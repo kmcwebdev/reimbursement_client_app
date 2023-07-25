@@ -1,7 +1,13 @@
 {
   "name": "reimbursement_client_app",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "private": true,
+  "engines": {
+    "node": ">=18.16.0",
+    "pnpm": ">=8.6.0",
+    "npm": "please-use-pnpm",
+    "yarn": "please-use-pnpm"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -9,16 +15,37 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@hookform/resolvers": "^3.1.1",
+    "@propelauth/react": "^2.0.9",
+    "@reduxjs/toolkit": "^1.9.5",
+    "@t3-oss/env-nextjs": "^0.6.0",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.0.0",
+    "framer-motion": "^10.13.1",
+    "next": "13.4.12",
+    "pusher-js": "^8.3.0",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-dropzone": "^14.2.3",
+    "react-hook-form": "^7.45.2",
+    "react-redux": "^8.1.1",
+    "react-select": "^5.7.4",
+    "tailwind-merge": "^1.14.0",
+    "zod": "^3.21.4"
+  },
+  "devDependencies": {
     "@types/node": "20.4.4",
     "@types/react": "18.2.16",
     "@types/react-dom": "18.2.7",
+    "@typescript-eslint/eslint-plugin": "^6.2.0",
+    "@typescript-eslint/parser": "^6.2.0",
     "autoprefixer": "10.4.14",
     "eslint": "8.45.0",
     "eslint-config-next": "13.4.12",
-    "next": "13.4.12",
+    "husky": "^8.0.3",
     "postcss": "8.4.27",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
+    "prettier": "^3.0.0",
+    "prettier-plugin-tailwindcss": "^0.4.1",
     "tailwindcss": "3.3.3",
     "typescript": "5.1.6"
   }
