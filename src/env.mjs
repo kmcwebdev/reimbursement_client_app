@@ -8,7 +8,7 @@ export const env = createEnv({
     process.env.SKIP_ENV_VALIDATION !== "0",
   isServer: typeof window === "undefined",
   server: {
-    TEST: z.string().url(),
+    TEST: z.string().min(1),
   },
   client: {
     NEXT_PUBLIC_ENVIRONMENT: z.enum(["development", "test", "production"]),
