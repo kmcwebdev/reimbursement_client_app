@@ -12,9 +12,11 @@ export const env = createEnv({
   },
   client: {
     NEXT_PUBLIC_ENVIRONMENT: z.enum(["development", "test", "production"]),
+    NEXT_PUBLIC_PROPELAUTH_URL: z.string().url(),
   },
   runtimeEnv: {
-    TEST: process.env.DATABASE_URL,
+    TEST: process.env.TEST,
     NEXT_PUBLIC_ENVIRONMENT: process.env.NEXT_PUBLIC_ENVIRONMENT,
+    NEXT_PUBLIC_PROPELAUTH_URL: process.env.NEXT_PUBLIC_PROPELAUTH_URL,
   },
 });
