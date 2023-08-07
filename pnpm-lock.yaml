@@ -12,8 +12,8 @@ dependencies:
     specifier: ^2.1.1
     version: 2.1.1
   '@propelauth/react':
-    specifier: ^2.0.9
-    version: 2.0.9(react-dom@18.2.0)(react@18.2.0)
+    specifier: ^2.0.10
+    version: 2.0.10(react-dom@18.2.0)(react@18.2.0)
   '@reduxjs/toolkit':
     specifier: ^1.9.5
     version: 1.9.5(react-redux@8.1.1)(react@18.2.0)
@@ -493,8 +493,8 @@ packages:
       tslib: 2.6.1
     dev: true
 
-  /@propelauth/javascript@2.0.5:
-    resolution: {integrity: sha512-AI9rhrfCYjA9iENSZIPBztdSr91a2aZj4HX8l4z+L6bAu4gTjN5F8tu1IetFjBLWNOK7DGcaANfHqTyfSv+TcA==}
+  /@propelauth/javascript@2.0.6:
+    resolution: {integrity: sha512-STz+44y+4A4leC9oRm2pg7QNp1XUZv62f2FR78WVikDphlAbAqOeEd+T284QKqaE/3V8/OnGms/CCKj7CpJN9Q==}
     dev: false
 
   /@propelauth/node@2.1.1:
@@ -503,13 +503,13 @@ packages:
       jsonwebtoken: 9.0.1
     dev: false
 
-  /@propelauth/react@2.0.9(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-K4RNx5E1smlIOwQ+BQ31C0SaKzuqX453Ln0mDfebtgbD2XKpr8AEc+VqRaVtQJPd3yue7vr0tX0TW3ulooD/gA==}
+  /@propelauth/react@2.0.10(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-/HJlNdCZrdQ8hZ+kNNPw5bP19G63xvlbxx48orCbYka8FK9bW5LE0NHb8c//3zV1SR6ukSJZvPMGV7JyN99U0Q==}
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0
       react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
     dependencies:
-      '@propelauth/javascript': 2.0.5
+      '@propelauth/javascript': 2.0.6
       hoist-non-react-statics: 3.3.2
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
