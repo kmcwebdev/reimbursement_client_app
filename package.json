@@ -16,7 +16,7 @@
     "prepare": "husky install"
   },
   "dependencies": {
-    "@hookform/resolvers": "^3.1.1",
+    "@hookform/resolvers": "^3.2.0",
     "@propelauth/node": "^2.1.1",
     "@propelauth/react": "^2.0.10",
     "@reduxjs/toolkit": "^1.9.5",
