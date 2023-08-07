@@ -1,6 +1,7 @@
 import "~/styles/globals.css";
 // import { RequiredAuthProvider, useRedirectFunctions } from "@propelauth/react";
 import type { AppProps } from "next/app";
+import Layout from "~/components/core/layout";
 // import { env } from "~/env.mjs";
 
 // const RedirectToCustomLocation = () => {
@@ -24,8 +25,10 @@ export default function App({ Component, pageProps }: AppProps) {
     //   displayIfLoggedOut={<RedirectToCustomLocation />}
     // >
 
-    <Component {...pageProps} />
-   
+    <Layout>
+      <Component {...pageProps} />
+    </Layout>
+
     // </RequiredAuthProvider>
   );
 }

@@ -1,46 +1,25 @@
-import Link from 'next/link';
-import React, { type PropsWithChildren } from 'react';
-import { MdSettings } from 'react-icons-all-files/md/MdSettings';
-import { barlow_Condensed } from '~/styles/fonts/barlowCondensed';
+import React, { type PropsWithChildren } from "react";
+import Header from "./Header";
+import Sidebar from "./Sidebar";
 
-const Layout: React.FC<PropsWithChildren> = ({children}) => {
+const Layout: React.FC<PropsWithChildren> = ({ children }) => {
   return (
-    <div>
-    <div className="z-20 hidden w-20 border-r bg-white md:block">
-        <div className="flex h-screen flex-col">
-          <div className="flex h-16 items-center justify-center border-b">
-            B
-          </div>
-          <div className="flex grow flex-col items-center gap-y-4 px-2 py-4 children:cursor-pointer ">
-           
-          </div>
-          <div className="flex flex-col items-center gap-y-4 px-2 py-4 children:cursor-pointer ">
-            <Link href={`/settings`}>
-              <MdSettings className="h-6 w-6 text-neutral-normal" />
-            </Link>
-          </div>
-        </div>
-      </div>
-      <div className="flex-1">
-        <div className="flex h-16 flex-col justify-between border-b bg-white">
-          <div className="flex items-center justify-between px-4 py-3">
-            <div
-              className={`${barlow_Condensed.variable} font-barlowCondensed text-2xl font-bold text-primary-normal`}
-            >
-                Dashboard
-            </div>
+    <div className="flex min-h-screen">
+      <Sidebar />
 
-    
+      <div className="flex-1 overflow-y-auto bg-[#F3F4F6]">
+        <Header />
+        <div className="relative flex h-[calc(100vh_-_4rem)]">
+          <div className=" h-full w-full overflow-y-auto bg-[#F3F4F6] p-4">
+            {children}
+
+            {/* <div className="h-16" /> !DO NOT REMOVE (Space for components that has footer) */}
+            <div className="h-16" />
           </div>
         </div>
-        <div className="relative flex h-full">
-          
-            
-          <div className="h-full w-full overflow-hidden">{children}</div>
-        </div>
       </div>
-      </div>
+    </div>
   );
-}
+};
 
 export default Layout;

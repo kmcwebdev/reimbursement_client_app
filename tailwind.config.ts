@@ -1,6 +1,6 @@
-
-
 export const base = {
+  black: "#111622",
+  navy: "#001738",
   primary: {
     normal: "#FF7200",
     hover: "#F2730D",
@@ -14,7 +14,7 @@ export const base = {
     },
   },
   neutral: {
-    normal: '#4A545E',
+    normal: "#4A545E",
     hover: "#3A424A",
     active: "#272E35",
     selected: "#3A424A",
@@ -79,8 +79,8 @@ module.exports = {
         barlowCondensed: ["var(--font-barlow-condensed)"],
       },
       colors: {
-        ...base
-      }
+        ...base,
+      },
     },
   },
   plugins: [
