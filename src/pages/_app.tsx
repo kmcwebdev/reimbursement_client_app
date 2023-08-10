@@ -1,29 +1,34 @@
 import "~/styles/globals.css";
-import { RequiredAuthProvider, useRedirectFunctions } from "@propelauth/react";
+// import { RequiredAuthProvider, useRedirectFunctions } from "@propelauth/react";
 import type { AppProps } from "next/app";
-import { env } from "~/env.mjs";
+import Layout from "~/components/core/layout";
+// import { env } from "~/env.mjs";
 
-const RedirectToCustomLocation = () => {
-  const { redirectToLoginPage } = useRedirectFunctions();
+// const RedirectToCustomLocation = () => {
+//   const { redirectToLoginPage } = useRedirectFunctions();
 
-  redirectToLoginPage({
-    postLoginRedirectUrl:
-      env.NEXT_PUBLIC_ENVIRONMENT === "development"
-        ? `${window.location.href}`
-        : `https://${window.location.hostname}`,
-  });
+//   redirectToLoginPage({
+//     postLoginRedirectUrl:
+//       env.NEXT_PUBLIC_ENVIRONMENT === "development"
+//         ? `${window.location.href}`
+//         : `https://${window.location.hostname}`,
+//   });
 
-  return null;
-};
+//   return null;
+// };
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
-    <RequiredAuthProvider
-      authUrl={env.NEXT_PUBLIC_PROPELAUTH_URL}
-      displayWhileLoading={<div>Auth Loading....</div>}
-      displayIfLoggedOut={<RedirectToCustomLocation />}
-    >
+    // <RequiredAuthProvider
+    //   authUrl={env.NEXT_PUBLIC_PROPELAUTH_URL}
+    //   displayWhileLoading={<div>Auth Loading....</div>}
+    //   displayIfLoggedOut={<RedirectToCustomLocation />}
+    // >
+
+    <Layout>
       <Component {...pageProps} />
-    </RequiredAuthProvider>
+    </Layout>
+
+    // </RequiredAuthProvider>
   );
 }
