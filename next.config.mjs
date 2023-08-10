@@ -7,6 +7,13 @@ await import("./src/env.mjs");
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  images: {
+    domains: [
+      "kmcstorage1.blob.core.windows.net",
+      "cdn.kmc.solutions",
+      "kmc.solutions",
+    ],
+  },
 };
 
 export default nextConfig;
