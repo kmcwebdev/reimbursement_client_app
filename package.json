@@ -1,5 +1,5 @@
 {
-  "name": "reimbursement_client_app",
+  "name": "reimbursement_app",
   "version": "0.0.1",
   "private": true,
   "engines": {
@@ -16,7 +16,7 @@
     "prepare": "husky install"
   },
   "dependencies": {
-    "@hookform/resolvers": "^3.1.1",
+    "@hookform/resolvers": "^3.2.0",
     "@propelauth/node": "^2.1.1",
     "@propelauth/react": "^2.0.10",
     "@reduxjs/toolkit": "^1.9.5",
@@ -42,6 +42,7 @@
     "@types/node": "20.4.8",
     "@types/react": "18.2.18",
     "@types/react-dom": "18.2.7",
+    "@types/react-icons": "^3.0.0",
     "@typescript-eslint/eslint-plugin": "^6.2.1",
     "@typescript-eslint/parser": "^6.2.0",
     "autoprefixer": "10.4.14",
