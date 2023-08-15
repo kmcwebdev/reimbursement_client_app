@@ -2,64 +2,34 @@ export const base = {
   black: "#111622",
   navy: "#001738",
   primary: {
-    normal: "#FF7200",
-    hover: "#F2730D",
-    active: "#FF6A00",
-    selected: "#F2730D",
-    subtle: {
-      normal: "#FFF1E6",
-      hover: "#FFE9D6",
-      active: "#FFDDC2",
-      selected: "#FFE9D6",
-    },
+    default: "#FF7200",
+    hover: "#CC5202",
+    pressed: "#A1400B",
+    subtle: "#FFF9EC",
   },
-  neutral: {
-    normal: "#4A545E",
-    hover: "#3A424A",
-    active: "#272E35",
-    selected: "#3A424A",
-    subtle: {
-      normal: "#F0F3F5",
-      hover: "#E9ECEF",
-      active: "#CFD6DD",
-      selected: "#E9ECEF",
-    },
-  },
-  positive: {
-    normal: "#1D7C4D",
-    hover: "#196742",
-    active: "#0E4E30",
-    selected: "#3A424A",
-    subtle: {
-      normal: "#E6F9EF",
-      hover: "#D8F8E7",
-      active: "#C2EBD5",
-      selected: "#D8F8E7",
-    },
-  },
-  danger: {
-    normal: "#C53434",
-    hover: "#952D2D",
-    active: "#6F2020",
-    selected: "#952D2D",
-    subtle: {
-      normal: "#FFEBEB",
-      hover: "#FEE6E6",
-      active: "#FCCFCF",
-      selected: "#FEE6E6",
-    },
+  success: {
+    default: "#16A679",
+    hover: "#007A5C",
+    pressed: "#3A424A",
+    subtle: "#E6F9EF",
   },
   informative: {
-    normal: "#3062D4",
-    hover: "#1E50C0",
-    active: "#1E50C0",
-    selected: "#1E50C0",
-    subtle: {
-      normal: "#EDF2FF",
-      hover: "#E5EEFF",
-      active: "#CDDDFF",
-      selected: "#E5EEFF",
-    },
+    default: "#2463BC",
+    hover: "#144995",
+    pressed: "#0E356C",
+    subtle: "#F0F5FD",
+  },
+  danger: {
+    default: "#C5280C",
+    hover: "#9F200A",
+    pressed: "#731807",
+    subtle: "#FEF3F1",
+  },
+  neutral: {
+    default: "#87909B",
+    hover: "#F9FAFB",
+    pressed: "#616A75",
+    subtle: "#CACED3",
   },
 };
 
@@ -74,9 +44,19 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        karla: ["var(--font-karla)"],
-        barlow: ["var(--font-barlow)"],
-        barlowCondensed: ["var(--font-barlow-condensed)"],
+        karla: "var(--font-karla)",
+        barlow: "var(--font-barlow)",
+        barlowCondensed: "var(--font-barlow-condensed)",
+      },
+      fontSize: {
+        sm: ["12px", , "16px"],
+        base: ["14px", , "26px"],
+        md: ["16px", , "24px"],
+        lg: ["20px", , "24px"],
+        xl: ["24px", "32px"],
+        "2xl": ["32px", , "40px"],
+        "3xl": ["38px", , "48px"],
+        "4xl": ["48px", , "56px"],
       },
       colors: {
         ...base,

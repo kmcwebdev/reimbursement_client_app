@@ -13,6 +13,7 @@ export type TextAreaProps = React.InputHTMLAttributes<HTMLTextAreaElement> &
     name: string;
     icon?: IconType;
     hasError?: boolean;
+    rows?: number;
   };
 
 const inputVariants = cva("py-2 text-sm rounded", {
@@ -39,6 +40,8 @@ const TextArea = ({
   name,
   placeholder,
   hasError = false,
+  rows = 4,
+  required = false,
 }: TextAreaProps) => {
   const formContext = useFormContext();
 
@@ -57,8 +60,11 @@ const TextArea = ({
   return (
     <div className="space-y-2">
       {label && (
-        <label htmlFor={name} className="text-xs">
-          {label}
+        <label
+          htmlFor={name}
+          className="text-xs font-semibold text-neutral-800"
+        >
+          {label} {required && <span className="text-primary-default">*</span>}
         </label>
       )}
 
@@ -85,16 +91,17 @@ const TextArea = ({
               hasError || formContext.formState.errors[name]?.message
                 ? "input-error"
                 : "input-default",
-              "block w-full rounded-md border-0 py-2.5 outline-none placeholder:text-xs placeholder:font-light focus:border focus:ring-1 focus:ring-inset sm:text-sm sm:leading-6",
             )}
+            rows={rows}
           />
         ) : (
           <textarea
             placeholder={placeholder}
             className={classNames(
-              hasError ? "input-error border" : "input-default border-0",
-              "block w-full rounded-md py-2.5 outline-none placeholder:text-xs placeholder:font-light focus:ring-1 focus:ring-inset sm:text-sm sm:leading-6",
+              hasError ? "input-error" : "input-default",
+              "w-full resize-none rounded-md border-neutral-subtle py-2 placeholder:pt-1 placeholder:text-xs placeholder:text-neutral-subtle focus:border-transparent focus:ring-1 focus:ring-inset focus:ring-primary-default sm:text-sm",
             )}
+            rows={rows}
           />
         )}
       </div>

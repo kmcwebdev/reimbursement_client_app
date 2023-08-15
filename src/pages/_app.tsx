@@ -1,7 +1,7 @@
-import "~/styles/globals.css";
 // import { RequiredAuthProvider, useRedirectFunctions } from "@propelauth/react";
 import type { AppProps } from "next/app";
 import Layout from "~/components/core/layout";
+import "~/styles/globals.css";
 // import { env } from "~/env.mjs";
 
 // const RedirectToCustomLocation = () => {

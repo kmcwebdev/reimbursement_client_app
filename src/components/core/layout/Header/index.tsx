@@ -6,8 +6,8 @@ interface indexProps {}
 
 const Header: React.FC<indexProps> = () => {
   return (
-    <div className="sticky top-0 z-[1000] flex h-16 flex-col justify-between border-b bg-white shadow-sm">
-      <div className="flex items-center justify-between px-4 py-3">
+    <div className="sticky top-0 z-20 flex h-16 flex-col justify-between border-b bg-white shadow-sm">
+      <div className="flex h-full items-center justify-between px-4">
         <PageTitle />
         <ProfileMenu />
       </div>

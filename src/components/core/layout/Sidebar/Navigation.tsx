@@ -76,14 +76,14 @@ const Navigation: React.FC<NavigationProps> = ({ collapsed }) => {
               )}
             >
               {active && (
-                <div className="relative h-full">
+                <div className="relative flex h-full">
                   <AnimatePresence>
                     <motion.div
                       initial={{ width: 0 }}
-                      animate={{ width: ".25rem" }}
+                      animate={{ width: "2px" }}
                       exit={{ width: 0 }}
-                      style={{ position: "absolute", top: 0, left: 0 }}
-                      className="h-[1.8rem] w-1 rounded-sm bg-primary-normal"
+                      style={{ position: "absolute", top: 6, left: 0 }}
+                      className="h-[16px] w-[2px] rounded-sm bg-primary-default"
                     />
                   </AnimatePresence>
                 </div>
@@ -91,7 +91,7 @@ const Navigation: React.FC<NavigationProps> = ({ collapsed }) => {
 
               <Icon
                 className={classNames(
-                  collapsed ? "h-6 w-6" : "h-5 w-5",
+                  collapsed ? "h-6 w-6" : "h-[14px] w-[14px]",
                   "transition-all ease-in-out",
                 )}
               />

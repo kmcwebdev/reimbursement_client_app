@@ -16,12 +16,14 @@
     "prepare": "husky install"
   },
   "dependencies": {
+    "@headlessui/react": "^1.7.16",
     "@hookform/resolvers": "^3.1.1",
     "@propelauth/node": "^2.1.1",
     "@propelauth/react": "^2.0.10",
     "@reduxjs/toolkit": "^1.9.5",
     "@t3-oss/env-nextjs": "^0.6.0",
     "@tailwindcss/forms": "^0.5.4",
+    "@tanstack/react-table": "^8.9.3",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
     "framer-motion": "^10.15.0",
