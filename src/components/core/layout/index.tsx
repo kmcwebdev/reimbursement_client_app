@@ -14,7 +14,7 @@ const Layout: React.FC<PropsWithChildren> = ({ children }) => {
       >
         <Header />
         <div className="relative flex h-[calc(100vh_-_4rem)]">
-          <div className=" h-full w-full overflow-y-auto bg-white p-4">
+          <div className="h-full w-full overflow-y-auto bg-white p-4">
             {children}
 
             {/* <div className="h-16" /> !DO NOT REMOVE (Space for components that has footer) */}
