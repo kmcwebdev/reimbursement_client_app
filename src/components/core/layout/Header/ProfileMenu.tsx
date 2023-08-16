@@ -1,8 +1,10 @@
 import React from "react";
+import { useUserAccessContext } from "~/context/AccessContext";
 import Popover from "../../Popover";
-const user = { firstName: "Jayzur", lastName: "Gandia" };
+import Select, { type OptionData } from "../../form/fields/Select";
 
 const ProfileMenu: React.FC = () => {
+  const { user, changeUser } = useUserAccessContext();
   return (
     <Popover
       btn={
@@ -10,12 +12,46 @@ const ProfileMenu: React.FC = () => {
           role="button"
           className="grid h-8 w-8 place-items-center rounded-full bg-gray-200 font-bold text-neutral-default"
         >
-          {user.firstName.charAt(0).toUpperCase()}
-          {user.lastName.charAt(0).toUpperCase()}
+          {user?.name.charAt(0).toUpperCase()}
         </div>
       }
       panelClassName="right-0 top-5"
-      content={<div className="w-32 p-4">TO DO: Edit content</div>}
+      content={
+        <div className="w-72 p-4">
+          <Select
+            name="user"
+            data={[
+              {
+                label: "EMPLOYEE",
+                value: "employee",
+              },
+              {
+                label: "HRBP",
+                value: "hrbp",
+              },
+              {
+                label: "MANAGER",
+                value: "manager",
+              },
+              {
+                label: "FINANCE",
+                value: "finance",
+              },
+            ]}
+            initialValue={
+              user
+                ? { label: user.name.toUpperCase(), value: user.role }
+                : undefined
+            }
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+            onChangeEvent={(e) => {
+              const event = e as OptionData;
+              console.log(event);
+              changeUser(event.value);
+            }}
+          />
+        </div>
+      }
     />
   );
 };

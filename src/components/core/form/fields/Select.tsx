@@ -11,12 +11,7 @@ import {
 
 import { type IconType } from "react-icons-all-files";
 import { TbChevronDown } from "react-icons-all-files/tb/TbChevronDown";
-import type {
-  ControlProps,
-  InputActionMeta,
-  MultiValue,
-  SingleValue,
-} from "react-select";
+import type { ControlProps, InputActionMeta, PropsValue } from "react-select";
 import { components } from "react-select";
 import AsyncSelect from "react-select/async";
 import { classNames } from "~/utils/classNames";
@@ -31,10 +26,6 @@ export type OptionData = {
   valueAsNum?: number;
 };
 
-export type ReactSelectOnChangeEvent =
-  | MultiValue<OptionData>
-  | SingleValue<OptionData>;
-
 interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   className?: string;
   icon?: IconType;
@@ -47,7 +38,7 @@ interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   placeholder?: string;
   closeMenuOnSelect?: boolean;
   onInputChange?: (newValue: string, actionMeta: InputActionMeta) => void;
-  onChangeEvent?: (event: ReactSelectOnChangeEvent) => void;
+  onChangeEvent?: (event: PropsValue<OptionData>) => void;
   data: OptionData[];
   initialValue?: OptionData[] | OptionData;
   required?: boolean;
