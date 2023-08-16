@@ -10,7 +10,7 @@ dependencies:
     version: 1.7.16(react-dom@18.2.0)(react@18.2.0)
   '@hookform/resolvers':
     specifier: ^3.1.1
-    version: 3.1.1(react-hook-form@7.45.2)
+    version: 3.1.1(react-hook-form@7.45.4)
   '@propelauth/node':
     specifier: ^2.1.1
     version: 2.1.1
@@ -57,11 +57,11 @@ dependencies:
     specifier: ^14.2.3
     version: 14.2.3(react@18.2.0)
   react-hook-form:
-    specifier: ^7.45.2
-    version: 7.45.2(react@18.2.0)
+    specifier: ^7.45.4
+    version: 7.45.4(react@18.2.0)
   react-icons-all-files:
     specifier: github:alisamar/react-icons-all-files#4.8.0
-    version: github.com/alisamar/react-icons-all-files/7f607f596c600ffdcea65e0388f21c8a4fd17943(react@18.2.0)
+    version: git/github.com+alisamar/react-icons-all-files/7f607f596c600ffdcea65e0388f21c8a4fd17943(react@18.2.0)
   react-redux:
     specifier: ^8.1.2
     version: 8.1.2(@types/react-dom@18.2.7)(@types/react@18.2.18)(react-dom@18.2.0)(react@18.2.0)(redux@4.2.1)
@@ -354,12 +354,12 @@ packages:
       react-dom: 18.2.0(react@18.2.0)
     dev: false
 
-  /@hookform/resolvers@3.1.1(react-hook-form@7.45.2):
+  /@hookform/resolvers@3.1.1(react-hook-form@7.45.4):
     resolution: {integrity: sha512-tS16bAUkqjITNSvbJuO1x7MXbn7Oe8ZziDTJdA9mMvsoYthnOOiznOTGBYwbdlYBgU+tgpI/BtTU3paRbCuSlg==}
     peerDependencies:
       react-hook-form: ^7.0.0
     dependencies:
-      react-hook-form: 7.45.2(react@18.2.0)
+      react-hook-form: 7.45.4(react@18.2.0)
     dev: false
 
   /@humanwhocodes/config-array@0.11.10:
@@ -3505,8 +3505,8 @@ packages:
       react: 18.2.0
     dev: false
 
-  /react-hook-form@7.45.2(react@18.2.0):
-    resolution: {integrity: sha512-9s45OdTaKN+4NSTbXVqeDITd/nwIg++nxJGL8+OD5uf1DxvhsXQ641kaYHk5K28cpIOTYm71O/fYk7rFaygb3A==}
+  /react-hook-form@7.45.4(react@18.2.0):
+    resolution: {integrity: sha512-HGDV1JOOBPZj10LB3+OZgfDBTn+IeEsNOKiq/cxbQAIbKaiJUe/KV8DBUzsx0Gx/7IG/orWqRRm736JwOfUSWQ==}
     engines: {node: '>=12.22.0'}
     peerDependencies:
       react: ^16.8.0 || ^17 || ^18
@@ -4350,9 +4350,9 @@ packages:
     resolution: {integrity: sha512-m46AKbrzKVzOzs/DZgVnG5H55N1sv1M8qZU3A8RIKbs3mrACDNeIOeilDymVb2HdmP8uwshOCF4uJ8uM9rCqJw==}
     dev: false
 
-  github.com/alisamar/react-icons-all-files/7f607f596c600ffdcea65e0388f21c8a4fd17943(react@18.2.0):
-    resolution: {tarball: https://codeload.github.com/alisamar/react-icons-all-files/tar.gz/7f607f596c600ffdcea65e0388f21c8a4fd17943}
-    id: github.com/alisamar/react-icons-all-files/7f607f596c600ffdcea65e0388f21c8a4fd17943
+  git/github.com+alisamar/react-icons-all-files/7f607f596c600ffdcea65e0388f21c8a4fd17943(react@18.2.0):
+    resolution: {commit: 7f607f596c600ffdcea65e0388f21c8a4fd17943, repo: git@github.com:alisamar/react-icons-all-files.git, type: git}
+    id: git@github.com+alisamar/react-icons-all-files/7f607f596c600ffdcea65e0388f21c8a4fd17943
     name: react-icons-all-files
     version: 4.8.0
     peerDependencies:
