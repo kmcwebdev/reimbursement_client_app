@@ -1,5 +1,5 @@
 import React from "react";
-import { useUserAccessContext } from "~/context/AccessContext";
+import { useUserAccessContext, type IRole } from "~/context/AccessContext";
 import Popover from "../../Popover";
 import Select, { type OptionData } from "../../form/fields/Select";
 
@@ -47,7 +47,8 @@ const ProfileMenu: React.FC = () => {
             onChangeEvent={(e) => {
               const event = e as OptionData;
               console.log(event);
-              changeUser(event.value);
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+              changeUser(event.value as IRole);
             }}
           />
         </div>

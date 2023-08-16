@@ -25,7 +25,7 @@ const users: IUserData[] = [
 ];
 
 // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
-type IRole = "employee" | "manager" | "hrbp" | "finance" | string;
+export type IRole = "employee" | "manager" | "hrbp" | "finance";
 
 export interface IUserData {
   name: string;
