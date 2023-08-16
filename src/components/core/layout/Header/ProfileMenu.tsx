@@ -1,15 +1,59 @@
 import React from "react";
-const user = { firstName: "John", lastName: "Doe" };
+import { useUserAccessContext, type IRole } from "~/context/AccessContext";
+import Popover from "../../Popover";
+import Select, { type OptionData } from "../../form/fields/Select";
 
 const ProfileMenu: React.FC = () => {
+  const { user, changeUser } = useUserAccessContext();
   return (
-    <div
-      role="button"
-      className="grid h-10 w-10 place-items-center rounded-full bg-gray-200 text-lg font-bold text-neutral-normal"
-    >
-      {user.firstName.charAt(0).toUpperCase()}
-      {user.lastName.charAt(0).toUpperCase()}
-    </div>
+    <Popover
+      btn={
+        <div
+          role="button"
+          className="grid h-8 w-8 place-items-center rounded-full bg-gray-200 font-bold text-neutral-default"
+        >
+          {user?.name.charAt(0).toUpperCase()}
+        </div>
+      }
+      panelClassName="right-0 top-5"
+      content={
+        <div className="w-72 p-4">
+          <Select
+            name="user"
+            data={[
+              {
+                label: "EMPLOYEE",
+                value: "employee",
+              },
+              {
+                label: "HRBP",
+                value: "hrbp",
+              },
+              {
+                label: "MANAGER",
+                value: "manager",
+              },
+              {
+                label: "FINANCE",
+                value: "finance",
+              },
+            ]}
+            initialValue={
+              user
+                ? { label: user.name.toUpperCase(), value: user.role }
+                : undefined
+            }
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+            onChangeEvent={(e) => {
+              const event = e as OptionData;
+              console.log(event);
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+              changeUser(event.value as IRole);
+            }}
+          />
+        </div>
+      }
+    />
   );
 };
 

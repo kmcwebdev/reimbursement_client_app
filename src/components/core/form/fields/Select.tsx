@@ -11,44 +11,20 @@ import {
 
 import { type IconType } from "react-icons-all-files";
 import { TbChevronDown } from "react-icons-all-files/tb/TbChevronDown";
-import type {
-  ControlProps,
-  InputActionMeta,
-  MultiValue,
-  SingleValue,
-} from "react-select";
+import type { ControlProps, InputActionMeta, PropsValue } from "react-select";
 import { components } from "react-select";
 import AsyncSelect from "react-select/async";
 import { classNames } from "~/utils/classNames";
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function debounce<F extends (...args: any[]) => void>(
-  func: F,
-  waitFor: number,
-) {
-  let timeoutId: NodeJS.Timeout | null = null;
-
-  return (...args: Parameters<F>): void => {
-    if (timeoutId) {
-      clearTimeout(timeoutId);
-    }
-
-    timeoutId = setTimeout(() => func(...args), waitFor);
-  };
-}
+import { debounce } from "~/utils/debounce";
 
 export type OptionData = {
   value: string;
   label: string;
-  color: string;
+  color?: string;
   isFixed?: undefined;
   isDisabled?: undefined;
   valueAsNum?: number;
 };
-
-export type ReactSelectOnChangeEvent =
-  | MultiValue<OptionData>
-  | SingleValue<OptionData>;
 
 interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   className?: string;
@@ -62,7 +38,7 @@ interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   placeholder?: string;
   closeMenuOnSelect?: boolean;
   onInputChange?: (newValue: string, actionMeta: InputActionMeta) => void;
-  onChangeEvent?: (event: ReactSelectOnChangeEvent) => void;
+  onChangeEvent?: (event: PropsValue<OptionData>) => void;
   data: OptionData[];
   initialValue?: OptionData[] | OptionData;
   required?: boolean;
@@ -83,9 +59,10 @@ const Select: React.FC<SelectProps> = ({
   onInputChange,
   data,
   initialValue,
-  placeholder,
+  placeholder = "Select an Option",
   isSearchable,
   hasError,
+  required = false,
 }) => {
   const debouncedOnInputChange = useMemo(() => {
     if (onInputChange) {
@@ -168,10 +145,15 @@ const Select: React.FC<SelectProps> = ({
   };
 
   return (
-    <div className="w-full">
-      <label htmlFor={label?.toLowerCase()} className="text-xs text-gray-700">
-        {label}
-      </label>
+    <div className="w-full space-y-2">
+      {label && (
+        <label
+          htmlFor={name}
+          className="text-xs font-semibold text-neutral-800"
+        >
+          {label} {required && <span className="text-primary-default">*</span>}
+        </label>
+      )}
 
       {formContext ? (
         <Controller
@@ -185,13 +167,11 @@ const Select: React.FC<SelectProps> = ({
             <AsyncSelect
               ref={ref}
               name={name}
-              className={classNames("text-sm", className)}
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+              className={classNames("text-xs", className)}
               value={
                 initialVal && {
                   label: initialVal?.label,
                   value: initialVal?.value,
-                  color: "",
                 }
               }
               placeholder={
@@ -199,8 +179,8 @@ const Select: React.FC<SelectProps> = ({
                   className={classNames(
                     "text-xs font-light",
                     hasError || formContext?.formState.errors[name]?.message
-                      ? "text-red-400"
-                      : "",
+                      ? "text-danger-default"
+                      : "text-neutral-subtle",
                   )}
                 >
                   {placeholder}
@@ -220,16 +200,16 @@ const Select: React.FC<SelectProps> = ({
                   borderRadius: "0.375rem",
                   background:
                     hasError || formContext?.formState.errors[name]?.message
-                      ? "#fee2e2"
-                      : "#EAEFF4",
+                      ? "#FEF3F1"
+                      : "#FFFFFF",
                   cursor: "pointer",
                   border: state.isFocused
                     ? hasError || formContext?.formState.errors[name]?.message
-                      ? "1px solid #f87171"
-                      : "1px solid #047857"
+                      ? "1px solid #C5280C"
+                      : "1px solid #FF7200"
                     : hasError || formContext?.formState.errors[name]?.message
-                    ? "1px solid #f87171"
-                    : "0 solid #047857",
+                    ? "1px solid #C5280C"
+                    : "1px solid #CACED3",
                   boxShadow: state.isFocused ? "0.094rem #f97316" : "none",
                   "&:hover": {
                     boxShadow: "0.094rem solid #f97316",
@@ -250,17 +230,14 @@ const Select: React.FC<SelectProps> = ({
                 }),
                 option: (provided, state) => ({
                   ...provided,
-                  background: state.isFocused ? "#6EE7B2" : "#FFFFFF",
-                  color: state.isFocused ? "#272E35" : "#272E35",
+                  backgroundColor: state.isSelected ? "#FF7200" : "transparent",
+                  color: state.isSelected ? "#FFFFFF" : "#272E35",
                   marginTop: "3px",
                   borderRadius: "0.25rem",
                   "&:hover": {
                     cursor: "pointer",
-                    background: "#6EE7B2",
-                  },
-                  "&:active": {
-                    color: "#272E35",
-                    background: "#6EE7B2",
+                    background: "#FF7200",
+                    color: "#FFFFFF",
                   },
                 }),
                 clearIndicator: (provided) => ({
@@ -285,7 +262,6 @@ const Select: React.FC<SelectProps> = ({
               onInputChange={debouncedOnInputChange}
               onChange={(event) => {
                 onChangeEvent && onChangeEvent(event);
-
                 onChange(event);
               }}
             />
@@ -307,7 +283,7 @@ const Select: React.FC<SelectProps> = ({
             <div
               className={classNames(
                 "text-xs font-light",
-                hasError && "text-red-400",
+                hasError ? "text-red-400" : "text-neutral-subtle",
               )}
             >
               {placeholder}
@@ -325,15 +301,15 @@ const Select: React.FC<SelectProps> = ({
               minHeight: "2.6rem",
               height: "auto",
               borderRadius: "0.375rem",
-              background: hasError ? "#fee2e2" : "#EAEFF4",
+              background: hasError ? "#FEF3F1" : "#FFFFFF",
               cursor: "pointer",
               border: state.isFocused
                 ? hasError
-                  ? "1px solid #f87171"
-                  : "1px solid #047857"
+                  ? "1px solid #C5280C"
+                  : "1px solid #FF7200"
                 : hasError
-                ? "1px solid #f87171"
-                : "0 solid #047857",
+                ? "1px solid #C5280C"
+                : "1px solid #CACED3",
               boxShadow: state.isFocused ? "0.094rem #f97316" : "none",
               "&:hover": {
                 boxShadow: "0.094rem solid #f97316",
@@ -354,17 +330,14 @@ const Select: React.FC<SelectProps> = ({
             }),
             option: (provided, state) => ({
               ...provided,
-              background: state.isFocused ? "#6EE7B2" : "#FFFFFF",
-              color: state.isFocused ? "#272E35" : "#272E35",
+              backgroundColor: state.isSelected ? "#FF7200" : "transparent",
+              color: state.isSelected ? "#FFFFFF" : "#272E35",
               marginTop: "3px",
               borderRadius: "0.25rem",
               "&:hover": {
                 cursor: "pointer",
-                background: "#6EE7B2",
-              },
-              "&:active": {
-                color: "#272E35",
-                background: "#6EE7B2",
+                background: "#FF7200",
+                color: "#FFFFFF",
               },
             }),
             clearIndicator: (provided) => ({

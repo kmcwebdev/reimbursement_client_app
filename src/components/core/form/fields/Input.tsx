@@ -10,19 +10,18 @@ import { classNames } from "~/utils/classNames";
 export type InputProps = React.InputHTMLAttributes<HTMLInputElement> &
   VariantProps<typeof inputVariants> & {
     label?: string;
-    labelColor?: "white" | "gray-700";
     name: string;
     icon?: IconType;
-    bgColor?: "gray" | "white";
     className?: string;
     hasErrors?: boolean;
+    required?: boolean;
   };
 
 const inputVariants = cva("py-2 text-sm rounded", {
   variants: {
     variant: {
       default:
-        "rounded-md py-2.5 pl-10 outline-none placeholder:text-xs placeholder:font-light focus:ring-inset sm:text-sm",
+        "rounded-md py-2 border-neutral-subtle focus:border-transparent placeholder:text-neutral-subtle placeholder:text-xs sm:text-sm focus:ring-1 focus:ring-inset focus:ring-primary-default",
     },
     width: {
       default: "w-auto",
@@ -38,15 +37,14 @@ const inputVariants = cva("py-2 text-sm rounded", {
 const Input = ({
   className,
   label,
-  labelColor = "gray-700",
   icon: Icon,
-  type,
+  type = "text",
   name,
-  bgColor = "gray",
   placeholder,
   variant,
   width,
   hasErrors = false,
+  required = false,
 }: InputProps) => {
   const formContext = useFormContext();
 
@@ -67,9 +65,9 @@ const Input = ({
       {label && (
         <label
           htmlFor={name}
-          className={classNames(`text-xs text-[${labelColor}]`)}
+          className="text-xs font-semibold text-neutral-800"
         >
-          {label}
+          {label} {required && <span className="text-primary-default">*</span>}
         </label>
       )}
 
@@ -81,7 +79,7 @@ const Input = ({
                 "h-5 w-5",
                 formContext && formContext.formState.errors[name]?.message
                   ? "text-red-400"
-                  : "text-gray-400",
+                  : "text-neutral-subtle",
               )}
               aria-hidden="true"
             />
@@ -91,14 +89,15 @@ const Input = ({
         {formContext ? (
           <input
             {...formContext.register(name, options)}
+            type={type}
             className={classNames(
               className,
               inputVariants({ variant, width }),
               formContext.formState.errors[name]?.message
                 ? "input-error"
-                : bgColor === "gray"
-                ? "input-gray-bg"
                 : "input-default",
+              Icon && "pl-10",
+              "w-full",
             )}
             placeholder={
               placeholder && type !== "date" ? placeholder : undefined
@@ -106,14 +105,13 @@ const Input = ({
           />
         ) : (
           <input
+            type={type}
             className={classNames(
               className,
               inputVariants({ variant, width }),
-              hasErrors
-                ? "input-error"
-                : bgColor === "gray"
-                ? "input-gray-bg"
-                : "input-default",
+              hasErrors ? "input-error" : "input-default",
+              Icon && "pl-10",
+              "w-full",
             )}
             placeholder={
               placeholder && type !== "date" ? placeholder : undefined

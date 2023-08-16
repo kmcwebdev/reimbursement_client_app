@@ -1,7 +1,6 @@
 import Image from "next/image";
 import React from "react";
-import { AiOutlineMenuFold } from "react-icons-all-files/ai/AiOutlineMenuFold";
-import { AiOutlineMenuUnfold } from "react-icons-all-files/ai/AiOutlineMenuUnfold";
+import { HiMenu } from "react-icons-all-files/hi/HiMenu";
 import { classNames } from "~/utils/classNames";
 
 interface SidebarHeaderProps {
@@ -32,11 +31,7 @@ const SidebarHeader: React.FC<SidebarHeaderProps> = ({ collapsed, toggle }) => {
         </div>
       </div>
 
-      {collapsed ? (
-        <AiOutlineMenuUnfold {...iconAttr} />
-      ) : (
-        <AiOutlineMenuFold {...iconAttr} />
-      )}
+      <HiMenu {...iconAttr} />
     </div>
   );
 };
