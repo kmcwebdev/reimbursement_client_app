@@ -1,16 +1,16 @@
 import { configureStore } from "@reduxjs/toolkit";
-import testReducer from "../features/test-slice";
+// import testReducer from "../features/test-slice";
+import { env } from "~/env.mjs";
 import userReducer from "../features/user-slice";
 import { appApiSlice } from "./api";
-import { env } from "~/env.mjs";
 
 const store = configureStore({
   reducer: {
     [appApiSlice.reducerPath]: appApiSlice.reducer,
     user: userReducer,
-    test: testReducer
   },
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(appApiSlice.middleware),
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat(appApiSlice.middleware),
   devTools: env.NEXT_PUBLIC_ENVIRONMENT === "development",
 });
 

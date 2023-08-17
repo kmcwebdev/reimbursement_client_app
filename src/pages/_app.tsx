@@ -2,10 +2,10 @@ import { RequiredAuthProvider, useRedirectFunctions } from "@propelauth/react";
 import type { AppProps } from "next/app";
 import { Provider } from "react-redux";
 import store from "~/app/store";
+import PageAnimation from "~/components/animation/PageAnimation";
 import Layout from "~/components/core/layout";
-import { UserAccessProvider } from "~/context/AccessContext";
-import "~/styles/globals.css";
 import { env } from "~/env.mjs";
+import "~/styles/globals.css";
 
 const RedirectToCustomLocation = () => {
   const { redirectToLoginPage } = useRedirectFunctions();
@@ -28,11 +28,12 @@ export default function App({ Component, pageProps }: AppProps) {
       displayIfLoggedOut={<RedirectToCustomLocation />}
     >
       <Provider store={store}>
-        <UserAccessProvider>
-          <Layout>
+        <Layout>
+          <PageAnimation>
+
             <Component {...pageProps} />
-          </Layout>
-        </UserAccessProvider>
+          </PageAnimation>
+        </Layout>
       </Provider>
     </RequiredAuthProvider>
   );
