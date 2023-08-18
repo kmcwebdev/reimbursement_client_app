@@ -24,7 +24,7 @@ import { useDialogState } from "~/hooks/use-dialog-state";
 import { sampleData } from "~/utils/sampleData";
 import PageAnimation from "../animation/PageAnimation";
 import TableCheckbox from "../core/Table/TableCheckbox";
-import TextArea from "../core/form/fields/Textarea";
+import TextArea from "../core/form/fields/TextArea";
 
 const StatusTypeFilter = dynamic(
   () => import("~/components/core/Table/filters/StatusFilter"),
