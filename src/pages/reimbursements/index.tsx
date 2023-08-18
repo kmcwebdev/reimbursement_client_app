@@ -7,8 +7,8 @@ import { AiOutlineSearch } from "react-icons-all-files/ai/AiOutlineSearch";
 import PageAnimation from "~/components/animation/PageAnimation";
 // import EmptyState from "~/components/core/EmptyState";
 import {
-  ColumnFiltersState,
   type ColumnDef,
+  type ColumnFiltersState,
   type PaginationState,
 } from "@tanstack/react-table";
 import { Button } from "~/components/core/Button";
@@ -117,7 +117,7 @@ const Reimbursements: React.FC = () => {
       {
         accessorKey: "filed",
         cell: (info) => info.getValue(),
-        header: "fileds",
+        header: "filed",
       },
       {
         accessorKey: "total",
