@@ -1,7 +1,27 @@
 import React from "react";
-import { useUserAccessContext, type IRole } from "~/context/AccessContext";
+import { PropsValue } from "react-select";
+import { IRole, useUserAccessContext } from "~/context/AccessContext";
 import Popover from "../../Popover";
-import Select, { type OptionData } from "../../form/fields/Select";
+import Select, { OptionData } from "../../form/fields/Select";
+
+const options = [
+  {
+    label: "EMPLOYEE",
+    value: "employee",
+  },
+  {
+    label: "HRBP",
+    value: "hrbp",
+  },
+  {
+    label: "MANAGER",
+    value: "manager",
+  },
+  {
+    label: "FINANCE",
+    value: "finance",
+  },
+];
 
 const ProfileMenu: React.FC = () => {
   const { user, changeUser } = useUserAccessContext();
@@ -19,36 +39,14 @@ const ProfileMenu: React.FC = () => {
       content={
         <div className="w-72 p-4">
           <Select
-            name="user"
-            data={[
-              {
-                label: "EMPLOYEE",
-                value: "employee",
-              },
-              {
-                label: "HRBP",
-                value: "hrbp",
-              },
-              {
-                label: "MANAGER",
-                value: "manager",
-              },
-              {
-                label: "FINANCE",
-                value: "finance",
-              },
-            ]}
             initialValue={
-              user
-                ? { label: user.name.toUpperCase(), value: user.role }
-                : undefined
+              options.find((a) => a.value === user?.role) as OptionData
             }
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-            onChangeEvent={(e) => {
-              const event = e as OptionData;
-              console.log(event);
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-              changeUser(event.value as IRole);
+            name="user"
+            options={options}
+            onChangeEvent={(e: PropsValue<OptionData>) => {
+              const value = e as OptionData;
+              changeUser(value.value as IRole);
             }}
           />
         </div>
