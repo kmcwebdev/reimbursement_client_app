@@ -14,6 +14,9 @@ import DashboardCard from "~/components/core/DashboardCard";
 import List from "~/components/core/List";
 import StatusBadge, { type StatusType } from "~/components/core/StatusBadge";
 import Table, { type Reimbursement } from "~/components/core/Table";
+import StatusFilter, {
+  type FilterProps,
+} from "~/components/core/Table/filters/StatusFilter";
 import Upload from "~/components/core/Upload";
 import ButtonGroup from "~/components/core/form/fields/ButtonGroup";
 import CardSelection from "~/components/core/form/fields/CardSelection";
@@ -24,11 +27,10 @@ import { useDialogState } from "~/hooks/use-dialog-state";
 import { sampleData } from "~/utils/sampleData";
 import PageAnimation from "../animation/PageAnimation";
 import TableCheckbox from "../core/Table/TableCheckbox";
+import ClientFilter from "../core/Table/filters/ClientFilter";
+import ReimbursementTypeFilter from "../core/Table/filters/ReimbursementTypeFilter";
 import TextArea from "../core/form/fields/TextArea";
 
-const StatusTypeFilter = dynamic(
-  () => import("~/components/core/Table/filters/StatusFilter"),
-);
 const Dialog = dynamic(() => import("~/components/core/Dialog"));
 const SideDrawer = dynamic(() => import("~/components/core/SideDrawer"));
 
@@ -77,7 +79,7 @@ const DashboardComp: React.FC = () => {
           return value.includes(row.getValue(id));
         },
         meta: {
-          filterComponent: StatusTypeFilter,
+          filterComponent: (info: FilterProps) => <StatusFilter {...info} />,
         },
       },
       {
@@ -88,7 +90,7 @@ const DashboardComp: React.FC = () => {
           return value.includes(row.getValue(id));
         },
         meta: {
-          filterComponent: StatusTypeFilter,
+          filterComponent: (info: FilterProps) => <ClientFilter {...info} />,
         },
       },
       {
@@ -114,7 +116,9 @@ const DashboardComp: React.FC = () => {
           return value.includes(row.getValue(id));
         },
         meta: {
-          filterComponent: StatusTypeFilter,
+          filterComponent: (info: FilterProps) => (
+            <ReimbursementTypeFilter {...info} />
+          ),
         },
       },
       {
@@ -128,9 +132,6 @@ const DashboardComp: React.FC = () => {
         header: "Filed",
         filterFn: (row, id, value: string) => {
           return value.includes(row.getValue(id));
-        },
-        meta: {
-          filterComponent: StatusTypeFilter,
         },
       },
       {
