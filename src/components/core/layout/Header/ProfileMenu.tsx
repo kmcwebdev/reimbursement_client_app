@@ -37,6 +37,10 @@ const ProfileMenu: React.FC = () => {
                 label: "FINANCE",
                 value: "finance",
               },
+              {
+                label: "SAMPLE",
+                value: "sample",
+              },
             ]}
             initialValue={
               user
