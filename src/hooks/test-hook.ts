@@ -1,3 +1,3 @@
 export function dontCodeHere() {
-  console.log("This is a hooks");
+  console.log("This is a hook");
 }
