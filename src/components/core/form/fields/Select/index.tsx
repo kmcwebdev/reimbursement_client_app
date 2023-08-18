@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-import { SelectHTMLAttributes, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type SelectHTMLAttributes } from "react";
 import {
   Controller,
   useFormContext,
@@ -62,7 +62,7 @@ interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
   showError?: boolean;
   disabled?: boolean;
   hasError?: boolean;
-  initialValue: PropsValue<OptionData>;
+  initialValue?: PropsValue<OptionData>;
 }
 
 const Select: React.FC<SelectProps> = ({

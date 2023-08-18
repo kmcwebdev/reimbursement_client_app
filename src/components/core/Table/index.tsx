@@ -1,18 +1,23 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
+import React, {
+  useEffect,
+  useState,
+  type Dispatch,
+  type SetStateAction,
+} from "react";
 
 import {
-  Column,
-  FilterMeta,
   flexRender,
   getCoreRowModel,
   getFacetedUniqueValues,
   getFilteredRowModel,
   getPaginationRowModel,
   useReactTable,
+  type Column,
   type ColumnDef,
   type ColumnFiltersState,
+  type FilterMeta,
   type PaginationState,
   type RowSelectionState,
   type Table,

@@ -1,6 +1,6 @@
 import {
-  ColumnFiltersState,
   type ColumnDef,
+  type ColumnFiltersState,
   type PaginationState,
 } from "@tanstack/react-table";
 import dynamic from "next/dynamic";
@@ -150,7 +150,7 @@ const DashboardComp: React.FC = () => {
           <Select
             name="Select"
             label="Select"
-            data={[
+            options={[
               { value: "Option 1", label: "Option1" },
               { value: "Option 2", label: "Option2" },
             ]}
