@@ -48,14 +48,14 @@ const TextArea = ({
   const options: RegisterOptions<FieldValues, string> | undefined =
     type === "date"
       ? {
-          valueAsDate:
-            type === "date" && formContext.getValues(name) ? true : false,
-        }
+        valueAsDate:
+          type === "date" && formContext.getValues(name) ? true : false,
+      }
       : type === "number"
-      ? {
+        ? {
           setValueAs: (v: string) => (v === "" ? undefined : parseInt(v, 10)),
         }
-      : undefined;
+        : undefined;
 
   return (
     <div className="space-y-2">
