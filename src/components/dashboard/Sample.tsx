@@ -1,6 +1,10 @@
-import { type ColumnDef, type PaginationState } from "@tanstack/react-table";
+import {
+  ColumnFiltersState,
+  type ColumnDef,
+  type PaginationState,
+} from "@tanstack/react-table";
 import dynamic from "next/dynamic";
-import React from "react";
+import React, { useState } from "react";
 import { type IconType } from "react-icons-all-files";
 import { MdAccessTime } from "react-icons-all-files/md/MdAccessTime";
 import { MdGavel } from "react-icons-all-files/md/MdGavel";
@@ -10,7 +14,6 @@ import DashboardCard from "~/components/core/DashboardCard";
 import List from "~/components/core/List";
 import StatusBadge, { type StatusType } from "~/components/core/StatusBadge";
 import Table, { type Reimbursement } from "~/components/core/Table";
-import IndeterminateCheckbox from "~/components/core/Table/IndeterminateCheckbox";
 import Upload from "~/components/core/Upload";
 import ButtonGroup from "~/components/core/form/fields/ButtonGroup";
 import CardSelection from "~/components/core/form/fields/CardSelection";
@@ -20,10 +23,11 @@ import Select from "~/components/core/form/fields/Select";
 import { useDialogState } from "~/hooks/use-dialog-state";
 import { sampleData } from "~/utils/sampleData";
 import PageAnimation from "../animation/PageAnimation";
-import TextArea from "../core/form/fields/TextArea";
+import TableCheckbox from "../core/Table/TableCheckbox";
+import TextArea from "../core/form/fields/Textarea";
 
 const StatusTypeFilter = dynamic(
-  () => import("~/components/core/Table/filters/StatusTypeFilter"),
+  () => import("~/components/core/Table/filters/StatusFilter"),
 );
 const Dialog = dynamic(() => import("~/components/core/Dialog"));
 const SideDrawer = dynamic(() => import("~/components/core/SideDrawer"));
@@ -36,28 +40,31 @@ const DashboardComp: React.FC = () => {
     close: closeDrawer,
   } = useDialogState();
 
+  const [selectedItems, setSelectedItems] = useState<number[]>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 10,
+  });
+
   const columns = React.useMemo<ColumnDef<Reimbursement>[]>(
     () => [
       {
         id: "select",
         header: ({ table }) => (
-          <IndeterminateCheckbox
-            {...{
-              checked: table.getIsAllRowsSelected(),
-              indeterminate: table.getIsSomeRowsSelected(),
-              onChange: table.getToggleAllRowsSelectedHandler(),
-            }}
+          <TableCheckbox
+            checked={table.getIsAllRowsSelected()}
+            indeterminate={table.getIsSomeRowsSelected()}
+            onChange={table.getToggleAllRowsSelectedHandler()}
           />
         ),
         cell: ({ row }) => (
           <div className="px-4">
-            <IndeterminateCheckbox
-              {...{
-                checked: row.getIsSelected(),
-                disabled: !row.getCanSelect(),
-                indeterminate: row.getIsSomeSelected(),
-                onChange: row.getToggleSelectedHandler(),
-              }}
+            <TableCheckbox
+              checked={row.getIsSelected()}
+              disabled={!row.getCanSelect()}
+              indeterminate={row.getIsSomeSelected()}
+              onChange={row.getToggleSelectedHandler()}
             />
           </div>
         ),
@@ -134,11 +141,6 @@ const DashboardComp: React.FC = () => {
     ],
     [],
   );
-
-  const [pagination, setPagination] = React.useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 10,
-  });
 
   return (
     <PageAnimation>
@@ -257,8 +259,12 @@ const DashboardComp: React.FC = () => {
             <Table
               data={sampleData}
               columns={columns}
-              pagination={pagination}
-              setPagination={setPagination}
+              tableState={{ pagination, selectedItems, columnFilters }}
+              tableStateActions={{
+                setColumnFilters,
+                setSelectedItems,
+                setPagination,
+              }}
             />
           </div>
         </div>

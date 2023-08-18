@@ -14,7 +14,7 @@ interface StatusBadgeProps {
 }
 
 const statusVariant = cva(
-  "h-6 max-w-[77px] rounded text-sm border border-opacity-10 grid place-items-center",
+  "h-6 max-w-[77px] rounded text-sm border border-opacity-10 grid place-items-center px-2",
   {
     variants: {
       status: {

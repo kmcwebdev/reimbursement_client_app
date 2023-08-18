@@ -1,17 +1,19 @@
 import { type Column, type Table } from "@tanstack/react-table";
 import { useEffect, useMemo, useState, type ChangeEvent } from "react";
 import { FaCaretDown } from "react-icons-all-files/fa/FaCaretDown";
+import CollapseHeightAnimation from "~/components/animation/CollapseHeight";
 import { type Reimbursement } from "..";
 import { Button } from "../../Button";
 import Popover from "../../Popover";
+import StatusBadge, { type StatusType } from "../../StatusBadge";
 import Checkbox from "../../form/fields/Checkbox";
 
-interface StatusTypeFilterProps {
+export interface FilterProps {
   column: Column<Reimbursement, unknown>;
   table: Table<Reimbursement>;
 }
 
-const StatusTypeFilter: React.FC<StatusTypeFilterProps> = ({
+const StatusFilter: React.FC<FilterProps> = ({
   column, // table,
 }) => {
   const sortedUniqueValues = useMemo(
@@ -60,16 +62,20 @@ const StatusTypeFilter: React.FC<StatusTypeFilterProps> = ({
               sortedUniqueValues.map((option: string) => (
                 <Checkbox
                   key={option}
-                  label={option}
+                  label={<StatusBadge status={option as StatusType} />}
                   name={option}
                   checked={checked.includes(option)}
                   onChange={(e) => onChange(e, option)}
                 />
               ))}
 
-            <Button buttonType="text" onClick={showAll}>
-              Show All
-            </Button>
+            <CollapseHeightAnimation
+              isVisible={checked.length < sortedUniqueValues.length}
+            >
+              <Button buttonType="text" onClick={showAll}>
+                Show All
+              </Button>
+            </CollapseHeightAnimation>
           </div>
         </div>
       }
@@ -77,4 +83,4 @@ const StatusTypeFilter: React.FC<StatusTypeFilterProps> = ({
   );
 };
 
-export default StatusTypeFilter;
+export default StatusFilter;
