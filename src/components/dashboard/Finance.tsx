@@ -1,55 +1,49 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import {
-  type ColumnDef,
-  type ColumnFiltersState,
-  type PaginationState,
-} from "@tanstack/react-table";
-import dynamic from "next/dynamic";
-import Head from "next/head";
-import React, { useState } from "react";
-import { AiOutlinePause } from "react-icons-all-files/ai/AiOutlinePause";
-import { AiOutlineSearch } from "react-icons-all-files/ai/AiOutlineSearch";
-import { MdAccessTimeFilled } from "react-icons-all-files/md/MdAccessTimeFilled";
-import { MdGavel } from "react-icons-all-files/md/MdGavel";
-import { Button } from "~/components/core/Button";
-import DashboardCard from "~/components/core/DashboardCard";
-import Table, { type Reimbursement } from "~/components/core/Table";
-import { type FilterProps } from "~/components/core/Table/filters/StatusFilter";
-import ButtonGroup from "~/components/core/form/fields/ButtonGroup";
-import Input from "~/components/core/form/fields/Input";
-import { sampleData } from "~/utils/sampleData";
+import React from "react";
 import PageAnimation from "../animation/PageAnimation";
-import TableCheckbox from "../core/Table/TableCheckbox";
+import Head from 'next/head';
+import DashboardCard from "~/components/core/DashboardCard";
+import { MdGavel } from "react-icons-all-files/md/MdGavel";
+import { MdAccessTimeFilled } from "react-icons-all-files/md/MdAccessTimeFilled";
+import { AiOutlineSearch } from "react-icons-all-files/ai/AiOutlineSearch";
+import { AiOutlinePause } from "react-icons-all-files/ai/AiOutlinePause";
+import Table, { type Reimbursement } from "~/components/core/Table";
+import { sampleData } from "~/utils/sampleData";
+import { type ColumnDef, type PaginationState } from "@tanstack/react-table";
+import IndeterminateCheckbox from "~/components/core/Table/IndeterminateCheckbox";
+import dynamic from "next/dynamic";
+import Input from "~/components/core/form/fields/Input";
+import { Button } from "~/components/core/Button";
+import ButtonGroup from "~/components/core/form/fields/ButtonGroup";
 
-const ReimbursementTypeFilter = dynamic(() => import("../core/Table/filters/ReimbursementTypeFilter"));
-const ClientFilter = dynamic(() => import("../core/Table/filters/ClientFilter"));
+const StatusTypeFilter = dynamic(
+  () => import("~/components/core/Table/filters/StatusTypeFilter"),
+);
 
 const FinanceDashboard: React.FC = () => {
-  const [selectedItems, setSelectedItems] = useState<number[]>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 10,
-  });
 
   const columns = React.useMemo<ColumnDef<Reimbursement>[]>(
     () => [
       {
         id: "select",
         header: ({ table }) => (
-          <TableCheckbox
-            checked={table.getIsAllRowsSelected()}
-            indeterminate={table.getIsSomeRowsSelected()}
-            onChange={table.getToggleAllRowsSelectedHandler()}
+          <IndeterminateCheckbox
+            {...{
+              checked: table.getIsAllRowsSelected(),
+              indeterminate: table.getIsSomeRowsSelected(),
+              onChange: table.getToggleAllRowsSelectedHandler(),
+            }}
           />
         ),
         cell: ({ row }) => (
           <div className="px-4">
-            <TableCheckbox
-              checked={row.getIsSelected()}
-              disabled={!row.getCanSelect()}
-              indeterminate={row.getIsSomeSelected()}
-              onChange={row.getToggleSelectedHandler()}
+            <IndeterminateCheckbox
+              {...{
+                checked: row.getIsSelected(),
+                disabled: !row.getCanSelect(),
+                indeterminate: row.getIsSomeSelected(),
+                onChange: row.getToggleSelectedHandler(),
+              }}
             />
           </div>
         ),
@@ -62,7 +56,7 @@ const FinanceDashboard: React.FC = () => {
           return value.includes(row.getValue(id));
         },
         meta: {
-          filterComponent: (info: FilterProps) => <ClientFilter {...info} />,
+          filterComponent: StatusTypeFilter,
         },
       },
       {
@@ -88,9 +82,7 @@ const FinanceDashboard: React.FC = () => {
           return value.includes(row.getValue(id));
         },
         meta: {
-          filterComponent: (info: FilterProps) => (
-            <ReimbursementTypeFilter {...info} />
-          ),
+          filterComponent: StatusTypeFilter,
         },
       },
       {
@@ -99,6 +91,9 @@ const FinanceDashboard: React.FC = () => {
         header: "Expense",
         filterFn: (row, id, value: string) => {
           return value.includes(row.getValue(id));
+        },
+        meta: {
+          filterComponent: StatusTypeFilter,
         },
       },
       {
@@ -119,16 +114,20 @@ const FinanceDashboard: React.FC = () => {
     ],
     [],
   );
-
+  const [pagination, setPagination] = React.useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 10,
+  });
+  
   return (
     <>
       <Head>
         <title>Finance Dashboard</title>
       </Head>
       <PageAnimation>
-        <div className="grid h-72 gap-y-2 p-5">
+        <div className="grid h-72 p-5 gap-y-2">
           {/* card */}
-          <div className="mb-5 flex place-items-start gap-4">
+          <div className="flex gap-4 place-items-start mb-5">
             <DashboardCard
               icon={<MdGavel className="h-5 w-5 text-[#D89B0D]" />}
               label="Pending Approval"
@@ -148,47 +147,35 @@ const FinanceDashboard: React.FC = () => {
           </div>
 
           {/* table */}
-          <div className="flex justify-between">
-            <h4>For Processing</h4>
-            <div className="flex gap-2">
-              <Input
-                name="inputText"
-                placeholder="Find anything..."
-                icon={AiOutlineSearch}
-              />
-
-              <Button variant="neutral" buttonType="outlined">
-                Hold
-              </Button>
-              <Button variant="danger" buttonType="outlined">
-                Reject
-              </Button>
-              <Button variant="success">Download Report</Button>
+            <div className="flex justify-between">
+              <h4>For Processing</h4>
+              <div className="flex gap-2">
+                <Input name="inputText" placeholder="Find anything..." icon={AiOutlineSearch} />
+                
+                <Button variant="neutral" buttonType='outlined'>Hold</Button>
+                <Button variant="danger"  buttonType='outlined'>Reject</Button>
+                <Button variant="success">Download Report</Button>
+              </div>
             </div>
-          </div>
+            
+            <div className="w-52">
+              <ButtonGroup
+                handleChange={(e) => console.log(e)}
+                label=""
+                name=""
+                options={[
+                  { label: "Pending", value: "Pending" },
+                  { label: "On-Hold", value: "On-Hold" },
+                ]}
+              />
+            </div>
 
-          <div className="w-52">
-            <ButtonGroup
-              handleChange={(e) => console.log(e)}
-              label=""
-              name=""
-              options={[
-                { label: "Pending", value: "Pending" },
-                { label: "On-Hold", value: "On-Hold" },
-              ]}
-            />
-          </div>
-
-          <Table
-            data={sampleData}
-            columns={columns}
-            tableState={{ pagination, selectedItems, columnFilters }}
-            tableStateActions={{
-              setColumnFilters,
-              setSelectedItems,
-              setPagination,
-            }}
-          />
+            <Table
+              data={sampleData}
+              columns={columns}
+              pagination={pagination}
+              setPagination={setPagination}
+              />
         </div>
       </PageAnimation>
     </>

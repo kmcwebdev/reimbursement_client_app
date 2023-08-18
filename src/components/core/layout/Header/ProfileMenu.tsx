@@ -7,29 +7,8 @@ import { useUserAccessContext, type IRole } from "~/context/AccessContext";
 import Popover from "../../Popover";
 import Select, { type OptionData } from "../../form/fields/Select";
 
-const options = [
-  {
-    label: "EMPLOYEE",
-    value: "employee",
-  },
-  {
-    label: "HRBP",
-    value: "hrbp",
-  },
-  {
-    label: "MANAGER",
-    value: "manager",
-  },
-  {
-    label: "FINANCE",
-    value: "finance",
-  },
-];
-
 const ProfileMenu: React.FC = () => {
   const { user, changeUser } = useUserAccessContext();
-
-  const navigation = useRouter();
   return (
     <Popover
       btn={
@@ -42,8 +21,31 @@ const ProfileMenu: React.FC = () => {
       }
       panelClassName="right-0 top-5"
       content={
-        <div className="w-72 p-4 space-y-4">
+        <div className="w-72 p-4">
           <Select
+            name="user"
+            data={[
+              {
+                label: "EMPLOYEE",
+                value: "employee",
+              },
+              {
+                label: "HRBP",
+                value: "hrbp",
+              },
+              {
+                label: "MANAGER",
+                value: "manager",
+              },
+              {
+                label: "FINANCE",
+                value: "finance",
+              },
+              {
+                label: "SAMPLE",
+                value: "sample",
+              },
+            ]}
             initialValue={
               options.find((a) => a.value === user?.role) as OptionData
             }

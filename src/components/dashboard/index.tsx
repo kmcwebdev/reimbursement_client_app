@@ -7,7 +7,7 @@ import { sampleData } from "~/utils/sampleDataReim";
 import FinanceDashboard from "./Finance";
 import HrbpDashboard from "./Hrbp";
 import ManagerDashboard from "./Manager";
-import EmployeeDashboard from "./employee";
+import Sample from "./Sample";
 
 const DashboardComponent: React.FC = () => {
   const {
@@ -25,6 +25,7 @@ const DashboardComponent: React.FC = () => {
           {user.role === "finance" && <FinanceDashboard />}
           {user.role === "hrbp" && <HrbpDashboard />}
           {user.role === "manager" && <ManagerDashboard />}
+          {user.role === "sample" && <Sample />}
         </>
       )}
       {/* Example button for ReimbursementsCardView to open*/}

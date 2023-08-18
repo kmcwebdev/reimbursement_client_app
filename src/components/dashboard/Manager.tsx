@@ -1,59 +1,36 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import {
-  type ColumnDef,
-  type ColumnFiltersState,
-  type PaginationState,
-} from "@tanstack/react-table";
-import dynamic from "next/dynamic";
-import Head from "next/head";
-import React, { useState } from "react";
-import { AiOutlineSearch } from "react-icons-all-files/ai/AiOutlineSearch";
-import { MdAccessTimeFilled } from "react-icons-all-files/md/MdAccessTimeFilled";
-import { MdGavel } from "react-icons-all-files/md/MdGavel";
-import DashboardCard from "~/components/core/DashboardCard";
-import StatusBadge, { type StatusType } from "~/components/core/StatusBadge";
-import Table, { type Reimbursement } from "~/components/core/Table";
-import { type FilterProps } from "~/components/core/Table/filters/StatusFilter";
-import Input from "~/components/core/form/fields/Input";
-import { sampleData } from "~/utils/sampleData";
+import React from "react";
 import PageAnimation from "../animation/PageAnimation";
-import TableCheckbox from "../core/Table/TableCheckbox";
+import Head from 'next/head';
+import DashboardCard from "~/components/core/DashboardCard";
+import { MdGavel } from "react-icons-all-files/md/MdGavel";
+import { MdAccessTimeFilled } from "react-icons-all-files/md/MdAccessTimeFilled";
+import { AiOutlineSearch } from "react-icons-all-files/ai/AiOutlineSearch";
+import Table, { type Reimbursement } from "~/components/core/Table";
+import { sampleData } from "~/utils/sampleData";
+import { type ColumnDef, type PaginationState } from "@tanstack/react-table";
+import IndeterminateCheckbox from "~/components/core/Table/IndeterminateCheckbox";
+import StatusBadge, { type StatusType } from "~/components/core/StatusBadge";
+import dynamic from "next/dynamic";
+import Input from "~/components/core/form/fields/Input";
 
-const StatusFilter = dynamic(
-  () => import("~/components/core/Table/filters/StatusFilter"),
-);
-
-const ReimbursementTypeFilter = dynamic(
-  () => import("~/components/core/Table/filters/ReimbursementTypeFilter"),
+const StatusTypeFilter = dynamic(
+  () => import("~/components/core/Table/filters/StatusTypeFilter"),
 );
 
 const ManagerDashboard: React.FC = () => {
-  const [selectedItems, setSelectedItems] = useState<number[]>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 10,
-  });
   const columns = React.useMemo<ColumnDef<Reimbursement>[]>(
     () => [
       {
         id: "select",
         header: ({ table }) => (
-          <TableCheckbox
-            checked={table.getIsAllRowsSelected()}
-            indeterminate={table.getIsSomeRowsSelected()}
-            onChange={table.getToggleAllRowsSelectedHandler()}
+          <IndeterminateCheckbox
+            {...{
+              checked: table.getIsAllRowsSelected(),
+              indeterminate: table.getIsSomeRowsSelected(),
+              onChange: table.getToggleAllRowsSelectedHandler(),
+            }}
           />
-        ),
-        cell: ({ row }) => (
-          <div className="px-4">
-            <TableCheckbox
-              checked={row.getIsSelected()}
-              disabled={!row.getCanSelect()}
-              indeterminate={row.getIsSomeSelected()}
-              onChange={row.getToggleSelectedHandler()}
-            />
-          </div>
         ),
       },
       {
@@ -63,9 +40,8 @@ const ManagerDashboard: React.FC = () => {
         filterFn: (row, id, value: string) => {
           return value.includes(row.getValue(id));
         },
-        enableColumnFilter: true,
         meta: {
-          filterComponent: (info: FilterProps) => <StatusFilter {...info} />,
+          filterComponent: StatusTypeFilter,
         },
       },
       {
@@ -91,9 +67,7 @@ const ManagerDashboard: React.FC = () => {
           return value.includes(row.getValue(id));
         },
         meta: {
-          filterComponent: (info: FilterProps) => (
-            <ReimbursementTypeFilter {...info} />
-          ),
+          filterComponent: StatusTypeFilter,
         },
       },
       {
@@ -103,6 +77,9 @@ const ManagerDashboard: React.FC = () => {
         filterFn: (row, id, value: string) => {
           return value.includes(row.getValue(id));
         },
+        meta: {
+          filterComponent: StatusTypeFilter,
+        },
       },
       {
         accessorKey: "filed",
@@ -110,6 +87,9 @@ const ManagerDashboard: React.FC = () => {
         header: "Filed",
         filterFn: (row, id, value: string) => {
           return value.includes(row.getValue(id));
+        },
+        meta: {
+          filterComponent: StatusTypeFilter,
         },
       },
       {
@@ -120,16 +100,19 @@ const ManagerDashboard: React.FC = () => {
     ],
     [],
   );
-
+  const [pagination, setPagination] = React.useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 10,
+  });
   return (
     <>
       <Head>
         <title>Manager Dashboard</title>
       </Head>
       <PageAnimation>
-        <div className="grid h-72 gap-y-5 p-5">
+        <div className="grid h-72 p-5 gap-y-5">
           {/* card */}
-          <div className="mb-3 flex place-items-start gap-4">
+          <div className="flex gap-4 place-items-start mb-3">
             <DashboardCard
               icon={<MdGavel className="h-5 w-5 text-[#D89B0D]" />}
               label="Pending Approval"
@@ -144,24 +127,17 @@ const ManagerDashboard: React.FC = () => {
           </div>
 
           {/* table */}
-          <div className="flex justify-between">
-            <h4>For Approval</h4>
-            <Input
-              name="inputText"
-              placeholder="Find anything..."
-              icon={AiOutlineSearch}
-            />
-          </div>
-          <Table
-            data={sampleData}
-            columns={columns}
-            tableState={{ pagination, selectedItems, columnFilters }}
-            tableStateActions={{
-              setColumnFilters,
-              setSelectedItems,
-              setPagination,
-            }}
-          />
+            <div className="flex justify-between">
+              <h4>For Approval</h4>
+              <Input name="inputText" placeholder="Find anything..." icon={AiOutlineSearch} />
+            </div>
+            <Table
+
+              data={sampleData}
+              columns={columns}
+              pagination={pagination}
+              setPagination={setPagination}
+              />
         </div>
       </PageAnimation>
     </>
