@@ -1,8 +1,8 @@
 import React from "react";
-import { PropsValue } from "react-select";
-import { IRole, useUserAccessContext } from "~/context/AccessContext";
+import { type PropsValue } from "react-select";
+import { useUserAccessContext, type IRole } from "~/context/AccessContext";
 import Popover from "../../Popover";
-import Select, { OptionData } from "../../form/fields/Select";
+import Select, { type OptionData } from "../../form/fields/Select";
 
 const options = [
   {
