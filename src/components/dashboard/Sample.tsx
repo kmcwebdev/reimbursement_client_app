@@ -17,10 +17,10 @@ import CardSelection from "~/components/core/form/fields/CardSelection";
 import Checkbox from "~/components/core/form/fields/Checkbox";
 import Input from "~/components/core/form/fields/Input";
 import Select from "~/components/core/form/fields/Select";
-import TextArea from "~/components/core/form/fields/TextArea";
 import { useDialogState } from "~/hooks/use-dialog-state";
 import { sampleData } from "~/utils/sampleData";
 import PageAnimation from "../animation/PageAnimation";
+import TextArea from "../core/form/fields/Textarea";
 
 const StatusTypeFilter = dynamic(
   () => import("~/components/core/Table/filters/StatusTypeFilter"),
