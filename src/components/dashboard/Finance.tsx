@@ -25,7 +25,6 @@ const FinanceDashboard: React.FC = () => {
     pageSize: 10,
   });
 
-
   const columns = React.useMemo<ColumnDef<Reimbursement>[]>(
     () => [
       {

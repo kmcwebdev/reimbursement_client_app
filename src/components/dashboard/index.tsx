@@ -3,7 +3,7 @@ import { useUserAccessContext } from "~/context/AccessContext";
 import FinanceDashboard from "./Finance";
 import HrbpDashboard from "./Hrbp";
 import ManagerDashboard from "./Manager";
-import EmployeeDashboard from "./employee";
+import Sample from "./Sample";
 
 const DashboardComponent: React.FC = () => {
 
@@ -16,6 +16,7 @@ const DashboardComponent: React.FC = () => {
           {user.role === "finance" && <FinanceDashboard />}
           {user.role === "hrbp" && <HrbpDashboard />}
           {user.role === "manager" && <ManagerDashboard />}
+          {user.role === "sample" && <Sample />}
         </>
       )}
     </>
