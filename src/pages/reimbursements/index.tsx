@@ -1,16 +1,13 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import Head from "next/head";
-import React, { useState } from "react";
-// import { type IconType } from "react-icons-all-files";
-// import { MdDashboard } from "react-icons-all-files/md/MdDashboard";
-import { AiOutlineSearch } from "react-icons-all-files/ai/AiOutlineSearch";
-import PageAnimation from "~/components/animation/PageAnimation";
-// import EmptyState from "~/components/core/EmptyState";
 import {
   type ColumnDef,
   type ColumnFiltersState,
   type PaginationState,
 } from "@tanstack/react-table";
+import Head from "next/head";
+import React, { useState } from "react";
+import { AiOutlineSearch } from "react-icons-all-files/ai/AiOutlineSearch";
+import PageAnimation from "~/components/animation/PageAnimation";
 import { Button } from "~/components/core/Button";
 import Table, { type Reimbursement } from "~/components/core/Table";
 import Input from "~/components/core/form/fields/Input";
@@ -134,19 +131,10 @@ const Reimbursements: React.FC = () => {
         <title>Reimbursements</title>
       </Head>
       <PageAnimation>
-        {/* <div className="grid h-72 w-full place-items-center rounded-md bg-white">
-          <EmptyState
-            title="Reimbursements is empty"
-            description="Wala pa kasing nagagawa na hayop ka! Magcode ka"
-            icon={MdDashboard as IconType}
-          >
-            <div className="bg-primary-normal h-10 w-32 rounded-md"></div>
-          </EmptyState>
-        </div> */}
         <div className="grid h-72 gap-y-4 p-5">
-          {/* table */}
+
           <div className="flex justify-between">
-            <h4>Reimburesemets</h4>
+            <h4>Reimbursemets</h4>
             <div className="flex gap-2">
               <Input
                 name="inputText"
