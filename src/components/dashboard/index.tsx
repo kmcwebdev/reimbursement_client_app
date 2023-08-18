@@ -4,7 +4,6 @@ import EmployeeDashboard from "./Employee";
 import FinanceDashboard from "./Finance";
 import HrbpDashboard from "./Hrbp";
 import ManagerDashboard from "./Manager";
-import Sample from "./Sample";
 
 const DashboardComponent: React.FC = () => {
   const { user } = useUserAccessContext();
@@ -16,7 +15,6 @@ const DashboardComponent: React.FC = () => {
           {user.role === "finance" && <FinanceDashboard />}
           {user.role === "hrbp" && <HrbpDashboard />}
           {user.role === "manager" && <ManagerDashboard />}
-          {user.role === "sample" && <Sample />}
         </>
       )}
     </>
