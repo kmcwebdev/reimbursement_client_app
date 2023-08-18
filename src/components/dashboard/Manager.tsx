@@ -4,19 +4,19 @@ import {
   type ColumnFiltersState,
   type PaginationState,
 } from "@tanstack/react-table";
+import dynamic from "next/dynamic";
 import Head from "next/head";
 import React, { useState } from "react";
 import { AiOutlineSearch } from "react-icons-all-files/ai/AiOutlineSearch";
 import { MdAccessTimeFilled } from "react-icons-all-files/md/MdAccessTimeFilled";
 import { MdGavel } from "react-icons-all-files/md/MdGavel";
 import DashboardCard from "~/components/core/DashboardCard";
+import StatusBadge, { type StatusType } from "~/components/core/StatusBadge";
 import Table, { type Reimbursement } from "~/components/core/Table";
+import { type FilterProps } from "~/components/core/Table/filters/StatusFilter";
+import Input from "~/components/core/form/fields/Input";
 import { sampleData } from "~/utils/sampleData";
 import PageAnimation from "../animation/PageAnimation";
-
-import dynamic from "next/dynamic";
-import StatusBadge, { type StatusType } from "~/components/core/StatusBadge";
-import Input from "~/components/core/form/fields/Input";
 import TableCheckbox from "../core/Table/TableCheckbox";
 import ReimbursementTypeFilter from "../core/Table/filters/ReimbursementTypeFilter";
 
@@ -60,8 +60,9 @@ const ManagerDashboard: React.FC = () => {
         filterFn: (row, id, value: string) => {
           return value.includes(row.getValue(id));
         },
+        enableColumnFilter: true,
         meta: {
-          filterComponent: StatusFilter,
+          filterComponent: (info: FilterProps) => <StatusFilter {...info} />,
         },
       },
       {
@@ -87,7 +88,9 @@ const ManagerDashboard: React.FC = () => {
           return value.includes(row.getValue(id));
         },
         meta: {
-          filterComponent: ReimbursementTypeFilter,
+          filterComponent: (info: FilterProps) => (
+            <ReimbursementTypeFilter {...info} />
+          ),
         },
       },
       {
@@ -97,9 +100,6 @@ const ManagerDashboard: React.FC = () => {
         filterFn: (row, id, value: string) => {
           return value.includes(row.getValue(id));
         },
-        meta: {
-          filterComponent: StatusFilter,
-        },
       },
       {
         accessorKey: "filed",
@@ -107,9 +107,6 @@ const ManagerDashboard: React.FC = () => {
         header: "Filed",
         filterFn: (row, id, value: string) => {
           return value.includes(row.getValue(id));
-        },
-        meta: {
-          filterComponent: StatusFilter,
         },
       },
       {

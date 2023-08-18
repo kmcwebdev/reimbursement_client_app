@@ -13,15 +13,11 @@ import Table, { type Reimbursement } from "~/components/core/Table";
 import Input from "~/components/core/form/fields/Input";
 import { sampleData } from "~/utils/sampleData";
 
-import dynamic from "next/dynamic";
 import StatusBadge, { type StatusType } from "~/components/core/StatusBadge";
 import TableCheckbox from "~/components/core/Table/TableCheckbox";
 import ClientFilter from "~/components/core/Table/filters/ClientFilter";
 import ReimbursementTypeFilter from "~/components/core/Table/filters/ReimbursementTypeFilter";
-
-const StatusFilter = dynamic(
-  () => import("~/components/core/Table/filters/StatusFilter"),
-);
+import StatusFilter from "~/components/core/Table/filters/StatusFilter";
 
 const Reimbursements: React.FC = () => {
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
@@ -132,7 +128,6 @@ const Reimbursements: React.FC = () => {
       </Head>
       <PageAnimation>
         <div className="grid h-72 gap-y-4 p-5">
-
           <div className="flex justify-between">
             <h4>Reimbursemets</h4>
             <div className="flex gap-2">

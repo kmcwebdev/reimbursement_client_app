@@ -65,6 +65,7 @@ const StatusFilter: React.FC<FilterProps> = ({
                   label={<StatusBadge status={option as StatusType} />}
                   name={option}
                   checked={checked.includes(option)}
+                  disabled={checked.length === 1 && checked.includes(option)}
                   onChange={(e) => onChange(e, option)}
                 />
               ))}

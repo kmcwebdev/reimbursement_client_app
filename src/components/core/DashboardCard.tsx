@@ -14,7 +14,7 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
   totalCount,
 }) => {
   return (
-    <div className="flex w-[312px] flex-col gap-4 rounded border border-neutral-subtle bg-white p-4">
+    <div className="flex h-[120px] w-[312px] flex-col gap-2 rounded border border-neutral-subtle bg-white p-4">
       <span>{icon}</span>
       <p className="text-neutral-pressed">{label}</p>
       <div className="text-lg font-bold">

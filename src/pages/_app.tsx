@@ -5,6 +5,7 @@ import store from "~/app/store";
 import PageAnimation from "~/components/animation/PageAnimation";
 import Layout from "~/components/core/layout";
 import AuthLoader from "~/components/loaders/AuthLoader";
+import { UserAccessProvider } from "~/context/AccessContext";
 import { env } from "~/env.mjs";
 import "~/styles/globals.css";
 
@@ -29,11 +30,13 @@ export default function App({ Component, pageProps }: AppProps) {
       displayIfLoggedOut={<RedirectToCustomLocation />}
     >
       <Provider store={store}>
-        <Layout>
-          <PageAnimation>
-            <Component {...pageProps} />
-          </PageAnimation>
-        </Layout>
+        <UserAccessProvider>
+          <Layout>
+            <PageAnimation>
+              <Component {...pageProps} />
+            </PageAnimation>
+          </Layout>
+        </UserAccessProvider>
       </Provider>
     </RequiredAuthProvider>
   );

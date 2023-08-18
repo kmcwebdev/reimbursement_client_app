@@ -34,7 +34,7 @@ export type Reimbursement = {
   type: string;
   expense: string;
   filed: string;
-  payrollAccount: number,
+  payrollAccount: number;
   total: number;
 };
 

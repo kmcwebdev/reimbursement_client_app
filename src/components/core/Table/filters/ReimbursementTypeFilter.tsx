@@ -27,8 +27,15 @@ const ReimbursementTypeFilter: React.FC<FilterProps> = ({ column }) => {
     } else {
       setChecked([...checked, value]);
     }
-
-    column.setFilterValue(checked);
+    if (e.target.checked) {
+      column.setFilterValue((old: string[]) =>
+        old ? [...old, value] : [value],
+      );
+    } else {
+      column.setFilterValue((old: string[]) =>
+        old ? old.filter((a) => a !== value) : undefined,
+      );
+    }
   };
 
   const showAll = () => {

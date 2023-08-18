@@ -4,7 +4,6 @@ import {
   type ColumnFiltersState,
   type PaginationState,
 } from "@tanstack/react-table";
-import dynamic from "next/dynamic";
 import Head from "next/head";
 import React, { useState } from "react";
 import { AiOutlinePause } from "react-icons-all-files/ai/AiOutlinePause";
@@ -14,15 +13,14 @@ import { MdGavel } from "react-icons-all-files/md/MdGavel";
 import { Button } from "~/components/core/Button";
 import DashboardCard from "~/components/core/DashboardCard";
 import Table, { type Reimbursement } from "~/components/core/Table";
+import { type FilterProps } from "~/components/core/Table/filters/StatusFilter";
 import ButtonGroup from "~/components/core/form/fields/ButtonGroup";
 import Input from "~/components/core/form/fields/Input";
 import { sampleData } from "~/utils/sampleData";
 import PageAnimation from "../animation/PageAnimation";
 import TableCheckbox from "../core/Table/TableCheckbox";
-
-const StatusTypeFilter = dynamic(
-  () => import("~/components/core/Table/filters/StatusFilter"),
-);
+import ClientFilter from "../core/Table/filters/ClientFilter";
+import ReimbursementTypeFilter from "../core/Table/filters/ReimbursementTypeFilter";
 
 const FinanceDashboard: React.FC = () => {
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
@@ -62,7 +60,7 @@ const FinanceDashboard: React.FC = () => {
           return value.includes(row.getValue(id));
         },
         meta: {
-          filterComponent: StatusTypeFilter,
+          filterComponent: (info: FilterProps) => <ClientFilter {...info} />,
         },
       },
       {
@@ -88,7 +86,9 @@ const FinanceDashboard: React.FC = () => {
           return value.includes(row.getValue(id));
         },
         meta: {
-          filterComponent: StatusTypeFilter,
+          filterComponent: (info: FilterProps) => (
+            <ReimbursementTypeFilter {...info} />
+          ),
         },
       },
       {
@@ -97,9 +97,6 @@ const FinanceDashboard: React.FC = () => {
         header: "Expense",
         filterFn: (row, id, value: string) => {
           return value.includes(row.getValue(id));
-        },
-        meta: {
-          filterComponent: StatusTypeFilter,
         },
       },
       {
