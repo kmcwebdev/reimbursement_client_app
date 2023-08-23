@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { Resend } from "resend";
 import { EmailTemplate } from "~/components/email-templates/Sample";
 
-const resend = new Resend("re_BW6DFXVh_6jyCKzXwCZDpwuB5Qwq5d4Rm");
+const resend = new Resend("");
 
 export default async function handler(
   _req: NextApiRequest,
