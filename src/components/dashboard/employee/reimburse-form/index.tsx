@@ -1,7 +1,8 @@
+import dynamic from 'next/dynamic';
 import React, { type Dispatch, type SetStateAction } from 'react';
-import ReimbursementDetailsForm from './steps/ReimbursementDetailsForm';
-import UploadAttachments from './steps/UploadAttachments';
 
+const ReimbursementDetailsForm = dynamic(() => import("./steps/ReimbursementDetailsForm"))
+const UploadAttachments = dynamic(() => import("./steps/UploadAttachments"))
 interface ReimburseFormProps {
   activeStep: number;
   setActiveStep: Dispatch<SetStateAction<number>>;

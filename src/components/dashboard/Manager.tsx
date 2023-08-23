@@ -18,10 +18,13 @@ import Input from "~/components/core/form/fields/Input";
 import { sampleData } from "~/utils/sampleData";
 import PageAnimation from "../animation/PageAnimation";
 import TableCheckbox from "../core/Table/TableCheckbox";
-import ReimbursementTypeFilter from "../core/Table/filters/ReimbursementTypeFilter";
 
 const StatusFilter = dynamic(
   () => import("~/components/core/Table/filters/StatusFilter"),
+);
+
+const ReimbursementTypeFilter = dynamic(
+  () => import("~/components/core/Table/filters/ReimbursementTypeFilter"),
 );
 
 const ManagerDashboard: React.FC = () => {

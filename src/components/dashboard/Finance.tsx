@@ -4,6 +4,7 @@ import {
   type ColumnFiltersState,
   type PaginationState,
 } from "@tanstack/react-table";
+import dynamic from "next/dynamic";
 import Head from "next/head";
 import React, { useState } from "react";
 import { AiOutlinePause } from "react-icons-all-files/ai/AiOutlinePause";
@@ -19,8 +20,9 @@ import Input from "~/components/core/form/fields/Input";
 import { sampleData } from "~/utils/sampleData";
 import PageAnimation from "../animation/PageAnimation";
 import TableCheckbox from "../core/Table/TableCheckbox";
-import ClientFilter from "../core/Table/filters/ClientFilter";
-import ReimbursementTypeFilter from "../core/Table/filters/ReimbursementTypeFilter";
+
+const ReimbursementTypeFilter = dynamic(() => import("../core/Table/filters/ReimbursementTypeFilter"));
+const ClientFilter = dynamic(() => import("../core/Table/filters/ClientFilter"));
 
 const FinanceDashboard: React.FC = () => {
   const [selectedItems, setSelectedItems] = useState<number[]>([]);

@@ -4,8 +4,6 @@ import { useRouter } from "next/router";
 
 import React from "react";
 import { type IconType } from "react-icons-all-files";
-import { FaReceipt } from "react-icons-all-files/fa/FaReceipt";
-import { HiCheckCircle } from "react-icons-all-files/hi/HiCheckCircle";
 import { MdDashboard } from "react-icons-all-files/md/MdDashboard";
 import { MdPerson } from "react-icons-all-files/md/MdPerson";
 import { classNames } from "~/utils/classNames";
@@ -20,16 +18,6 @@ const navItems: NavItems[] = [
     label: "Dashboard",
     href: "/dashboard",
     Icon: MdDashboard as IconType,
-  },
-  {
-    label: "Reimbursements",
-    href: "/reimbursements",
-    Icon: FaReceipt as IconType,
-  },
-  {
-    label: "Approvals",
-    href: "/approvals",
-    Icon: HiCheckCircle as IconType,
   },
   {
     label: "Profile",

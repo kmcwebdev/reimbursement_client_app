@@ -79,7 +79,6 @@ const Input = ({
                 ? "input-error"
                 : "input-default",
               Icon && "pl-10",
-              "w-full rounded py-2 text-sm focus:ring-1 focus:ring-primary-default focus:border-transparent focus:ring-inset",
             )}
             placeholder={
               placeholder && type !== "date" ? placeholder : undefined
@@ -93,7 +92,6 @@ const Input = ({
               className,
               hasErrors ? "input-error" : "input-default",
               Icon && "pl-10",
-              "w-full rounded py-2 text-sm focus:ring-1 focus:ring-primary-default focus:border-none focus:ring-inset",
             )}
             placeholder={
               placeholder && type !== "date" ? placeholder : undefined

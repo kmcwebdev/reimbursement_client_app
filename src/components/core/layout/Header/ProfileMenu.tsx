@@ -1,4 +1,7 @@
+
+import { useRouter } from "next/navigation";
 import React from "react";
+import { MdPeople } from 'react-icons-all-files/md/MdPeople';
 import { type PropsValue } from "react-select";
 import { useUserAccessContext, type IRole } from "~/context/AccessContext";
 import Popover from "../../Popover";
@@ -25,6 +28,8 @@ const options = [
 
 const ProfileMenu: React.FC = () => {
   const { user, changeUser } = useUserAccessContext();
+
+  const navigation = useRouter();
   return (
     <Popover
       btn={
@@ -37,7 +42,7 @@ const ProfileMenu: React.FC = () => {
       }
       panelClassName="right-0 top-5"
       content={
-        <div className="w-72 p-4">
+        <div className="w-72 p-4 space-y-4">
           <Select
             initialValue={
               options.find((a) => a.value === user?.role) as OptionData
@@ -49,6 +54,7 @@ const ProfileMenu: React.FC = () => {
               changeUser(value.value as IRole);
             }}
           />
+          <div className="p-2 flex items-center gap-4 rounded hover:bg-primary-subtle transition-all ease-in-out cursor-pointer" onClick={() => navigation.push('/user-management')} ><MdPeople className="h-5 w-5 text-primary-default" />User Management</div>
         </div>
       }
     />

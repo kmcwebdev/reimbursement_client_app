@@ -4,6 +4,7 @@ import {
   type ColumnFiltersState,
   type PaginationState,
 } from "@tanstack/react-table";
+import dynamic from "next/dynamic";
 import Head from "next/head";
 import React, { useState } from "react";
 import { MdAccessTimeFilled } from "react-icons-all-files/md/MdAccessTimeFilled";
@@ -11,7 +12,6 @@ import { MdCreditCard } from "react-icons-all-files/md/MdCreditCard";
 import PageAnimation from "~/components/animation/PageAnimation";
 import { Button } from "~/components/core/Button";
 import DashboardCard from "~/components/core/DashboardCard";
-import Dialog from "~/components/core/Dialog";
 import StatusBadge, { type StatusType } from "~/components/core/StatusBadge";
 import Table, { type Reimbursement } from "~/components/core/Table";
 import TableCheckbox from "~/components/core/Table/TableCheckbox";
@@ -19,7 +19,10 @@ import ReimbursementTypeFilter from "~/components/core/Table/filters/Reimburseme
 import StatusFilter, { type FilterProps } from "~/components/core/Table/filters/StatusFilter";
 import { useDialogState } from "~/hooks/use-dialog-state";
 import { sampleData } from "~/utils/sampleData";
-import ReimburseForm from "./reimburse-form";
+
+
+const Dialog = dynamic(() => import('~/components/core/Dialog'))
+const ReimburseForm = dynamic(() => import('./reimburse-form'))
 
 const EmployeeDashboard: React.FC = () => {
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
