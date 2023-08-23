@@ -7,11 +7,16 @@ export type StatusType =
   | "pending"
   | "approved"
   | "rejected"
-  | "credited";
+  | "credited"
+  | "default";
 
-interface StatusBadgeProps {
+type StatusBadgeProps = {
   status: StatusType;
+  label?: string;
 }
+
+
+
 
 const statusVariant = cva(
   "h-6 max-w-[77px] rounded text-sm border border-opacity-10 grid place-items-center px-2",
@@ -24,15 +29,17 @@ const statusVariant = cva(
         rejected: "bg-[#FEF3F1] text-danger-default border-danger-default",
         credited:
           "bg-[#F0F5FD] text-informative-default border-informative-default",
+
+        default: "bg-neutral-50 text-neutral-default border-neutral-default",
       },
     },
   },
 );
 
-const StatusBadge: React.FC<StatusBadgeProps> = ({ status }) => {
+const StatusBadge: React.FC<StatusBadgeProps> = ({ status, label }) => {
   return (
     <div className={classNames("capitalize", statusVariant({ status }))}>
-      {status}
+      {label ? label : status}
     </div>
   );
 };

@@ -42,7 +42,14 @@ const CardSelection = React.forwardRef<HTMLDivElement, CardSelectionProps>(
     const [selected, setSelected] = useState<CardSelectionOption>();
 
     useEffect(() => {
-      if (options) {
+      if (formContext && selected) {
+        formContext.setValue(name, selected.value)
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [formContext, selected])
+
+    useEffect(() => {
+      if (options && defaultValue) {
         const idx = options.findIndex((item) => item.value === defaultValue);
         idx >= 0 && setSelected(options[idx]);
 
@@ -50,15 +57,17 @@ const CardSelection = React.forwardRef<HTMLDivElement, CardSelectionProps>(
           formContext.setValue(name, options[idx]);
         }
       }
-    }, [defaultValue, formContext, name, options]);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [defaultValue, options]);
 
     const handleClick = (e: CardSelectionOption) => {
-      handleChange && handleChange(e);
+      handleChange(e);
+      formContext && formContext.setValue(name, e.value)
       setSelected(e);
     };
 
     return (
-      <div ref={ref}>
+      <div>
         <div className="flex flex-col">
           {label && (
             <label
@@ -73,8 +82,9 @@ const CardSelection = React.forwardRef<HTMLDivElement, CardSelectionProps>(
           {formContext ? (
             <div
               {...formContext.register(name)}
-              className="mt-1 inline-flex flex-1 overflow-hidden rounded border border-neutral-subtle"
+              className="mt-2 inline-flex flex-1 overflow-hidden gap-4"
               {...rest}
+              ref={ref}
             >
               {options.map((option) => {
                 const OptionIcon = option.icon;
@@ -93,8 +103,8 @@ const CardSelection = React.forwardRef<HTMLDivElement, CardSelectionProps>(
                     <OptionIcon
                       className={classNames(
                         selected?.value === option.value
-                          ? "text-white"
-                          : "text-primary-default group-hover:text-primary-hover",
+                          ? "text-primary-default"
+                          : "text-navy",
                         "h-5 w-5",
                       )}
                     />
@@ -102,8 +112,8 @@ const CardSelection = React.forwardRef<HTMLDivElement, CardSelectionProps>(
                     <p
                       className={classNames(
                         selected?.value === option.value
-                          ? "text-white"
-                          : "text-navy group-hover:text-primary-hover",
+                          ? "text-navy"
+                          : "text-navy ",
                       )}
                     >
                       {option.label}
@@ -114,7 +124,7 @@ const CardSelection = React.forwardRef<HTMLDivElement, CardSelectionProps>(
             </div>
           ) : (
             <div
-              className="mt-1 flex flex-1 items-center gap-4 overflow-hidden"
+              className="mt-2 flex flex-1 items-center gap-4 overflow-hidden"
               {...rest}
             >
               {options.map((option) => {
@@ -155,12 +165,15 @@ const CardSelection = React.forwardRef<HTMLDivElement, CardSelectionProps>(
             </div>
           )}
 
-          {/* {errors && (
-            <p className="mt-1 text-sm text-red-600" id="email-error">
-              {errors}
-            </p>
-          )} */}
+
         </div>
+        {formContext && formContext.formState.errors && formContext.formState.errors[name] && formContext.formState.errors[name]?.message && (
+          <p className="mt-1 text-sm text-danger-default">
+            {formContext.formState.errors[name]?.message as string}
+          </p>
+        )}
+
+
       </div>
     );
   },

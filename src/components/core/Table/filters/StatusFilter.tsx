@@ -57,6 +57,16 @@ const StatusFilter: React.FC<FilterProps> = ({
       content={
         <div className="w-32 p-4">
           <div className="flex flex-col gap-2 capitalize">
+
+            <Checkbox
+              key="all"
+              label={<StatusBadge label="All" status="default" />}
+              name="all"
+              checked={checked.includes("all")}
+              disabled={checked.length === 1 && checked.includes("all")}
+              onChange={(e) => onChange(e, "all")}
+
+            />
             {sortedUniqueValues &&
               sortedUniqueValues.length > 0 &&
               sortedUniqueValues.map((option: string) => (

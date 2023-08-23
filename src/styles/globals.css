@@ -31,7 +31,7 @@
 @layer components {
   /* BUTTON */
   .btn {
-    @apply flex items-center justify-between gap-2 rounded font-medium transition-all duration-150 disabled:cursor-not-allowed;
+    @apply flex items-center justify-center gap-2 rounded font-medium transition-all duration-150 disabled:cursor-not-allowed;
   }
 
   .btn.filled {
@@ -104,10 +104,10 @@
 
   /* INPUT */
   .input-default {
-    @apply text-gray-800 placeholder:text-neutral-pressed;
+    @apply border border-[#CACED3] text-gray-800 placeholder:text-neutral-pressed focus:ring-1 focus:ring-inset focus:ring-primary-default;
   }
 
   .input-error {
-    @apply border border-danger-default bg-danger-subtle text-danger-default ring-danger-default placeholder:text-danger-default focus:border-danger-default focus:ring-1 focus:ring-danger-default;
+    @apply border border-danger-default bg-danger-subtle text-danger-default ring-danger-default placeholder:text-danger-default focus:ring-1 focus:ring-inset focus:ring-danger-default;
   }
 }

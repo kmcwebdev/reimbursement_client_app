@@ -1,6 +1,6 @@
 import Head from "next/head";
 import React from "react";
-import EmployeeDashboard from "~/components/dashboard/Employee";
+import EmployeeDashboard from "~/components/dashboard/employee";
 import FinanceDashboard from "~/components/dashboard/Finance";
 import HrbpDashboard from "~/components/dashboard/Hrbp";
 import ManagerDashboard from "~/components/dashboard/Manager";
