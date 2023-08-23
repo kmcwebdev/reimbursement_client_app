@@ -43,13 +43,11 @@ const appApiBaseQueryWithReauth: BaseQueryFn<
       // const user = rootState.user;
       const accessToken = propelauthRefreshTokenQuery.access_token;
 
-      api.dispatch(
-        setAccessToken(accessToken),
-      );
+      api.dispatch(setAccessToken(accessToken));
 
       result = await appApiBaseQuery(args, api, extraOptions);
     } else {
-     api.dispatch(clearAccessToken())
+      api.dispatch(clearAccessToken());
     }
   }
 
