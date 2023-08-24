@@ -1,4 +1,3 @@
-import { cva, type VariantProps } from "class-variance-authority";
 import {
   useFormContext,
   type FieldValues,
@@ -7,32 +6,15 @@ import {
 import { type IconType } from "react-icons-all-files";
 import { classNames } from "~/utils/classNames";
 
-export type InputProps = React.InputHTMLAttributes<HTMLInputElement> &
-  VariantProps<typeof inputVariants> & {
-    label?: string;
-    name: string;
-    icon?: IconType;
-    className?: string;
-    hasErrors?: boolean;
-    required?: boolean;
-  };
-
-const inputVariants = cva("py-2 text-sm rounded", {
-  variants: {
-    variant: {
-      default:
-        "rounded-md py-2 border-neutral-subtle focus:border-transparent placeholder:text-neutral-subtle placeholder:text-xs sm:text-sm focus:ring-1 focus:ring-inset focus:ring-primary-default",
-    },
-    width: {
-      default: "w-auto",
-      full: "w-full",
-    },
-  },
-  defaultVariants: {
-    variant: "default",
-    width: "default",
-  },
-});
+export type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
+  label?: string;
+  name: string;
+  icon?: IconType;
+  className?: string;
+  hasErrors?: boolean;
+  error?: string;
+  required?: boolean;
+};
 
 const Input = ({
   className,
@@ -41,24 +23,24 @@ const Input = ({
   type = "text",
   name,
   placeholder,
-  variant,
-  width,
   hasErrors = false,
+  error,
   required = false,
+  ...rest
 }: InputProps) => {
   const formContext = useFormContext();
 
   const options: RegisterOptions<FieldValues, string> | undefined =
     type === "date"
       ? {
-          valueAsDate:
-            type === "date" && formContext.getValues(name) ? true : false,
-        }
+        valueAsDate:
+          type === "date" && formContext.getValues(name) ? true : false,
+      }
       : type === "number"
-      ? {
+        ? {
           setValueAs: (v: string) => (v === "" ? undefined : parseInt(v, 10)),
         }
-      : undefined;
+        : undefined;
 
   return (
     <div className="space-y-2">
@@ -77,7 +59,7 @@ const Input = ({
             <Icon
               className={classNames(
                 "h-5 w-5",
-                formContext && formContext.formState.errors[name]?.message
+                hasErrors || formContext && formContext.formState.errors[name]?.message
                   ? "text-red-400"
                   : "text-neutral-subtle",
               )}
@@ -89,36 +71,49 @@ const Input = ({
         {formContext ? (
           <input
             {...formContext.register(name, options)}
+            name={name}
             type={type}
             className={classNames(
               className,
-              inputVariants({ variant, width }),
-              formContext.formState.errors[name]?.message
+              hasErrors || formContext.formState.errors[name]?.message
                 ? "input-error"
                 : "input-default",
               Icon && "pl-10",
-              "w-full",
             )}
             placeholder={
               placeholder && type !== "date" ? placeholder : undefined
             }
+            {...rest}
           />
         ) : (
           <input
             type={type}
             className={classNames(
               className,
-              inputVariants({ variant, width }),
               hasErrors ? "input-error" : "input-default",
               Icon && "pl-10",
-              "w-full",
             )}
             placeholder={
               placeholder && type !== "date" ? placeholder : undefined
             }
+
+            {...rest}
           />
         )}
+
+
       </div>
+      {formContext && formContext.formState.errors && formContext.formState.errors[name] && (
+        <p className="mt-1 text-sm text-danger-default">
+          {formContext.formState.errors[name]?.message as string}
+        </p>
+      )}
+
+      {hasErrors && error && (
+        <p className="mt-1 text-sm text-danger-default">
+          {error}
+        </p>
+      )}
     </div>
   );
 };

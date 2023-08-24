@@ -1,10 +1,9 @@
 import { AnimatePresence, motion } from "framer-motion";
-import Link from "next/link";
+import { useRouter as useNavigation } from "next/navigation";
 import { useRouter } from "next/router";
+
 import React from "react";
 import { type IconType } from "react-icons-all-files";
-import { FaReceipt } from "react-icons-all-files/fa/FaReceipt";
-import { HiCheckCircle } from "react-icons-all-files/hi/HiCheckCircle";
 import { MdDashboard } from "react-icons-all-files/md/MdDashboard";
 import { MdPerson } from "react-icons-all-files/md/MdPerson";
 import { classNames } from "~/utils/classNames";
@@ -21,16 +20,6 @@ const navItems: NavItems[] = [
     Icon: MdDashboard as IconType,
   },
   {
-    label: "Reimbursements",
-    href: "/reimbursements",
-    Icon: FaReceipt as IconType,
-  },
-  {
-    label: "Approvals",
-    href: "/approvals",
-    Icon: HiCheckCircle as IconType,
-  },
-  {
     label: "Profile",
     href: "/profile",
     Icon: MdPerson as IconType,
@@ -41,7 +30,10 @@ interface NavigationProps {
   collapsed: boolean;
 }
 const Navigation: React.FC<NavigationProps> = ({ collapsed }) => {
-  const { pathname } = useRouter();
+
+  const navigation = useNavigation()
+  const { pathname } = useRouter()
+
   return (
     <div className="flex flex-col gap-2">
       {navItems.map((item) => {
@@ -49,13 +41,14 @@ const Navigation: React.FC<NavigationProps> = ({ collapsed }) => {
         const active = pathname.includes(href);
 
         return (
-          <Link
+          <div
             className={classNames(
               !active && "hover:bg-[#ffffff] hover:bg-opacity-5",
               "relative flex h-11 items-center gap-2 rounded-[4px] p-2 text-white transition-all ease-in-out ",
             )}
             key={item.href}
-            href={href}
+            // eslint-disable-next-line @typescript-eslint/no-misused-promises
+            onClick={() => navigation.push(href)}
           >
             {active && (
               <AnimatePresence>
@@ -98,7 +91,7 @@ const Navigation: React.FC<NavigationProps> = ({ collapsed }) => {
             </div>
 
             {!collapsed && <p className="tracking-wider">{label}</p>}
-          </Link>
+          </div>
         );
       })}
     </div>

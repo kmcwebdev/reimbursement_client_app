@@ -16,6 +16,8 @@ const Form: React.FC<FormProps> = ({
   onSubmit,
   name,
 }) => {
+
+  console.log(useFormReturn.getValues())
   return (
     <FormProvider {...useFormReturn}>
       <form

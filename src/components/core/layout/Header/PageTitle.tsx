@@ -6,7 +6,7 @@ const PageTitle: React.FC = () => {
 
   return (
     <h3 className="font-bold uppercase text-navy">
-      {pathname.replaceAll("/", "")}
+      {pathname.replaceAll("/", "").replaceAll("-", " ")}
     </h3>
   );
 };
