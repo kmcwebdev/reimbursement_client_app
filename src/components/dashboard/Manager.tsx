@@ -164,7 +164,7 @@ const ManagerDashboard: React.FC = () => {
 
           {/* table */}
           <div className="flex justify-between">
-            <h4>For Approval</h4>
+            <h4 className="font-karla">For Approval</h4>
             <Input
               name="inputText"
               placeholder="Find anything..."

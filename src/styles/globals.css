@@ -9,8 +9,7 @@
 
   h1,
   h2,
-  h3,
-  h4 {
+  h3{
     @apply font-barlowCondensed font-bold;
   }
 
@@ -24,7 +23,7 @@
     @apply text-[24px] leading-[26px] md:text-[26px] lg:text-[32px] lg:leading-[24px];
   }
   h4 {
-    @apply text-[20px] leading-[38px] md:text-[22px] lg:text-[20px];
+    @apply font-karla font-bold text-[20px] leading-[38px] md:text-[22px] lg:text-[20px];
   }
 }
 
