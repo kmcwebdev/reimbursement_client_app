@@ -23,11 +23,11 @@ import {
   type Table,
 } from "@tanstack/react-table";
 import { type StatusType } from "../StatusBadge";
-import Pagination from "./Pagination";
 
 import { MdBrowserNotSupported } from "react-icons-all-files/md/MdBrowserNotSupported";
 import EmptyState from "../EmptyState";
 import FilterView from "./FilterView";
+import Pagination from "./Pagination";
 
 export type Reimbursement = {
   status: StatusType;
@@ -120,80 +120,81 @@ const Table: React.FC<TableProps> = ({
   });
 
   return (
-    <div className="flex flex-col gap-2 bg-white">
-      <table className="overflow-x-scroll bg-white">
-        <thead className="h-12 border-b border-neutral-subtle text-xs">
-          {table.getHeaderGroups().map((headerGroup, i) => (
-            <tr key={i}>
-              {headerGroup.headers.map((header, i) => {
-                return (
-                  <th key={i} colSpan={header.colSpan} className=" px-4">
-                    <div className="flex items-center justify-between">
-                      {flexRender(
-                        header.column.columnDef.header,
-                        header.getContext(),
-                      )}
-
-                      {header.column.columnDef?.meta &&
-                        (header.column.columnDef?.meta as CustomFilterMeta)
-                          .filterComponent &&
-                        (
-                          header.column.columnDef?.meta as CustomFilterMeta
-                        ).filterComponent({
-                          column: header.column,
-                          table,
-                        })}
-                    </div>
-                  </th>
-                );
-              })}
-            </tr>
-          ))}
-        </thead>
-        <tbody>
-          {tableState?.columnFilters && (
-            <FilterView
-              colSpan={table.getAllColumns().length}
-              columns={tableState.columnFilters?.map((a) =>
-                table.getColumn(a.id),
-              )}
-            />
-          )}
-
-          {table.getRowModel().rows.length === 0 && (
-            <tr className="h-72">
-              <td colSpan={table.getAllFlatColumns().length}>
-                <EmptyState
-                  icon={MdBrowserNotSupported}
-                  title="Your search returned 0 results."
-                  description="Please try to change your filter values to see records."
-                />
-              </td>
-            </tr>
-          )}
-
-          {table.getRowModel().rows.map((row, i) => {
-            return (
-              <tr key={i} className="h-16">
-                {row.getVisibleCells().map((cell, i) => {
+    <div className="relative flex flex-col gap-4 overflow-hidden">
+      <div className="overflow-x-scroll bg-white">
+        <table className="w-full overflow-x-scroll whitespace-nowrap bg-white">
+          <thead className="h-12 border-b border-neutral-subtle text-xs">
+            {table.getHeaderGroups().map((headerGroup, i) => (
+              <tr key={i}>
+                {headerGroup.headers.map((header, i) => {
                   return (
-                    <td
-                      key={i}
-                      className=" border-b border-b-[#F1F2F4] px-4 first:px-0"
-                    >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
-                    </td>
+                    <th key={i} colSpan={header.colSpan} className=" px-4">
+                      <div className="flex items-center justify-between">
+                        {flexRender(
+                          header.column.columnDef.header,
+                          header.getContext(),
+                        )}
+
+                        {header.column.columnDef?.meta &&
+                          (header.column.columnDef?.meta as CustomFilterMeta)
+                            .filterComponent &&
+                          (
+                            header.column.columnDef?.meta as CustomFilterMeta
+                          ).filterComponent({
+                            column: header.column,
+                            table,
+                          })}
+                      </div>
+                    </th>
                   );
                 })}
               </tr>
-            );
-          })}
-        </tbody>
-      </table>
+            ))}
+          </thead>
+          <tbody>
+            {tableState?.columnFilters && (
+              <FilterView
+                colSpan={table.getAllColumns().length}
+                columns={tableState.columnFilters?.map((a) =>
+                  table.getColumn(a.id),
+                )}
+              />
+            )}
 
+            {table.getRowModel().rows.length === 0 && (
+              <tr className="h-72">
+                <td colSpan={table.getAllFlatColumns().length}>
+                  <EmptyState
+                    icon={MdBrowserNotSupported}
+                    title="Your search returned 0 results."
+                    description="Please try to change your filter values to see records."
+                  />
+                </td>
+              </tr>
+            )}
+
+            {table.getRowModel().rows.map((row, i) => {
+              return (
+                <tr key={i} className="h-16">
+                  {row.getVisibleCells().map((cell, i) => {
+                    return (
+                      <td
+                        key={i}
+                        className=" border-b border-b-[#F1F2F4] px-4 first:px-0"
+                      >
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </td>
+                    );
+                  })}
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
       <Pagination table={table} />
     </div>
   );

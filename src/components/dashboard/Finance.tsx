@@ -153,7 +153,7 @@ const FinanceDashboard: React.FC = () => {
         <title>Finance Dashboard</title>
       </Head>
       <PageAnimation>
-        <div className="grid h-72 gap-y-2 p-5">
+        <div className="grid gap-y-2 p-5">
           {/* card */}
           <div className="mb-5 flex place-items-start gap-4">
             <DashboardCard
