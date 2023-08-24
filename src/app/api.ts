@@ -10,6 +10,8 @@ import {
 import { type RootState } from "./store";
 import { propelauthRefreshToken } from "~/utils/propelauthRefreshToken";
 import { clearAccessToken, setAccessToken } from "~/features/user-slice";
+import { propelauthRefreshToken } from "~/utils/propelauthRefreshToken";
+import { type RootState } from "./store";
 
 const appApiBaseQuery = fetchBaseQuery({
   baseUrl: "",

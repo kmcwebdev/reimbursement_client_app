@@ -8,11 +8,12 @@ import {
 import type { AppProps } from "next/app";
 import { Provider } from "react-redux";
 import store from "~/app/store";
+import PageAnimation from "~/components/animation/PageAnimation";
 import Layout from "~/components/core/layout";
-import { UserAccessProvider } from "~/context/AccessContext";
-import "~/styles/globals.css";
 import { env } from "~/env.mjs";
 import { type PropsWithChildren } from "react";
+import "~/styles/globals.css";
+
 
 const RedirectToCustomLocation = withAuthInfo<
   WithAuthInfoProps & WithAuthInfoArgs & PropsWithChildren
