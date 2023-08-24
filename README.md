@@ -1,4 +1,4 @@
-# Reimbursement client app
+## Reimbursement client app
 
 This project requires the use of `pnpm` as the package manager. Please do not use `npm` or `yarn`.
 

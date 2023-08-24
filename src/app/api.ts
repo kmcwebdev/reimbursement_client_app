@@ -7,6 +7,8 @@ import {
   type FetchBaseQueryError,
   type FetchBaseQueryMeta,
 } from "@reduxjs/toolkit/query/react";
+import { type RootState } from "./store";
+import { propelauthRefreshToken } from "~/utils/propelauthRefreshToken";
 import { clearAccessToken, setAccessToken } from "~/features/user-slice";
 import { propelauthRefreshToken } from "~/utils/propelauthRefreshToken";
 import { type RootState } from "./store";
@@ -43,13 +45,11 @@ const appApiBaseQueryWithReauth: BaseQueryFn<
       // const user = rootState.user;
       const accessToken = propelauthRefreshTokenQuery.access_token;
 
-      api.dispatch(
-        setAccessToken(accessToken),
-      );
+      api.dispatch(setAccessToken(accessToken));
 
       result = await appApiBaseQuery(args, api, extraOptions);
     } else {
-     api.dispatch(clearAccessToken())
+      api.dispatch(clearAccessToken());
     }
   }
 
