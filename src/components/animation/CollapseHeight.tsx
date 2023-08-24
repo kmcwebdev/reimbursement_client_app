@@ -1,12 +1,13 @@
 import { AnimatePresence, motion, type HTMLMotionProps } from "framer-motion";
-import React from "react";
+import React, { type PropsWithChildren } from "react";
 
 interface Props extends HTMLMotionProps<"div"> {
   isVisible: boolean;
   yOffset?: number;
+  className?: string;
 }
 
-const CollapseHeightAnimation: React.FC<Props> = ({
+const CollapseHeightAnimation: React.FC<PropsWithChildren<Props>> = ({
   isVisible,
   children,
   className,

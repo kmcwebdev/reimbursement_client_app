@@ -2,11 +2,17 @@ import React, { useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
 
 interface CheckboxProps extends React.InputHTMLAttributes<HTMLInputElement> {
-  label?: string;
+  label?: string | JSX.Element;
   name: string;
 }
 
-const Checkbox = ({ label, name, checked, onChange }: CheckboxProps) => {
+const Checkbox = ({
+  label,
+  name,
+  checked,
+  onChange,
+  ...rest
+}: CheckboxProps) => {
   const [isChecked, setIsChecked] = useState(false);
   const formContext = useFormContext();
 
@@ -34,7 +40,7 @@ const Checkbox = ({ label, name, checked, onChange }: CheckboxProps) => {
                   onChange && onChange(e);
                 }}
                 checked={isChecked}
-                className="h-4 w-4 rounded border-neutral-subtle text-primary-default focus:ring-0 focus:ring-transparent"
+                className="h-4 w-4 rounded border-neutral-subtle text-primary-default transition-all ease-in-out focus:ring-0 focus:ring-transparent disabled:cursor-not-allowed disabled:text-neutral-default"
               />
             )}
 
@@ -49,17 +55,20 @@ const Checkbox = ({ label, name, checked, onChange }: CheckboxProps) => {
                   onChange && onChange(e);
                 }}
                 checked={isChecked}
-                className="h-4 w-4 rounded border-neutral-subtle text-primary-default focus:ring-0 focus:ring-transparent"
+                className="h-4 w-4 rounded border-neutral-subtle text-primary-default transition-all ease-in-out focus:ring-0 focus:ring-transparent disabled:cursor-not-allowed disabled:text-neutral-default"
+                {...rest}
               />
             )}
           </div>
           <div className="ml-3">
-            <label
-              htmlFor={name}
-              className="text-ne cursor-pointer text-xs leading-6 text-neutral-pressed"
-            >
-              {label}
-            </label>
+            {label && (
+              <label
+                htmlFor={name}
+                className="text-ne cursor-pointer text-xs leading-6 text-neutral-pressed"
+              >
+                {label}
+              </label>
+            )}
           </div>
         </div>
       </div>

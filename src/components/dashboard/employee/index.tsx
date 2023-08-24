@@ -9,19 +9,20 @@ import Head from "next/head";
 import React, { useState } from "react";
 import { MdAccessTimeFilled } from "react-icons-all-files/md/MdAccessTimeFilled";
 import { MdCreditCard } from "react-icons-all-files/md/MdCreditCard";
-import { MdSearch } from 'react-icons-all-files/md/MdSearch';
+import PageAnimation from "~/components/animation/PageAnimation";
 import { Button } from "~/components/core/Button";
 import DashboardCard from "~/components/core/DashboardCard";
+import StatusBadge, { type StatusType } from "~/components/core/StatusBadge";
 import Table, { type Reimbursement } from "~/components/core/Table";
-import { type FilterProps } from "~/components/core/Table/filters/StatusFilter";
+import TableCheckbox from "~/components/core/Table/TableCheckbox";
+import ReimbursementTypeFilter from "~/components/core/Table/filters/ReimbursementTypeFilter";
+import StatusFilter, { type FilterProps } from "~/components/core/Table/filters/StatusFilter";
+import { useDialogState } from "~/hooks/use-dialog-state";
 import { sampleData } from "~/utils/sampleData";
-import PageAnimation from "../animation/PageAnimation";
-import StatusBadge, { type StatusType } from "../core/StatusBadge";
-import TableCheckbox from "../core/Table/TableCheckbox";
-import Input from "../core/form/fields/Input";
 
-const ReimbursementTypeFilter = dynamic(() => import("../core/Table/filters/ReimbursementTypeFilter"));
-const StatusFilter = dynamic(() => import("../core/Table/filters/StatusFilter"));
+
+const Dialog = dynamic(() => import('~/components/core/Dialog'))
+const ReimburseForm = dynamic(() => import('./reimburse-form'))
 
 const EmployeeDashboard: React.FC = () => {
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
@@ -30,6 +31,11 @@ const EmployeeDashboard: React.FC = () => {
     pageIndex: 0,
     pageSize: 10,
   });
+
+  const { isVisible: reimburseFormIsVisible, open: openReimburseForm, close: closeReimburseForm } = useDialogState();
+
+  //TODO: Move State to Redux store
+  const [activeStep, setActiveStep] = useState<number>(0);
 
   const columns = React.useMemo<ColumnDef<Reimbursement>[]>(
     () => [
@@ -67,21 +73,15 @@ const EmployeeDashboard: React.FC = () => {
         },
       },
       {
-        accessorKey: "id",
+        accessorKey: "reimbursementId",
         cell: (info) => info.getValue(),
         header: "ID",
       },
       {
-        accessorKey: "name",
+        accessorKey: "id",
         cell: (info) => info.getValue(),
-        header: "Name",
+        header: "ID",
       },
-      {
-        accessorKey: "reimbursementId",
-        cell: (info) => info.getValue(),
-        header: "R-ID",
-      },
-
       {
         accessorKey: "type",
         cell: (info) => info.getValue(),
@@ -125,11 +125,12 @@ const EmployeeDashboard: React.FC = () => {
   return (
     <>
       <Head>
-        <title>HRBP Dashboard</title>
+        <title>Employee Dashboard</title>
       </Head>
 
       <PageAnimation>
         <div className="grid h-72 gap-y-2 p-5">
+
           <div className="mb-5 flex place-items-start gap-4">
             <DashboardCard
               icon={<MdAccessTimeFilled className="h-5 w-5 text-[#D89B0D]" />}
@@ -144,8 +145,10 @@ const EmployeeDashboard: React.FC = () => {
           </div>
 
           <div className="flex justify-between">
-            <h4>For Approval</h4>
-            <Input name="searchFilter" placeholder="Find anything..." icon={MdSearch} />
+            <h4>Reimbursements</h4>
+            <Button onClick={openReimburseForm}>
+              Reimburse
+            </Button>
           </div>
 
           <Table
@@ -159,6 +162,10 @@ const EmployeeDashboard: React.FC = () => {
             }}
           />
         </div>
+
+        <Dialog title="File a Reimbursement" isVisible={reimburseFormIsVisible} close={closeReimburseForm}>
+          <ReimburseForm activeStep={activeStep} setActiveStep={setActiveStep} />
+        </Dialog>
       </PageAnimation>
     </>
   );
