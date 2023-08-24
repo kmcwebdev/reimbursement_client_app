@@ -17,7 +17,7 @@ const EmptyState: React.FC<EmptyStateProps> = ({
     <div className="grid place-items-center gap-4">
       <div className="flex flex-col items-center gap-5">
         {Icon && <Icon className="h-8 w-8 text-neutral-default" />}
-        <h3 className="font-semibold">{title}</h3>
+        <h4 className="font-barlowCondensed font-semibold">{title}</h4>
         <p className="text-neutral-default">{description}</p>
       </div>
 
