@@ -17,12 +17,19 @@ import Table, { type Reimbursement } from "~/components/core/Table";
 import { type FilterProps } from "~/components/core/Table/filters/StatusFilter";
 import ButtonGroup from "~/components/core/form/fields/ButtonGroup";
 import Input from "~/components/core/form/fields/Input";
+import { currencyFormat } from "~/utils/currencyFormat";
 import { sampleData } from "~/utils/sampleData";
 import PageAnimation from "../animation/PageAnimation";
 import TableCheckbox from "../core/Table/TableCheckbox";
+import DateFiledFilter from "../core/Table/filters/DateFiledFilter";
+import ExpenseTypeFilter from "../core/Table/filters/ExpenseTypeFilter";
 
-const ReimbursementTypeFilter = dynamic(() => import("../core/Table/filters/ReimbursementTypeFilter"));
-const ClientFilter = dynamic(() => import("../core/Table/filters/ClientFilter"));
+const ReimbursementTypeFilter = dynamic(
+  () => import("../core/Table/filters/ReimbursementTypeFilter"),
+);
+const ClientFilter = dynamic(
+  () => import("../core/Table/filters/ClientFilter"),
+);
 
 const FinanceDashboard: React.FC = () => {
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
@@ -55,6 +62,7 @@ const FinanceDashboard: React.FC = () => {
         ),
       },
       {
+        id: "client",
         accessorKey: "client",
         cell: (info) => info.getValue(),
         header: "Client",
@@ -66,21 +74,25 @@ const FinanceDashboard: React.FC = () => {
         },
       },
       {
+        id: "id",
         accessorKey: "id",
         cell: (info) => info.getValue(),
         header: "ID",
       },
       {
+        id: "name",
         accessorKey: "name",
         cell: (info) => info.getValue(),
         header: "Name",
       },
       {
+        id: "reimbursementId",
         accessorKey: "reimbursementId",
         cell: (info) => info.getValue(),
         header: "R-ID",
       },
       {
+        id: "type",
         accessorKey: "type",
         cell: (info) => info.getValue(),
         header: "Type",
@@ -94,26 +106,41 @@ const FinanceDashboard: React.FC = () => {
         },
       },
       {
+        id: "expense",
         accessorKey: "expense",
         cell: (info) => info.getValue(),
         header: "Expense",
         filterFn: (row, id, value: string) => {
           return value.includes(row.getValue(id));
         },
+        meta: {
+          filterComponent: (info: FilterProps) => (
+            <ExpenseTypeFilter {...info} />
+          ),
+        },
       },
       {
+        id: "filed",
         accessorKey: "filed",
         cell: (info) => info.getValue(),
         header: "Approved",
+        filterFn: (row, id, value: string) => {
+          return value.includes(row.getValue(id));
+        },
+        meta: {
+          filterComponent: (info: FilterProps) => <DateFiledFilter {...info} />,
+        },
       },
       {
+        id: "payrollAccount",
         accessorKey: "payrollAccount",
         cell: (info) => info.getValue(),
         header: "Payroll Account",
       },
       {
+        id: "total",
         accessorKey: "total",
-        cell: (info) => info.getValue(),
+        cell: (info) => currencyFormat(info.getValue() as number),
         header: "Total",
       },
     ],

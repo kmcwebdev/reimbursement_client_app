@@ -15,9 +15,12 @@ import StatusBadge, { type StatusType } from "~/components/core/StatusBadge";
 import Table, { type Reimbursement } from "~/components/core/Table";
 import { type FilterProps } from "~/components/core/Table/filters/StatusFilter";
 import Input from "~/components/core/form/fields/Input";
+import { currencyFormat } from "~/utils/currencyFormat";
 import { sampleData } from "~/utils/sampleData";
 import PageAnimation from "../animation/PageAnimation";
 import TableCheckbox from "../core/Table/TableCheckbox";
+import DateFiledFilter from "../core/Table/filters/DateFiledFilter";
+import ExpenseTypeFilter from "../core/Table/filters/ExpenseTypeFilter";
 
 const StatusFilter = dynamic(
   () => import("~/components/core/Table/filters/StatusFilter"),
@@ -57,6 +60,7 @@ const ManagerDashboard: React.FC = () => {
         ),
       },
       {
+        id: "status",
         accessorKey: "status",
         header: "Status",
         cell: (info) => <StatusBadge status={info.getValue() as StatusType} />,
@@ -69,21 +73,25 @@ const ManagerDashboard: React.FC = () => {
         },
       },
       {
+        id: "id",
         accessorKey: "id",
         cell: (info) => info.getValue(),
         header: "ID",
       },
       {
+        id: "name",
         accessorKey: "name",
         cell: (info) => info.getValue(),
         header: "Name",
       },
       {
+        id: "reimbursementId",
         accessorKey: "reimbursementId",
         cell: (info) => info.getValue(),
         header: "R-ID",
       },
       {
+        id: "type",
         accessorKey: "type",
         cell: (info) => info.getValue(),
         header: "Type",
@@ -97,24 +105,35 @@ const ManagerDashboard: React.FC = () => {
         },
       },
       {
+        id: "expense",
         accessorKey: "expense",
         cell: (info) => info.getValue(),
         header: "Expense",
         filterFn: (row, id, value: string) => {
           return value.includes(row.getValue(id));
         },
+        meta: {
+          filterComponent: (info: FilterProps) => (
+            <ExpenseTypeFilter {...info} />
+          ),
+        },
       },
       {
+        id: "filed",
         accessorKey: "filed",
         cell: (info) => info.getValue(),
         header: "Filed",
         filterFn: (row, id, value: string) => {
           return value.includes(row.getValue(id));
         },
+        meta: {
+          filterComponent: (info: FilterProps) => <DateFiledFilter {...info} />,
+        },
       },
       {
+        id: "total",
         accessorKey: "total",
-        cell: (info) => info.getValue(),
+        cell: (info) => currencyFormat(info.getValue() as number),
         header: "Total",
       },
     ],

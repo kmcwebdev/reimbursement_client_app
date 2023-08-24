@@ -25,9 +25,9 @@ import {
 import { type StatusType } from "../StatusBadge";
 import Pagination from "./Pagination";
 
-import { HiCurrencyDollar } from 'react-icons-all-files/hi/HiCurrencyDollar';
-import { MdAccessTimeFilled } from "react-icons-all-files/md/MdAccessTimeFilled";
-import { MdLabel } from 'react-icons-all-files/md/MdLabel';
+import { MdBrowserNotSupported } from "react-icons-all-files/md/MdBrowserNotSupported";
+import EmptyState from "../EmptyState";
+import FilterView from "./FilterView";
 
 export type Reimbursement = {
   status: StatusType;
@@ -101,8 +101,7 @@ const Table: React.FC<TableProps> = ({
     data: data,
     columns: columns,
     state: {
-      pagination: tableState?.pagination ? tableState.pagination : undefined,
-      columnFilters: tableState?.columnFilters,
+      ...tableState,
       rowSelection: tableState?.selectedItems ? rowSelection : undefined,
     },
     onColumnFiltersChange: tableStateActions?.setColumnFilters,
@@ -118,7 +117,6 @@ const Table: React.FC<TableProps> = ({
       : undefined,
     enableRowSelection: tableStateActions?.setSelectedItems ? true : false,
     manualPagination: true,
-    debugTable: true,
   });
 
   return (
@@ -153,34 +151,26 @@ const Table: React.FC<TableProps> = ({
           ))}
         </thead>
         <tbody>
+          {tableState?.columnFilters && (
+            <FilterView
+              colSpan={table.getAllColumns().length}
+              columns={tableState.columnFilters?.map((a) =>
+                table.getColumn(a.id),
+              )}
+            />
+          )}
 
-          {tableState?.columnFilters &&
-            <tr className="h-16">
-              <td
-                colSpan={table.getAllColumns().length}
-                className=" border-b border-b-[#F1F2F4] px-4 first:px-0  h-16"
-              >
-                <div className="flex gap-4 items-center">
-                  <span className="font-bold">Filters: </span>
-                  {tableState.columnFilters.map((a) =>
-                    <div key={a.id} className="flex">
-                      {a.id === 'status' && <div className="flex items-center gap-2 rounded"><MdLabel className="h-5 w-5" /></div>}
-                      {a.id === 'type' && <div className="flex items-center gap-2 rounded"><MdAccessTimeFilled className="h-5 w-5" /></div>}
-                      {a.id === 'expense' && <div className="flex items-center gap-2 rounded"><HiCurrencyDollar className="h-5 w-5" /></div>}
-
-                      <p className="flex divide-x gap-2 text-neutral-default">
-                        {Array.isArray(a.value) ?
-                          a.value.map((value) => <span key={value} className="capitalize pl-2">{value}</span>)
-                          :
-                          a.value as string
-                        }
-                      </p>
-
-                    </div>)}
-                </div>
+          {table.getRowModel().rows.length === 0 && (
+            <tr className="h-72">
+              <td colSpan={table.getAllFlatColumns().length}>
+                <EmptyState
+                  icon={MdBrowserNotSupported}
+                  title="Your search returned 0 results."
+                  description="Please try to change your filter values to see records."
+                />
               </td>
             </tr>
-          }
+          )}
 
           {table.getRowModel().rows.map((row, i) => {
             return (

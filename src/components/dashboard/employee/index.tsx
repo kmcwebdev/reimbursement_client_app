@@ -15,14 +15,23 @@ import DashboardCard from "~/components/core/DashboardCard";
 import StatusBadge, { type StatusType } from "~/components/core/StatusBadge";
 import Table, { type Reimbursement } from "~/components/core/Table";
 import TableCheckbox from "~/components/core/Table/TableCheckbox";
-import ReimbursementTypeFilter from "~/components/core/Table/filters/ReimbursementTypeFilter";
-import StatusFilter, { type FilterProps } from "~/components/core/Table/filters/StatusFilter";
+import DateFiledFilter from "~/components/core/Table/filters/DateFiledFilter";
+import { type FilterProps } from "~/components/core/Table/filters/StatusFilter";
 import { useDialogState } from "~/hooks/use-dialog-state";
+import { currencyFormat } from "~/utils/currencyFormat";
 import { sampleData } from "~/utils/sampleData";
 
-
-const Dialog = dynamic(() => import('~/components/core/Dialog'))
-const ReimburseForm = dynamic(() => import('./reimburse-form'))
+const Dialog = dynamic(() => import("~/components/core/Dialog"));
+const ReimburseForm = dynamic(() => import("./reimburse-form"));
+const StatusFilter = dynamic(
+  () => import("~/components/core/Table/filters/StatusFilter"),
+);
+const ExpenseTypeFilter = dynamic(
+  () => import("~/components/core/Table/filters/ExpenseTypeFilter"),
+);
+const ReimbursementTypeFilter = dynamic(
+  () => import("~/components/core/Table/filters/ReimbursementTypeFilter"),
+);
 
 const EmployeeDashboard: React.FC = () => {
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
@@ -32,7 +41,11 @@ const EmployeeDashboard: React.FC = () => {
     pageSize: 10,
   });
 
-  const { isVisible: reimburseFormIsVisible, open: openReimburseForm, close: closeReimburseForm } = useDialogState();
+  const {
+    isVisible: reimburseFormIsVisible,
+    open: openReimburseForm,
+    close: closeReimburseForm,
+  } = useDialogState();
 
   //TODO: Move State to Redux store
   const [activeStep, setActiveStep] = useState<number>(0);
@@ -61,6 +74,7 @@ const EmployeeDashboard: React.FC = () => {
       },
 
       {
+        id: "status",
         accessorKey: "status",
         header: "Status",
         cell: (info) => <StatusBadge status={info.getValue() as StatusType} />,
@@ -73,16 +87,19 @@ const EmployeeDashboard: React.FC = () => {
         },
       },
       {
+        id: "r-id",
         accessorKey: "reimbursementId",
         cell: (info) => info.getValue(),
         header: "ID",
       },
       {
+        id: "id",
         accessorKey: "id",
         cell: (info) => info.getValue(),
         header: "ID",
       },
       {
+        id: "type",
         accessorKey: "type",
         cell: (info) => info.getValue(),
         header: "Type",
@@ -96,24 +113,39 @@ const EmployeeDashboard: React.FC = () => {
         },
       },
       {
+        id: "expense",
         accessorKey: "expense",
         cell: (info) => info.getValue(),
         header: "Expense",
         filterFn: (row, id, value: string) => {
           return value.includes(row.getValue(id));
         },
+        meta: {
+          filterComponent: (info: FilterProps) => (
+            <ExpenseTypeFilter {...info} />
+          ),
+        },
       },
       {
+        id: "filed",
         accessorKey: "filed",
         cell: (info) => info.getValue(),
         header: "Filed",
+        filterFn: (row, id, value: string) => {
+          return value.includes(row.getValue(id));
+        },
+        meta: {
+          filterComponent: (info: FilterProps) => <DateFiledFilter {...info} />,
+        },
       },
       {
+        id: "total",
         accessorKey: "total",
-        cell: (info) => info.getValue(),
+        cell: (info) => currencyFormat(info.getValue() as number),
         header: "Total",
       },
       {
+        id: "actions",
         accessorKey: "r-id",
         cell: () => <Button buttonType="text">View</Button>,
         header: "",
@@ -130,7 +162,6 @@ const EmployeeDashboard: React.FC = () => {
 
       <PageAnimation>
         <div className="grid h-72 gap-y-2 p-5">
-
           <div className="mb-5 flex place-items-start gap-4">
             <DashboardCard
               icon={<MdAccessTimeFilled className="h-5 w-5 text-[#D89B0D]" />}
@@ -146,15 +177,17 @@ const EmployeeDashboard: React.FC = () => {
 
           <div className="flex justify-between">
             <h4>Reimbursements</h4>
-            <Button onClick={openReimburseForm}>
-              Reimburse
-            </Button>
+            <Button onClick={openReimburseForm}>Reimburse</Button>
           </div>
 
           <Table
             data={sampleData}
             columns={columns}
-            tableState={{ pagination, selectedItems, columnFilters }}
+            tableState={{
+              pagination,
+              selectedItems,
+              columnFilters,
+            }}
             tableStateActions={{
               setColumnFilters,
               setSelectedItems,
@@ -163,8 +196,15 @@ const EmployeeDashboard: React.FC = () => {
           />
         </div>
 
-        <Dialog title="File a Reimbursement" isVisible={reimburseFormIsVisible} close={closeReimburseForm}>
-          <ReimburseForm activeStep={activeStep} setActiveStep={setActiveStep} />
+        <Dialog
+          title="File a Reimbursement"
+          isVisible={reimburseFormIsVisible}
+          close={closeReimburseForm}
+        >
+          <ReimburseForm
+            activeStep={activeStep}
+            setActiveStep={setActiveStep}
+          />
         </Dialog>
       </PageAnimation>
     </>
