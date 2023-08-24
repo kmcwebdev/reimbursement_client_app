@@ -64,7 +64,7 @@ dependencies:
     version: 7.45.4(react@18.2.0)
   react-icons-all-files:
     specifier: github:alisamar/react-icons-all-files#4.8.0
-    version: git/github.com+alisamar/react-icons-all-files/7f607f596c600ffdcea65e0388f21c8a4fd17943(react@18.2.0)
+    version: github.com/alisamar/react-icons-all-files/7f607f596c600ffdcea65e0388f21c8a4fd17943(react@18.2.0)
   react-redux:
     specifier: ^8.1.2
     version: 8.1.2(@types/react-dom@18.2.7)(@types/react@18.2.18)(react-dom@18.2.0)(react@18.2.0)(redux@4.2.1)
@@ -5108,9 +5108,9 @@ packages:
     resolution: {integrity: sha512-wvWkphh5WQsJbVk1tbx1l1Ly4yg+XecD+Mq280uBGt9wa5BKSWf4Mhp6GmrkPixhMxmabYY7RbzlwVP32pbGCg==}
     dev: false
 
-  git/github.com+alisamar/react-icons-all-files/7f607f596c600ffdcea65e0388f21c8a4fd17943(react@18.2.0):
-    resolution: {commit: 7f607f596c600ffdcea65e0388f21c8a4fd17943, repo: git@github.com:alisamar/react-icons-all-files.git, type: git}
-    id: git@github.com+alisamar/react-icons-all-files/7f607f596c600ffdcea65e0388f21c8a4fd17943
+  github.com/alisamar/react-icons-all-files/7f607f596c600ffdcea65e0388f21c8a4fd17943(react@18.2.0):
+    resolution: {tarball: https://codeload.github.com/alisamar/react-icons-all-files/tar.gz/7f607f596c600ffdcea65e0388f21c8a4fd17943}
+    id: github.com/alisamar/react-icons-all-files/7f607f596c600ffdcea65e0388f21c8a4fd17943
     name: react-icons-all-files
     version: 4.8.0
     peerDependencies:
