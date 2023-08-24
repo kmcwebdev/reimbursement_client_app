@@ -4,15 +4,15 @@ import { type IconType } from "react-icons-all-files";
 import { MdPerson } from "react-icons-all-files/md/MdPerson";
 import EmptyState from "~/components/core/EmptyState";
 
-const Profile: React.FC = () => {
+const UserManagement: React.FC = () => {
   return (
     <>
       <Head>
-        <title>Profile</title>
+        <title>User Management</title>
       </Head>
       <div className="grid h-72 w-full place-items-center rounded-md bg-white">
         <EmptyState
-          title="Profile is empty"
+          title="User Management is empty"
           description="Wala pa kasing nagagawa na hayop ka! Magcode ka"
           icon={MdPerson as IconType}
         >
@@ -23,4 +23,4 @@ const Profile: React.FC = () => {
   );
 };
 
-export default Profile;
+export default UserManagement;

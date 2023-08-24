@@ -84,7 +84,7 @@ const ButtonGroup = React.forwardRef<HTMLDivElement, ButtonGroupProps>(
                     key={option.value}
                     type="button"
                     className={classNames(
-                      "relative inline-flex flex-1 border-collapse items-center justify-center px-4 py-[0.6rem] text-sm font-medium transition-all focus:outline-none",
+                      "relative inline-flex h-[32px] flex-1 border-collapse items-center justify-center px-3 py-2 text-sm font-medium transition-all focus:outline-none",
                       selected?.value === option.value
                         ? "bg-primary-default text-white"
                         : "bg-white text-neutral-default hover:bg-primary-subtle hover:text-primary-hover ",
@@ -107,7 +107,7 @@ const ButtonGroup = React.forwardRef<HTMLDivElement, ButtonGroupProps>(
                     key={option.value}
                     type="button"
                     className={classNames(
-                      "relative inline-flex flex-1 border-collapse items-center justify-center px-4 py-[0.6rem] text-sm font-medium transition-all focus:outline-none",
+                      "relative inline-flex h-[32px] flex-1 border-collapse items-center justify-center px-3 py-2 text-sm font-medium transition-all focus:outline-none",
                       selected?.value === option.value
                         ? "bg-primary-default text-white"
                         : "bg-white text-neutral-default hover:bg-primary-subtle hover:text-primary-hover ",

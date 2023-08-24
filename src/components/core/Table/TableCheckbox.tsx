@@ -1,10 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { type HTMLProps } from "react";
 
-type IndeterminateCheckboxProps = {
+export type IndeterminateCheckboxProps = {
   indeterminate?: boolean;
 } & HTMLProps<HTMLInputElement>;
 
-const IndeterminateCheckbox: React.FC<IndeterminateCheckboxProps> = ({
+const TableCheckbox: React.FC<IndeterminateCheckboxProps> = ({
   indeterminate,
   ...rest
 }) => {
@@ -27,4 +28,4 @@ const IndeterminateCheckbox: React.FC<IndeterminateCheckboxProps> = ({
   );
 };
 
-export default IndeterminateCheckbox;
+export default TableCheckbox;

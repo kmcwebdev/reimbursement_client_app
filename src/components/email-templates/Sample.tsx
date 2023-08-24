@@ -1,9 +1,9 @@
 import {
-  Tailwind,
-  Html,
-  Head,
-  Preview,
   Body,
+  Head,
+  Html,
+  Preview,
+  Tailwind,
   Text,
 } from "@react-email/components";
 
@@ -21,7 +21,7 @@ export const EmailTemplate: React.FC<Readonly<EmailTemplateProps>> = ({
         Thank you for joining our waitlist and for your patience
       </Preview>
       <Body>
-        <Text className="text-center text-emerald-700">
+        <Text className="text-center text-primary-default">
           Welcome, {firstName}!
         </Text>
       </Body>
