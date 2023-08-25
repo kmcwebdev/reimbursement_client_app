@@ -6,7 +6,6 @@ import ManagerDashboard from "./Manager";
 import EmployeeDashboard from "./employee";
 
 const DashboardComponent: React.FC = () => {
-  
   const { user } = useUserAccessContext();
   return (
     <>
