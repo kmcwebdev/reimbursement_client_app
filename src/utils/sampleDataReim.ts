@@ -1,8 +1,8 @@
 import { type Reimbursement } from "~/components/reimbursementView";
 
-export const sampleData: Reimbursement[] = [
+export const sampleDataReim: Reimbursement[] = [
   {
-    status: "processing",
+    status: "pending",
     client: "Apple",
     id: "1",
     name: "John Doe",

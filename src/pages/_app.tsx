@@ -11,9 +11,9 @@ import { type PropsWithChildren } from "react";
 import { Provider } from "react-redux";
 import store from "~/app/store";
 import Layout from "~/components/core/layout";
-import { UserAccessProvider } from "~/context/AccessContext";
 import { env } from "~/env.mjs";
 import "~/styles/globals.css";
+import { UserAccessProvider } from "~/context/AccessContext";
 
 const AuthLoader = dynamic(() => import("~/components/loaders/AuthLoader"));
 

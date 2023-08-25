@@ -1,13 +1,13 @@
-import { Dialog, Transition } from "@headlessui/react";
+import { Dialog ,Transition } from "@headlessui/react";
 import { Fragment, type PropsWithChildren } from "react";
 import { MdClose } from "react-icons-all-files/md/MdClose";
 import { karla } from "~/styles/fonts/karla";
 import { Button } from "~/components/core/Button";
-import StatusBadge, { type StatusType } from "~/components/core/StatusBadge";
-import { MdAccessTimeFilled } from "react-icons-all-files/md/MdAccessTimeFilled";
-import { AiTwotoneFile } from "react-icons-all-files/ai/AiTwotoneFile";
-import { FaArrowRight } from "react-icons-all-files/fa/FaArrowRight";
-import { HiCheckCircle } from "react-icons-all-files/hi/HiCheckCircle";
+import { type StatusType } from "~/components/core/StatusBadge";
+import Details from "./Details"
+import Notes from "./Notes"
+import Approvers from "./Approvers"
+import Attachments from "./Attachments"
 
 export type Reimbursement = {
     status: StatusType;
@@ -27,14 +27,14 @@ export type Reimbursement = {
     notes: string;
   };
 
-export interface DrawerProps extends PropsWithChildren {
+export interface ReimbursementsCardViewProps extends PropsWithChildren {
     data: Reimbursement[];
   isVisible: boolean;
   closeDrawer: () => void;
   title?: string;
 }
 
-const ReimbursementsCardView: React.FC<DrawerProps> = ({
+const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
   closeDrawer,
   isVisible,
   title,
@@ -88,120 +88,36 @@ const ReimbursementsCardView: React.FC<DrawerProps> = ({
                         {data.map(item => {
                             return (
                                 <>
-                                    <div className="flex flex-col">
-                                        <div className="grid grid-cols-2 p-3 text-sm">
-                                            <span className="text-gray-500">Status</span><span><StatusBadge status={item.status}/></span>
-                                        </div>
-                                        <div className="grid grid-cols-2 p-3 text-sm">
-                                            <span className="text-gray-500">Type</span><span>{item.type}</span>
-                                        </div>
-                                        <div className="grid grid-cols-2 p-3 text-sm">
-                                            <span className="text-gray-500">Expense</span><span>{item.expense}</span>
-                                        </div>
-                                        {item.status === 'rejected' && (
-                                            <div className="grid grid-cols-2 p-3 text-sm">
-                                                <span className="text-gray-500">Remarks</span><span>{item.remarks}</span>
-                                            </div>
-                                        )}
-                                        
-                                        <div className="grid grid-cols-2 p-3 text-sm">
-                                            <span className="text-gray-500">Filed</span><span>{item.filed}</span>
-                                        </div>
-                                        <div className="grid grid-cols-2 p-3 text-sm">
-                                            {item.status === "credited" && (
-                                                <span className="text-gray-500">Total</span>
-                                            )}
-                                            {item.status !== "credited" && (
-                                                <span className="text-gray-500">Amount</span>
-                                            )}
-                                            
-                                            <span>{item.total}</span>
-                                        </div>
-                                        {(item.status === 'processing' || item.status === 'credited') && (
-                                            <div className="grid grid-cols-2 p-3 text-sm">
-                                                <span className="text-gray-500">Payout</span><span>{item.filed}</span>
-                                            </div>
-                                        )}
-                                        
-                                    </div>
-                                    
-                                    {item.status === 'rejected' && (
-                                        <div className="flex flex-col gap-3 p-3">
-                                            <h6 className="text-base font-semibold">Notes</h6>
-                                            <p className="text-sm text-gray-500">{item.notes}</p>
-                                        </div>
-                                    )}
+                                  <Details 
+                                    statusDetails={item.status} 
+                                    type={item.type} expense={item.expense} 
+                                    remarks={item.remarks}
+                                    filed={item.filed}
+                                    total={item.total}
+                                  />
+                                  
 
-                                    <div className="flex flex-col gap-3 p-3">
-                                        <h6 className="text-base font-semibold">Approvers</h6>
-                                        <div className="flex flex-col gap-2">
-                                            {/* Pending */}
-                                            {item.status === 'pending' && (
-                                                <div className="flex items-center gap-2">
-                                                    <MdAccessTimeFilled className="h-4 w-4 text-[#D89B0D]"/>
-                                                    <span className="text-gray-700 text-sm">
-                                                        {item.approvers}
-                                                    </span>
-                                                </div>
-                                            )}
-                                            {/* Reject */}
-                                            {item.status === 'rejected' && (
-                                                <div className="flex gap-2">
-                                                    <MdClose className="h-4 w-4 text-red-600"/>
-                                                    <div className="w-full flex flex-col">
-                                                        <span className="text-gray-700 text-sm">
-                                                            {item.approvers}
-                                                        </span>
-                                                        <div className="w-full flex justify-between">
-                                                            <small className="text-[8px] text-gray-500">
-                                                                {item.daterejected}
-                                                            </small>
-                                                            <small className="text-[8px] text-gray-500">
-                                                                09:00 AM
-                                                            </small>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            )}
-                                            {/* Approved */}
-                                            {(item.status === 'approved' || item.status === 'credited' || item.status === 'processing') && (
-                                                <div className="flex gap-2">
-                                                    <HiCheckCircle className="h-4 w-4 text-success-default"/>
-                                                    <div className="w-full flex flex-col">
-                                                        <span className="text-gray-700 text-sm">
-                                                            {item.approvers}
-                                                        </span>
-                                                        <div className="w-full flex justify-between">
-                                                            <small className="text-[8px] text-gray-500">
-                                                                {item.daterejected}
-                                                            </small>
-                                                            <small className="text-[8px] text-gray-500">
-                                                                09:00 AM
-                                                            </small>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
+                                  {item.status === 'rejected' && (
+                                    <Notes note={item.note}/>
+                                  )}
 
-                                    <div className="flex flex-col gap-3 p-3">
-                                        <h6 className="text-base font-semibold">Attachments</h6>
-                                        <div className="flex items-center justify-between w-full border border-solid p-3">
-                                            <div className="flex items-center gap-3">
-                                                <AiTwotoneFile className="h-4 w-4 text-gray-500"/><span className="text-gray-600 text-sm">{item.attachments}</span>
-                                            </div>
-                                            <FaArrowRight className="h-3 w-3 text-primary-default"/>
-                                        </div>
-                                    </div>
+                                  
+                                  <Approvers 
+                                    status={item.status} 
+                                    approvers={item.approvers} 
+                                    daterejected={item.daterejected}
+                                  />
+
+                                  <Attachments  attachments={item.attachments}/>
+
                                 </>
                             )
                         })}
                       </div>
                     </div>
                     <div className="flex justify-center h-[72px] items-center  border-t border-neutral-subtle px-4 gap-2">
-                        <Button className="flex justify-center w-full" buttonType='outlined' variant='neutral'>Back</Button>
-                        <Button className="flex justify-center w-full" variant='danger'>Cancel</Button>
+                        <Button onClick={closeDrawer} className="flex justify-center w-full hover:bg-gray-300 hover:opacity-80" buttonType='outlined' variant='neutral'>Back</Button>
+                        <Button className="flex justify-center w-full" variant='danger'>Cancel Request</Button>
                     </div>
                   </div>
                 </Dialog.Panel>
