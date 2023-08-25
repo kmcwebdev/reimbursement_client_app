@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import React from "react";
+import React, { useState } from "react";
 import PageAnimation from "../animation/PageAnimation";
 import Head from 'next/head';
 import DashboardCard from "~/components/core/DashboardCard";
@@ -8,17 +8,22 @@ import { MdAccessTimeFilled } from "react-icons-all-files/md/MdAccessTimeFilled"
 import { AiOutlineSearch } from "react-icons-all-files/ai/AiOutlineSearch";
 import Table, { type Reimbursement } from "~/components/core/Table";
 import { sampleData } from "~/utils/sampleData";
-import { type ColumnDef, type PaginationState } from "@tanstack/react-table";
-import IndeterminateCheckbox from "~/components/core/Table/IndeterminateCheckbox";
+import { type ColumnFiltersState, type ColumnDef, type PaginationState } from "@tanstack/react-table";
+import IndeterminateCheckbox from "~/components/core/Table/TableCheckbox";
 import StatusBadge, { type StatusType } from "~/components/core/StatusBadge";
-import dynamic from "next/dynamic";
 import Input from "~/components/core/form/fields/Input";
+import StatusFilter from "../core/Table/filters/StatusFilter";
 
-const StatusTypeFilter = dynamic(
-  () => import("~/components/core/Table/filters/StatusTypeFilter"),
-);
 
 const ManagerDashboard: React.FC = () => {
+  const [selectedItems, setSelectedItems] = useState<number[]>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 10,
+  });
+
+
   const columns = React.useMemo<ColumnDef<Reimbursement>[]>(
     () => [
       {
@@ -41,7 +46,7 @@ const ManagerDashboard: React.FC = () => {
           return value.includes(row.getValue(id));
         },
         meta: {
-          filterComponent: StatusTypeFilter,
+          filterComponent: StatusFilter,
         },
       },
       {
@@ -67,7 +72,7 @@ const ManagerDashboard: React.FC = () => {
           return value.includes(row.getValue(id));
         },
         meta: {
-          filterComponent: StatusTypeFilter,
+          filterComponent: StatusFilter,
         },
       },
       {
@@ -78,7 +83,7 @@ const ManagerDashboard: React.FC = () => {
           return value.includes(row.getValue(id));
         },
         meta: {
-          filterComponent: StatusTypeFilter,
+          filterComponent: StatusFilter,
         },
       },
       {
@@ -89,7 +94,7 @@ const ManagerDashboard: React.FC = () => {
           return value.includes(row.getValue(id));
         },
         meta: {
-          filterComponent: StatusTypeFilter,
+          filterComponent: StatusFilter,
         },
       },
       {
@@ -100,10 +105,6 @@ const ManagerDashboard: React.FC = () => {
     ],
     [],
   );
-  const [pagination, setPagination] = React.useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 10,
-  });
   return (
     <>
       <Head>
@@ -132,12 +133,15 @@ const ManagerDashboard: React.FC = () => {
               <Input name="inputText" placeholder="Find anything..." icon={AiOutlineSearch} />
             </div>
             <Table
-
-              data={sampleData}
-              columns={columns}
-              pagination={pagination}
-              setPagination={setPagination}
-              />
+            data={sampleData}
+            columns={columns}
+            tableState={{ pagination, selectedItems, columnFilters }}
+            tableStateActions={{
+              setColumnFilters,
+              setSelectedItems,
+              setPagination,
+            }}
+          />
         </div>
       </PageAnimation>
     </>

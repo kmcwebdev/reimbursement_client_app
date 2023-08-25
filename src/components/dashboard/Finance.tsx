@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import React from "react";
+import React, { useState } from "react";
 import PageAnimation from "../animation/PageAnimation";
 import Head from 'next/head';
 import DashboardCard from "~/components/core/DashboardCard";
@@ -9,18 +9,22 @@ import { AiOutlineSearch } from "react-icons-all-files/ai/AiOutlineSearch";
 import { AiOutlinePause } from "react-icons-all-files/ai/AiOutlinePause";
 import Table, { type Reimbursement } from "~/components/core/Table";
 import { sampleData } from "~/utils/sampleData";
-import { type ColumnDef, type PaginationState } from "@tanstack/react-table";
-import IndeterminateCheckbox from "~/components/core/Table/IndeterminateCheckbox";
-import dynamic from "next/dynamic";
+import { type ColumnFiltersState, type ColumnDef, type PaginationState } from "@tanstack/react-table";
+import IndeterminateCheckbox from "~/components/core/Table/TableCheckbox";
 import Input from "~/components/core/form/fields/Input";
 import { Button } from "~/components/core/Button";
 import ButtonGroup from "~/components/core/form/fields/ButtonGroup";
+import StatusFilter from "../core/Table/filters/StatusFilter";
 
-const StatusTypeFilter = dynamic(
-  () => import("~/components/core/Table/filters/StatusTypeFilter"),
-);
 
 const FinanceDashboard: React.FC = () => {
+  const [selectedItems, setSelectedItems] = useState<number[]>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 10,
+  });
+
 
   const columns = React.useMemo<ColumnDef<Reimbursement>[]>(
     () => [
@@ -56,7 +60,7 @@ const FinanceDashboard: React.FC = () => {
           return value.includes(row.getValue(id));
         },
         meta: {
-          filterComponent: StatusTypeFilter,
+          filterComponent: StatusFilter,
         },
       },
       {
@@ -82,7 +86,7 @@ const FinanceDashboard: React.FC = () => {
           return value.includes(row.getValue(id));
         },
         meta: {
-          filterComponent: StatusTypeFilter,
+          filterComponent: StatusFilter,
         },
       },
       {
@@ -93,7 +97,7 @@ const FinanceDashboard: React.FC = () => {
           return value.includes(row.getValue(id));
         },
         meta: {
-          filterComponent: StatusTypeFilter,
+          filterComponent: StatusFilter,
         },
       },
       {
@@ -114,10 +118,6 @@ const FinanceDashboard: React.FC = () => {
     ],
     [],
   );
-  const [pagination, setPagination] = React.useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 10,
-  });
   
   return (
     <>
@@ -171,11 +171,15 @@ const FinanceDashboard: React.FC = () => {
             </div>
 
             <Table
-              data={sampleData}
-              columns={columns}
-              pagination={pagination}
-              setPagination={setPagination}
-              />
+            data={sampleData}
+            columns={columns}
+            tableState={{ pagination, selectedItems, columnFilters }}
+            tableStateActions={{
+              setColumnFilters,
+              setSelectedItems,
+              setPagination,
+            }}
+          />
         </div>
       </PageAnimation>
     </>
