@@ -1,4 +1,4 @@
-import { type Reimbursement } from "~/components/reimbursementView";
+import { type Reimbursement } from "~/components/reimbursement-view";
 
 export const sampleDataReim: Reimbursement[] = [
   {
