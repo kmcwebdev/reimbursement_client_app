@@ -1,54 +1,43 @@
-import React, { type PropsWithChildren } from "react";
+import React, { useState, type PropsWithChildren } from "react";
 import { barlow_Condensed } from "~/styles/fonts/barlowCondensed";
 import { karla } from "~/styles/fonts/karla";
+import { classNames } from "~/utils/classNames";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
 
-// const RedirectToCustomLocation = () => {
-//   const { redirectToLoginPage } = useRedirectFunctions();
-
-//   redirectToLoginPage({
-//     postLoginRedirectUrl:
-//       env.NEXT_PUBLIC_ENVIRONMENT === "development"
-//         ? `${window.location.href}`
-//         : `https://${window.location.hostname}`,
-//   });
-
-//   return null;
-// };
-
 const Layout: React.FC<PropsWithChildren> = ({ children }) => {
-  return (
+  const [collapsed, setIsCollapsed] = useState<boolean>(false);
 
-    // <RequiredAuthProvider
-    //   authUrl={env.NEXT_PUBLIC_PROPELAUTH_URL}
-    //   displayWhileLoading={<div>Auth Loading....</div>}
-    //   displayIfLoggedOut={<RedirectToCustomLocation />}
-    // >
-    //   <Provider store={store}>
+  const toggleSidebarWidth = () => {
+    setIsCollapsed(!collapsed);
+  };
+
+  return (
     <div className="flex min-h-screen">
-      <Sidebar />
+      <Sidebar collapsed={collapsed} toggleSidebarWidth={toggleSidebarWidth} />
 
       <main
-        className={`${karla.variable} ${barlow_Condensed.variable} flex-1 overflow-y-auto bg-white font-karla`}
+        className={classNames(
+          collapsed
+            ? "md:max-w-[calc(100vw_-_24px)]"
+            : "md:max-w-[calc(100vw_-_101px)]",
+          `${karla.variable} ${barlow_Condensed.variable} w-full flex-1 overflow-y-auto bg-white font-karla`,
+        )}
       >
         <Header />
-        <div className="relative flex h-[calc(100vh_-_4rem)]">
-
-
-
-
-          <div className='h-full w-full overflow-y-auto bg-white p-4'>
+        <div className="relative flex h-[calc(100vh_-_4rem)] w-full flex-col">
+          <div
+            className={classNames(
+              "relative h-full w-full overflow-hidden overflow-y-auto bg-white p-4",
+            )}
+          >
             {children}
           </div>
 
-          {/* <div className="h-16" /> !DO NOT REMOVE (Space for components that has footer) */}
-          <div className="h-16" />
+          <div className="absolute h-16" />
         </div>
       </main>
     </div>
-    //   </Provider>
-    // </RequiredAuthProvider>
   );
 };
 

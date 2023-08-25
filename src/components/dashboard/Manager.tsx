@@ -1,18 +1,21 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import React, { useState } from "react";
-import PageAnimation from "../animation/PageAnimation";
-import Head from 'next/head';
-import DashboardCard from "~/components/core/DashboardCard";
-import { MdGavel } from "react-icons-all-files/md/MdGavel";
-import { MdAccessTimeFilled } from "react-icons-all-files/md/MdAccessTimeFilled";
 import { AiOutlineSearch } from "react-icons-all-files/ai/AiOutlineSearch";
-import Table, { type Reimbursement } from "~/components/core/Table";
-import { sampleData } from "~/utils/sampleData";
-import { type ColumnFiltersState, type ColumnDef, type PaginationState } from "@tanstack/react-table";
-import IndeterminateCheckbox from "~/components/core/Table/TableCheckbox";
+import { MdAccessTimeFilled } from "react-icons-all-files/md/MdAccessTimeFilled";
+import { MdGavel } from "react-icons-all-files/md/MdGavel";
+import DashboardCard from "~/components/core/DashboardCard";
 import StatusBadge, { type StatusType } from "~/components/core/StatusBadge";
+import Table, { type Reimbursement } from "~/components/core/Table";
+import StatusFilter, { type FilterProps } from "~/components/core/Table/filters/StatusFilter";
 import Input from "~/components/core/form/fields/Input";
-import StatusFilter from "../core/Table/filters/StatusFilter";
+import { currencyFormat } from "~/utils/currencyFormat";
+import { sampleData } from "~/utils/sampleData";
+import PageAnimation from "../animation/PageAnimation";
+import TableCheckbox from "../core/Table/TableCheckbox";
+import DateFiledFilter from "../core/Table/filters/DateFiledFilter";
+import ExpenseTypeFilter from "../core/Table/filters/ExpenseTypeFilter";
+import { type ColumnDef, type ColumnFiltersState, type PaginationState } from "@tanstack/react-table";
+import Head  from "next/head";
 
 
 const ManagerDashboard: React.FC = () => {
@@ -29,7 +32,7 @@ const ManagerDashboard: React.FC = () => {
       {
         id: "select",
         header: ({ table }) => (
-          <IndeterminateCheckbox
+          <TableCheckbox
             {...{
               checked: table.getIsAllRowsSelected(),
               indeterminate: table.getIsSomeRowsSelected(),
@@ -39,6 +42,7 @@ const ManagerDashboard: React.FC = () => {
         ),
       },
       {
+        id: "status",
         accessorKey: "status",
         header: "Status",
         cell: (info) => <StatusBadge status={info.getValue() as StatusType} />,
@@ -50,21 +54,25 @@ const ManagerDashboard: React.FC = () => {
         },
       },
       {
+        id: "id",
         accessorKey: "id",
         cell: (info) => info.getValue(),
         header: "ID",
       },
       {
+        id: "name",
         accessorKey: "name",
         cell: (info) => info.getValue(),
         header: "Name",
       },
       {
+        id: "reimbursementId",
         accessorKey: "reimbursementId",
         cell: (info) => info.getValue(),
         header: "R-ID",
       },
       {
+        id: "type",
         accessorKey: "type",
         cell: (info) => info.getValue(),
         header: "Type",
@@ -76,6 +84,7 @@ const ManagerDashboard: React.FC = () => {
         },
       },
       {
+        id: "expense",
         accessorKey: "expense",
         cell: (info) => info.getValue(),
         header: "Expense",
@@ -83,10 +92,13 @@ const ManagerDashboard: React.FC = () => {
           return value.includes(row.getValue(id));
         },
         meta: {
-          filterComponent: StatusFilter,
+          filterComponent: (info: FilterProps) => (
+            <ExpenseTypeFilter {...info} />
+          ),
         },
       },
       {
+        id: "filed",
         accessorKey: "filed",
         cell: (info) => info.getValue(),
         header: "Filed",
@@ -94,12 +106,13 @@ const ManagerDashboard: React.FC = () => {
           return value.includes(row.getValue(id));
         },
         meta: {
-          filterComponent: StatusFilter,
+          filterComponent: (info: FilterProps) => <DateFiledFilter {...info} />,
         },
       },
       {
+        id: "total",
         accessorKey: "total",
-        cell: (info) => info.getValue(),
+        cell: (info) => currencyFormat(info.getValue() as number),
         header: "Total",
       },
     ],
@@ -111,7 +124,7 @@ const ManagerDashboard: React.FC = () => {
         <title>Manager Dashboard</title>
       </Head>
       <PageAnimation>
-        <div className="grid h-72 p-5 gap-y-5">
+        <div className="grid gap-y-5 p-5">
           {/* card */}
           <div className="flex gap-4 place-items-start mb-3">
             <DashboardCard
@@ -128,11 +141,15 @@ const ManagerDashboard: React.FC = () => {
           </div>
 
           {/* table */}
-            <div className="flex justify-between">
-              <h4>For Approval</h4>
-              <Input name="inputText" placeholder="Find anything..." icon={AiOutlineSearch} />
-            </div>
-            <Table
+          <div className="flex justify-between">
+            <h4 className="font-karla">For Approval</h4>
+            <Input
+              name="inputText"
+              placeholder="Find anything..."
+              icon={AiOutlineSearch}
+            />
+          </div>
+          <Table
             data={sampleData}
             columns={columns}
             tableState={{ pagination, selectedItems, columnFilters }}

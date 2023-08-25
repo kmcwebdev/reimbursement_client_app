@@ -1,20 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-import { type Column, type Table } from "@tanstack/react-table";
 import { useEffect, useMemo, useState } from "react";
 import { FaCaretDown } from "react-icons-all-files/fa/FaCaretDown";
 import { type PropsValue } from "react-select";
 import CollapseHeightAnimation from "~/components/animation/CollapseHeight";
-import { type Reimbursement } from "..";
 import { Button } from "../../Button";
 import Popover from "../../Popover";
 import Select, { type OptionData } from "../../form/fields/Select";
+import { type FilterProps } from "./StatusFilter";
 
-interface ClientFilterProps {
-  column: Column<Reimbursement, unknown>;
-  table: Table<Reimbursement>;
-}
-
-const ClientFilter: React.FC<ClientFilterProps> = ({
+const ClientFilter: React.FC<FilterProps> = ({
   column, // table,
 }) => {
   const sortedUniqueValues = useMemo(
