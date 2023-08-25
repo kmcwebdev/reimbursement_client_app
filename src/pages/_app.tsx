@@ -1,19 +1,21 @@
 import {
   AuthProvider,
-  type WithAuthInfoProps,
   useRedirectFunctions,
   withAuthInfo,
   type WithAuthInfoArgs,
+  type WithAuthInfoProps,
 } from "@propelauth/react";
 import type { AppProps } from "next/app";
+import dynamic from "next/dynamic";
+import { type PropsWithChildren } from "react";
 import { Provider } from "react-redux";
 import store from "~/app/store";
-import PageAnimation from "~/components/animation/PageAnimation";
 import Layout from "~/components/core/layout";
+import { UserAccessProvider } from "~/context/AccessContext";
 import { env } from "~/env.mjs";
-import { type PropsWithChildren } from "react";
 import "~/styles/globals.css";
 
+const AuthLoader = dynamic(() => import("~/components/loaders/AuthLoader"));
 
 const RedirectToCustomLocation = withAuthInfo<
   WithAuthInfoProps & WithAuthInfoArgs & PropsWithChildren
@@ -35,7 +37,7 @@ const RedirectToCustomLocation = withAuthInfo<
     return <>{props.children}</>;
   },
   {
-    displayWhileLoading: <div>Auth Loading....</div>,
+    displayWhileLoading: <AuthLoader />,
   },
 );
 

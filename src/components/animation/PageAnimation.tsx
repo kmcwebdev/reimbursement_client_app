@@ -5,8 +5,10 @@ interface PageAnimationProps extends PropsWithChildren {
   className?: string;
 }
 
-const PageAnimation: React.FC<PageAnimationProps> = ({ children, className }) => {
-
+const PageAnimation: React.FC<PageAnimationProps> = ({
+  children,
+  className,
+}) => {
   return (
     <AnimatePresence initial={true}>
       <motion.div

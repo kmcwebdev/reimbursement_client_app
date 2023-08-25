@@ -1,10 +1,35 @@
+
+import { useRouter } from "next/navigation";
 import React from "react";
+import { MdPeople } from 'react-icons-all-files/md/MdPeople';
+import { type PropsValue } from "react-select";
 import { useUserAccessContext, type IRole } from "~/context/AccessContext";
 import Popover from "../../Popover";
 import Select, { type OptionData } from "../../form/fields/Select";
 
+const options = [
+  {
+    label: "EMPLOYEE",
+    value: "employee",
+  },
+  {
+    label: "HRBP",
+    value: "hrbp",
+  },
+  {
+    label: "MANAGER",
+    value: "manager",
+  },
+  {
+    label: "FINANCE",
+    value: "finance",
+  },
+];
+
 const ProfileMenu: React.FC = () => {
   const { user, changeUser } = useUserAccessContext();
+
+  const navigation = useRouter();
   return (
     <Popover
       btn={
@@ -17,44 +42,19 @@ const ProfileMenu: React.FC = () => {
       }
       panelClassName="right-0 top-5"
       content={
-        <div className="w-72 p-4">
+        <div className="w-72 p-4 space-y-4">
           <Select
-            name="user"
-            data={[
-              {
-                label: "EMPLOYEE",
-                value: "employee",
-              },
-              {
-                label: "HRBP",
-                value: "hrbp",
-              },
-              {
-                label: "MANAGER",
-                value: "manager",
-              },
-              {
-                label: "FINANCE",
-                value: "finance",
-              },
-              {
-                label: "SAMPLE",
-                value: "sample",
-              },
-            ]}
             initialValue={
-              user
-                ? { label: user.name.toUpperCase(), value: user.role }
-                : undefined
+              options.find((a) => a.value === user?.role) as OptionData
             }
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-            onChangeEvent={(e) => {
-              const event = e as OptionData;
-              console.log(event);
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-              changeUser(event.value as IRole);
+            name="user"
+            options={options}
+            onChangeEvent={(e: PropsValue<OptionData>) => {
+              const value = e as OptionData;
+              changeUser(value.value as IRole);
             }}
           />
+          <div className="p-2 flex items-center gap-4 rounded hover:bg-primary-subtle transition-all ease-in-out cursor-pointer" onClick={() => navigation.push('/user-management')} ><MdPeople className="h-5 w-5 text-primary-default" />User Management</div>
         </div>
       }
     />

@@ -7,8 +7,6 @@ import {
   type FetchBaseQueryError,
   type FetchBaseQueryMeta,
 } from "@reduxjs/toolkit/query/react";
-import { type RootState } from "./store";
-import { propelauthRefreshToken } from "~/utils/propelauthRefreshToken";
 import { clearAccessToken, setAccessToken } from "~/features/user-slice";
 import { propelauthRefreshToken } from "~/utils/propelauthRefreshToken";
 import { type RootState } from "./store";

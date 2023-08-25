@@ -6,6 +6,7 @@ export const base = {
     hover: "#CC5202",
     pressed: "#A1400B",
     subtle: "#FFF9EC",
+    inactive: "#FFE0A5"
   },
   success: {
     default: "#16A679",
