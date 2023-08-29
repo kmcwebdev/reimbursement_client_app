@@ -1,9 +1,13 @@
+import { useUser } from "@propelauth/nextjs/client";
+import dynamic from "next/dynamic";
 import React, {
   createContext,
   useContext,
   useState,
   type PropsWithChildren,
 } from "react";
+
+const AuthLoader = dynamic(() => import("~/components/loaders/AuthLoader"));
 
 const users: IUserData[] = [
   {
@@ -56,6 +60,8 @@ export const useUserAccessContext = () => {
 export const UserAccessProvider: React.FC<PropsWithChildren> = ({
   children,
 }) => {
+  const { loading } = useUser();
+
   const [user, setUser] = useState<IUserData | null>(users[0]);
   // const [isAuthenticated, setIsAuthenticated] = useState(true);
 
@@ -83,6 +89,10 @@ export const UserAccessProvider: React.FC<PropsWithChildren> = ({
   const handleLogout = async () => {
     await logout();
   };
+
+  if (loading) {
+    return <AuthLoader />;
+  }
 
   return (
     <UserAccessContext.Provider value={{ handleLogout, user, changeUser }}>
