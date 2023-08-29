@@ -1,4 +1,10 @@
 import { useLogoutFunction } from "@propelauth/nextjs/client";
+import { getUserFromServerSideProps } from "@propelauth/nextjs/server/pages";
+import {
+  type NextPage,
+  type GetServerSideProps,
+  type InferGetServerSidePropsType,
+} from "next";
 import dynamic from "next/dynamic";
 import Head from "next/head";
 import React from "react";
@@ -15,9 +21,13 @@ const ManagerDashboard = dynamic(
   () => import("~/components/dashboard/Manager"),
 );
 
-const Dashboard: React.FC = () => {
+const Dashboard: NextPage<
+  InferGetServerSidePropsType<typeof getServerSideProps>
+> = (ssrprops) => {
   const { user } = useUserAccessContext();
   const logoutFn = useLogoutFunction();
+
+  console.log(ssrprops.userJson);
 
   return (
     <>
@@ -36,3 +46,22 @@ const Dashboard: React.FC = () => {
 };
 
 export default Dashboard;
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const user = await getUserFromServerSideProps(context);
+
+  if (!user) {
+    return {
+      redirect: {
+        destination: "/api/auth/login",
+        permanent: false,
+      },
+    };
+  }
+
+  return {
+    props: {
+      userJson: JSON.stringify(user),
+    },
+  };
+};
