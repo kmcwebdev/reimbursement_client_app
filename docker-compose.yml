@@ -11,7 +11,7 @@ services:
         NODE_ENV: "production"
         NEXT_PUBLIC_ENVIRONMENT: "production"
         NEXT_PUBLIC_PUSHER_APP_KEY: "affa5695ab0f6d72e6b5"
-        NEXT_PUBLIC_PROPELAUTH_URL: "https://171091628.propelauthtest.com"
+        NEXT_PUBLIC_AUTH_URL: "https://171091628.propelauthtest.com"
 
     ports:
       - 3000:3000

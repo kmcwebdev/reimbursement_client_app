@@ -30,8 +30,8 @@ FROM --platform=linux/amd64 node:18-alpine3.16 AS builder
 
 ARG NODE_ENV
 ARG NEXT_PUBLIC_ENVIRONMENT
+ARG NEXT_PUBLIC_AUTH_URL
 ARG NEXT_PUBLIC_PUSHER_APP_KEY
-ARG NEXT_PUBLIC_PROPELAUTH_URL
 
 
 # Set the working directory to /app

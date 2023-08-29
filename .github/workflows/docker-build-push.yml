@@ -56,7 +56,7 @@ jobs:
           build-args: |
             NODE_ENV=production
             NEXT_PUBLIC_ENVIRONMENT=${{ secrets.NEXT_PUBLIC_ENVIRONMENT }}
-            NEXT_PUBLIC_PROPELAUTH_URL=${{ secrets.NEXT_PUBLIC_PROPELAUTH_URL }}
+            NEXT_PUBLIC_AUTH_URL=${{ secrets.NEXT_PUBLIC_AUTH_URL }}
             NEXT_PUBLIC_PUSHER_APP_KEY=${{ secrets.NEXT_PUBLIC_PUSHER_APP_KEY }}
 
   delete-old-packages-keep-3-latest:
