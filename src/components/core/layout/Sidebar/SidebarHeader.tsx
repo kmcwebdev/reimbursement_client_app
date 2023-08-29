@@ -26,6 +26,7 @@ const SidebarHeader: React.FC<SidebarHeaderProps> = ({ collapsed, toggle }) => {
           <Image
             src="https://cdn.kmc.solutions/project-statics/KMC-logo-updated-white%20(1).png"
             alt="kmc-logo"
+            sizes="100%"
             fill
           />
         </div>
