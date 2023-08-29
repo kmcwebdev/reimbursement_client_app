@@ -10,9 +10,10 @@ import {
 import { clearAccessToken, setAccessToken } from "~/features/user-slice";
 import { propelauthRefreshToken } from "~/utils/propelauthRefreshToken";
 import { type RootState } from "./store";
+import { env } from "~/env.mjs";
 
 const appApiBaseQuery = fetchBaseQuery({
-  baseUrl: "",
+  baseUrl: env.NEXT_PUBLIC_BASE_URL,
   credentials: "include",
   prepareHeaders: (headers, { getState }) => {
     const userState = getState() as RootState;

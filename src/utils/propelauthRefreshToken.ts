@@ -1,8 +1,8 @@
 import { env } from "~/env.mjs";
 
-type PropelAuthRefreshTokenResponse = {
+interface PropelAuthRefreshTokenResponse {
   access_token: string;
-};
+}
 
 const REFRESH_TOKEN_URL = `${env.NEXT_PUBLIC_AUTH_URL}/api/v1/refresh_token`;
 
@@ -19,12 +19,12 @@ export async function propelauthRefreshToken(): Promise<PropelAuthRefreshTokenRe
       throw new Error(`Failed to refresh token: ${response.statusText}`);
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const data: PropelAuthRefreshTokenResponse = await response.json();
+    const data = (await response.json()) as unknown;
 
-    return data;
-  } catch (error) {
-    console.error(error);
+    const refreshToken = data as PropelAuthRefreshTokenResponse;
+
+    return refreshToken;
+  } catch (_error: unknown) {
     throw new Error("Failed to refresh token");
   }
 }
