@@ -1,3 +1,4 @@
+import { useLogoutFunction } from "@propelauth/nextjs/client";
 import dynamic from "next/dynamic";
 import Head from "next/head";
 import React from "react";
@@ -16,6 +17,7 @@ const ManagerDashboard = dynamic(
 
 const Dashboard: React.FC = () => {
   const { user } = useUserAccessContext();
+  const logoutFn = useLogoutFunction();
 
   return (
     <>
@@ -27,6 +29,8 @@ const Dashboard: React.FC = () => {
       {user && user.role === "hrbp" && <HrbpDashboard />}
       {user && user.role === "finance" && <FinanceDashboard />}
       {user && user.role === "manager" && <ManagerDashboard />}
+
+      <button onClick={() => void logoutFn()}>Logout</button>
     </>
   );
 };
