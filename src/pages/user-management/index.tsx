@@ -13,7 +13,7 @@ const UserManagement: React.FC = () => {
       <div className="grid h-72 w-full place-items-center rounded-md bg-white">
         <EmptyState
           title="User Management is empty"
-          description="Wala pa kasing nagagawa na hayop ka! Magcode ka"
+          description="Wait.."
           icon={MdPerson as IconType}
         >
           <div className="bg-primary-normal h-10 w-32 rounded-md"></div>
