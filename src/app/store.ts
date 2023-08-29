@@ -2,7 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 // import testReducer from "../features/test-slice";
 import { env } from "~/env.mjs";
 import userReducer from "../features/user-slice";
-import { appApiSlice } from "./api";
+import { appApiSlice } from "./rtkQuery";
 
 const store = configureStore({
   reducer: {
