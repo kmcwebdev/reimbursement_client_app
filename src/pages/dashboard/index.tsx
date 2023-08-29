@@ -1,14 +1,14 @@
-import { useLogoutFunction } from "@propelauth/nextjs/client";
+import { UserFromToken, useLogoutFunction } from "@propelauth/nextjs/client";
 import { getUserFromServerSideProps } from "@propelauth/nextjs/server/pages";
-import {
-  type NextPage,
-  type GetServerSideProps,
-  type InferGetServerSidePropsType,
-} from "next";
+import { type NextPage, type GetServerSideProps } from "next";
 import dynamic from "next/dynamic";
 import Head from "next/head";
 import React from "react";
 import { useUserAccessContext } from "~/context/AccessContext";
+
+interface DashboardSSRProps {
+  userJson: string;
+}
 
 const EmployeeDashboard = dynamic(
   () => import("~/components/dashboard/employee"),
@@ -21,13 +21,13 @@ const ManagerDashboard = dynamic(
   () => import("~/components/dashboard/Manager"),
 );
 
-const Dashboard: NextPage<
-  InferGetServerSidePropsType<typeof getServerSideProps>
-> = (ssrprops) => {
+const Dashboard: NextPage<DashboardSSRProps> = (props) => {
   const { user } = useUserAccessContext();
   const logoutFn = useLogoutFunction();
 
-  console.log(ssrprops.userJson);
+  const propel = UserFromToken.fromJSON(props.userJson);
+
+  console.log(propel);
 
   return (
     <>

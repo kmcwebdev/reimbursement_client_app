@@ -61,7 +61,6 @@ export const UserAccessProvider: React.FC<PropsWithChildren> = ({
   children,
 }) => {
   const { loading } = useUser();
-
   const [user, setUser] = useState<IUserData | null>(users[0]);
   // const [isAuthenticated, setIsAuthenticated] = useState(true);
 
