@@ -22,8 +22,8 @@ const navItems: NavItems[] = [
   },
 
   {
-    label: "For Approval",
-    href: "/approvals",
+    label: "Approval",
+    href: "/approval",
     Icon: MdGavel as IconType,
   },
   {
