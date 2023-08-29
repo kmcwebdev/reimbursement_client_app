@@ -11,12 +11,12 @@ dependencies:
   '@hookform/resolvers':
     specifier: ^3.1.1
     version: 3.1.1(react-hook-form@7.45.4)
+  '@propelauth/nextjs':
+    specifier: ^0.0.92
+    version: 0.0.92(next@13.4.19)(react@18.2.0)
   '@propelauth/node':
     specifier: ^2.1.3
     version: 2.1.3
-  '@propelauth/react':
-    specifier: ^2.0.10
-    version: 2.0.10(react-dom@18.2.0)(react@18.2.0)
   '@react-email/components':
     specifier: ^0.0.7
     version: 0.0.7
@@ -671,27 +671,26 @@ packages:
       tslib: 2.6.1
     dev: true
 
-  /@propelauth/javascript@2.0.6:
-    resolution: {integrity: sha512-STz+44y+4A4leC9oRm2pg7QNp1XUZv62f2FR78WVikDphlAbAqOeEd+T284QKqaE/3V8/OnGms/CCKj7CpJN9Q==}
+  /@propelauth/nextjs@0.0.92(next@13.4.19)(react@18.2.0):
+    resolution: {integrity: sha512-2uCHjqimtcP8vYiGIPGqihUhgJfID4C98kPexJmpN+7e2iQNE/sC5uGj1cCYfp2rhpJhMJVODP2Xqx3PwZiquw==}
+    peerDependencies:
+      next: ^13.1.0
+      react: ^18.2.0
+    dependencies:
+      '@propelauth/node-apis': 2.1.1
+      jose: 4.14.4
+      next: 13.4.19(react-dom@18.2.0)(react@18.2.0)
+      react: 18.2.0
+    dev: false
+
+  /@propelauth/node-apis@2.1.1:
+    resolution: {integrity: sha512-YvBkDSt/2GngcBw1hf3kRWdbBe1fzjpxibLe4066Lk6vwpHWfUPpRlCcaYN2g0LtKim7vsnmLyILiBecVZS47Q==}
     dev: false
 
   /@propelauth/node@2.1.3:
     resolution: {integrity: sha512-JfY09Zh74UAQXmLs2Yra5nX9/2yS69CmlRJo+uzQJ3kHw+bSZLmkKDtIxu4NstTTA6XVXW1352wD+qRL3B3OBQ==}
     dependencies:
       jsonwebtoken: 9.0.1
-    dev: false
-
-  /@propelauth/react@2.0.10(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-/HJlNdCZrdQ8hZ+kNNPw5bP19G63xvlbxx48orCbYka8FK9bW5LE0NHb8c//3zV1SR6ukSJZvPMGV7JyN99U0Q==}
-    peerDependencies:
-      react: ^16.8.0 || ^17.0.0 || ^18.0.0
-      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
-    dependencies:
-      '@propelauth/javascript': 2.0.6
-      hoist-non-react-statics: 3.3.2
-      react: 18.2.0
-      react-dom: 18.2.0(react@18.2.0)
-      utility-types: 3.10.0
     dev: false
 
   /@protobufjs/aspromise@1.1.2:
@@ -3111,6 +3110,10 @@ packages:
     resolution: {integrity: sha512-oVhqoRDaBXf7sjkll95LHVS6Myyyb1zaunVwk4Z0+WPSW4gjS0pl01zYKHScTuyEhQsFxV5L4DR5r+YqSyqyyg==}
     hasBin: true
 
+  /jose@4.14.4:
+    resolution: {integrity: sha512-j8GhLiKmUAh+dsFXlX1aJCbt5KMibuKb+d7j1JaOJG6s2UjX1PQlW+OKB/sD4a/5ZYF4RcmYmLSndOoU3Lt/3g==}
+    dev: false
+
   /js-beautify@1.14.9:
     resolution: {integrity: sha512-coM7xq1syLcMyuVGyToxcj2AlzhkDjmfklL8r0JgJ7A76wyGMpJ1oA35mr4APdYNO/o/4YY8H54NQIJzhMbhBg==}
     engines: {node: '>=12'}
@@ -4910,11 +4913,6 @@ packages:
 
   /util-deprecate@1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
-
-  /utility-types@3.10.0:
-    resolution: {integrity: sha512-O11mqxmi7wMKCo6HKFt5AhO4BwY3VV68YU07tgxfz8zJTIxr4BpsezN49Ffwy9j3ZpwwJp4fkRwjRzq3uWE6Rg==}
-    engines: {node: '>= 4'}
-    dev: false
 
   /utils-merge@1.0.1:
     resolution: {integrity: sha512-pMZTvIkT1d+TFGvDOqodOclx0QWkkgi6Tdoa8gC8ffGAAqz9pzPTZWAybbsHHoED/ztMtkv/VoYTYyShUn81hA==}
