@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState, type ChangeEvent } from "react";
+import { useEffect, useMemo, useState, type ChangeEvent } from "react";
 import { FaCaretDown } from "react-icons-all-files/fa/FaCaretDown";
 import CollapseHeightAnimation from "~/components/animation/CollapseHeight";
 import { Button } from "../../Button";
@@ -6,14 +6,14 @@ import Popover from "../../Popover";
 import Checkbox from "../../form/fields/Checkbox";
 import { type FilterProps } from "./StatusFilter";
 
-const ReimbursementTypeFilter: React.FC<FilterProps> = ({ column }) => {
+const ExpenseTypeFilter: React.FC<FilterProps> = ({
+  column, // table,
+}) => {
   const sortedUniqueValues = useMemo(
     () => Array.from(column.getFacetedUniqueValues().keys()).sort() as string[],
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [column.getFacetedUniqueValues()],
   );
-
-  const [checked, setChecked] = useState(sortedUniqueValues);
 
   useEffect(() => {
     column.setFilterValue(sortedUniqueValues);
@@ -26,10 +26,13 @@ const ReimbursementTypeFilter: React.FC<FilterProps> = ({ column }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [column.getFilterValue()]);
 
+  const [checked, setChecked] = useState(sortedUniqueValues);
+
   const onChange = (e: ChangeEvent<HTMLInputElement>, value: string) => {
     if (checked.includes(value)) {
       setChecked(checked.filter((a) => a !== value));
     } else {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       setChecked([...checked, value]);
     }
     if (e.target.checked) {
@@ -59,12 +62,7 @@ const ReimbursementTypeFilter: React.FC<FilterProps> = ({ column }) => {
               sortedUniqueValues.map((option: string) => (
                 <Checkbox
                   key={option}
-                  label={
-                    <div className="flex items-center gap-2 capitalize">
-                      {option}
-                    </div>
-                  }
-                  value={option}
+                  label={option}
                   name={option}
                   checked={checked.includes(option)}
                   disabled={checked.length === 1 && checked.includes(option)}
@@ -86,4 +84,4 @@ const ReimbursementTypeFilter: React.FC<FilterProps> = ({ column }) => {
   );
 };
 
-export default ReimbursementTypeFilter;
+export default ExpenseTypeFilter;

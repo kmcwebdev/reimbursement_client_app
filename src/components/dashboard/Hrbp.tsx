@@ -9,19 +9,26 @@ import Head from "next/head";
 import React, { useState } from "react";
 import { MdAccessTimeFilled } from "react-icons-all-files/md/MdAccessTimeFilled";
 import { MdCreditCard } from "react-icons-all-files/md/MdCreditCard";
-import { MdSearch } from 'react-icons-all-files/md/MdSearch';
+import { MdSearch } from "react-icons-all-files/md/MdSearch";
 import { Button } from "~/components/core/Button";
 import DashboardCard from "~/components/core/DashboardCard";
 import Table, { type Reimbursement } from "~/components/core/Table";
 import { type FilterProps } from "~/components/core/Table/filters/StatusFilter";
+import { currencyFormat } from "~/utils/currencyFormat";
 import { sampleData } from "~/utils/sampleData";
 import PageAnimation from "../animation/PageAnimation";
 import StatusBadge, { type StatusType } from "../core/StatusBadge";
 import TableCheckbox from "../core/Table/TableCheckbox";
+import DateFiledFilter from "../core/Table/filters/DateFiledFilter";
+import ExpenseTypeFilter from "../core/Table/filters/ExpenseTypeFilter";
 import Input from "../core/form/fields/Input";
 
-const ReimbursementTypeFilter = dynamic(() => import("../core/Table/filters/ReimbursementTypeFilter"));
-const StatusFilter = dynamic(() => import("../core/Table/filters/StatusFilter"));
+const ReimbursementTypeFilter = dynamic(
+  () => import("../core/Table/filters/ReimbursementTypeFilter"),
+);
+const StatusFilter = dynamic(
+  () => import("../core/Table/filters/StatusFilter"),
+);
 
 const EmployeeDashboard: React.FC = () => {
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
@@ -55,6 +62,7 @@ const EmployeeDashboard: React.FC = () => {
       },
 
       {
+        id: "status",
         accessorKey: "status",
         header: "Status",
         cell: (info) => <StatusBadge status={info.getValue() as StatusType} />,
@@ -67,22 +75,26 @@ const EmployeeDashboard: React.FC = () => {
         },
       },
       {
+        id: "id",
         accessorKey: "id",
         cell: (info) => info.getValue(),
         header: "ID",
       },
       {
+        id: "name",
         accessorKey: "name",
         cell: (info) => info.getValue(),
         header: "Name",
       },
       {
+        id: "reimbursementId",
         accessorKey: "reimbursementId",
         cell: (info) => info.getValue(),
         header: "R-ID",
       },
 
       {
+        id: "type",
         accessorKey: "type",
         cell: (info) => info.getValue(),
         header: "Type",
@@ -96,24 +108,39 @@ const EmployeeDashboard: React.FC = () => {
         },
       },
       {
+        id: "expense",
         accessorKey: "expense",
         cell: (info) => info.getValue(),
         header: "Expense",
         filterFn: (row, id, value: string) => {
           return value.includes(row.getValue(id));
         },
+        meta: {
+          filterComponent: (info: FilterProps) => (
+            <ExpenseTypeFilter {...info} />
+          ),
+        },
       },
       {
+        id: "filed",
         accessorKey: "filed",
         cell: (info) => info.getValue(),
         header: "Filed",
+        filterFn: (row, id, value: string) => {
+          return value.includes(row.getValue(id));
+        },
+        meta: {
+          filterComponent: (info: FilterProps) => <DateFiledFilter {...info} />,
+        },
       },
       {
+        id: "total",
         accessorKey: "total",
-        cell: (info) => info.getValue(),
+        cell: (info) => currencyFormat(info.getValue() as number),
         header: "Total",
       },
       {
+        id: "r-id",
         accessorKey: "r-id",
         cell: () => <Button buttonType="text">View</Button>,
         header: "",
@@ -129,8 +156,8 @@ const EmployeeDashboard: React.FC = () => {
       </Head>
 
       <PageAnimation>
-        <div className="grid h-72 gap-y-2 p-5">
-          <div className="mb-5 flex place-items-start gap-4">
+        <div className="grid w-full gap-y-2 md:p-5">
+          <div className="mb-5 flex flex-col gap-4 lg:flex-row">
             <DashboardCard
               icon={<MdAccessTimeFilled className="h-5 w-5 text-[#D89B0D]" />}
               label="Pending Approval"
@@ -145,7 +172,11 @@ const EmployeeDashboard: React.FC = () => {
 
           <div className="flex justify-between">
             <h4>For Approval</h4>
-            <Input name="searchFilter" placeholder="Find anything..." icon={MdSearch} />
+            <Input
+              name="searchFilter"
+              placeholder="Find anything..."
+              icon={MdSearch}
+            />
           </div>
 
           <Table
