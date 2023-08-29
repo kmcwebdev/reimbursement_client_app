@@ -4,7 +4,7 @@ type PropelAuthRefreshTokenResponse = {
   access_token: string;
 };
 
-const REFRESH_TOKEN_URL = `${env.NEXT_PUBLIC_PROPELAUTH_URL}/api/v1/refresh_token`;
+const REFRESH_TOKEN_URL = `${env.NEXT_PUBLIC_AUTH_URL}/api/v1/refresh_token`;
 
 export async function propelauthRefreshToken(): Promise<PropelAuthRefreshTokenResponse> {
   try {

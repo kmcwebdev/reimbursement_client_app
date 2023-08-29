@@ -3,10 +3,16 @@ import Head from "next/head";
 import React from "react";
 import { useUserAccessContext } from "~/context/AccessContext";
 
-const EmployeeDashboard = dynamic(() => import('~/components/dashboard/employee'));
-const FinanceDashboard = dynamic(() => import('~/components/dashboard/Finance'));
-const HrbpDashboard = dynamic(() => import('~/components/dashboard/Hrbp'));
-const ManagerDashboard = dynamic(() => import('~/components/dashboard/Manager'));
+const EmployeeDashboard = dynamic(
+  () => import("~/components/dashboard/employee"),
+);
+const FinanceDashboard = dynamic(
+  () => import("~/components/dashboard/Finance"),
+);
+const HrbpDashboard = dynamic(() => import("~/components/dashboard/Hrbp"));
+const ManagerDashboard = dynamic(
+  () => import("~/components/dashboard/Manager"),
+);
 
 const Dashboard: React.FC = () => {
   const { user } = useUserAccessContext();
