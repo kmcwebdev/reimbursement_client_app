@@ -9,8 +9,7 @@
 
   h1,
   h2,
-  h3,
-  h4 {
+  h3{
     @apply font-barlowCondensed font-bold;
   }
 
@@ -24,7 +23,7 @@
     @apply text-[24px] leading-[26px] md:text-[26px] lg:text-[32px] lg:leading-[24px];
   }
   h4 {
-    @apply text-[20px] leading-[38px] md:text-[22px] lg:text-[20px];
+    @apply font-bold text-[20px] leading-[38px] md:text-[22px] lg:text-[20px];
   }
 }
 
@@ -104,10 +103,10 @@
 
   /* INPUT */
   .input-default {
-    @apply w-full py-2 rounded text-sm border border-[#CACED3] text-gray-800 placeholder:text-neutral-pressed focus:ring-1 focus:ring-inset focus:ring-primary-default focus:border-transparent;
+    @apply w-full py-2 rounded text-sm border border-[#CACED3] text-gray-800 placeholder:text-neutral-pressed focus:ring-1 focus:ring-inset focus:ring-primary-default focus:border-transparent disabled:bg-neutral-100 disabled:border-neutral-300 disabled:text-neutral-300 disabled:cursor-not-allowed;
   }
 
   .input-error {
-    @apply w-full py-2 rounded text-sm border border-danger-default bg-danger-subtle text-danger-default ring-danger-default placeholder:text-danger-default focus:ring-1 focus:ring-inset focus:ring-danger-default focus:border-transparent;
+    @apply w-full py-2 rounded text-sm border border-danger-default bg-danger-subtle text-danger-default ring-danger-default placeholder:text-danger-default focus:ring-1 focus:ring-inset focus:ring-danger-default focus:border-transparent disabled:bg-neutral-100 disabled:border-neutral-300 disabled:text-neutral-300 disabled:cursor-not-allowed;
   }
 }

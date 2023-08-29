@@ -1,15 +1,13 @@
-import React, { useState } from "react";
+import React from "react";
 import { classNames } from "~/utils/classNames";
 import Navigation from "./Navigation";
 import SidebarHeader from "./SidebarHeader";
 
-const Sidebar: React.FC = () => {
-  const [collapsed, setIsCollapsed] = useState<boolean>(false);
-
-  const toggleSidebarWidth = () => {
-    setIsCollapsed(!collapsed);
-  };
-
+interface SidebarProps {
+  collapsed: boolean;
+  toggleSidebarWidth: () => void;
+}
+const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebarWidth }) => {
   return (
     <div
       className={classNames(

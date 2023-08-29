@@ -1,7 +1,5 @@
 import {
-  useFormContext,
-  type FieldValues,
-  type RegisterOptions,
+  useFormContext
 } from "react-hook-form";
 import { type IconType } from "react-icons-all-files";
 import { classNames } from "~/utils/classNames";
@@ -29,18 +27,6 @@ const Input = ({
   ...rest
 }: InputProps) => {
   const formContext = useFormContext();
-
-  const options: RegisterOptions<FieldValues, string> | undefined =
-    type === "date"
-      ? {
-        valueAsDate:
-          type === "date" && formContext.getValues(name) ? true : false,
-      }
-      : type === "number"
-        ? {
-          setValueAs: (v: string) => (v === "" ? undefined : parseInt(v, 10)),
-        }
-        : undefined;
 
   return (
     <div className="space-y-2">
@@ -70,7 +56,7 @@ const Input = ({
 
         {formContext ? (
           <input
-            {...formContext.register(name, options)}
+            {...formContext.register(name)}
             name={name}
             type={type}
             className={classNames(

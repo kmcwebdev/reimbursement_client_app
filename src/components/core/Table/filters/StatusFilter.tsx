@@ -1,13 +1,13 @@
 import { type Column, type Table } from "@tanstack/react-table";
-import { useEffect, useMemo, useState, type ChangeEvent } from "react";
+import { useEffect, useState, type ChangeEvent } from "react";
 import { FaCaretDown } from "react-icons-all-files/fa/FaCaretDown";
 import CollapseHeightAnimation from "~/components/animation/CollapseHeight";
+import { statusOptions } from "~/constants/status-options";
 import { type Reimbursement } from "..";
 import { Button } from "../../Button";
 import Popover from "../../Popover";
 import StatusBadge, { type StatusType } from "../../StatusBadge";
 import Checkbox from "../../form/fields/Checkbox";
-
 export interface FilterProps {
   column: Column<Reimbursement, unknown>;
   table: Table<Reimbursement>;
@@ -16,17 +16,19 @@ export interface FilterProps {
 const StatusFilter: React.FC<FilterProps> = ({
   column, // table,
 }) => {
-  const sortedUniqueValues = useMemo(
-    () => Array.from(column.getFacetedUniqueValues().keys()).sort() as string[],
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [column.getFacetedUniqueValues()],
-  );
+  useEffect(() => {
+    column.setFilterValue(statusOptions);
+  }, [column]);
 
   useEffect(() => {
-    column.setFilterValue(sortedUniqueValues);
-  }, [column, sortedUniqueValues]);
+    if (column.getFilterValue()) {
+      setChecked(column.getFilterValue() as string[]);
+    }
 
-  const [checked, setChecked] = useState(sortedUniqueValues);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [column.getFilterValue()]);
+
+  const [checked, setChecked] = useState(statusOptions);
 
   const onChange = (e: ChangeEvent<HTMLInputElement>, value: string) => {
     if (checked.includes(value)) {
@@ -47,8 +49,8 @@ const StatusFilter: React.FC<FilterProps> = ({
   };
 
   const showAll = () => {
-    setChecked(sortedUniqueValues);
-    column.setFilterValue(sortedUniqueValues);
+    setChecked(statusOptions);
+    column.setFilterValue(statusOptions);
   };
 
   return (
@@ -57,31 +59,19 @@ const StatusFilter: React.FC<FilterProps> = ({
       content={
         <div className="w-32 p-4">
           <div className="flex flex-col gap-2 capitalize">
-
-            <Checkbox
-              key="all"
-              label={<StatusBadge label="All" status="default" />}
-              name="all"
-              checked={checked.includes("all")}
-              disabled={checked.length === 1 && checked.includes("all")}
-              onChange={(e) => onChange(e, "all")}
-
-            />
-            {sortedUniqueValues &&
-              sortedUniqueValues.length > 0 &&
-              sortedUniqueValues.map((option: string) => (
-                <Checkbox
-                  key={option}
-                  label={<StatusBadge status={option as StatusType} />}
-                  name={option}
-                  checked={checked.includes(option)}
-                  disabled={checked.length === 1 && checked.includes(option)}
-                  onChange={(e) => onChange(e, option)}
-                />
-              ))}
+            {statusOptions.map((option: string) => (
+              <Checkbox
+                key={option}
+                label={<StatusBadge status={option as StatusType} />}
+                name={option}
+                checked={checked.includes(option)}
+                disabled={checked.length === 1 && checked.includes(option)}
+                onChange={(e) => onChange(e, option)}
+              />
+            ))}
 
             <CollapseHeightAnimation
-              isVisible={checked.length < sortedUniqueValues.length}
+              isVisible={checked.length < statusOptions.length}
             >
               <Button buttonType="text" onClick={showAll}>
                 Show All
