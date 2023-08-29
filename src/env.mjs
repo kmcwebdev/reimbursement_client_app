@@ -8,8 +8,6 @@ export const env = createEnv({
     process.env.SKIP_ENV_VALIDATION !== "0",
   isServer: typeof window === "undefined",
   server: {
-    PROPELAUTH_KMC_SOLUTIONS_ORG_ID: z.string().min(1),
-    PROPELAUTH_KMC_COMMUNITY_ORG_ID: z.string().min(1),
     PUSHER_APP_ID: z.string().min(1),
     PUSHER_APP_KEY: z.string().min(1),
     PUSHER_APP_SECRET: z.string().min(1),
@@ -22,10 +20,6 @@ export const env = createEnv({
     NEXT_PUBLIC_PUSHER_APP_KEY: z.string().min(1),
   },
   runtimeEnv: {
-    PROPELAUTH_KMC_SOLUTIONS_ORG_ID:
-      process.env.PROPELAUTH_KMC_SOLUTIONS_ORG_ID,
-    PROPELAUTH_KMC_COMMUNITY_ORG_ID:
-      process.env.PROPELAUTH_KMC_COMMUNITY_ORG_ID,
     PUSHER_APP_ID: process.env.PUSHER_APP_ID,
     PUSHER_APP_KEY: process.env.PUSHER_APP_KEY,
     PUSHER_APP_SECRET: process.env.PUSHER_APP_SECRET,
