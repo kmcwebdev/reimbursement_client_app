@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 import React from "react";
 import { type IconType } from "react-icons-all-files";
 import { MdDashboard } from "react-icons-all-files/md/MdDashboard";
+import { MdGavel } from "react-icons-all-files/md/MdGavel";
 import { MdPerson } from "react-icons-all-files/md/MdPerson";
 import { classNames } from "~/utils/classNames";
 interface NavItems {
@@ -19,6 +20,12 @@ const navItems: NavItems[] = [
     href: "/dashboard",
     Icon: MdDashboard as IconType,
   },
+
+  {
+    label: "For Approval",
+    href: "/approvals",
+    Icon: MdGavel as IconType,
+  },
   {
     label: "Profile",
     href: "/profile",
@@ -30,9 +37,8 @@ interface NavigationProps {
   collapsed: boolean;
 }
 const Navigation: React.FC<NavigationProps> = ({ collapsed }) => {
-
-  const navigation = useNavigation()
-  const { pathname } = useRouter()
+  const navigation = useNavigation();
+  const { pathname } = useRouter();
 
   return (
     <div className="flex flex-col gap-2">
