@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
   type ColumnDef,
   type ColumnFiltersState,
@@ -6,9 +7,11 @@ import {
 } from "@tanstack/react-table";
 import dynamic from "next/dynamic";
 import Head from "next/head";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
+import { useForm } from "react-hook-form";
 import { MdAccessTimeFilled } from "react-icons-all-files/md/MdAccessTimeFilled";
 import { MdCreditCard } from "react-icons-all-files/md/MdCreditCard";
+import { useAppDispatch, useAppSelector } from "~/app/hook";
 import PageAnimation from "~/components/animation/PageAnimation";
 import { Button } from "~/components/core/Button";
 import DashboardCard from "~/components/core/DashboardCard";
@@ -17,7 +20,16 @@ import Table, { type Reimbursement } from "~/components/core/table";
 import TableCheckbox from "~/components/core/table/TableCheckbox";
 import DateFiledFilter from "~/components/core/table/filters/DateFiledFilter";
 import { type FilterProps } from "~/components/core/table/filters/StatusFilter";
-import { useDialogState } from "~/hooks/use-dialog-state";
+import {
+  clearReimbursementForm,
+  toggleCancelDialog,
+  toggleFormDialog,
+} from "~/features/reimbursement-form-slice";
+import { reimbursementDetailsSchema } from "~/schema/reimbursement-details.schema";
+import {
+  type ReimbursementAttachmentsDTO,
+  type ReimbursementDetailsDTO,
+} from "~/types/reimbursement.types";
 import { currencyFormat } from "~/utils/currencyFormat";
 import { sampleData } from "~/utils/sampleData";
 
@@ -37,6 +49,14 @@ const ReimbursementTypeFilter = dynamic(
 );
 
 const EmployeeDashboard: React.FC = () => {
+  const {
+    activeStep,
+    formDialogIsOpen,
+    cancelDialogIsOpen,
+    reimbursementDetails,
+  } = useAppSelector((state) => state.reimbursementForm);
+  const dispatch = useAppDispatch();
+
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [pagination, setPagination] = useState<PaginationState>({
@@ -44,14 +64,23 @@ const EmployeeDashboard: React.FC = () => {
     pageSize: 10,
   });
 
-  const {
-    isVisible: reimburseFormIsVisible,
-    open: openReimburseForm,
-    close: closeReimburseForm,
-  } = useDialogState();
+  /***Closes the form and open cancel dialog */
+  const handleOpenCancelDialog = () => {
+    dispatch(toggleFormDialog());
+    dispatch(toggleCancelDialog());
+  };
 
-  //TODO: Move State to Redux store
-  const [activeStep, setActiveStep] = useState<number>(0);
+  /**Continue reimbursement request cancellation */
+  const handleConfirmCancellation = () => {
+    dispatch(clearReimbursementForm());
+    dispatch(toggleCancelDialog());
+  };
+
+  /**Aborts reimbursement request cancellation */
+  const handleAbortCancellation = () => {
+    dispatch(toggleCancelDialog());
+    dispatch(toggleFormDialog());
+  };
 
   const columns = React.useMemo<ColumnDef<Reimbursement>[]>(
     () => [
@@ -157,6 +186,29 @@ const EmployeeDashboard: React.FC = () => {
     [],
   );
 
+  //Form return for Details
+  const useReimbursementDetailsFormReturn = useForm<ReimbursementDetailsDTO>({
+    resolver: zodResolver(reimbursementDetailsSchema),
+    defaultValues: useMemo(() => {
+      if (reimbursementDetails) {
+        return { ...reimbursementDetails };
+      }
+    }, [reimbursementDetails]),
+    mode: "onChange",
+  });
+
+  //Form return for Attachments
+  const useReimbursementAttachmentsFormReturn =
+    useForm<ReimbursementAttachmentsDTO>({
+      resolver: zodResolver(reimbursementDetailsSchema),
+      // defaultValues: useMemo(() => {
+      //   if (reimbursementAttachments) {
+      //     return { ...reimbursementAttachments };
+      //   }
+      // }, [reimbursementAttachments]),
+      mode: "onChange",
+    });
+
   return (
     <>
       <Head>
@@ -180,7 +232,9 @@ const EmployeeDashboard: React.FC = () => {
 
           <div className="flex justify-between">
             <h4>Reimbursements</h4>
-            <Button onClick={openReimburseForm}>Reimburse</Button>
+            <Button onClick={() => dispatch(toggleFormDialog())}>
+              Reimburse
+            </Button>
           </div>
 
           <Table
@@ -201,13 +255,38 @@ const EmployeeDashboard: React.FC = () => {
 
         <Dialog
           title="File a Reimbursement"
-          isVisible={reimburseFormIsVisible}
-          close={closeReimburseForm}
+          isVisible={formDialogIsOpen}
+          close={handleOpenCancelDialog}
         >
           <ReimburseForm
-            activeStep={activeStep}
-            setActiveStep={setActiveStep}
+            formReturn={
+              activeStep === 0
+                ? useReimbursementDetailsFormReturn
+                : useReimbursementAttachmentsFormReturn
+            }
           />
+        </Dialog>
+
+        <Dialog
+          title="Cancel Reimbursements?"
+          isVisible={cancelDialogIsOpen}
+          close={handleAbortCancellation}
+        >
+          <div className="flex flex-col gap-8 pt-8">
+            <p className="text-neutral-default">
+              Are you sure you want to cancel reimbursement request?
+            </p>
+
+            <div className="flex justify-end">
+              <Button
+                variant="danger"
+                className="w-1/2"
+                onClick={handleConfirmCancellation}
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
         </Dialog>
       </PageAnimation>
     </>
