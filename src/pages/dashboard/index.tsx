@@ -11,7 +11,7 @@ interface DashboardSSRProps {
 }
 
 const EmployeeDashboard = dynamic(
-  () => import("~/components/dashboard/Employee"),
+  () => import("~/components/dashboard/employee"),
 );
 const FinanceDashboard = dynamic(
   () => import("~/components/dashboard/Finance"),

@@ -2,7 +2,7 @@ import { UserFromToken } from "@propelauth/nextjs/client";
 import { getUserFromServerSideProps } from "@propelauth/nextjs/server/pages";
 import { type NextPage, type GetServerSideProps } from "next";
 import Head from "next/head";
-import React from "react";
+import React, { Fragment } from "react";
 import { type IconType } from "react-icons-all-files";
 import { MdPerson } from "react-icons-all-files/md/MdPerson";
 import EmptyState from "~/components/core/EmptyState";
@@ -17,7 +17,7 @@ const UserManagement: NextPage<DashboardSSRProps> = (props) => {
   console.log(propel);
 
   return (
-    <>
+    <Fragment>
       <Head>
         <title>User Management</title>
       </Head>
@@ -30,7 +30,7 @@ const UserManagement: NextPage<DashboardSSRProps> = (props) => {
           <div className="bg-primary-normal h-10 w-32 rounded-md"></div>
         </EmptyState>
       </div>
-    </>
+    </Fragment>
   );
 };
 
