@@ -1,9 +1,9 @@
 import { UserFromToken } from "@propelauth/nextjs/client";
 import { getUserFromServerSideProps } from "@propelauth/nextjs/server/pages";
-import { type NextPage, type GetServerSideProps } from "next";
+import { type GetServerSideProps, type NextPage } from "next";
 import dynamic from "next/dynamic";
 import Head from "next/head";
-import React, { Fragment } from "react";
+import { Fragment } from "react";
 import { useUserAccessContext } from "~/context/AccessContext";
 
 interface DashboardSSRProps {
@@ -11,7 +11,7 @@ interface DashboardSSRProps {
 }
 
 const EmployeeDashboard = dynamic(
-  () => import("~/components/dashboard/Employee"),
+  () => import("~/components/dashboard/employee"),
 );
 const FinanceDashboard = dynamic(
   () => import("~/components/dashboard/Finance"),
