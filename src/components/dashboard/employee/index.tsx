@@ -13,10 +13,10 @@ import PageAnimation from "~/components/animation/PageAnimation";
 import { Button } from "~/components/core/Button";
 import DashboardCard from "~/components/core/DashboardCard";
 import StatusBadge, { type StatusType } from "~/components/core/StatusBadge";
-import Table, { type Reimbursement } from "~/components/core/Table";
-import TableCheckbox from "~/components/core/Table/TableCheckbox";
-import DateFiledFilter from "~/components/core/Table/filters/DateFiledFilter";
-import { type FilterProps } from "~/components/core/Table/filters/StatusFilter";
+import Table, { type Reimbursement } from "~/components/core/table";
+import TableCheckbox from "~/components/core/table/TableCheckbox";
+import DateFiledFilter from "~/components/core/table/filters/DateFiledFilter";
+import { type FilterProps } from "~/components/core/table/filters/StatusFilter";
 import { useDialogState } from "~/hooks/use-dialog-state";
 import { currencyFormat } from "~/utils/currencyFormat";
 import { sampleData } from "~/utils/sampleData";
@@ -24,13 +24,13 @@ import { sampleData } from "~/utils/sampleData";
 const Dialog = dynamic(() => import("~/components/core/Dialog"));
 const ReimburseForm = dynamic(() => import("./reimburse-form"));
 const StatusFilter = dynamic(
-  () => import("~/components/core/Table/filters/StatusFilter"),
+  () => import("~/components/core/table/filters/StatusFilter"),
 );
 const ExpenseTypeFilter = dynamic(
-  () => import("~/components/core/Table/filters/ExpenseTypeFilter"),
+  () => import("~/components/core/table/filters/ExpenseTypeFilter"),
 );
 const ReimbursementTypeFilter = dynamic(
-  () => import("~/components/core/Table/filters/ReimbursementTypeFilter"),
+  () => import("~/components/core/table/filters/ReimbursementTypeFilter"),
 );
 
 const EmployeeDashboard: React.FC = () => {

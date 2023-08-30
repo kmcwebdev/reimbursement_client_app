@@ -12,22 +12,22 @@ import { MdCreditCard } from "react-icons-all-files/md/MdCreditCard";
 import { MdSearch } from "react-icons-all-files/md/MdSearch";
 import { Button } from "~/components/core/Button";
 import DashboardCard from "~/components/core/DashboardCard";
-import Table, { type Reimbursement } from "~/components/core/Table";
-import { type FilterProps } from "~/components/core/Table/filters/StatusFilter";
+import Table, { type Reimbursement } from "~/components/core/table";
+import { type FilterProps } from "~/components/core/table/filters/StatusFilter";
 import { currencyFormat } from "~/utils/currencyFormat";
 import { sampleData } from "~/utils/sampleData";
 import PageAnimation from "../animation/PageAnimation";
 import StatusBadge, { type StatusType } from "../core/StatusBadge";
-import TableCheckbox from "../core/Table/TableCheckbox";
-import DateFiledFilter from "../core/Table/filters/DateFiledFilter";
-import ExpenseTypeFilter from "../core/Table/filters/ExpenseTypeFilter";
 import Input from "../core/form/fields/Input";
+import TableCheckbox from "../core/table/TableCheckbox";
+import DateFiledFilter from "../core/table/filters/DateFiledFilter";
+import ExpenseTypeFilter from "../core/table/filters/ExpenseTypeFilter";
 
 const ReimbursementTypeFilter = dynamic(
-  () => import("../core/Table/filters/ReimbursementTypeFilter"),
+  () => import("../core/table/filters/ReimbursementTypeFilter"),
 );
 const StatusFilter = dynamic(
-  () => import("../core/Table/filters/StatusFilter"),
+  () => import("../core/table/filters/StatusFilter"),
 );
 
 const EmployeeDashboard: React.FC = () => {

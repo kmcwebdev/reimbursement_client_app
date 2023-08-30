@@ -1,4 +1,4 @@
-import { type Reimbursement } from "~/components/core/Table";
+import { type Reimbursement } from "~/components/core/table";
 
 export const sampleData: Reimbursement[] = [
   {
