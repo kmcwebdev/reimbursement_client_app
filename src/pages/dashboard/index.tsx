@@ -1,17 +1,17 @@
-import { useLogoutFunction } from "@propelauth/nextjs/client";
+import { UserFromToken } from "@propelauth/nextjs/client";
 import { getUserFromServerSideProps } from "@propelauth/nextjs/server/pages";
-import {
-  type NextPage,
-  type GetServerSideProps,
-  type InferGetServerSidePropsType,
-} from "next";
+import { type NextPage, type GetServerSideProps } from "next";
 import dynamic from "next/dynamic";
 import Head from "next/head";
-import React from "react";
+import React, { Fragment } from "react";
 import { useUserAccessContext } from "~/context/AccessContext";
 
+interface DashboardSSRProps {
+  userJson: string;
+}
+
 const EmployeeDashboard = dynamic(
-  () => import("~/components/dashboard/employee"),
+  () => import("~/components/dashboard/Employee"),
 );
 const FinanceDashboard = dynamic(
   () => import("~/components/dashboard/Finance"),
@@ -21,27 +21,23 @@ const ManagerDashboard = dynamic(
   () => import("~/components/dashboard/Manager"),
 );
 
-const Dashboard: NextPage<
-  InferGetServerSidePropsType<typeof getServerSideProps>
-> = (ssrprops) => {
+const Dashboard: NextPage<DashboardSSRProps> = (props) => {
   const { user } = useUserAccessContext();
-  const logoutFn = useLogoutFunction();
 
-  console.log(ssrprops.userJson);
+  const propel = UserFromToken.fromJSON(props.userJson);
+
+  console.log(propel);
 
   return (
-    <>
+    <Fragment>
       <Head>
         <title>Dashboard</title>
       </Head>
-
       {user && user.role === "employee" && <EmployeeDashboard />}
       {user && user.role === "hrbp" && <HrbpDashboard />}
       {user && user.role === "finance" && <FinanceDashboard />}
       {user && user.role === "manager" && <ManagerDashboard />}
-
-      <button onClick={() => void logoutFn()}>Logout</button>
-    </>
+    </Fragment>
   );
 };
 
@@ -49,6 +45,7 @@ export default Dashboard;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const user = await getUserFromServerSideProps(context);
+  // const accessToken = context.req.cookies?.__pa_at;
 
   if (!user) {
     return {

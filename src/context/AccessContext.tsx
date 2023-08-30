@@ -1,13 +1,9 @@
-import { useUser } from "@propelauth/nextjs/client";
-import dynamic from "next/dynamic";
 import React, {
   createContext,
   useContext,
   useState,
   type PropsWithChildren,
 } from "react";
-
-const AuthLoader = dynamic(() => import("~/components/loaders/AuthLoader"));
 
 const users: IUserData[] = [
   {
@@ -41,35 +37,19 @@ export interface IUserData {
 }
 
 interface IUserAccessCtx {
-  handleLogout: () => Promise<void>;
   user: IUserData | null;
   changeUser: (role: IRole) => void;
 }
 
 const UserAccessContext = createContext<IUserAccessCtx>({
-  // eslint-disable-next-line @typescript-eslint/require-await
-  handleLogout: async () => console.log("logged out"),
   user: users[0],
   changeUser: () => console.log("changed user"),
 });
 
-export const useUserAccessContext = () => {
-  return useContext(UserAccessContext);
-};
-
 export const UserAccessProvider: React.FC<PropsWithChildren> = ({
   children,
 }) => {
-  const { loading } = useUser();
-
   const [user, setUser] = useState<IUserData | null>(users[0]);
-  // const [isAuthenticated, setIsAuthenticated] = useState(true);
-
-  // const login = (userData: IUserData) => {
-  //   // Implement login logic, set user and isAuthenticated
-  //   setUser(userData);
-  //   setIsAuthenticated(true);
-  // };
 
   const changeUser = (role: IRole) => {
     const u = users.find((a) => a.role === role);
@@ -79,24 +59,13 @@ export const UserAccessProvider: React.FC<PropsWithChildren> = ({
     }
   };
 
-  // eslint-disable-next-line @typescript-eslint/require-await
-  const logout = async () => {
-    // Implement logout logic, clear user and isAuthenticated
-    setUser(users[0]);
-    // setIsAuthenticated(false);
-  };
-
-  const handleLogout = async () => {
-    await logout();
-  };
-
-  if (loading) {
-    return <AuthLoader />;
-  }
-
   return (
-    <UserAccessContext.Provider value={{ handleLogout, user, changeUser }}>
+    <UserAccessContext.Provider value={{ user, changeUser }}>
       {children}
     </UserAccessContext.Provider>
   );
+};
+
+export const useUserAccessContext = () => {
+  return useContext(UserAccessContext);
 };

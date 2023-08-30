@@ -1,3 +1,5 @@
+import { getUserFromServerSideProps } from "@propelauth/nextjs/server/pages";
+import { type GetServerSideProps } from "next";
 import Head from "next/head";
 import React from "react";
 import { type IconType } from "react-icons-all-files";
@@ -24,3 +26,23 @@ const UserManagement: React.FC = () => {
 };
 
 export default UserManagement;
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const user = await getUserFromServerSideProps(context);
+  // const accessToken = context.req.cookies?.__pa_at;
+
+  if (!user) {
+    return {
+      redirect: {
+        destination: "/api/auth/login",
+        permanent: false,
+      },
+    };
+  }
+
+  return {
+    props: {
+      userJson: JSON.stringify(user),
+    },
+  };
+};
