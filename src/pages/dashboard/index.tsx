@@ -3,7 +3,7 @@ import { getUserFromServerSideProps } from "@propelauth/nextjs/server/pages";
 import { type NextPage, type GetServerSideProps } from "next";
 import dynamic from "next/dynamic";
 import Head from "next/head";
-import React from "react";
+import React, { Fragment } from "react";
 import { useUserAccessContext } from "~/context/AccessContext";
 
 interface DashboardSSRProps {
@@ -11,7 +11,7 @@ interface DashboardSSRProps {
 }
 
 const EmployeeDashboard = dynamic(
-  () => import("~/components/dashboard/employee"),
+  () => import("~/components/dashboard/Employee"),
 );
 const FinanceDashboard = dynamic(
   () => import("~/components/dashboard/Finance"),
@@ -29,16 +29,15 @@ const Dashboard: NextPage<DashboardSSRProps> = (props) => {
   console.log(propel);
 
   return (
-    <>
+    <Fragment>
       <Head>
         <title>Dashboard</title>
       </Head>
-
       {user && user.role === "employee" && <EmployeeDashboard />}
       {user && user.role === "hrbp" && <HrbpDashboard />}
       {user && user.role === "finance" && <FinanceDashboard />}
       {user && user.role === "manager" && <ManagerDashboard />}
-    </>
+    </Fragment>
   );
 };
 
@@ -46,6 +45,7 @@ export default Dashboard;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const user = await getUserFromServerSideProps(context);
+  // const accessToken = context.req.cookies?.__pa_at;
 
   if (!user) {
     return {

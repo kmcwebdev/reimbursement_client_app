@@ -1,13 +1,9 @@
-import { useUser } from "@propelauth/nextjs/client";
-import dynamic from "next/dynamic";
 import React, {
   createContext,
   useContext,
   useState,
   type PropsWithChildren,
 } from "react";
-
-const AuthLoader = dynamic(() => import("~/components/loaders/AuthLoader"));
 
 const users: IUserData[] = [
   {
@@ -53,7 +49,6 @@ const UserAccessContext = createContext<IUserAccessCtx>({
 export const UserAccessProvider: React.FC<PropsWithChildren> = ({
   children,
 }) => {
-  const { loading } = useUser();
   const [user, setUser] = useState<IUserData | null>(users[0]);
 
   const changeUser = (role: IRole) => {
@@ -63,10 +58,6 @@ export const UserAccessProvider: React.FC<PropsWithChildren> = ({
       setUser(u);
     }
   };
-
-  if (loading) {
-    return <AuthLoader />;
-  }
 
   return (
     <UserAccessContext.Provider value={{ user, changeUser }}>
