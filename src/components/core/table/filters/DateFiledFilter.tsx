@@ -8,9 +8,7 @@ import Popover from "../../Popover";
 import Input from "../../form/fields/Input";
 import { type FilterProps } from "./StatusFilter";
 
-const DateFiledFilter: React.FC<FilterProps> = ({
-  column, // table,
-}) => {
+const DateFiledFilter: React.FC<FilterProps> = ({ column }) => {
   useEffect(() => {
     column.setFilterValue(undefined);
   }, [column]);
