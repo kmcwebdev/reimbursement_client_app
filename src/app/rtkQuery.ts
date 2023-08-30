@@ -16,10 +16,10 @@ const appApiBaseQuery = fetchBaseQuery({
   baseUrl: env.NEXT_PUBLIC_BASE_URL,
   credentials: "include",
   prepareHeaders: (headers, { getState }) => {
-    const userState = getState() as RootState;
+    const state = getState() as RootState;
 
-    if (userState.user.accessToken) {
-      headers.set("authorization", `Bearer ${userState.user.accessToken}`);
+    if (state.session.accessToken) {
+      headers.set("authorization", `Bearer ${state.session.accessToken}`);
     }
 
     return headers;

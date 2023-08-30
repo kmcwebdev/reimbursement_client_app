@@ -7,7 +7,7 @@ import { appApiSlice } from "./rtkQuery";
 const store = configureStore({
   reducer: {
     [appApiSlice.reducerPath]: appApiSlice.reducer,
-    user: userReducer,
+    session: userReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(appApiSlice.middleware),
