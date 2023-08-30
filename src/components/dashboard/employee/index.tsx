@@ -20,9 +20,10 @@ import { type FilterProps } from "~/components/core/table/filters/StatusFilter";
 import { useDialogState } from "~/hooks/use-dialog-state";
 import { currencyFormat } from "~/utils/currencyFormat";
 import { sampleData } from "~/utils/sampleData";
+import ReimburseForm from "./reimburse-form";
 
 const Dialog = dynamic(() => import("~/components/core/Dialog"));
-const ReimburseForm = dynamic(() => import("./reimburse-form"));
+
 const StatusFilter = dynamic(
   () => import("~/components/core/table/filters/StatusFilter"),
 );
