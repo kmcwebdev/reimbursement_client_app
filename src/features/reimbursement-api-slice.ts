@@ -39,4 +39,8 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
   }),
 });
 
-export const {} = reimbursementApiSlice;
+export const {
+  useGetAllRequestsQuery,
+  useRequestTypesQuery,
+  useExpenseTypesQuery,
+} = reimbursementApiSlice;
