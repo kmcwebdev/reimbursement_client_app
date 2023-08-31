@@ -15,6 +15,7 @@ import CardSelection, {
 } from "~/components/core/form/fields/CardSelection";
 import Input from "~/components/core/form/fields/Input";
 import Select, { type OptionData } from "~/components/core/form/fields/Select";
+import { useRequestTypesQuery } from "~/features/reimbursement-api-slice";
 import {
   setActiveStep,
   setReimbursementDetails,
@@ -35,6 +36,7 @@ const ReimbursementDetailsForm: React.FC<ReimbursementDetailsFormProps> = ({
 
   const [selectedType, setSelectedType] = useState<number>();
   const [selectedExpense, setSelectedExpense] = useState<string>();
+  const { data } = useRequestTypesQuery();
 
   useMemo(() => {
     if (reimbursementDetails) {
@@ -80,10 +82,16 @@ const ReimbursementDetailsForm: React.FC<ReimbursementDetailsFormProps> = ({
         name="type"
         required
         handleChange={handleTypeChange}
-        options={[
-          { label: "Scheduled", value: 0, icon: MdAccessTime as IconType },
-          { label: "Unscheduled", value: 1, icon: MdAccessTime as IconType },
-        ]}
+        options={
+          data?.map((item) => ({
+            label: item.request_type,
+            value: item.reimbursement_request_type_id,
+            icon:
+              item.request_type === "Scheduled"
+                ? (MdAccessTime as IconType)
+                : (MdAccessTime as IconType),
+          })) || []
+        }
       />
 
       <Select
