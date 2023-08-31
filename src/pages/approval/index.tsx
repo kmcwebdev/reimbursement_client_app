@@ -1,6 +1,7 @@
+import { type NextPage } from "next";
 import React from "react";
 
-const Approvals: React.FC = () => {
+const Approvals: NextPage = () => {
   return <>React FCC</>;
 };
 
