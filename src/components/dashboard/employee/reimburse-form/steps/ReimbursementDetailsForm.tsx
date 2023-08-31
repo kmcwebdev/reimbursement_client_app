@@ -15,7 +15,10 @@ import CardSelection, {
 } from "~/components/core/form/fields/CardSelection";
 import Input from "~/components/core/form/fields/Input";
 import Select, { type OptionData } from "~/components/core/form/fields/Select";
-import { useRequestTypesQuery } from "~/features/reimbursement-api-slice";
+import {
+  useExpenseTypesQuery,
+  useRequestTypesQuery,
+} from "~/features/reimbursement-api-slice";
 import {
   setActiveStep,
   setReimbursementDetails,
@@ -34,9 +37,15 @@ const ReimbursementDetailsForm: React.FC<ReimbursementDetailsFormProps> = ({
   );
   const dispatch = useAppDispatch();
 
-  const [selectedType, setSelectedType] = useState<number>();
+  const [selectedType, setSelectedType] = useState<string>();
   const [selectedExpense, setSelectedExpense] = useState<string>();
-  const { isLoading, data } = useRequestTypesQuery();
+  const { isLoading: requestTypesIsLoading, data: requestTypes } =
+    useRequestTypesQuery();
+  const { isLoading: expenseTypesIsLoading, data: expenseTypes } =
+    useExpenseTypesQuery(
+      { request_type_id: selectedType! },
+      { skip: !selectedType },
+    );
 
   useMemo(() => {
     if (reimbursementDetails) {
@@ -56,9 +65,9 @@ const ReimbursementDetailsForm: React.FC<ReimbursementDetailsFormProps> = ({
   };
 
   const handleTypeChange = (e: CardSelectionOption) => {
-    setSelectedType(+e.value);
+    setSelectedType(e.value);
 
-    if (e.value === 1) {
+    if (e.value === "9850f2aa-40c4-4fd5-8708-c8edf734d83f") {
       append({ email: "" });
     } else {
       formReturn.setValue("approvers", []);
@@ -82,9 +91,9 @@ const ReimbursementDetailsForm: React.FC<ReimbursementDetailsFormProps> = ({
         name="type"
         required
         handleChange={handleTypeChange}
-        loading={isLoading}
+        loading={requestTypesIsLoading}
         options={
-          data?.map((item) => ({
+          requestTypes?.map((item) => ({
             label: item.request_type,
             value: item.reimbursement_request_type_id,
             icon:
@@ -101,10 +110,13 @@ const ReimbursementDetailsForm: React.FC<ReimbursementDetailsFormProps> = ({
         placeholder="Type of expense"
         required
         onChangeEvent={handleExpenseTypeChange}
-        options={[
-          { label: "Meal", value: "Meal" },
-          { label: "Others", value: "others" },
-        ]}
+        isLoading={expenseTypesIsLoading}
+        options={
+          expenseTypes?.map((item) => ({
+            label: item.expense_type,
+            value: item.expense_type_id,
+          })) ?? []
+        }
       />
 
       <CollapseHeightAnimation
@@ -127,7 +139,11 @@ const ReimbursementDetailsForm: React.FC<ReimbursementDetailsFormProps> = ({
         step={0.01}
       />
 
-      <CollapseHeightAnimation isVisible={selectedType === 1 ? true : false}>
+      <CollapseHeightAnimation
+        isVisible={
+          selectedType === "9850f2aa-40c4-4fd5-8708-c8edf734d83f" ? true : false
+        }
+      >
         <label className="text-xs font-semibold text-neutral-800">
           Approvers
         </label>

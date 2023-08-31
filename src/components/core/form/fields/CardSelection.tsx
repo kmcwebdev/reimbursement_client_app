@@ -5,7 +5,7 @@ import { classNames } from "~/utils/classNames";
 
 export type CardSelectionOption = {
   icon: IconType;
-  value: string | number;
+  value: string;
   label: string;
 };
 
@@ -19,7 +19,7 @@ export interface CardSelectionProps
   options: CardSelectionOption[];
   label: string;
   handleChange: (e: CardSelectionOption) => void;
-  defaultValue?: string | number;
+  defaultValue?: string;
   placeholder?: string;
   name: string;
   required?: boolean;
