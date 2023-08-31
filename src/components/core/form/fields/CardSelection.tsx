@@ -15,6 +15,7 @@ export interface CardSelectionProps
     HTMLDivElement
   > {
   selected?: CardSelectionOption;
+  loading?: boolean;
   options: CardSelectionOption[];
   label: string;
   handleChange: (e: CardSelectionOption) => void;
@@ -29,6 +30,7 @@ const CardSelection = React.forwardRef<HTMLDivElement, CardSelectionProps>(
     {
       handleChange,
       label,
+      loading,
       options,
       defaultValue,
       name,
@@ -65,6 +67,10 @@ const CardSelection = React.forwardRef<HTMLDivElement, CardSelectionProps>(
       formContext && formContext.setValue(name, e.value);
       setSelected(e);
     };
+
+    if (loading) {
+      return "Loading...";
+    }
 
     return (
       <div>

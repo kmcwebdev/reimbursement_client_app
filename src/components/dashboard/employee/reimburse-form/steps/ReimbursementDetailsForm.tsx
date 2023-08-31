@@ -36,7 +36,7 @@ const ReimbursementDetailsForm: React.FC<ReimbursementDetailsFormProps> = ({
 
   const [selectedType, setSelectedType] = useState<number>();
   const [selectedExpense, setSelectedExpense] = useState<string>();
-  const { data } = useRequestTypesQuery();
+  const { isLoading, data } = useRequestTypesQuery();
 
   useMemo(() => {
     if (reimbursementDetails) {
@@ -82,6 +82,7 @@ const ReimbursementDetailsForm: React.FC<ReimbursementDetailsFormProps> = ({
         name="type"
         required
         handleChange={handleTypeChange}
+        loading={isLoading}
         options={
           data?.map((item) => ({
             label: item.request_type,
@@ -90,7 +91,7 @@ const ReimbursementDetailsForm: React.FC<ReimbursementDetailsFormProps> = ({
               item.request_type === "Scheduled"
                 ? (MdAccessTime as IconType)
                 : (MdAccessTime as IconType),
-          })) || []
+          })) ?? []
         }
       />
 

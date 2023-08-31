@@ -29,7 +29,7 @@ const options = [
 const ProfileMenu: React.FC = () => {
   const { user: tempUser, changeUser } = useUserAccessContext();
 
-  const [user] = useAppSelector((state) => [state.session.user]);
+  const user = useAppSelector((state) => state.session.user);
 
   const navigation = useRouter();
   return (
