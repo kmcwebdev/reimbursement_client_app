@@ -29,6 +29,8 @@ interface ReimbursementDetailsFormProps {
   formReturn: UseFormReturn<ReimbursementDetailsDTO>;
 }
 
+const UNSCHEDULED = "9850f2aa-40c4-4fd5-8708-c8edf734d83f";
+
 const ReimbursementDetailsForm: React.FC<ReimbursementDetailsFormProps> = ({
   formReturn,
 }) => {
@@ -67,7 +69,7 @@ const ReimbursementDetailsForm: React.FC<ReimbursementDetailsFormProps> = ({
   const handleTypeChange = (e: CardSelectionOption) => {
     setSelectedType(e.value);
 
-    if (e.value === "9850f2aa-40c4-4fd5-8708-c8edf734d83f") {
+    if (e.value === UNSCHEDULED) {
       append({ email: "" });
     } else {
       formReturn.setValue("approvers", []);
@@ -140,9 +142,7 @@ const ReimbursementDetailsForm: React.FC<ReimbursementDetailsFormProps> = ({
       />
 
       <CollapseHeightAnimation
-        isVisible={
-          selectedType === "9850f2aa-40c4-4fd5-8708-c8edf734d83f" ? true : false
-        }
+        isVisible={selectedType === UNSCHEDULED ? true : false}
       >
         <label className="text-xs font-semibold text-neutral-800">
           Approvers
