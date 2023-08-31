@@ -5,7 +5,7 @@ import { classNames } from "~/utils/classNames";
 
 export type CardSelectionOption = {
   icon: IconType;
-  value: string | number;
+  value: string;
   label: string;
 };
 
@@ -15,10 +15,11 @@ export interface CardSelectionProps
     HTMLDivElement
   > {
   selected?: CardSelectionOption;
+  loading?: boolean;
   options: CardSelectionOption[];
   label: string;
   handleChange: (e: CardSelectionOption) => void;
-  defaultValue?: string | number;
+  defaultValue?: string;
   placeholder?: string;
   name: string;
   required?: boolean;
@@ -29,6 +30,7 @@ const CardSelection = React.forwardRef<HTMLDivElement, CardSelectionProps>(
     {
       handleChange,
       label,
+      loading,
       options,
       defaultValue,
       name,
@@ -43,10 +45,10 @@ const CardSelection = React.forwardRef<HTMLDivElement, CardSelectionProps>(
 
     useEffect(() => {
       if (formContext && selected) {
-        formContext.setValue(name, selected.value)
+        formContext.setValue(name, selected.value);
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [formContext, selected])
+    }, [formContext, selected]);
 
     useEffect(() => {
       if (options && defaultValue) {
@@ -62,9 +64,14 @@ const CardSelection = React.forwardRef<HTMLDivElement, CardSelectionProps>(
 
     const handleClick = (e: CardSelectionOption) => {
       handleChange(e);
-      formContext && formContext.setValue(name, e.value)
+      formContext && formContext.setValue(name, e.value);
       setSelected(e);
     };
+
+    // TODO: Improve loading state
+    if (loading) {
+      return "Loading...";
+    }
 
     return (
       <div>
@@ -82,7 +89,7 @@ const CardSelection = React.forwardRef<HTMLDivElement, CardSelectionProps>(
           {formContext ? (
             <div
               {...formContext.register(name)}
-              className="mt-2 inline-flex flex-1 overflow-hidden gap-4"
+              className="mt-2 inline-flex flex-1 gap-4 overflow-hidden"
               {...rest}
               ref={ref}
             >
@@ -164,16 +171,15 @@ const CardSelection = React.forwardRef<HTMLDivElement, CardSelectionProps>(
               })}
             </div>
           )}
-
-
         </div>
-        {formContext && formContext.formState.errors && formContext.formState.errors[name] && formContext.formState.errors[name]?.message && (
-          <p className="mt-1 text-sm text-danger-default">
-            {formContext.formState.errors[name]?.message as string}
-          </p>
-        )}
-
-
+        {formContext &&
+          formContext.formState.errors &&
+          formContext.formState.errors[name] &&
+          formContext.formState.errors[name]?.message && (
+            <p className="mt-1 text-sm text-danger-default">
+              {formContext.formState.errors[name]?.message as string}
+            </p>
+          )}
       </div>
     );
   },

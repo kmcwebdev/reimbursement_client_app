@@ -1,5 +1,5 @@
 export type ReimbursementDetailsDTO = {
-  type: number;
+  type: string;
   expense: string;
   remarks?: string;
   total: number;

@@ -5,7 +5,6 @@ import Head from "next/head";
 import { Fragment } from "react";
 import store from "~/app/store";
 import { useUserAccessContext } from "~/context/AccessContext";
-import { useRequestTypesQuery } from "~/features/reimbursement-api-slice";
 import { setAccessToken } from "~/features/user-slice";
 
 interface DashboardSSRProps {
@@ -25,7 +24,6 @@ const ManagerDashboard = dynamic(
 
 const Dashboard: NextPage<DashboardSSRProps> = () => {
   const { user } = useUserAccessContext();
-  const {} = useRequestTypesQuery();
 
   // const propel = UserFromToken.fromJSON(props.userJson);
 
