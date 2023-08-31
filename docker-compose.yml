@@ -9,11 +9,13 @@ services:
       context: .
       args:
         NODE_ENV: "production"
-        PROPELAUTH_REDIRECT_URI: "http://localhost:3000/api/auth/callback"
         NEXT_PUBLIC_ENVIRONMENT: "production"
-        NEXT_PUBLIC_PUSHER_APP_KEY: "affa5695ab0f6d72e6b5"
-        NEXT_PUBLIC_APP_URL: "http://localhost:3000"
-        NEXT_PUBLIC_AUTH_URL: "https://171091628.propelauthtest.com"
+        PROPELAUTH_API_KEY: ${PROPELAUTH_API_KEY}
+        PROPELAUTH_VERIFIER_KEY: ${PROPELAUTH_VERIFIER_KEY}
+        PROPELAUTH_REDIRECT_URI: ${PROPELAUTH_REDIRECT_URI}
+        NEXT_PUBLIC_PUSHER_APP_KEY: ${PUSHER_APP_KEY}
+        NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL}
+        NEXT_PUBLIC_AUTH_URL: ${NEXT_PUBLIC_AUTH_URL}
 
     ports:
       - 3000:3000
