@@ -1,4 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
+import {
+  type ColumnDef,
+  type ColumnFiltersState,
+  type PaginationState,
+} from "@tanstack/react-table";
+import dynamic from "next/dynamic";
+import Head from "next/head";
 import React, { useState } from "react";
 import { AiOutlinePause } from "react-icons-all-files/ai/AiOutlinePause";
 import { AiOutlineSearch } from "react-icons-all-files/ai/AiOutlineSearch";
@@ -6,25 +13,22 @@ import { MdAccessTimeFilled } from "react-icons-all-files/md/MdAccessTimeFilled"
 import { MdGavel } from "react-icons-all-files/md/MdGavel";
 import { Button } from "~/components/core/Button";
 import DashboardCard from "~/components/core/DashboardCard";
-import Table, { type Reimbursement } from "~/components/core/Table";
-import { type FilterProps } from "~/components/core/Table/filters/StatusFilter";
 import ButtonGroup from "~/components/core/form/fields/ButtonGroup";
 import Input from "~/components/core/form/fields/Input";
+import Table, { type Reimbursement } from "~/components/core/table";
 import { currencyFormat } from "~/utils/currencyFormat";
 import { sampleData } from "~/utils/sampleData";
 import PageAnimation from "../animation/PageAnimation";
-import TableCheckbox from "../core/Table/TableCheckbox";
-import DateFiledFilter from "../core/Table/filters/DateFiledFilter";
-import ExpenseTypeFilter from "../core/Table/filters/ExpenseTypeFilter";
-import dynamic from "next/dynamic";
-import { type ColumnDef, type ColumnFiltersState, type PaginationState } from "@tanstack/react-table";
-import Head from "next/head";
+import TableCheckbox from "../core/table/TableCheckbox";
+import DateFiledFilter from "../core/table/filters/DateFiledFilter";
+import ExpenseTypeFilter from "../core/table/filters/ExpenseTypeFilter";
+import { type FilterProps } from "../core/table/filters/StatusFilter";
 
 const ReimbursementTypeFilter = dynamic(
-  () => import("../core/Table/filters/ReimbursementTypeFilter"),
+  () => import("../core/table/filters/ReimbursementTypeFilter"),
 );
 const ClientFilter = dynamic(
-  () => import("../core/Table/filters/ClientFilter"),
+  () => import("../core/table/filters/ClientFilter"),
 );
 
 const FinanceDashboard: React.FC = () => {
@@ -70,7 +74,7 @@ const FinanceDashboard: React.FC = () => {
           return value.includes(row.getValue(id));
         },
         meta: {
-          filterComponent: (info:FilterProps)=><ClientFilter {...info}/>,
+          filterComponent: (info: FilterProps) => <ClientFilter {...info} />,
         },
       },
       {
@@ -100,7 +104,9 @@ const FinanceDashboard: React.FC = () => {
           return value.includes(row.getValue(id));
         },
         meta: {
-          filterComponent: (info:FilterProps)=><ReimbursementTypeFilter {...info}/>,
+          filterComponent: (info: FilterProps) => (
+            <ReimbursementTypeFilter {...info} />
+          ),
         },
       },
       {
@@ -144,7 +150,7 @@ const FinanceDashboard: React.FC = () => {
     ],
     [],
   );
-  
+
   return (
     <>
       <Head>
@@ -153,7 +159,7 @@ const FinanceDashboard: React.FC = () => {
       <PageAnimation>
         <div className="grid gap-y-2 p-5">
           {/* card */}
-          <div className="flex gap-4 place-items-start mb-5">
+          <div className="mb-5 flex place-items-start gap-4">
             <DashboardCard
               icon={<MdGavel className="h-5 w-5 text-[#D89B0D]" />}
               label="Pending Approval"
@@ -173,30 +179,38 @@ const FinanceDashboard: React.FC = () => {
           </div>
 
           {/* table */}
-            <div className="flex justify-between">
-              <h4>For Processing</h4>
-              <div className="flex gap-2">
-                <Input name="inputText" placeholder="Find anything..." icon={AiOutlineSearch} />
-                
-                <Button variant="neutral" buttonType='outlined'>Hold</Button>
-                <Button variant="danger"  buttonType='outlined'>Reject</Button>
-                <Button variant="success">Download Report</Button>
-              </div>
-            </div>
-            
-            <div className="w-52">
-              <ButtonGroup
-                handleChange={(e) => console.log(e)}
-                label=""
-                name=""
-                options={[
-                  { label: "Pending", value: "Pending" },
-                  { label: "On-Hold", value: "On-Hold" },
-                ]}
+          <div className="flex justify-between">
+            <h4>For Processing</h4>
+            <div className="flex gap-2">
+              <Input
+                name="inputText"
+                placeholder="Find anything..."
+                icon={AiOutlineSearch}
               />
-            </div>
 
-            <Table
+              <Button variant="neutral" buttonType="outlined">
+                Hold
+              </Button>
+              <Button variant="danger" buttonType="outlined">
+                Reject
+              </Button>
+              <Button variant="success">Download Report</Button>
+            </div>
+          </div>
+
+          <div className="w-52">
+            <ButtonGroup
+              handleChange={(e) => console.log(e)}
+              label=""
+              name=""
+              options={[
+                { label: "Pending", value: "Pending" },
+                { label: "On-Hold", value: "On-Hold" },
+              ]}
+            />
+          </div>
+
+          <Table
             data={sampleData}
             columns={columns}
             tableState={{ pagination, selectedItems, columnFilters }}

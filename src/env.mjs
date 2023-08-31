@@ -19,6 +19,8 @@ export const env = createEnv({
   },
   client: {
     NEXT_PUBLIC_ENVIRONMENT: z.enum(["development", "production"]),
+    NEXT_PUBLIC_APP_URL: z.string().url(),
+    NEXT_PUBLIC_BASE_URL: z.string().url(),
     NEXT_PUBLIC_AUTH_URL: z.string().url(),
     NEXT_PUBLIC_PUSHER_APP_KEY: z.string().min(1),
   },
@@ -32,6 +34,8 @@ export const env = createEnv({
     PROPELAUTH_VERIFIER_KEY: process.env.PROPELAUTH_VERIFIER_KEY,
     PROPELAUTH_REDIRECT_URI: process.env.PROPELAUTH_REDIRECT_URI,
     NEXT_PUBLIC_ENVIRONMENT: process.env.NEXT_PUBLIC_ENVIRONMENT,
+    NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
+    NEXT_PUBLIC_BASE_URL: process.env.NEXT_PUBLIC_BASE_URL,
     NEXT_PUBLIC_AUTH_URL: process.env.NEXT_PUBLIC_AUTH_URL,
     NEXT_PUBLIC_PUSHER_APP_KEY: process.env.NEXT_PUBLIC_PUSHER_APP_KEY,
   },

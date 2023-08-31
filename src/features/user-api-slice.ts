@@ -1,7 +1,7 @@
-import { appApiSlice } from "~/app/api";
+import { appApiSlice } from "~/app/rtkQuery";
 
 export const userApiSlice = appApiSlice.injectEndpoints({
-  endpoints: () => ({})
+  endpoints: () => ({}),
 });
 
 export const {} = userApiSlice;

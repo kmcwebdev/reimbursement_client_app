@@ -1,5 +1,5 @@
 import { Dialog as DialogComp, Transition } from "@headlessui/react";
-import React, { Fragment } from "react";
+import React, { Fragment, useRef } from "react";
 import { MdClose } from "react-icons-all-files/md/MdClose";
 import { karla } from "~/styles/fonts/karla";
 import { classNames } from "~/utils/classNames";
@@ -23,11 +23,14 @@ const Dialog: React.FC<DialogProps> = ({
   className,
   size = "md",
 }) => {
+  const cancelButtonRef = useRef<HTMLButtonElement | null>(null);
+
   return (
     <>
       <Transition appear show={isVisible} as={Fragment}>
         <DialogComp
           as="div"
+          initialFocus={cancelButtonRef}
           className={`${karla.variable} fixed inset-0 z-50 overflow-y-auto`}
           onClose={close}
         >
@@ -60,27 +63,36 @@ const Dialog: React.FC<DialogProps> = ({
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <div
+              <DialogComp.Panel
+                as="div"
                 className={classNames(
                   "my-8 inline-block w-full transform rounded-md bg-white p-4 text-left align-middle shadow-xl transition-all",
                   className && className,
                   dialogSize[size],
                 )}
               >
-                <button className="absolute right-3 top-3" onClick={close}>
-                  <MdClose className="h-4 w-4 text-gray-400 transition-all hover:text-gray-900" />
-                </button>
-                {title && (
-                  <DialogComp.Title
-                    as="p"
-                    className="font-karla text-lg font-bold"
-                  >
-                    {title}
-                  </DialogComp.Title>
-                )}
+                <div
+                  className={classNames(
+                    title ? "justify-between" : "justify-end",
+                    "flex items-center",
+                  )}
+                >
+                  {title && (
+                    <DialogComp.Title
+                      as="p"
+                      className="font-karla text-lg font-bold"
+                    >
+                      {title}
+                    </DialogComp.Title>
+                  )}
+
+                  <button onClick={close} ref={cancelButtonRef}>
+                    <MdClose className="h-4 w-4 text-neutral-pressed transition-all hover:text-neutral-default" />
+                  </button>
+                </div>
 
                 <div>{children}</div>
-              </div>
+              </DialogComp.Panel>
             </Transition.Child>
           </div>
         </DialogComp>

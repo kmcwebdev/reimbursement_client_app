@@ -1,13 +1,15 @@
 import { configureStore } from "@reduxjs/toolkit";
 // import testReducer from "../features/test-slice";
 import { env } from "~/env.mjs";
+import reimbursementFormSlice from "~/features/reimbursement-form-slice";
 import userReducer from "../features/user-slice";
-import { appApiSlice } from "./api";
+import { appApiSlice } from "./rtkQuery";
 
 const store = configureStore({
   reducer: {
     [appApiSlice.reducerPath]: appApiSlice.reducer,
-    user: userReducer,
+    session: userReducer,
+    reimbursementForm: reimbursementFormSlice,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(appApiSlice.middleware),

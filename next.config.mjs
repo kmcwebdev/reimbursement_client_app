@@ -14,6 +14,7 @@ const nextConfig = {
       "kmcstorage1.blob.core.windows.net",
       "cdn.kmc.solutions",
       "kmc.solutions",
+      "img.propelauth.com",
     ],
   },
 };

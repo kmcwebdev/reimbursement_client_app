@@ -3,9 +3,9 @@ export type ReimbursementDetailsDTO = {
   expense: string;
   remarks?: string;
   total: number;
-  approvers?: {email:string}[];
-}
+  approvers?: { email: string }[];
+};
 
 export type ReimbursementAttachmentsDTO = {
   files: string[];
-}
+};

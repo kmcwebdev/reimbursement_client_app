@@ -1,9 +1,16 @@
+import { useUser } from "@propelauth/nextjs/client";
+import dynamic from "next/dynamic";
 import React, {
   createContext,
   useContext,
   useState,
   type PropsWithChildren,
+  useEffect,
 } from "react";
+import { useAppDispatch } from "~/app/hook";
+import { setUser as reduxSetUser, setAccessToken } from "~/features/user-slice";
+
+const AuthLoader = dynamic(() => import("~/components/loaders/AuthLoader"));
 
 const users: IUserData[] = [
   {
@@ -37,33 +44,42 @@ export interface IUserData {
 }
 
 interface IUserAccessCtx {
-  handleLogout: () => Promise<void>;
   user: IUserData | null;
   changeUser: (role: IRole) => void;
 }
 
 const UserAccessContext = createContext<IUserAccessCtx>({
-  // eslint-disable-next-line @typescript-eslint/require-await
-  handleLogout: async () => console.log("logged out"),
   user: users[0],
   changeUser: () => console.log("changed user"),
 });
 
-export const useUserAccessContext = () => {
-  return useContext(UserAccessContext);
-};
-
 export const UserAccessProvider: React.FC<PropsWithChildren> = ({
   children,
 }) => {
+  const dispatch = useAppDispatch();
+  const { loading: userIsLoading, user: propelUser, accessToken } = useUser();
   const [user, setUser] = useState<IUserData | null>(users[0]);
-  // const [isAuthenticated, setIsAuthenticated] = useState(true);
 
-  // const login = (userData: IUserData) => {
-  //   // Implement login logic, set user and isAuthenticated
-  //   setUser(userData);
-  //   setIsAuthenticated(true);
-  // };
+  useEffect(() => {
+    if (user && accessToken) {
+      dispatch(
+        reduxSetUser({
+          userId: propelUser.userId,
+          email: propelUser.email,
+          firstName: propelUser.firstName,
+          lastName: propelUser.lastName,
+          username: propelUser.username,
+          pictureUrl: propelUser.pictureUrl,
+          mfaEnabled: propelUser.mfaEnabled,
+          legacyUserId: propelUser.legacyUserId,
+          lastActiveAt: propelUser.lastActiveAt,
+          createdAt: propelUser.createdAt,
+        }),
+      );
+      dispatch(setAccessToken(accessToken));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, accessToken, dispatch]);
 
   const changeUser = (role: IRole) => {
     const u = users.find((a) => a.role === role);
@@ -73,20 +89,17 @@ export const UserAccessProvider: React.FC<PropsWithChildren> = ({
     }
   };
 
-  // eslint-disable-next-line @typescript-eslint/require-await
-  const logout = async () => {
-    // Implement logout logic, clear user and isAuthenticated
-    setUser(users[0]);
-    // setIsAuthenticated(false);
-  };
-
-  const handleLogout = async () => {
-    await logout();
-  };
+  if (userIsLoading) {
+    return <AuthLoader />;
+  }
 
   return (
-    <UserAccessContext.Provider value={{ handleLogout, user, changeUser }}>
+    <UserAccessContext.Provider value={{ user, changeUser }}>
       {children}
     </UserAccessContext.Provider>
   );
+};
+
+export const useUserAccessContext = () => {
+  return useContext(UserAccessContext);
 };

@@ -8,17 +8,19 @@ import {
   type FetchBaseQueryMeta,
 } from "@reduxjs/toolkit/query/react";
 import { clearAccessToken, setAccessToken } from "~/features/user-slice";
-import { propelauthRefreshToken } from "~/utils/propelauthRefreshToken";
+import { propelauthUserInfo } from "~/utils/propelauthUserInfo";
 import { type RootState } from "./store";
+import { env } from "~/env.mjs";
 
 const appApiBaseQuery = fetchBaseQuery({
-  baseUrl: "",
-  credentials: "include",
+  baseUrl: env.NEXT_PUBLIC_BASE_URL,
   prepareHeaders: (headers, { getState }) => {
-    const userState = getState() as RootState;
+    const state = getState() as RootState;
 
-    if (userState.user.accessToken) {
-      headers.set("authorization", `Bearer ${userState.user.accessToken}`);
+    headers.set("content-type", "application/json");
+
+    if (state.session.accessToken) {
+      headers.set("authorization", `Bearer ${state.session.accessToken}`);
     }
 
     return headers;
@@ -37,11 +39,13 @@ const appApiBaseQueryWithReauth: BaseQueryFn<
   if (result?.error?.status === 401) {
     // const rootState = api.getState() as RootState;
 
-    const propelauthRefreshTokenQuery = await propelauthRefreshToken();
+    const propelauthRefreshTokenQuery = await propelauthUserInfo();
 
-    if (propelauthRefreshTokenQuery?.access_token) {
+    console.log(propelauthRefreshTokenQuery);
+
+    if (propelauthRefreshTokenQuery?.accessToken) {
       // const user = rootState.user;
-      const accessToken = propelauthRefreshTokenQuery.access_token;
+      const { accessToken } = propelauthRefreshTokenQuery;
 
       api.dispatch(setAccessToken(accessToken));
 
@@ -57,7 +61,7 @@ const appApiBaseQueryWithReauth: BaseQueryFn<
 export const appApiSlice = createApi({
   reducerPath: "appApi",
   baseQuery: appApiBaseQueryWithReauth,
-  tagTypes: ["PandadocAccessCredentials", "PandadocDocumentList"],
+  tagTypes: [],
   endpoints: (
     _builder: EndpointBuilder<
       BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError>,
