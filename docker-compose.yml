@@ -9,6 +9,7 @@ services:
       context: .
       args:
         NODE_ENV: "production"
+        PROPELAUTH_REDIRECT_URI: "http://localhost:3000/api/auth/callback"
         NEXT_PUBLIC_ENVIRONMENT: "production"
         NEXT_PUBLIC_PUSHER_APP_KEY: "affa5695ab0f6d72e6b5"
         NEXT_PUBLIC_APP_URL: "http://localhost:3000"
