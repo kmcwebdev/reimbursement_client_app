@@ -68,6 +68,7 @@ const CardSelection = React.forwardRef<HTMLDivElement, CardSelectionProps>(
       setSelected(e);
     };
 
+    // TODO: Improve loading state
     if (loading) {
       return "Loading...";
     }
