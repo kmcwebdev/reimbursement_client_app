@@ -1,8 +1,8 @@
 import { getUserFromServerSideProps } from "@propelauth/nextjs/server/pages";
-import { type NextPage, type GetServerSideProps } from "next";
+import { type GetServerSideProps, type NextPage } from "next";
 import dynamic from "next/dynamic";
 import Head from "next/head";
-import React, { Fragment } from "react";
+import { Fragment } from "react";
 import store from "~/app/store";
 import { useUserAccessContext } from "~/context/AccessContext";
 import { useRequestTypesQuery } from "~/features/reimbursement-api-slice";

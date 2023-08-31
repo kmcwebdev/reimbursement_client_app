@@ -1,23 +1,27 @@
-import dynamic from 'next/dynamic';
-import React, { type Dispatch, type SetStateAction } from 'react';
+import dynamic from "next/dynamic";
+import React from "react";
+import { type UseFormReturn } from "react-hook-form";
+import { useAppSelector } from "~/app/hook";
 
-const ReimbursementDetailsForm = dynamic(() => import("./steps/ReimbursementDetailsForm"))
-const UploadAttachments = dynamic(() => import("./steps/UploadAttachments"))
+const ReimbursementDetailsForm = dynamic(
+  () => import("./steps/ReimbursementDetailsForm"),
+);
+const UploadAttachments = dynamic(() => import("./steps/UploadAttachments"));
+
 interface ReimburseFormProps {
-  activeStep: number;
-  setActiveStep: Dispatch<SetStateAction<number>>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  formReturn: UseFormReturn<any>;
 }
 
+const ReimburseForm: React.FC<ReimburseFormProps> = ({ formReturn }) => {
+  const { activeStep } = useAppSelector((state) => state.reimbursementForm);
 
-const ReimburseForm: React.FC<ReimburseFormProps> = ({ activeStep, setActiveStep }) => {
-
-
-  return (<div className='py-4'>
-
-    {activeStep === 0 && < ReimbursementDetailsForm activeStep={activeStep} setActiveStep={setActiveStep} />}
-    {activeStep === 1 && < UploadAttachments />}
-
-  </div >);
-}
+  return (
+    <div className="py-4">
+      {activeStep === 0 && <ReimbursementDetailsForm formReturn={formReturn} />}
+      {activeStep === 1 && <UploadAttachments formReturn={formReturn} />}
+    </div>
+  );
+};
 
 export default ReimburseForm;

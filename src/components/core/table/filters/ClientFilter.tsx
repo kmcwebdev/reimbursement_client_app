@@ -8,9 +8,7 @@ import Popover from "../../Popover";
 import Select, { type OptionData } from "../../form/fields/Select";
 import { type FilterProps } from "./StatusFilter";
 
-const ClientFilter: React.FC<FilterProps> = ({
-  column, // table,
-}) => {
+const ClientFilter: React.FC<FilterProps> = ({ column }) => {
   const sortedUniqueValues = useMemo(
     () => Array.from(column.getFacetedUniqueValues().keys()).sort() as string[],
     // eslint-disable-next-line react-hooks/exhaustive-deps
