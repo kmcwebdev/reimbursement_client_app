@@ -1,10 +1,12 @@
-import { UserFromToken } from "@propelauth/nextjs/client";
 import { getUserFromServerSideProps } from "@propelauth/nextjs/server/pages";
 import { type GetServerSideProps, type NextPage } from "next";
 import dynamic from "next/dynamic";
 import Head from "next/head";
 import { Fragment } from "react";
+import store from "~/app/store";
 import { useUserAccessContext } from "~/context/AccessContext";
+import { useRequestTypesQuery } from "~/features/reimbursement-api-slice";
+import { setAccessToken } from "~/features/user-slice";
 
 interface DashboardSSRProps {
   userJson: string;
@@ -21,12 +23,11 @@ const ManagerDashboard = dynamic(
   () => import("~/components/dashboard/Manager"),
 );
 
-const Dashboard: NextPage<DashboardSSRProps> = (props) => {
+const Dashboard: NextPage<DashboardSSRProps> = () => {
   const { user } = useUserAccessContext();
+  const {} = useRequestTypesQuery();
 
-  const propel = UserFromToken.fromJSON(props.userJson);
-
-  console.log(propel);
+  // const propel = UserFromToken.fromJSON(props.userJson);
 
   return (
     <Fragment>
@@ -45,7 +46,9 @@ export default Dashboard;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const user = await getUserFromServerSideProps(context);
-  // const accessToken = context.req.cookies?.__pa_at;
+  const accessToken = context.req.cookies?.__pa_at;
+
+  store.dispatch(setAccessToken(accessToken as string));
 
   if (!user) {
     return {

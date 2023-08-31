@@ -11,11 +11,11 @@ type ExpenseTypeQueryType = z.infer<typeof ExpenseTypeQuerySchema>;
 
 export const reimbursementApiSlice = appApiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    getAllRequests: builder.query({
-      query: () => "/finance/reimbursements/requests",
+    getAllRequests: builder.query<unknown, void>({
+      query: () => "/api/finance/reimbursements/requests",
     }),
-    requestTypes: builder.query<ReimbursementRequestType[], null>({
-      query: () => "/finance/reimbursements/request-types",
+    requestTypes: builder.query<ReimbursementRequestType[], void>({
+      query: () => "/api/finance/reimbursements/request-types",
     }),
     expenseTypes: builder.query<
       ReimbursementExpenseType[],
@@ -29,7 +29,7 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
         }
 
         return {
-          url: "/finance/reimbursements/expense-types",
+          url: "/api/finance/reimbursements/expense-types",
           params: {
             request_type_id,
           },
