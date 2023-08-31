@@ -11,9 +11,9 @@ export const reimbursementDetailsSchema = z.object({
     .uuid({
       message: "Type of expense is must be a uuid!",
     }),
-  remarks: z
-    .string({ required_error: "Please input remarks!" })
-    .nonempty("Please input remarks!"),
+  remarks: z.string({ required_error: "Please input remarks!" }).nonempty({
+    message: "Please input remarks!",
+  }),
   approvers: z
     .object({
       email: z
