@@ -1,10 +1,16 @@
 import { z } from "zod";
 
 export const reimbursementDetailsSchema = z.object({
-  type: z.number({ required_error: "Please choose a reimbursement type!" }),
+  type: z
+    .string({ required_error: "Please choose a reimbursement type!" })
+    .uuid({
+      message: "Reimbursment type is must be a uuid!",
+    }),
   expense: z
     .string({ required_error: "Please choose a type of expense!" })
-    .nonempty(),
+    .uuid({
+      message: "Type of expense is must be a uuid!",
+    }),
   remarks: z
     .string({ required_error: "Please input remarks!" })
     .nonempty("Please input remarks!"),
