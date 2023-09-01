@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { appApiSlice } from "~/app/rtkQuery";
-import { type ReimbursementExpenseType } from "~/types/reimbursement.expese-type";
+import { type ReimbursementExpenseType } from "~/types/reimbursement.expense-type";
 import { type ReimbursementRequestType } from "~/types/reimbursement.request-type";
 
 const ExpenseTypeQuerySchema = z.object({
@@ -36,6 +36,19 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
         };
       },
     }),
+    uploadFile: builder.mutation<unknown, FormData>({
+      query: (formData) => {
+        return {
+          url: "/api/finance/reimbursements/requests/attachments",
+          method: "POST",
+          body: formData,
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+          formData: true,
+        };
+      },
+    }),
   }),
 });
 
@@ -43,4 +56,5 @@ export const {
   useGetAllRequestsQuery,
   useRequestTypesQuery,
   useExpenseTypesQuery,
+  useUploadFileMutation,
 } = reimbursementApiSlice;

@@ -10,8 +10,12 @@ import { MdOutlineDelete } from "react-icons-all-files/md/MdOutlineDelete";
 import { MdPictureAsPdf } from "react-icons-all-files/md/MdPictureAsPdf";
 import { classNames } from "~/utils/classNames";
 import CollapseHeightAnimation from "../animation/CollapseHeight";
+import { Button, type ButtonProps } from "./Button";
 
 export interface UploadProps extends DropzoneOptions {
+  uploadButtonProps: Omit<ButtonProps, "onClick"> & {
+    onClick: (e: FileWithPath) => void;
+  };
 }
 
 const Upload: React.FC<UploadProps> = ({
@@ -24,6 +28,7 @@ const Upload: React.FC<UploadProps> = ({
       ".xslx",
     ],
   },
+  uploadButtonProps,
   ...rest
 }) => {
   const [files, setFiles] = useState<FileWithPath[]>([]);
@@ -77,26 +82,20 @@ const Upload: React.FC<UploadProps> = ({
           file.type === "text/csv" ||
           file.type === "application/vnd.ms-excel" ||
           file.type ===
-          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
         return (
           <li
             className="flex justify-between gap-4 rounded border border-neutral-200 p-2"
             key={file.path + `${idx}`}
           >
-            <div className="flex gap-2 items-center">
+            <div className="flex items-center gap-2">
               <span className="relative flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border">
-                {isPDF && (
-                  <MdPictureAsPdf className="h-5 w-5" />
-                )}
-                {isSpreadsheet && (
-                  <BiSpreadsheet className="h-5 w-5" />
-                )}
+                {isPDF && <MdPictureAsPdf className="h-5 w-5" />}
+                {isSpreadsheet && <BiSpreadsheet className="h-5 w-5" />}
               </span>
 
               <span className="flex w-52 flex-col justify-center">
-                <span className="typography-caption truncate">
-                  {file.name}
-                </span>
+                <span className="typography-caption truncate">{file.name}</span>
               </span>
             </div>
 
@@ -140,29 +139,25 @@ const Upload: React.FC<UploadProps> = ({
       </div>
 
       <CollapseHeightAnimation isVisible={acceptedFileItems.length > 0}>
-        <aside className="py-4 space-y-4">
-          <p className="text-xs font-medium text-neutral-900">
-            Uploaded Files
-          </p>
+        <aside className="space-y-4 py-4">
+          <p className="text-xs font-medium text-neutral-900">Uploaded Files</p>
           <ul className="mt-2 space-y-2">{acceptedFileItems}</ul>
         </aside>
 
-        {/* <div className="mt-4 flex justify-end">
+        <div className="mt-4 flex justify-end">
           <Button
             type="button"
             className="px-5"
             {...{
               ...uploadButtonProps,
               onClick: () => {
-                uploadButtonProps.onClick(files);
+                uploadButtonProps.onClick(files[0]);
               },
             }}
           >
-            {uploadButtonProps.buttontext
-              ? uploadButtonProps.buttontext
-              : "Upload File"}
+            Upload File
           </Button>
-        </div> */}
+        </div>
       </CollapseHeightAnimation>
     </section>
   );

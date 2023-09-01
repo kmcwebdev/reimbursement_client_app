@@ -3,6 +3,7 @@ import { type UseFormReturn } from "react-hook-form";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { Button } from "~/components/core/Button";
 import Upload from "~/components/core/Upload";
+import { useUploadFileMutation } from "~/features/reimbursement-api-slice";
 import { setActiveStep } from "~/features/reimbursement-form-slice";
 import { type ReimbursementAttachmentsDTO } from "~/types/reimbursement.types";
 
@@ -13,9 +14,29 @@ interface UploadAttachmentsProps {
 const UploadAttachments: React.FC<UploadAttachmentsProps> = () => {
   const { activeStep } = useAppSelector((state) => state.reimbursementForm);
   const dispatch = useAppDispatch();
+
+  const [
+    uploadFiles,
+    // {
+    //   isLoading: isUploading,
+    //   isSuccess: isUploadingSuccess,
+    //   data: uploadedFiles,
+    // },
+  ] = useUploadFileMutation();
+
   return (
     <div className="flex flex-col gap-4">
-      <Upload />
+      <Upload
+        uploadButtonProps={{
+          onClick: (e) => {
+            if (e) {
+              const formData = new FormData();
+              formData.append("file", e);
+              void uploadFiles(formData);
+            }
+          },
+        }}
+      />
 
       <div className="my-4 flex items-center justify-center gap-2">
         <div className="h-2 w-2 rounded-full bg-primary-inactive"></div>

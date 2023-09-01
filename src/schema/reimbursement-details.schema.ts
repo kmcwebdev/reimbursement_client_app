@@ -8,7 +8,7 @@ export const reimbursementDetailsSchema = z
     type: z
       .string({ required_error: "Please choose a reimbursement type!" })
       .uuid({
-        message: "Reimbursment type is must be a uuid!",
+        message: "Reimbursement type is must be a uuid!",
       }),
     expense: z
       .string({ required_error: "Please choose a type of expense!" })
