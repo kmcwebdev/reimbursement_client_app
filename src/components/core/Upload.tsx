@@ -85,13 +85,15 @@ const Upload: React.FC<UploadProps> = ({
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
         return (
           <li
-            className="flex justify-between gap-4 rounded border border-neutral-200 p-2"
+            className="flex justify-between gap-4 rounded border border-neutral-300 p-2"
             key={file.path + `${idx}`}
           >
             <div className="flex items-center gap-2">
-              <span className="relative flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border">
-                {isPDF && <MdPictureAsPdf className="h-5 w-5" />}
-                {isSpreadsheet && <BiSpreadsheet className="h-5 w-5" />}
+              <span className="relative flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border border-neutral-300">
+                {isPDF && <MdPictureAsPdf className="h-5 w-5 text-navy" />}
+                {isSpreadsheet && (
+                  <BiSpreadsheet className="h-5 w-5 text-navy" />
+                )}
               </span>
 
               <span className="flex w-52 flex-col justify-center">
@@ -103,7 +105,7 @@ const Upload: React.FC<UploadProps> = ({
               <button
                 type="button"
                 onClick={() => deleteFile(file)}
-                className="rounded p-2 text-danger-default outline-none hover:text-danger-hover focus:ring-1 focus:ring-danger-pressed focus:ring-offset-2"
+                className="rounded p-2 text-red-600 outline-none hover:text-red-700 focus:ring-1 focus:ring-red-800 focus:ring-offset-2"
               >
                 <MdOutlineDelete className="h-5 w-5" />
               </button>
@@ -119,21 +121,21 @@ const Upload: React.FC<UploadProps> = ({
       <div
         {...getRootProps({ className: "dropzone" })}
         className={classNames(
-          "group flex cursor-pointer flex-col items-center gap-4 rounded border border-neutral-subtle bg-white p-4 text-center outline-none transition-all hover:border-primary-hover focus:ring-1 focus:ring-primary-default",
+          "group flex cursor-pointer flex-col items-center gap-4 rounded border border-neutral-300 bg-white p-4 text-center outline-none transition-all hover:border-orange-700 focus:ring-1 focus:ring-orange-600",
           fileRejections.length > 0
-            ? "border-red-600 focus:ring-red-400"
-            : "border-neutral-subtle focus:ring-primary-default",
+            ? "border-red-600 focus:ring-red-600"
+            : "border-neutral-300 focus:ring-orange-600",
         )}
       >
         <input {...getInputProps()} />
 
-        <div className="grid h-12 w-12 place-items-center rounded-full bg-neutral-200">
-          <MdCloudUpload className="h-6 w-6 text-neutral-pressed" />
+        <div className="grid h-12 w-12 place-items-center rounded-full bg-neutral-300">
+          <MdCloudUpload className="h-6 w-6 text-neutral-800" />
         </div>
 
-        <p className="font-bold text-primary-default">Click/Drop to Upload</p>
+        <p className="font-bold text-orange-600">Click/Drop to Upload</p>
 
-        <p className="text-neutral-default">
+        <p className="text-neutral-600">
           PDF or Excel (add the images of particulars)
         </p>
       </div>

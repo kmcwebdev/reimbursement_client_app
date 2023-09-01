@@ -34,63 +34,61 @@
   }
 
   .btn.filled {
-    @apply px-4 py-[0.3rem] h-[40px] text-white shadow-sm hover:shadow-sm focus:shadow-sm focus:outline-none focus:ring-0 active:shadow-sm disabled:bg-neutral-subtle;
+    @apply px-4 py-[0.3rem] h-[40px] text-white shadow-sm hover:shadow-sm focus:shadow-sm focus:outline-none focus:ring-0 active:shadow-sm disabled:bg-opacity-[64%] disabled:hover:bg-opacity-[64%];
   }
 
   .btn.outlined {
-    @apply px-4 py-[0.3rem] h-[40px] shadow-sm disabled:border-neutral-subtle;
+    @apply px-4 py-[0.3rem] h-[40px] shadow-sm;
   }
 
   .btn.filled.primary {
-    @apply bg-primary-default hover:bg-primary-hover active:bg-primary-pressed disabled:bg-primary-subtle disabled:hover:bg-primary-subtle;
+    @apply bg-orange-600 hover:bg-orange-700 active:bg-orange-800 disabled:bg-orange-600 disabled:hover:bg-orange-600;
   }
 
   .btn.filled.success {
-    @apply bg-success-default hover:bg-success-hover active:bg-success-pressed disabled:bg-success-subtle disabled:hover:bg-success-subtle;
+    @apply bg-orange-600 hover:bg-orange-700 active:bg-orange-800 disabled:bg-orange-600 disabled:hover:bg-orange-600;
   }
 
   .btn.filled.informative {
-    @apply bg-informative-default hover:bg-informative-hover active:bg-informative-pressed disabled:bg-informative-subtle disabled:hover:bg-informative-subtle;
+    @apply bg-blue-600 hover:bg-blue-700 active:bg-blue-800 disabled:bg-blue-600 disabled:hover:bg-blue-600;
   }
 
   .btn.filled.danger {
-    @apply bg-danger-default hover:bg-danger-hover active:bg-danger-pressed disabled:bg-danger-subtle disabled:hover:bg-danger-subtle;
+    @apply bg-red-600 hover:bg-red-700 active:bg-red-800 disabled:bg-red-600 disabled:hover:bg-red-600;
   }
 
-  .btn.filled.neutral {
-    @apply bg-neutral-600 hover:bg-neutral-700 active:bg-neutral-800 disabled:bg-neutral-subtle disabled:hover:bg-neutral-subtle;
-  }
 
   .btn.outlined.primary {
-    @apply border border-primary-default text-primary-default outline-none hover:bg-primary-subtle focus:ring-transparent focus-visible:outline-none focus-visible:ring-transparent active:border-primary-hover active:text-primary-hover;
+    @apply border border-orange-600 text-orange-600 outline-none hover:bg-orange-50 focus:ring-transparent focus-visible:outline-none focus-visible:ring-transparent active:border-orange-700 active:text-orange-700;
   }
 
   .btn.outlined.success {
-    @apply border border-success-default text-success-default outline-none hover:bg-success-subtle focus:ring-transparent focus-visible:outline-none focus-visible:ring-transparent active:border-success-hover active:text-success-hover;
-  }
+    @apply border border-green-600 text-green-600 outline-none hover:bg-green-50 focus:ring-transparent focus-visible:outline-none focus-visible:ring-transparent active:border-green-700 active:text-green-700;
+   }
 
   .btn.outlined.informative {
-    @apply border border-informative-default text-informative-default outline-none hover:bg-informative-subtle focus:ring-transparent focus-visible:outline-none focus-visible:ring-transparent active:border-informative-hover active:text-informative-hover;
-  }
-
-  .btn.outlined.neutral {
-    @apply border border-neutral-600 text-neutral-600 outline-none hover:bg-neutral-50 focus:ring-transparent focus-visible:outline-none focus-visible:ring-transparent active:border-neutral-700 active:text-neutral-700 disabled:border-neutral-subtle disabled:hover:bg-transparent;
+    @apply border border-blue-600 text-blue-600 outline-none hover:bg-blue-50 focus:ring-transparent focus-visible:outline-none focus-visible:ring-transparent active:border-blue-700 active:text-blue-700;
   }
 
   .btn.outlined.danger {
-    @apply border border-danger-default text-danger-default outline-none hover:bg-danger-subtle focus:ring-transparent focus-visible:outline-none focus-visible:ring-transparent active:border-danger-hover active:text-danger-hover;
+    @apply border border-red-600 text-red-600 outline-none hover:bg-red-50 focus:ring-transparent focus-visible:outline-none focus-visible:ring-transparent active:border-red-700 active:text-red-700;
   }
 
+  .btn.outlined.neutral {
+    @apply border border-neutral-500 text-neutral-900 outline-none hover:bg-neutral-100 focus:ring-transparent focus-visible:outline-none focus-visible:ring-transparent active:border-neutral-700 ;
+  }
+
+
   .btn.text.primary {
-    @apply text-primary-default outline-none hover:text-primary-hover focus:ring-transparent focus-visible:outline-none focus-visible:ring-transparent active:text-primary-pressed;
+    @apply text-orange-600 outline-none hover:text-orange-700 focus:ring-transparent focus-visible:outline-none focus-visible:ring-transparent active:text-orange-800;
   }
 
   .btn.text.success {
-    @apply text-success-default outline-none hover:text-success-hover focus:ring-transparent focus-visible:outline-none focus-visible:ring-transparent active:text-success-pressed;
+    @apply text-green-600 outline-none hover:text-green-700 focus:ring-transparent focus-visible:outline-none focus-visible:ring-transparent active:text-green-800;
   }
 
   .btn.text.informative {
-    @apply text-informative-default outline-none hover:text-informative-hover focus:ring-transparent focus-visible:outline-none focus-visible:ring-transparent active:text-informative-pressed;
+    @apply text-blue-600 outline-none hover:text-blue-700 focus:ring-transparent focus-visible:outline-none focus-visible:ring-transparent active:text-blue-800;
   }
 
   .btn.text.danger {
@@ -99,14 +97,14 @@
 
   .btn.text.neutral {
     @apply text-neutral-600 outline-none hover:text-neutral-700 focus:ring-transparent focus-visible:outline-none focus-visible:ring-transparent active:text-neutral-800;
-  }
+  } 
 
   /* INPUT */
   .input-default {
-    @apply w-full py-2 rounded text-sm border border-[#CACED3] text-gray-800 placeholder:text-neutral-pressed focus:ring-1 focus:ring-inset focus:ring-primary-default focus:border-transparent disabled:bg-neutral-100 disabled:border-neutral-300 disabled:text-neutral-300 disabled:cursor-not-allowed;
+    @apply w-full py-2 rounded text-sm border border-neutral-500 text-gray-800 placeholder:text-neutral-800 focus:ring-1 focus:ring-inset focus:ring-orange-600 focus:border-transparent disabled:bg-neutral-100 disabled:border-neutral-300 disabled:text-neutral-300 disabled:cursor-not-allowed;
   }
 
   .input-error {
-    @apply w-full py-2 rounded text-sm border border-danger-default bg-danger-subtle text-danger-default ring-danger-default placeholder:text-danger-default focus:ring-1 focus:ring-inset focus:ring-danger-default focus:border-transparent disabled:bg-neutral-100 disabled:border-neutral-300 disabled:text-neutral-300 disabled:cursor-not-allowed;
+    @apply w-full py-2 rounded text-sm border border-red-600 bg-red-300 text-red-600 ring-red-600 placeholder:text-red-600 focus:ring-1 focus:ring-inset focus:ring-red-600 focus:border-transparent disabled:bg-neutral-100 disabled:border-neutral-300 disabled:text-neutral-300 disabled:cursor-not-allowed;
   }
 }

@@ -1,15 +1,15 @@
 import {
   Body,
-  Head,
-  Html,
-  Preview,
-  Img,
-  Container,
-  Section,
   Button,
+  Container,
+  Head,
+  Hr,
+  Html,
+  Img,
+  Preview,
+  Section,
   Tailwind,
   Text,
-  Hr,
 } from "@react-email/components";
 
 interface EmailTemplateProps {
@@ -45,7 +45,7 @@ export const NewRequest: React.FC<Readonly<EmailTemplateProps>> = ({
             alt="KMC Reimbursement Email Header"
           />
           <Container className="space-y-4 px-4">
-            <Text className="text-primary-default">Dear {fullName}</Text>
+            <Text className="text-orange-600">Dear {fullName}</Text>
             <Text>
               We want to inform you that your reimbursement request {requestId}{" "}
               has been successfully submitted to {hrbpManagerName} for review.

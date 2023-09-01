@@ -24,7 +24,7 @@ const CustomControl: React.FC<PropsWithChildren<CustomControlProps>> = ({
             <Icon
               className={classNames(
                 "h-5 w-5",
-                hasError ? "text-red-400" : "text-gray-400",
+                hasError ? "text-red-600" : "text-neutral-600",
               )}
               aria-hidden="true"
             />

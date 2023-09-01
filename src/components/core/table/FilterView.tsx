@@ -127,13 +127,13 @@ const FilterView: React.FC<FilterViewProps> = ({ columns, colSpan }) => {
           )}
         >
           <div className="flex items-center gap-2">
-            <span className="font-bold">Filters: </span>
+            <span className="font-bold text-neutral-900">Filters: </span>
 
             {columns.sort().map((column) => (
               <div key={column?.id} className="flex items-center gap-8">
                 {statusFilterIsVisible && column && column.id === "status" && (
                   <div className="flex items-center gap-2">
-                    <MdLabel className="h-4 w-4" />
+                    <MdLabel className="h-4 w-4 text-neutral-900" />
                     <div className="flex gap-2 divide-x">
                       {statusFilterValue.map((value) => (
                         <StatusBadge key={value} status={value as StatusType} />
@@ -144,12 +144,13 @@ const FilterView: React.FC<FilterViewProps> = ({ columns, colSpan }) => {
 
                 {typeFilterIsVisible && column && column.id === "type" && (
                   <div className="flex items-center gap-2">
-                    <MdAccessTimeFilled className="h-4 w-4" />
+                    <HiCurrencyDollar className="h-4 w-4 text-neutral-900" />
+                    <MdAccessTimeFilled className="h-4 w-4 " />
                     <div className="flex gap-2 divide-x">
                       {typeFilterValue.map((value) => (
                         <p
                           key={value}
-                          className="pl-2 text-sm text-neutral-pressed"
+                          className="pl-2 text-sm text-neutral-800"
                         >
                           {value}
                         </p>
@@ -162,12 +163,12 @@ const FilterView: React.FC<FilterViewProps> = ({ columns, colSpan }) => {
                   column &&
                   column.id === "expense" && (
                     <div className="flex items-center gap-2">
-                      <HiCurrencyDollar className="h-4 w-4" />
+                      <HiCurrencyDollar className="h-4 w-4 text-neutral-900" />
                       <div className="flex gap-2 divide-x">
                         {expenseFilterValue.map((value) => (
                           <p
                             key={value}
-                            className="pl-2 text-sm text-neutral-pressed first:pl-0"
+                            className="pl-2 text-sm text-neutral-800 first:pl-0"
                           >
                             {value}
                           </p>
@@ -178,10 +179,10 @@ const FilterView: React.FC<FilterViewProps> = ({ columns, colSpan }) => {
 
                 {dateFilterIsVisible && column && column.id === "filed" && (
                   <div className="flex items-center gap-2">
-                    <MdCalendarToday className="h-4 w-4" />
+                    <MdCalendarToday className="h-4 w-4 text-neutral-900" />
                     <div className="flex items-center gap-1">
                       {dateFilterValue.map((value, i) => (
-                        <p key={value} className="text-sm text-neutral-pressed">
+                        <p key={value} className="text-sm text-neutral-800">
                           {value}
                           {dateFilterValue.length === 2 && i === 0 && " -"}
                         </p>

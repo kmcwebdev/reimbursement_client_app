@@ -15,16 +15,19 @@ import { useAppDispatch, useAppSelector } from "~/app/hook";
 import PageAnimation from "~/components/animation/PageAnimation";
 import { Button } from "~/components/core/Button";
 import DashboardCard from "~/components/core/DashboardCard";
+import SideDrawer from "~/components/core/SideDrawer";
 import StatusBadge, { type StatusType } from "~/components/core/StatusBadge";
 import Table, { type Reimbursement } from "~/components/core/table";
 import TableCheckbox from "~/components/core/table/TableCheckbox";
 import DateFiledFilter from "~/components/core/table/filters/DateFiledFilter";
 import { type FilterProps } from "~/components/core/table/filters/StatusFilter";
+import ReimbursementsCardView from "~/components/reimbursement-view";
 import {
   clearReimbursementForm,
   toggleCancelDialog,
   toggleFormDialog,
 } from "~/features/reimbursement-form-slice";
+import { useDialogState } from "~/hooks/use-dialog-state";
 import { ReimbursementDetailsSchema } from "~/schema/reimbursement-details.schema";
 import { type ReimbursementDetailsDTO } from "~/types/reimbursement.types";
 import { currencyFormat } from "~/utils/currencyFormat";
@@ -49,6 +52,8 @@ const EmployeeDashboard: React.FC = () => {
   const { formDialogIsOpen, cancelDialogIsOpen, reimbursementDetails } =
     useAppSelector((state) => state.reimbursementForm);
   const dispatch = useAppDispatch();
+
+  const { isVisible, open, close } = useDialogState();
 
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -154,7 +159,11 @@ const EmployeeDashboard: React.FC = () => {
       {
         id: "actions",
         accessorKey: "r-id",
-        cell: () => <Button buttonType="text">View</Button>,
+        cell: () => (
+          <Button buttonType="text" onClick={open}>
+            View
+          </Button>
+        ),
         header: "",
       },
     ],
@@ -201,12 +210,12 @@ const EmployeeDashboard: React.FC = () => {
         <div className="grid gap-y-2 p-5">
           <div className="mb-5 flex place-items-start gap-4">
             <DashboardCard
-              icon={<MdAccessTimeFilled className="h-5 w-5 text-[#D89B0D]" />}
+              icon={<MdAccessTimeFilled className="h-5 w-5 text-yellow-600" />}
               label="Pending Approval"
               count={2}
             />
             <DashboardCard
-              icon={<MdCreditCard className="h-5 w-5 text-[#2463bc]" />}
+              icon={<MdCreditCard className="text-informative-600 h-5 w-5" />}
               label="Overall Total"
               count={2}
             />
@@ -252,7 +261,7 @@ const EmployeeDashboard: React.FC = () => {
           close={handleAbortCancellation}
         >
           <div className="flex flex-col gap-8 pt-8">
-            <p className="text-neutral-default">
+            <p className="text-neutral-800">
               Are you sure you want to cancel reimbursement request?
             </p>
 
@@ -267,6 +276,29 @@ const EmployeeDashboard: React.FC = () => {
             </div>
           </div>
         </Dialog>
+
+        <SideDrawer title="R-12345" isVisible={isVisible} closeDrawer={close}>
+          <ReimbursementsCardView
+            closeDrawer={close}
+            data={{
+              reimbursementId: "R-245",
+              client: "test",
+              id: "123",
+              name: "test",
+              notes: "test notes",
+              status: "approved",
+              type: "test",
+              expense: "test",
+              remarks: "test",
+              filed: "test",
+              total: 123,
+              note: "test",
+              approvers: "test",
+              daterejected: "test",
+              attachments: "test",
+            }}
+          />
+        </SideDrawer>
       </PageAnimation>
     </>
   );

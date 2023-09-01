@@ -80,14 +80,14 @@ const Dialog: React.FC<DialogProps> = ({
                   {title && (
                     <DialogComp.Title
                       as="p"
-                      className="font-karla text-lg font-bold"
+                      className="font-karla text-lg font-bold text-neutral-900"
                     >
                       {title}
                     </DialogComp.Title>
                   )}
 
                   <button onClick={close} ref={cancelButtonRef}>
-                    <MdClose className="h-4 w-4 text-neutral-pressed transition-all hover:text-neutral-default" />
+                    <MdClose className="h-4 w-4 text-neutral-900 transition-all hover:text-neutral-800" />
                   </button>
                 </div>
 

@@ -148,9 +148,7 @@ const ReimbursementDetailsForm: React.FC<ReimbursementDetailsFormProps> = ({
       <CollapseHeightAnimation
         isVisible={selectedType === UNSCHEDULED ? true : false}
       >
-        <label className="text-xs font-semibold text-neutral-800">
-          Approvers
-        </label>
+        <label className="text-xs font-bold text-neutral-900">Approvers</label>
 
         {fields.map((item, i) => (
           <div key={item.id} className="relative my-4 flex flex-col gap-4">
@@ -174,7 +172,7 @@ const ReimbursementDetailsForm: React.FC<ReimbursementDetailsFormProps> = ({
 
             {fields.length > 1 && (
               <AiOutlineMinusCircle
-                className="absolute right-2 top-3 h-4 w-4 cursor-pointer text-danger-default transition-all ease-in-out hover:text-danger-hover"
+                className="absolute right-2 top-3 h-4 w-4 cursor-pointer text-red-600 transition-all ease-in-out hover:text-red-700"
                 onClick={() => remove(i)}
               />
             )}
@@ -190,8 +188,8 @@ const ReimbursementDetailsForm: React.FC<ReimbursementDetailsFormProps> = ({
       </CollapseHeightAnimation>
 
       <div className="my-4 flex items-center justify-center gap-2">
-        <div className="h-2 w-2 rounded-full bg-primary-default"></div>
-        <div className="h-2 w-2 rounded-full bg-primary-inactive"></div>
+        <div className="h-2 w-2 rounded-full bg-orange-600"></div>
+        <div className="h-2 w-2 rounded-full bg-orange-200"></div>
       </div>
 
       <div className="grid grid-cols-2 items-center gap-4">

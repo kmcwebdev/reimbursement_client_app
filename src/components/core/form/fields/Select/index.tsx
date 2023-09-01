@@ -123,11 +123,8 @@ const Select: React.FC<SelectProps> = ({
   return (
     <div className="w-full space-y-2">
       {label && (
-        <label
-          htmlFor={name}
-          className="text-xs font-semibold text-neutral-800"
-        >
-          {label} {required && <span className="text-primary-default">*</span>}
+        <label htmlFor={name} className="text-xs font-bold text-neutral-900">
+          {label} {required && <span className="text-orange-600">*</span>}
         </label>
       )}
 

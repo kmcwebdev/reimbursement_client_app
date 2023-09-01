@@ -12,10 +12,16 @@ const List: React.FC<PropsWithChildren> = ({ children }) => {
 const Item: React.FC<ItemProps> = ({ label, value }) => {
   return (
     <div className="grid grid-cols-2 items-center gap-4">
-      <span className="text-neutral-default">{label}</span>
+      <span className="text-neutral-700">{label}</span>
 
       {/* Checks the value if JSX.Element */}
-      <>{React.isValidElement(value) ? value : <span>{value}</span>}</>
+      <>
+        {React.isValidElement(value) ? (
+          value
+        ) : (
+          <span className="text-neutral-900">{value}</span>
+        )}
+      </>
     </div>
   );
 };

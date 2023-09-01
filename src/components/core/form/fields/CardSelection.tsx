@@ -81,10 +81,10 @@ const CardSelection = React.forwardRef<HTMLDivElement, CardSelectionProps>(
           {label && (
             <label
               htmlFor={name}
-              className="text-xs font-semibold text-neutral-800"
+              className="text-xs font-bold text-neutral-900"
             >
               {label}
-              {required && <span className="text-primary-default">*</span>}
+              {required && <span className="text-orange-600">*</span>}
             </label>
           )}
 
@@ -105,8 +105,8 @@ const CardSelection = React.forwardRef<HTMLDivElement, CardSelectionProps>(
                     type="button"
                     className={classNames(
                       selected?.value === option.value
-                        ? "border-primary-default bg-white"
-                        : "border-neutral-subtle bg-white text-neutral-default hover:bg-neutral-100 hover:text-primary-hover",
+                        ? "border-orange-600"
+                        : "border-neutral-300 hover:bg-neutral-100",
                       "group flex h-24 flex-1 flex-col justify-center gap-2 rounded border px-4 py-[0.6rem] text-sm font-medium transition-all ease-in-out",
                     )}
                     onClick={() => handleClick(option)}
@@ -114,7 +114,7 @@ const CardSelection = React.forwardRef<HTMLDivElement, CardSelectionProps>(
                     <OptionIcon
                       className={classNames(
                         selected?.value === option.value
-                          ? "text-primary-default"
+                          ? "text-orange-600"
                           : "text-navy",
                         "h-5 w-5",
                       )}
@@ -146,17 +146,17 @@ const CardSelection = React.forwardRef<HTMLDivElement, CardSelectionProps>(
                     key={option.value}
                     type="button"
                     className={classNames(
-                      "group relative flex h-24 flex-1 flex-col justify-center gap-2 rounded border border-transparent px-4 py-[0.6rem] text-sm font-medium transition-all ease-in-out focus:outline-none focus:ring-0",
                       selected?.value === option.value
-                        ? "border-primary-default bg-white"
-                        : "border-neutral-subtle bg-white text-neutral-default hover:bg-neutral-100 hover:text-primary-hover",
+                        ? "border-orange-600"
+                        : "border-neutral-300 hover:bg-neutral-100",
+                      "group flex h-24 flex-1 flex-col justify-center gap-2 rounded border px-4 py-[0.6rem] text-sm font-medium transition-all ease-in-out",
                     )}
                     onClick={() => handleClick(option)}
                   >
                     <OptionIcon
                       className={classNames(
                         selected?.value === option.value
-                          ? "text-primary-default"
+                          ? "text-orange-600"
                           : "text-navy",
                         "h-5 w-5",
                       )}
@@ -181,7 +181,7 @@ const CardSelection = React.forwardRef<HTMLDivElement, CardSelectionProps>(
           formContext.formState.errors &&
           formContext.formState.errors[name] &&
           formContext.formState.errors[name]?.message && (
-            <p className="mt-1 text-sm text-danger-default">
+            <p className="mt-1 text-sm text-red-600">
               {formContext.formState.errors[name]?.message as string}
             </p>
           )}

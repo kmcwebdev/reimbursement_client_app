@@ -65,8 +65,8 @@ const UploadAttachments: React.FC = () => {
       />
 
       <div className="my-4 flex items-center justify-center gap-2">
-        <div className="h-2 w-2 rounded-full bg-primary-inactive"></div>
-        <div className="h-2 w-2 rounded-full bg-primary-default"></div>
+        <div className="h-2 w-2 rounded-full bg-orange-600"></div>
+        <div className="h-2 w-2 rounded-full bg-orange-600"></div>
       </div>
 
       <div className="grid grid-cols-2 items-center gap-4">
