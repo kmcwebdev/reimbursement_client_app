@@ -20,6 +20,7 @@ const ReimburseForm: React.FC<ReimburseFormProps> = ({
 }) => {
   const { activeStep } = useAppSelector((state) => state.reimbursementForm);
 
+  console.log(formReturn.formState.errors);
   console.log(formReturn.getValues());
 
   return (

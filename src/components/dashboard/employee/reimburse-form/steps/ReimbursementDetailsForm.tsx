@@ -159,13 +159,15 @@ const ReimbursementDetailsForm: React.FC<ReimbursementDetailsFormProps> = ({
               placeholder="Add an Approver"
               hasErrors={
                 formReturn.formState.errors.approvers &&
-                formReturn.formState.errors.approvers[i]?.email?.message
+                (formReturn.formState.errors.approvers[i]?.email?.message ||
+                  formReturn.formState.errors.approvers.message)
                   ? true
                   : false
               }
               error={
                 formReturn.formState.errors.approvers &&
-                formReturn.formState.errors.approvers[i]?.email?.message
+                (formReturn.formState.errors.approvers[i]?.email?.message ||
+                  formReturn.formState.errors.approvers.message)
               }
             />
 

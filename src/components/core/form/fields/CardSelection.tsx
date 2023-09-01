@@ -45,8 +45,14 @@ const CardSelection = React.forwardRef<HTMLDivElement, CardSelectionProps>(
     const [selected, setSelected] = useState<CardSelectionOption>();
 
     useEffect(() => {
-      if (formContext && selected) {
-        formContext.setValue(name, selected.value);
+      if (formContext) {
+        const value = formContext.getValues(name) as string;
+        if (value) {
+          setSelected(options.find((a) => a.value === value));
+        }
+        if (selected) {
+          formContext.setValue(name, selected.value);
+        }
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [formContext, selected]);

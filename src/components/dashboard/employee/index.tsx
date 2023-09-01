@@ -176,7 +176,7 @@ const EmployeeDashboard: React.FC = () => {
         return { ...reimbursementDetails };
       }
     }, [reimbursementDetails]),
-    // mode: "onChange",
+    mode: "onChange",
   });
 
   //Form return for Attachments

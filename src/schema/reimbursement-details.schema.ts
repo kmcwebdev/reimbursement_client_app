@@ -22,20 +22,37 @@ export const reimbursementDetailsSchema = z
       })
       .optional(),
     approvers: z
-      .object({
-        email: z
-          .string({
-            required_error: "Please add at least 1 approver!",
-            invalid_type_error: "Please input at least 1 approver!",
-          })
-          .nonempty("Please input at least 1 approver!")
-          .refine((val) => val.length > 0),
-      })
-      .array()
+      .array(
+        z.object({
+          email: z
+            .string({
+              required_error: "Please input approver!",
+              invalid_type_error: "Please input approver!",
+            })
+            .nonempty("Please input approver!")
+            .refine((val) => val.length > 0),
+        }),
+      )
+      .refine(
+        (items) => {
+          const values = items.map((item) => item.email);
+
+          const hasDuplicateEmail =
+            values.length > 1 &&
+            values.some((email, idx) => values.indexOf(email) !== idx);
+
+          return !hasDuplicateEmail;
+        },
+        {
+          message: "Please check for duplicate approvers!",
+        },
+      )
       .optional(),
     total: z.preprocess(
       (input) => Number(input),
-      z.number({ required_error: "Please input total!" }),
+      z
+        .number({ required_error: "Please input total!" })
+        .min(1, "Please input total!"),
     ),
   })
   .refine(
