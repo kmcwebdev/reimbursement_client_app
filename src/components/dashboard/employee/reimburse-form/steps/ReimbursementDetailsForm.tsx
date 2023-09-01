@@ -27,12 +27,15 @@ import { type ReimbursementDetailsDTO } from "~/types/reimbursement.types";
 
 interface ReimbursementDetailsFormProps {
   formReturn: UseFormReturn<ReimbursementDetailsDTO>;
+  handleOpenCancelDialog: () => void;
 }
 
 const UNSCHEDULED = "9850f2aa-40c4-4fd5-8708-c8edf734d83f";
+const OTHER_EXPENSE = "1de6c849-39d9-421b-b0db-2fb3202cb7c6";
 
 const ReimbursementDetailsForm: React.FC<ReimbursementDetailsFormProps> = ({
   formReturn,
+  handleOpenCancelDialog,
 }) => {
   const { activeStep, reimbursementDetails } = useAppSelector(
     (state) => state.reimbursementForm,
@@ -122,7 +125,7 @@ const ReimbursementDetailsForm: React.FC<ReimbursementDetailsFormProps> = ({
       />
 
       <CollapseHeightAnimation
-        isVisible={selectedExpense === "others" ? true : false}
+        isVisible={selectedExpense === OTHER_EXPENSE ? true : false}
       >
         <Input
           name="remarks"
@@ -156,13 +159,15 @@ const ReimbursementDetailsForm: React.FC<ReimbursementDetailsFormProps> = ({
               placeholder="Add an Approver"
               hasErrors={
                 formReturn.formState.errors.approvers &&
-                formReturn.formState.errors.approvers[i]?.email?.message
+                (formReturn.formState.errors.approvers[i]?.email?.message ||
+                  formReturn.formState.errors.approvers.message)
                   ? true
                   : false
               }
               error={
                 formReturn.formState.errors.approvers &&
-                formReturn.formState.errors.approvers[i]?.email?.message
+                (formReturn.formState.errors.approvers[i]?.email?.message ||
+                  formReturn.formState.errors.approvers.message)
               }
             />
 
@@ -194,6 +199,7 @@ const ReimbursementDetailsForm: React.FC<ReimbursementDetailsFormProps> = ({
           buttonType="outlined"
           variant="neutral"
           className="w-full"
+          onClick={handleOpenCancelDialog}
         >
           Cancel
         </Button>

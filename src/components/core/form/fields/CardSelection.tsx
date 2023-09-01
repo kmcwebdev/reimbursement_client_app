@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { type IconType } from "react-icons-all-files";
 import { classNames } from "~/utils/classNames";
+import SkeletonLoading from "../../SkeletonLoading";
 
 export type CardSelectionOption = {
   icon: IconType;
@@ -44,8 +45,14 @@ const CardSelection = React.forwardRef<HTMLDivElement, CardSelectionProps>(
     const [selected, setSelected] = useState<CardSelectionOption>();
 
     useEffect(() => {
-      if (formContext && selected) {
-        formContext.setValue(name, selected.value);
+      if (formContext) {
+        const value = formContext.getValues(name) as string;
+        if (value) {
+          setSelected(options.find((a) => a.value === value));
+        }
+        if (selected) {
+          formContext.setValue(name, selected.value);
+        }
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [formContext, selected]);
@@ -68,11 +75,6 @@ const CardSelection = React.forwardRef<HTMLDivElement, CardSelectionProps>(
       setSelected(e);
     };
 
-    // TODO: Improve loading state
-    if (loading) {
-      return "Loading...";
-    }
-
     return (
       <div>
         <div className="flex flex-col">
@@ -81,12 +83,14 @@ const CardSelection = React.forwardRef<HTMLDivElement, CardSelectionProps>(
               htmlFor={name}
               className="text-xs font-semibold text-neutral-800"
             >
-              {label}{" "}
+              {label}
               {required && <span className="text-primary-default">*</span>}
             </label>
           )}
 
-          {formContext ? (
+          {loading && <CardSelectionSkeleton />}
+
+          {!loading && formContext && (
             <div
               {...formContext.register(name)}
               className="mt-2 inline-flex flex-1 gap-4 overflow-hidden"
@@ -129,7 +133,8 @@ const CardSelection = React.forwardRef<HTMLDivElement, CardSelectionProps>(
                 );
               })}
             </div>
-          ) : (
+          )}
+          {!loading && !formContext && (
             <div
               className="mt-2 flex flex-1 items-center gap-4 overflow-hidden"
               {...rest}
@@ -184,6 +189,21 @@ const CardSelection = React.forwardRef<HTMLDivElement, CardSelectionProps>(
     );
   },
 );
+
+const CardSelectionSkeleton: React.FC = () => {
+  return (
+    <div className="mt-2 flex flex-1 items-center gap-4 overflow-hidden">
+      <SkeletonLoading
+        containerClassName="h-24 w-1/2 rounded-md overflow-hidden"
+        className="h-full w-full"
+      />
+      <SkeletonLoading
+        containerClassName="h-24 w-1/2 rounded-md overflow-hidden"
+        className="h-full w-full"
+      />
+    </div>
+  );
+};
 
 CardSelection.displayName = "CardSelection";
 

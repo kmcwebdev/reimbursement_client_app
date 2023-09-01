@@ -11,14 +11,26 @@ const UploadAttachments = dynamic(() => import("./steps/UploadAttachments"));
 interface ReimburseFormProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   formReturn: UseFormReturn<any>;
+  handleOpenCancelDialog: () => void;
 }
 
-const ReimburseForm: React.FC<ReimburseFormProps> = ({ formReturn }) => {
+const ReimburseForm: React.FC<ReimburseFormProps> = ({
+  formReturn,
+  handleOpenCancelDialog,
+}) => {
   const { activeStep } = useAppSelector((state) => state.reimbursementForm);
+
+  console.log(formReturn.formState.errors);
+  console.log(formReturn.getValues());
 
   return (
     <div className="py-4">
-      {activeStep === 0 && <ReimbursementDetailsForm formReturn={formReturn} />}
+      {activeStep === 0 && (
+        <ReimbursementDetailsForm
+          formReturn={formReturn}
+          handleOpenCancelDialog={handleOpenCancelDialog}
+        />
+      )}
       {activeStep === 1 && <UploadAttachments formReturn={formReturn} />}
     </div>
   );

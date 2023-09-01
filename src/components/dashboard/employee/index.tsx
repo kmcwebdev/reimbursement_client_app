@@ -64,24 +64,6 @@ const EmployeeDashboard: React.FC = () => {
     pageSize: 10,
   });
 
-  /***Closes the form and open cancel dialog */
-  const handleOpenCancelDialog = () => {
-    dispatch(toggleFormDialog());
-    dispatch(toggleCancelDialog());
-  };
-
-  /**Continue reimbursement request cancellation */
-  const handleConfirmCancellation = () => {
-    dispatch(clearReimbursementForm());
-    dispatch(toggleCancelDialog());
-  };
-
-  /**Aborts reimbursement request cancellation */
-  const handleAbortCancellation = () => {
-    dispatch(toggleCancelDialog());
-    dispatch(toggleFormDialog());
-  };
-
   const columns = React.useMemo<ColumnDef<Reimbursement>[]>(
     () => [
       {
@@ -209,6 +191,26 @@ const EmployeeDashboard: React.FC = () => {
       mode: "onChange",
     });
 
+  /***Closes the form and open cancel dialog */
+  const handleOpenCancelDialog = () => {
+    dispatch(toggleFormDialog());
+    dispatch(toggleCancelDialog());
+  };
+
+  /**Continue reimbursement request cancellation */
+  const handleConfirmCancellation = () => {
+    dispatch(clearReimbursementForm());
+    useReimbursementDetailsFormReturn.reset();
+    useReimbursementAttachmentsFormReturn.reset();
+    dispatch(toggleCancelDialog());
+  };
+
+  /**Aborts reimbursement request cancellation */
+  const handleAbortCancellation = () => {
+    dispatch(toggleCancelDialog());
+    dispatch(toggleFormDialog());
+  };
+
   return (
     <>
       <Head>
@@ -264,6 +266,7 @@ const EmployeeDashboard: React.FC = () => {
                 ? useReimbursementDetailsFormReturn
                 : useReimbursementAttachmentsFormReturn
             }
+            handleOpenCancelDialog={handleOpenCancelDialog}
           />
         </Dialog>
 
