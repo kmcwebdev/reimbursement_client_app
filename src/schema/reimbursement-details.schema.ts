@@ -48,12 +48,9 @@ export const reimbursementDetailsSchema = z
         },
       )
       .optional(),
-    total: z.preprocess(
-      (input) => Number(input),
-      z
-        .number({ required_error: "Please input total!" })
-        .min(1, "Please input total!"),
-    ),
+    total: z.coerce
+      .number({ required_error: "Please input total!" })
+      .min(1, "Please input total!"),
   })
   .refine(
     (input) => {

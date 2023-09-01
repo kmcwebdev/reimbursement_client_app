@@ -1,6 +1,4 @@
-import {
-  useFormContext
-} from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 import { type IconType } from "react-icons-all-files";
 import { classNames } from "~/utils/classNames";
 
@@ -45,7 +43,8 @@ const Input = ({
             <Icon
               className={classNames(
                 "h-5 w-5",
-                hasErrors || formContext && formContext.formState.errors[name]?.message
+                hasErrors ||
+                  (formContext && formContext.formState.errors[name]?.message)
                   ? "text-red-400"
                   : "text-neutral-subtle",
               )}
@@ -82,23 +81,20 @@ const Input = ({
             placeholder={
               placeholder && type !== "date" ? placeholder : undefined
             }
-
             {...rest}
           />
         )}
-
-
       </div>
-      {formContext && formContext.formState.errors && formContext.formState.errors[name] && (
-        <p className="mt-1 text-sm text-danger-default">
-          {formContext.formState.errors[name]?.message as string}
-        </p>
-      )}
+      {formContext &&
+        formContext.formState.errors &&
+        formContext.formState.errors[name] && (
+          <p className="mt-1 text-sm text-danger-default">
+            {formContext.formState.errors[name]?.message as string}
+          </p>
+        )}
 
       {hasErrors && error && (
-        <p className="mt-1 text-sm text-danger-default">
-          {error}
-        </p>
+        <p className="mt-1 text-sm text-danger-default">{error}</p>
       )}
     </div>
   );
