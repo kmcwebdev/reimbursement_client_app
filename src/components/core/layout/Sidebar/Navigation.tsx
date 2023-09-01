@@ -49,7 +49,7 @@ const Navigation: React.FC<NavigationProps> = ({ collapsed }) => {
         return (
           <div
             className={classNames(
-              !active && "hover:bg-[#ffffff] hover:bg-opacity-5",
+              !active && "hover:bg-white hover:bg-opacity-5",
               "relative flex h-11 items-center gap-2 rounded-[4px] p-2 text-white transition-all ease-in-out ",
             )}
             key={item.href}
@@ -63,7 +63,7 @@ const Navigation: React.FC<NavigationProps> = ({ collapsed }) => {
                   animate={{ opacity: "16%" }}
                   exit={{ opacity: 0 }}
                   style={{ position: "absolute", left: 0 }}
-                  className="h-full w-full rounded-sm bg-[#fcfcfc]"
+                  className="h-full w-full rounded-sm bg-neutral-50"
                 />
               </AnimatePresence>
             )}
@@ -82,7 +82,7 @@ const Navigation: React.FC<NavigationProps> = ({ collapsed }) => {
                       animate={{ width: "2px" }}
                       exit={{ width: 0 }}
                       style={{ position: "absolute", top: 6, left: 0 }}
-                      className="h-[16px] w-[2px] rounded-sm bg-primary-default"
+                      className="h-[16px] w-[2px] rounded-sm bg-orange-600"
                     />
                   </AnimatePresence>
                 </div>

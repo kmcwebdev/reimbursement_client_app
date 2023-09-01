@@ -18,6 +18,7 @@ import Select, { type OptionData } from "~/components/core/form/fields/Select";
 import {
   useExpenseTypesQuery,
   useRequestTypesQuery,
+  type ReimbursementDetailsType,
 } from "~/features/reimbursement-api-slice";
 import {
   setActiveStep,
@@ -54,8 +55,8 @@ const ReimbursementDetailsForm: React.FC<ReimbursementDetailsFormProps> = ({
 
   useMemo(() => {
     if (reimbursementDetails) {
-      setSelectedType(reimbursementDetails.type);
-      setSelectedExpense(reimbursementDetails.expense);
+      setSelectedType(reimbursementDetails.reimbursement_request_type_id);
+      setSelectedExpense(reimbursementDetails.expense_type_id);
     }
   }, [reimbursementDetails]);
 
@@ -64,7 +65,7 @@ const ReimbursementDetailsForm: React.FC<ReimbursementDetailsFormProps> = ({
     name: "approvers", // unique name for your Field Array
   });
 
-  const onSubmit = (e: ReimbursementDetailsDTO) => {
+  const onSubmit = (e: ReimbursementDetailsType) => {
     dispatch(setReimbursementDetails(e));
     dispatch(setActiveStep(activeStep + 1));
   };
@@ -93,7 +94,7 @@ const ReimbursementDetailsForm: React.FC<ReimbursementDetailsFormProps> = ({
     >
       <CardSelection
         label="Type"
-        name="type"
+        name="reimbursement_request_type_id"
         required
         handleChange={handleTypeChange}
         loading={requestTypesIsLoading}
@@ -111,7 +112,7 @@ const ReimbursementDetailsForm: React.FC<ReimbursementDetailsFormProps> = ({
 
       <Select
         label="Expense"
-        name="expense"
+        name="expense_type_id"
         placeholder="Type of expense"
         required
         onChangeEvent={handleExpenseTypeChange}
@@ -138,7 +139,7 @@ const ReimbursementDetailsForm: React.FC<ReimbursementDetailsFormProps> = ({
       <Input
         type="number"
         label="Total"
-        name="total"
+        name="amount"
         placeholder="Total"
         required
         step={0.01}
@@ -147,9 +148,7 @@ const ReimbursementDetailsForm: React.FC<ReimbursementDetailsFormProps> = ({
       <CollapseHeightAnimation
         isVisible={selectedType === UNSCHEDULED ? true : false}
       >
-        <label className="text-xs font-semibold text-neutral-800">
-          Approvers
-        </label>
+        <label className="text-xs font-bold text-neutral-900">Approvers</label>
 
         {fields.map((item, i) => (
           <div key={item.id} className="relative my-4 flex flex-col gap-4">
@@ -173,7 +172,7 @@ const ReimbursementDetailsForm: React.FC<ReimbursementDetailsFormProps> = ({
 
             {fields.length > 1 && (
               <AiOutlineMinusCircle
-                className="absolute right-2 top-3 h-4 w-4 cursor-pointer text-danger-default transition-all ease-in-out hover:text-danger-hover"
+                className="absolute right-2 top-3 h-4 w-4 cursor-pointer text-red-600 transition-all ease-in-out hover:text-red-700"
                 onClick={() => remove(i)}
               />
             )}
@@ -189,8 +188,8 @@ const ReimbursementDetailsForm: React.FC<ReimbursementDetailsFormProps> = ({
       </CollapseHeightAnimation>
 
       <div className="my-4 flex items-center justify-center gap-2">
-        <div className="h-2 w-2 rounded-full bg-primary-default"></div>
-        <div className="h-2 w-2 rounded-full bg-primary-inactive"></div>
+        <div className="h-2 w-2 rounded-full bg-orange-600"></div>
+        <div className="h-2 w-2 rounded-full bg-orange-200"></div>
       </div>
 
       <div className="grid grid-cols-2 items-center gap-4">

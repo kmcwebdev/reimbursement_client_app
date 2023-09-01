@@ -29,11 +29,8 @@ const Input = ({
   return (
     <div className="space-y-2">
       {label && (
-        <label
-          htmlFor={name}
-          className="text-xs font-semibold text-neutral-800"
-        >
-          {label} {required && <span className="text-primary-default">*</span>}
+        <label htmlFor={name} className="text-xs font-bold text-neutral-900">
+          {label} {required && <span className="text-orange-600">*</span>}
         </label>
       )}
 
@@ -45,8 +42,8 @@ const Input = ({
                 "h-5 w-5",
                 hasErrors ||
                   (formContext && formContext.formState.errors[name]?.message)
-                  ? "text-red-400"
-                  : "text-neutral-subtle",
+                  ? "text-red-600"
+                  : "text-neutral-600",
               )}
               aria-hidden="true"
             />
@@ -88,13 +85,13 @@ const Input = ({
       {formContext &&
         formContext.formState.errors &&
         formContext.formState.errors[name] && (
-          <p className="mt-1 text-sm text-danger-default">
+          <p className="mt-1 text-sm text-red-600">
             {formContext.formState.errors[name]?.message as string}
           </p>
         )}
 
       {hasErrors && error && (
-        <p className="mt-1 text-sm text-danger-default">{error}</p>
+        <p className="mt-1 text-sm text-red-600">{error}</p>
       )}
     </div>
   );

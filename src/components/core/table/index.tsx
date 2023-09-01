@@ -38,7 +38,7 @@ export type Reimbursement = {
   type: string;
   expense: string;
   filed: string;
-  payrollAccount: number,
+  payrollAccount: number;
   total: number;
 };
 
@@ -121,9 +121,9 @@ const Table: React.FC<TableProps> = ({
 
   return (
     <div className="relative flex flex-col gap-4 overflow-hidden">
-      <div className="overflow-x-scroll bg-white">
+      <div className="overflow-x-auto bg-white">
         <table className="w-full overflow-x-scroll whitespace-nowrap bg-white">
-          <thead className="h-12 border-b border-neutral-subtle text-xs">
+          <thead className="h-12 border-b border-neutral-300 text-xs">
             {table.getHeaderGroups().map((headerGroup, i) => (
               <tr key={i}>
                 {headerGroup.headers.map((header, i) => {
@@ -180,7 +180,7 @@ const Table: React.FC<TableProps> = ({
                     return (
                       <td
                         key={i}
-                        className=" border-b border-b-[#F1F2F4] px-4 first:px-0"
+                        className=" border-b border-b-neutral-200 px-4 first:px-0"
                       >
                         {flexRender(
                           cell.column.columnDef.cell,

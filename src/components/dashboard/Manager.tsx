@@ -132,12 +132,12 @@ const ManagerDashboard: React.FC = () => {
           {/* card */}
           <div className="mb-3 flex place-items-start gap-4">
             <DashboardCard
-              icon={<MdGavel className="h-5 w-5 text-[#D89B0D]" />}
+              icon={<MdGavel className="h-5 w-5 text-orange-600" />}
               label="Pending Approval"
               count={16}
             />
             <DashboardCard
-              icon={<MdAccessTimeFilled className="h-5 w-5 text-[#2463bc]" />}
+              icon={<MdAccessTimeFilled className="h-5 w-5 text-blue-600" />}
               label="Pending Approval"
               count={50}
               totalCount={20}

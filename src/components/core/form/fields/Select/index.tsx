@@ -93,7 +93,9 @@ const Select: React.FC<SelectProps> = ({
     }
 
     if (formContext && !initialValue) {
-      setValue(options.find((opt) => opt.value === formContext.getValues(name)));
+      setValue(
+        options.find((opt) => opt.value === formContext.getValues(name)),
+      );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialValue, formContext]);
@@ -118,15 +120,11 @@ const Select: React.FC<SelectProps> = ({
     onChangeEvent && onChangeEvent(newValue);
   };
 
-
   return (
     <div className="w-full space-y-2">
       {label && (
-        <label
-          htmlFor={name}
-          className="text-xs font-semibold text-neutral-800"
-        >
-          {label} {required && <span className="text-primary-default">*</span>}
+        <label htmlFor={name} className="text-xs font-bold text-neutral-900">
+          {label} {required && <span className="text-orange-600">*</span>}
         </label>
       )}
 
@@ -144,37 +142,58 @@ const Select: React.FC<SelectProps> = ({
                 IndicatorSeparator: () => null,
                 DropdownIndicator: CustomDropdownIndicator,
                 Control: (
-                  props: ControlProps<OptionData, boolean, GroupBase<OptionData>>,
+                  props: ControlProps<
+                    OptionData,
+                    boolean,
+                    GroupBase<OptionData>
+                  >,
                 ) => (
                   <CustomControl
                     Icon={Icon}
                     hasError={
-                      formContext?.formState.errors[name]?.message ? true : false
+                      formContext?.formState.errors[name]?.message
+                        ? true
+                        : false
                     }
                     {...props}
                   />
                 ),
-              }
-              }
-
-              styles={
-                {
-                  control: (
-                    base: CSSObjectWithLabel,
-                    state: ControlProps<OptionData, boolean, GroupBase<OptionData>>,
-                  ) => controlConfig(base, state, formContext?.formState.errors[name] ? true : false),
-                  input: inputConfig,
-                  menu: menuConfig,
-                  option: optionConfig,
-                  clearIndicator: clearIndicatorConfig,
-                }
-              }
+              }}
+              styles={{
+                control: (
+                  base: CSSObjectWithLabel,
+                  state: ControlProps<
+                    OptionData,
+                    boolean,
+                    GroupBase<OptionData>
+                  >,
+                ) =>
+                  controlConfig(
+                    base,
+                    state,
+                    formContext?.formState.errors[name] ? true : false,
+                  ),
+                input: inputConfig,
+                menu: menuConfig,
+                option: optionConfig,
+                clearIndicator: clearIndicatorConfig,
+              }}
               theme={themeConfig}
               ref={ref}
               name={name}
               className={classNames("text-xs", className)}
               value={value}
-              placeholder={<Placeholder hasError={hasError || formContext.formState.errors[name] ? true : false}>{placeholder}</Placeholder>}
+              placeholder={
+                <Placeholder
+                  hasError={
+                    hasError || formContext.formState.errors[name]
+                      ? true
+                      : false
+                  }
+                >
+                  {placeholder}
+                </Placeholder>
+              }
               isLoading={isLoading}
               instanceId="postType"
               closeMenuOnSelect={closeOnSelect}
@@ -194,9 +213,10 @@ const Select: React.FC<SelectProps> = ({
                   newValue.forEach((value) => values.push(value.value));
                   onChange(newValue);
                 } else {
-
                   const selected = newValue as OptionData;
-                  onChange(selected.value)
+
+                  console.log(selected);
+                  onChange(selected.value);
                 }
               }}
             />
@@ -212,32 +232,28 @@ const Select: React.FC<SelectProps> = ({
             ) => (
               <CustomControl
                 Icon={Icon}
-                hasError={
-                  hasError ? true : false
-                }
+                hasError={hasError ? true : false}
                 {...props}
               />
             ),
-          }
-          }
-
-          styles={
-            {
-              control: (
-                base: CSSObjectWithLabel,
-                state: ControlProps<OptionData, boolean, GroupBase<OptionData>>,
-              ) => controlConfig(base, state, hasError),
-              input: inputConfig,
-              menu: menuConfig,
-              option: optionConfig,
-              clearIndicator: clearIndicatorConfig,
-            }
-          }
+          }}
+          styles={{
+            control: (
+              base: CSSObjectWithLabel,
+              state: ControlProps<OptionData, boolean, GroupBase<OptionData>>,
+            ) => controlConfig(base, state, hasError),
+            input: inputConfig,
+            menu: menuConfig,
+            option: optionConfig,
+            clearIndicator: clearIndicatorConfig,
+          }}
           theme={themeConfig}
           name={name}
           className={classNames("text-sm", className)}
           value={value}
-          placeholder={<Placeholder hasError={hasError}>{placeholder}</Placeholder>}
+          placeholder={
+            <Placeholder hasError={hasError}>{placeholder}</Placeholder>
+          }
           isLoading={isLoading}
           instanceId="postType"
           closeMenuOnSelect={closeOnSelect}
@@ -252,11 +268,14 @@ const Select: React.FC<SelectProps> = ({
         />
       )}
 
-      {formContext && formContext.formState.errors && formContext.formState.errors[name] && formContext.formState.errors[name]?.message && (
-        <p className="mt-1 text-sm text-danger-default" id="email-error">
-          {formContext.formState.errors[name]?.message as string}
-        </p>
-      )}
+      {formContext &&
+        formContext.formState.errors &&
+        formContext.formState.errors[name] &&
+        formContext.formState.errors[name]?.message && (
+          <p className="mt-1 text-sm text-danger-default" id="email-error">
+            {formContext.formState.errors[name]?.message as string}
+          </p>
+        )}
     </div>
   );
 };

@@ -40,7 +40,7 @@ const Checkbox = ({
                   onChange && onChange(e);
                 }}
                 checked={isChecked}
-                className="h-4 w-4 rounded border-neutral-subtle text-primary-default transition-all ease-in-out focus:ring-0 focus:ring-transparent disabled:cursor-not-allowed disabled:text-neutral-default"
+                className="h-4 w-4 rounded border-neutral-300 text-orange-600 transition-all ease-in-out focus:ring-0 focus:ring-transparent disabled:cursor-not-allowed disabled:text-neutral-300"
               />
             )}
 
@@ -55,7 +55,7 @@ const Checkbox = ({
                   onChange && onChange(e);
                 }}
                 checked={isChecked}
-                className="h-4 w-4 rounded border-neutral-subtle text-primary-default transition-all ease-in-out focus:ring-0 focus:ring-transparent disabled:cursor-not-allowed disabled:text-neutral-default"
+                className="h-4 w-4 rounded border-neutral-300 text-orange-600 transition-all ease-in-out focus:ring-0 focus:ring-transparent disabled:cursor-not-allowed disabled:text-neutral-300"
                 {...rest}
               />
             )}
@@ -64,7 +64,7 @@ const Checkbox = ({
             {label && (
               <label
                 htmlFor={name}
-                className="text-ne cursor-pointer text-xs leading-6 text-neutral-pressed"
+                className=" cursor-pointer text-xs leading-6 text-neutral-900"
               >
                 {label}
               </label>

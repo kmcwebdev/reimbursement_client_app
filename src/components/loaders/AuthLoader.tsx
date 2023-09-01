@@ -10,7 +10,7 @@ const AuthLoader: React.FC = () => {
           <div className="absolute grid h-full w-full place-items-center">
             <BsFingerprint className="absolute h-10 w-10" />
           </div>
-          <RiLoader4Fill className="h-24 w-24 animate-spin text-primary-default" />
+          <RiLoader4Fill className="h-24 w-24 animate-spin text-orange-600" />
         </div>
 
         <h5>Loading please wait...</h5>

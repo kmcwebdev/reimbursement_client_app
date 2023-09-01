@@ -37,7 +37,7 @@ const ProfileMenu: React.FC = () => {
       btn={
         <div
           role="button"
-          className="grid h-8 w-8 place-items-center rounded-full bg-gray-200 font-bold text-neutral-default"
+          className="grid h-8 w-8 place-items-center rounded-full bg-gray-200 font-bold text-neutral-800"
         >
           <div className="relative grid h-5 w-5 place-items-center">
             <>
@@ -62,10 +62,10 @@ const ProfileMenu: React.FC = () => {
             }}
           />
           <div
-            className="flex cursor-pointer items-center gap-4 rounded p-2 transition-all ease-in-out hover:bg-primary-subtle"
+            className="flex cursor-pointer items-center gap-4 rounded p-2 transition-all ease-in-out hover:bg-orange-300"
             onClick={() => navigation.push("/user-management")}
           >
-            <MdPeople className="h-5 w-5 text-primary-default" />
+            <MdPeople className="h-5 w-5 text-orange-600" />
             User Management
           </div>
         </div>

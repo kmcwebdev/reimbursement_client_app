@@ -55,7 +55,7 @@ const StatusFilter: React.FC<FilterProps> = ({
 
   return (
     <Popover
-      btn={<FaCaretDown />}
+      btn={<FaCaretDown className="text-neutral-900 hover:text-neutral-800" />}
       content={
         <div className="w-32 p-4">
           <div className="flex flex-col gap-2 capitalize">
