@@ -1,33 +1,59 @@
 import React from "react";
-import { type UseFormReturn } from "react-hook-form";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { Button } from "~/components/core/Button";
 import Upload from "~/components/core/Upload";
-import { useUploadFileMutation } from "~/features/reimbursement-api-slice";
-import { setActiveStep } from "~/features/reimbursement-form-slice";
-import { type ReimbursementAttachmentsDTO } from "~/types/reimbursement.types";
+import {
+  useCreateReimbursementMutation,
+  useUploadFileMutation,
+} from "~/features/reimbursement-api-slice";
+import {
+  setActiveStep,
+  setReimbursementAttachments,
+} from "~/features/reimbursement-form-slice";
 
-interface UploadAttachmentsProps {
-  formReturn: UseFormReturn<ReimbursementAttachmentsDTO>;
-}
-
-const UploadAttachments: React.FC<UploadAttachmentsProps> = () => {
-  const { activeStep } = useAppSelector((state) => state.reimbursementForm);
+const UploadAttachments: React.FC = () => {
+  const { activeStep, reimbursementDetails } = useAppSelector(
+    (state) => state.reimbursementForm,
+  );
   const dispatch = useAppDispatch();
 
   const [
     uploadFiles,
-    // {
-    //   isLoading: isUploading,
-    //   isSuccess: isUploadingSuccess,
-    //   data: uploadedFiles,
-    // },
+    {
+      isLoading: isUploading,
+      isSuccess: isUploadingSuccess,
+      data: uploadedFiles,
+    },
   ] = useUploadFileMutation();
+
+  const [
+    createReimbursement,
+    // { isLoading: isCreating, isSuccess: isCreatingSuccess, data: created },
+  ] = useCreateReimbursementMutation();
+
+  const handleReimburse = () => {
+    if (uploadedFiles) {
+      dispatch(setReimbursementAttachments(uploadedFiles));
+
+      if (reimbursementDetails) {
+        const { reimbursement_request_type_id, expense_type_id, amount } =
+          reimbursementDetails;
+        void createReimbursement({
+          reimbursement_request_type_id,
+          expense_type_id,
+          amount,
+          attachment: uploadedFiles.url,
+        });
+      }
+    }
+  };
 
   return (
     <div className="flex flex-col gap-4">
       <Upload
         uploadButtonProps={{
+          loading: isUploading,
+          disabled: isUploading,
           onClick: (e) => {
             if (e) {
               const formData = new FormData();
@@ -53,7 +79,11 @@ const UploadAttachments: React.FC<UploadAttachmentsProps> = () => {
         >
           Previous
         </Button>
-        <Button type="submit" className="w-full">
+        <Button
+          onClick={handleReimburse}
+          className="w-full"
+          disabled={isUploading && !isUploadingSuccess && !uploadedFiles}
+        >
           Reimburse
         </Button>
       </div>

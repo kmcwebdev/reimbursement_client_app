@@ -1,13 +1,11 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import {
-  type ReimbursementAttachmentsDTO,
-  type ReimbursementDetailsDTO,
-} from "~/types/reimbursement.types";
+import { type UploadFileResponse } from "~/types/file-upload-response.type";
+import { type ReimbursementDetailsType } from "./reimbursement-api-slice";
 
 interface ReimburseFormState {
   activeStep: number;
-  reimbursementDetails: ReimbursementDetailsDTO | null;
-  reimbursementAttachments: ReimbursementAttachmentsDTO | [];
+  reimbursementDetails: ReimbursementDetailsType | null;
+  reimbursementAttachment: UploadFileResponse | null;
   cancelDialogIsOpen: boolean;
   formDialogIsOpen: boolean;
 }
@@ -15,7 +13,7 @@ interface ReimburseFormState {
 const initialState: ReimburseFormState = {
   activeStep: 0,
   reimbursementDetails: null,
-  reimbursementAttachments: [],
+  reimbursementAttachment: null,
   formDialogIsOpen: false,
   cancelDialogIsOpen: false,
 };
@@ -29,20 +27,20 @@ const reimbursementFormSlice = createSlice({
     },
     setReimbursementDetails(
       state,
-      action: PayloadAction<ReimbursementDetailsDTO | null>,
+      action: PayloadAction<ReimbursementDetailsType | null>,
     ) {
       state.reimbursementDetails = action.payload;
     },
     setReimbursementAttachments(
       state,
-      action: PayloadAction<ReimbursementAttachmentsDTO | []>,
+      action: PayloadAction<UploadFileResponse | null>,
     ) {
-      state.reimbursementAttachments = action.payload;
+      state.reimbursementAttachment = action.payload;
     },
     clearReimbursementForm(state) {
       state.activeStep = 0;
       state.reimbursementDetails = null;
-      state.reimbursementAttachments = [];
+      state.reimbursementAttachment = null;
     },
     toggleFormDialog(state) {
       state.formDialogIsOpen = !state.formDialogIsOpen;

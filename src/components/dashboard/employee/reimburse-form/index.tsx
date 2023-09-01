@@ -20,18 +20,15 @@ const ReimburseForm: React.FC<ReimburseFormProps> = ({
 }) => {
   const { activeStep } = useAppSelector((state) => state.reimbursementForm);
 
-  console.log(formReturn.formState.errors);
-  console.log(formReturn.getValues());
-
   return (
     <div className="py-4">
-      {activeStep === 0 && (
+      {activeStep === 0 && formReturn && (
         <ReimbursementDetailsForm
           formReturn={formReturn}
           handleOpenCancelDialog={handleOpenCancelDialog}
         />
       )}
-      {activeStep === 1 && <UploadAttachments formReturn={formReturn} />}
+      {activeStep === 1 && <UploadAttachments />}
     </div>
   );
 };

@@ -18,6 +18,7 @@ import Select, { type OptionData } from "~/components/core/form/fields/Select";
 import {
   useExpenseTypesQuery,
   useRequestTypesQuery,
+  type ReimbursementDetailsType,
 } from "~/features/reimbursement-api-slice";
 import {
   setActiveStep,
@@ -54,8 +55,8 @@ const ReimbursementDetailsForm: React.FC<ReimbursementDetailsFormProps> = ({
 
   useMemo(() => {
     if (reimbursementDetails) {
-      setSelectedType(reimbursementDetails.type);
-      setSelectedExpense(reimbursementDetails.expense);
+      setSelectedType(reimbursementDetails.reimbursement_request_type_id);
+      setSelectedExpense(reimbursementDetails.expense_type_id);
     }
   }, [reimbursementDetails]);
 
@@ -64,7 +65,7 @@ const ReimbursementDetailsForm: React.FC<ReimbursementDetailsFormProps> = ({
     name: "approvers", // unique name for your Field Array
   });
 
-  const onSubmit = (e: ReimbursementDetailsDTO) => {
+  const onSubmit = (e: ReimbursementDetailsType) => {
     dispatch(setReimbursementDetails(e));
     dispatch(setActiveStep(activeStep + 1));
   };
@@ -93,7 +94,7 @@ const ReimbursementDetailsForm: React.FC<ReimbursementDetailsFormProps> = ({
     >
       <CardSelection
         label="Type"
-        name="type"
+        name="reimbursement_request_type_id"
         required
         handleChange={handleTypeChange}
         loading={requestTypesIsLoading}
@@ -111,7 +112,7 @@ const ReimbursementDetailsForm: React.FC<ReimbursementDetailsFormProps> = ({
 
       <Select
         label="Expense"
-        name="expense"
+        name="expense_type_id"
         placeholder="Type of expense"
         required
         onChangeEvent={handleExpenseTypeChange}
@@ -138,7 +139,7 @@ const ReimbursementDetailsForm: React.FC<ReimbursementDetailsFormProps> = ({
       <Input
         type="number"
         label="Total"
-        name="total"
+        name="amount"
         placeholder="Total"
         required
         step={0.01}

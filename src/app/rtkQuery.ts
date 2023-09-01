@@ -17,8 +17,6 @@ const appApiBaseQuery = fetchBaseQuery({
   prepareHeaders: (headers, { getState }) => {
     const state = getState() as RootState;
 
-    headers.set("content-type", "application/json");
-
     if (state.session.accessToken) {
       headers.set("authorization", `Bearer ${state.session.accessToken}`);
     }

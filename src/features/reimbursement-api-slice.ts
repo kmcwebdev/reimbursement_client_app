@@ -1,6 +1,8 @@
 import { z } from "zod";
 import { appApiSlice } from "~/app/rtkQuery";
-import { type ReimbursementExpenseType } from "~/types/reimbursement.expense-type";
+import { type ReimbursementDetailsSchema } from "~/schema/reimbursement-details.schema";
+import { type UploadFileResponse } from "~/types/file-upload-response.type";
+import { type ReimbursementExpenseType } from "~/types/reimbursement.expese-type";
 import { type ReimbursementRequestType } from "~/types/reimbursement.request-type";
 
 const ExpenseTypeQuerySchema = z.object({
@@ -8,6 +10,9 @@ const ExpenseTypeQuerySchema = z.object({
 });
 
 type ExpenseTypeQueryType = z.infer<typeof ExpenseTypeQuerySchema>;
+export type ReimbursementDetailsType = z.infer<
+  typeof ReimbursementDetailsSchema
+>;
 
 export const reimbursementApiSlice = appApiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -36,16 +41,25 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
         };
       },
     }),
-    uploadFile: builder.mutation<unknown, FormData>({
+    uploadFile: builder.mutation<UploadFileResponse, FormData>({
       query: (formData) => {
         return {
           url: "/api/finance/reimbursements/requests/attachments",
           method: "POST",
           body: formData,
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
           formData: true,
+        };
+      },
+    }),
+    createReimbursement: builder.mutation<
+      unknown,
+      ReimbursementDetailsType & { attachment: string }
+    >({
+      query: (data) => {
+        return {
+          url: "/api/finance/reimbursements/requests",
+          method: "POST",
+          body: data,
         };
       },
     }),
@@ -57,4 +71,5 @@ export const {
   useRequestTypesQuery,
   useExpenseTypesQuery,
   useUploadFileMutation,
+  useCreateReimbursementMutation,
 } = reimbursementApiSlice;
