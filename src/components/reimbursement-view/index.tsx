@@ -1,7 +1,7 @@
 import { type PropsWithChildren } from "react";
 import { Button } from "~/components/core/Button";
 import { type StatusType } from "~/components/core/StatusBadge";
-import { ReimbursementRequest } from "~/types/reimbursement.types";
+import { type ReimbursementRequest } from "~/types/reimbursement.types";
 import Approvers from "./Approvers";
 import Attachments from "./Attachments";
 import Details from "./Details";

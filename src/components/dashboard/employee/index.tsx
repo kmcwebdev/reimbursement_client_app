@@ -167,7 +167,9 @@ const EmployeeDashboard: React.FC = () => {
         cell: (info) => (
           <Button
             buttonType="text"
-            onClick={() => handleOpenReimbursementView(info.getValue())}
+            onClick={() =>
+              handleOpenReimbursementView(info.getValue() as string)
+            }
           >
             View
           </Button>
