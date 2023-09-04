@@ -3,12 +3,13 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 interface User {
   userId: string;
   email: string;
-  firstName: string | undefined;
-  lastName: string | undefined;
-  pictureUrl: string | undefined;
-  username: string | undefined;
+  firstName?: string;
+  lastName?: string;
+  pictureUrl?: string;
+  username?: string;
+  assignedRole?: string;
   mfaEnabled: boolean;
-  legacyUserId: string | undefined;
+  legacyUserId?: string;
   lastActiveAt: number;
   createdAt: number;
 }

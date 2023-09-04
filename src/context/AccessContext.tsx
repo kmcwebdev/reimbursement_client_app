@@ -9,6 +9,7 @@ import React, {
 } from "react";
 import { useAppDispatch } from "~/app/hook";
 import { setUser as reduxSetUser, setAccessToken } from "~/features/user-slice";
+import { ORG_KMC_SOLUTIONS } from "~/utils/constant";
 
 const AuthLoader = dynamic(() => import("~/components/loaders/AuthLoader"));
 
@@ -57,29 +58,50 @@ export const UserAccessProvider: React.FC<PropsWithChildren> = ({
   children,
 }) => {
   const dispatch = useAppDispatch();
-  const { loading: userIsLoading, user: propelUser, accessToken } = useUser();
+  const {
+    loading: userIsLoading,
+    user: propel,
+    accessToken,
+    isLoggedIn,
+  } = useUser();
   const [user, setUser] = useState<IUserData | null>(users[0]);
 
   useEffect(() => {
-    if (user && accessToken) {
+    if (propel && accessToken) {
+      const {
+        userId,
+        email,
+        firstName,
+        lastName,
+        username,
+        pictureUrl,
+        mfaEnabled,
+        legacyUserId,
+        lastActiveAt,
+        createdAt,
+      } = propel;
+
+      const assignedRole = propel.getOrgByName(ORG_KMC_SOLUTIONS)?.assignedRole;
+
       dispatch(
         reduxSetUser({
-          userId: propelUser.userId,
-          email: propelUser.email,
-          firstName: propelUser.firstName,
-          lastName: propelUser.lastName,
-          username: propelUser.username,
-          pictureUrl: propelUser.pictureUrl,
-          mfaEnabled: propelUser.mfaEnabled,
-          legacyUserId: propelUser.legacyUserId,
-          lastActiveAt: propelUser.lastActiveAt,
-          createdAt: propelUser.createdAt,
+          userId,
+          email,
+          firstName,
+          lastName,
+          username,
+          assignedRole,
+          pictureUrl,
+          mfaEnabled,
+          legacyUserId,
+          lastActiveAt,
+          createdAt,
         }),
       );
+
       dispatch(setAccessToken(accessToken));
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, accessToken, dispatch]);
+  }, [propel, accessToken, dispatch]);
 
   const changeUser = (role: IRole) => {
     const u = users.find((a) => a.role === role);
@@ -89,7 +111,7 @@ export const UserAccessProvider: React.FC<PropsWithChildren> = ({
     }
   };
 
-  if (userIsLoading) {
+  if (userIsLoading && isLoggedIn) {
     return <AuthLoader />;
   }
 
