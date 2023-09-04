@@ -3,7 +3,7 @@ import React from "react";
 import { MdPeople } from "react-icons-all-files/md/MdPeople";
 import { type PropsValue } from "react-select";
 import { useAppSelector } from "~/app/hook";
-import { useUserAccessContext, type IRole } from "~/context/AccessContext";
+import { useUserContext, type IRole } from "~/context/UserContext";
 import Popover from "../../Popover";
 import Select, { type OptionData } from "../../form/fields/Select";
 
@@ -27,7 +27,7 @@ const options = [
 ];
 
 const ProfileMenu: React.FC = () => {
-  const { user: tempUser, changeUser } = useUserAccessContext();
+  const { user: tempUser, changeUser } = useUserContext();
 
   const user = useAppSelector((state) => state.session.user);
 

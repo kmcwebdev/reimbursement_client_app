@@ -302,10 +302,12 @@ const EmployeeDashboard: React.FC = () => {
           isVisible={isVisible}
           closeDrawer={close}
         >
-          <ReimbursementsCardView
-            closeDrawer={close}
-            data={focusedReimbursement}
-          />
+          {focusedReimbursement && (
+            <ReimbursementsCardView
+              closeDrawer={close}
+              data={focusedReimbursement}
+            />
+          )}
         </SideDrawer>
       </PageAnimation>
     </>

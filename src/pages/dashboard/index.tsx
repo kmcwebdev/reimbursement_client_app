@@ -4,7 +4,7 @@ import { type GetServerSideProps, type NextPage } from "next";
 import dynamic from "next/dynamic";
 import Head from "next/head";
 import { Fragment } from "react";
-import { useUserAccessContext } from "~/context/AccessContext";
+import { useUserContext } from "~/context/UserContext";
 
 interface SSRProps {
   userJson: string;
@@ -23,7 +23,7 @@ const ManagerDashboard = dynamic(
 
 const Dashboard: NextPage<SSRProps> = () => {
   const logoutFn = useLogoutFunction();
-  const { user } = useUserAccessContext();
+  const { user } = useUserContext();
 
   // const propel = UserFromToken.fromJSON(props.userJson);
 
