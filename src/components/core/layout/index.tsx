@@ -33,7 +33,6 @@ const Layout: React.FC<PropsWithChildren> = ({ children }) => {
           >
             {children}
           </div>
-
           <div className="absolute h-16" />
         </div>
       </main>
