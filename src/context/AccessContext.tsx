@@ -58,25 +58,29 @@ export const UserAccessProvider: React.FC<PropsWithChildren> = ({
   children,
 }) => {
   const dispatch = useAppDispatch();
-  const { loading: userIsLoading, user: propelUser, accessToken } = useUser();
+  const {
+    loading: userIsLoading,
+    user: propelauthUser,
+    accessToken,
+  } = useUser();
   const [user, setUser] = useState<IUserData | null>(users[0]);
 
   useEffect(() => {
     if (user && accessToken) {
       dispatch(
         reduxSetUser({
-          userId: propelUser.userId,
-          email: propelUser.email,
-          firstName: propelUser.firstName,
-          lastName: propelUser.lastName,
-          username: propelUser.username,
+          userId: propelauthUser.userId,
+          email: propelauthUser.email,
+          firstName: propelauthUser.firstName,
+          lastName: propelauthUser.lastName,
+          username: propelauthUser.username,
           assignedRole:
-            propelUser.getOrgByName(ORG_KMC_SOLUTIONS)?.assignedRole,
-          pictureUrl: propelUser.pictureUrl,
-          mfaEnabled: propelUser.mfaEnabled,
-          legacyUserId: propelUser.legacyUserId,
-          lastActiveAt: propelUser.lastActiveAt,
-          createdAt: propelUser.createdAt,
+            propelauthUser.getOrgByName(ORG_KMC_SOLUTIONS)?.assignedRole,
+          pictureUrl: propelauthUser.pictureUrl,
+          mfaEnabled: propelauthUser.mfaEnabled,
+          legacyUserId: propelauthUser.legacyUserId,
+          lastActiveAt: propelauthUser.lastActiveAt,
+          createdAt: propelauthUser.createdAt,
         }),
       );
       dispatch(setAccessToken(accessToken));
@@ -92,7 +96,7 @@ export const UserAccessProvider: React.FC<PropsWithChildren> = ({
     }
   };
 
-  if (userIsLoading && propelUser) {
+  if (userIsLoading && propelauthUser) {
     return <AuthLoader />;
   }
 
