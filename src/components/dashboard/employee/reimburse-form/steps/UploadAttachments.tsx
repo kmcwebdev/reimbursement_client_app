@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-import React, { useEffect } from "react";
+import React from "react";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { Button } from "~/components/core/Button";
 import { showToast } from "~/components/core/Toast";
@@ -12,8 +12,7 @@ import {
   setActiveStep,
   setReimbursementAttachments,
 } from "~/features/reimbursement-form-slice";
-import { MutationError } from "~/types/global-types";
-import { isFetchBaseQueryError } from "~/utils/is-fetch-base-query-error";
+import { type MutationError } from "~/types/global-types";
 
 const UploadAttachments: React.FC = () => {
   const { activeStep, reimbursementDetails } = useAppSelector(
@@ -30,39 +29,8 @@ const UploadAttachments: React.FC = () => {
     },
   ] = useUploadFileMutation();
 
-  const [
-    createReimbursement,
-    {
-      isLoading: isSubmitting,
-      isSuccess: isSubmissionSuccess,
-      isError: isSubmissionError,
-      error: submissionError,
-    },
-  ] = useCreateReimbursementMutation();
-
-  useEffect(() => {
-    if (isSubmissionSuccess) {
-      showToast({
-        type: "success",
-        description:
-          "You have successfully submitted your reimbursement request!",
-      });
-    }
-    if (isSubmissionError && submissionError) {
-      if (isFetchBaseQueryError(submissionError)) {
-        const mutationError = submissionError as MutationError;
-        showToast({
-          type: "error",
-          description: mutationError.data.errors[0].message,
-        });
-      } else {
-        showToast({
-          type: "error",
-          description: "There was a problem submitting your request!",
-        });
-      }
-    }
-  }, [isSubmissionSuccess, isSubmissionError, submissionError]);
+  const [createReimbursement, { isLoading: isSubmitting }] =
+    useCreateReimbursementMutation();
 
   const handleReimburse = () => {
     if (uploadedFiles) {
@@ -71,12 +39,23 @@ const UploadAttachments: React.FC = () => {
       if (reimbursementDetails) {
         const { reimbursement_request_type_id, expense_type_id, amount } =
           reimbursementDetails;
+
         void createReimbursement({
           reimbursement_request_type_id,
           expense_type_id,
           amount,
           attachment: uploadedFiles.url,
-        });
+        })
+          .unwrap()
+          .then((data) => {
+            console.log(data);
+          })
+          .catch((error: MutationError) => {
+            showToast({
+              type: "error",
+              description: error.data.errors[0].message,
+            });
+          });
       }
     }
   };
