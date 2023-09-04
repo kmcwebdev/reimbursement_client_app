@@ -7,14 +7,14 @@ import { MdAccessTimeFilled } from "react-icons-all-files/md/MdAccessTimeFilled"
 import { MdCalendarToday } from "react-icons-all-files/md/MdCalendarToday";
 import { MdLabel } from "react-icons-all-files/md/MdLabel";
 import { statusOptions } from "~/constants/status-options";
+import { type ReimbursementRequest } from "~/types/reimbursement.types";
 import { classNames } from "~/utils/classNames";
-import { type Reimbursement } from ".";
 import { Button } from "../Button";
 import StatusBadge, { type StatusType } from "../StatusBadge";
 
 interface FilterViewProps {
   colSpan: number;
-  columns: (Column<Reimbursement, unknown> | undefined)[];
+  columns: (Column<ReimbursementRequest, unknown> | undefined)[];
 }
 
 const FilterView: React.FC<FilterViewProps> = ({ columns, colSpan }) => {
@@ -39,16 +39,21 @@ const FilterView: React.FC<FilterViewProps> = ({ columns, colSpan }) => {
     );
     if (statusColumn) {
       const filterValue: string[] = statusColumn.getFilterValue() as string[];
-      setStatusFilterValue(filterValue);
-      setStatusFilterIsVisible(filterValue.length < statusOptions.length);
+      if (filterValue && filterValue.length > 0) {
+        setStatusFilterValue(filterValue);
+        setStatusFilterIsVisible(filterValue.length < statusOptions.length);
+      }
     }
 
     /**Check reimbursement type filter value length if equal to 2 */
     const typeColumn = columns.find((column) => column && column.id === "type");
     if (typeColumn) {
       const filterValue: string[] = typeColumn.getFilterValue() as string[];
-      setTypeFilterValue(filterValue);
-      setTypeFilterIsVisible(filterValue.length < 2);
+
+      if (filterValue && filterValue.length > 0) {
+        setTypeFilterValue(filterValue);
+        setTypeFilterIsVisible(filterValue.length < 2);
+      }
     }
 
     /**Check expense type filter value if equal to expense type = column faceted unique values */
@@ -57,11 +62,14 @@ const FilterView: React.FC<FilterViewProps> = ({ columns, colSpan }) => {
     );
     if (expenseColumn) {
       const filterValue: string[] = expenseColumn.getFilterValue() as string[];
-      setExpenseFilterValue(filterValue);
-      setExpenseFilterIsVisible(
-        filterValue.length <
-          Array.from(expenseColumn.getFacetedUniqueValues().keys()).length,
-      );
+
+      if (filterValue && filterValue.length > 0) {
+        setExpenseFilterValue(filterValue);
+        setExpenseFilterIsVisible(
+          filterValue.length <
+            Array.from(expenseColumn.getFacetedUniqueValues().keys()).length,
+        );
+      }
     }
 
     /**Check date filed filter value if has value */

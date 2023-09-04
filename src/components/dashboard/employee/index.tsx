@@ -17,11 +17,11 @@ import { Button } from "~/components/core/Button";
 import DashboardCard from "~/components/core/DashboardCard";
 import SideDrawer from "~/components/core/SideDrawer";
 import StatusBadge, { type StatusType } from "~/components/core/StatusBadge";
-import Table, { type Reimbursement } from "~/components/core/table";
+import Table from "~/components/core/table";
 import TableCheckbox from "~/components/core/table/TableCheckbox";
-import DateFiledFilter from "~/components/core/table/filters/DateFiledFilter";
 import { type FilterProps } from "~/components/core/table/filters/StatusFilter";
 import ReimbursementsCardView from "~/components/reimbursement-view";
+import { useGetAllRequestsQuery } from "~/features/reimbursement-api-slice";
 import {
   clearReimbursementForm,
   toggleCancelDialog,
@@ -29,9 +29,11 @@ import {
 } from "~/features/reimbursement-form-slice";
 import { useDialogState } from "~/hooks/use-dialog-state";
 import { ReimbursementDetailsSchema } from "~/schema/reimbursement-details.schema";
-import { type ReimbursementDetailsDTO } from "~/types/reimbursement.types";
+import {
+  ReimbursementRequest,
+  type ReimbursementDetailsDTO,
+} from "~/types/reimbursement.types";
 import { currencyFormat } from "~/utils/currencyFormat";
-import { sampleData } from "~/utils/sampleData";
 
 const Dialog = dynamic(() => import("~/components/core/Dialog"));
 const ReimburseForm = dynamic(
@@ -53,6 +55,11 @@ const EmployeeDashboard: React.FC = () => {
     useAppSelector((state) => state.reimbursementForm);
   const dispatch = useAppDispatch();
 
+  const [focusedReimbursement, setFocusedReimbursement] =
+    useState<ReimbursementRequest>();
+
+  const { isLoading, data } = useGetAllRequestsQuery();
+
   const { isVisible, open, close } = useDialogState();
 
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
@@ -62,8 +69,8 @@ const EmployeeDashboard: React.FC = () => {
     pageSize: 10,
   });
 
-  const columns = React.useMemo<ColumnDef<Reimbursement>[]>(
-    () => [
+  const columns = React.useMemo<ColumnDef<ReimbursementRequest>[]>(() => {
+    return [
       {
         id: "select",
         header: ({ table }) => (
@@ -86,10 +93,14 @@ const EmployeeDashboard: React.FC = () => {
       },
 
       {
-        id: "status",
-        accessorKey: "status",
+        id: "request_status",
+        accessorKey: "request_status",
         header: "Status",
-        cell: (info) => <StatusBadge status={info.getValue() as StatusType} />,
+        cell: (info) => (
+          <StatusBadge
+            status={(info.getValue() as string).toLowerCase() as StatusType}
+          />
+        ),
         filterFn: (row, id, value: string) => {
           return value.includes(row.getValue(id));
         },
@@ -99,20 +110,14 @@ const EmployeeDashboard: React.FC = () => {
         },
       },
       {
-        id: "r-id",
-        accessorKey: "reimbursementId",
+        id: "reference_no",
+        accessorKey: "reference_no",
         cell: (info) => info.getValue(),
-        header: "ID",
+        header: "R-ID",
       },
       {
-        id: "id",
-        accessorKey: "id",
-        cell: (info) => info.getValue(),
-        header: "ID",
-      },
-      {
-        id: "type",
-        accessorKey: "type",
+        id: "request_type",
+        accessorKey: "request_type",
         cell: (info) => info.getValue(),
         header: "Type",
         filterFn: (row, id, value: string) => {
@@ -125,8 +130,8 @@ const EmployeeDashboard: React.FC = () => {
         },
       },
       {
-        id: "expense",
-        accessorKey: "expense",
+        id: "expense_type",
+        accessorKey: "expense_type",
         cell: (info) => info.getValue(),
         header: "Expense",
         filterFn: (row, id, value: string) => {
@@ -138,38 +143,46 @@ const EmployeeDashboard: React.FC = () => {
           ),
         },
       },
+      // {
+      //   id: "filed",
+      //   accessorKey: "filed",
+      //   cell: (info) => info.getValue(),
+      //   header: "Filed",
+      //   filterFn: (row, id, value: string) => {
+      //     return value.includes(row.getValue(id));
+      //   },
+      //   meta: {
+      //     filterComponent: (info: FilterProps) => <DateFiledFilter {...info} />,
+      //   },
+      // },
       {
-        id: "filed",
-        accessorKey: "filed",
-        cell: (info) => info.getValue(),
-        header: "Filed",
-        filterFn: (row, id, value: string) => {
-          return value.includes(row.getValue(id));
-        },
-        meta: {
-          filterComponent: (info: FilterProps) => <DateFiledFilter {...info} />,
-        },
-      },
-      {
-        id: "total",
-        accessorKey: "total",
+        id: "amount",
+        accessorKey: "amount",
         cell: (info) => currencyFormat(info.getValue() as number),
-        header: "Total",
+        header: "Amount",
       },
       {
         id: "actions",
-        accessorKey: "r-id",
-        cell: () => (
-          <Button buttonType="text" onClick={open}>
+        accessorKey: "reimbursement_request_id",
+        cell: (info) => (
+          <Button
+            buttonType="text"
+            onClick={() => handleOpenReimbursementView(info.getValue())}
+          >
             View
           </Button>
         ),
         header: "",
       },
-    ],
+    ];
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
-  );
+  }, []);
+
+  const handleOpenReimbursementView = (id: string) => {
+    const focused = data?.find((a) => a.reimbursement_request_id === id);
+    setFocusedReimbursement(focused);
+    open();
+  };
 
   //Form return for Details
   const useReimbursementDetailsFormReturn = useForm<ReimbursementDetailsDTO>({
@@ -229,20 +242,22 @@ const EmployeeDashboard: React.FC = () => {
             </Button>
           </div>
 
-          <Table
-            data={sampleData}
-            columns={columns}
-            tableState={{
-              pagination,
-              selectedItems,
-              columnFilters,
-            }}
-            tableStateActions={{
-              setColumnFilters,
-              setSelectedItems,
-              setPagination,
-            }}
-          />
+          {!isLoading && data && (
+            <Table
+              data={data}
+              columns={columns}
+              tableState={{
+                pagination,
+                selectedItems,
+                columnFilters,
+              }}
+              tableStateActions={{
+                setColumnFilters,
+                setSelectedItems,
+                setPagination,
+              }}
+            />
+          )}
         </div>
 
         <Dialog
@@ -278,26 +293,16 @@ const EmployeeDashboard: React.FC = () => {
           </div>
         </Dialog>
 
-        <SideDrawer title="R-12345" isVisible={isVisible} closeDrawer={close}>
+        <SideDrawer
+          title={
+            focusedReimbursement ? focusedReimbursement.reference_no : "..."
+          }
+          isVisible={isVisible}
+          closeDrawer={close}
+        >
           <ReimbursementsCardView
             closeDrawer={close}
-            data={{
-              reimbursementId: "R-245",
-              client: "test",
-              id: "123",
-              name: "test",
-              notes: "test notes",
-              status: "approved",
-              type: "test",
-              expense: "test",
-              remarks: "test",
-              filed: "test",
-              total: 123,
-              note: "test",
-              approvers: "test",
-              daterejected: "test",
-              attachments: "test",
-            }}
+            data={focusedReimbursement}
           />
         </SideDrawer>
       </PageAnimation>

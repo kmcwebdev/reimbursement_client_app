@@ -22,25 +22,12 @@ import {
   type RowSelectionState,
   type Table,
 } from "@tanstack/react-table";
-import { type StatusType } from "../StatusBadge";
 
 import { MdBrowserNotSupported } from "react-icons-all-files/md/MdBrowserNotSupported";
+import { type ReimbursementRequest } from "~/types/reimbursement.types";
 import EmptyState from "../EmptyState";
 import FilterView from "./FilterView";
-import Pagination from "./Pagination";
-
-export type Reimbursement = {
-  status: StatusType;
-  client: string;
-  id: string;
-  name: string;
-  reimbursementId: string;
-  type: string;
-  expense: string;
-  filed: string;
-  payrollAccount: number;
-  total: number;
-};
+// import Pagination from "./Pagination";
 
 export type ITableState = {
   columnFilters?: ColumnFiltersState;
@@ -56,8 +43,8 @@ export type ITableStateActions = {
 };
 
 type TableProps = {
-  data: Reimbursement[];
-  columns: ColumnDef<Reimbursement>[];
+  data: ReimbursementRequest[];
+  columns: ColumnDef<ReimbursementRequest>[];
   tableState?: ITableState;
   tableStateActions?: ITableStateActions;
 };
@@ -89,7 +76,8 @@ const Table: React.FC<TableProps> = ({
 
       Object.keys(rowSelection).forEach((key) => {
         selectedItems.push(
-          data[key as unknown as number].id as unknown as number,
+          data[key as unknown as number]
+            .reimbursement_request_id as unknown as number,
         );
       });
       tableStateActions?.setSelectedItems(selectedItems);
@@ -118,6 +106,8 @@ const Table: React.FC<TableProps> = ({
     enableRowSelection: tableStateActions?.setSelectedItems ? true : false,
     manualPagination: true,
   });
+
+  console.log(tableState);
 
   return (
     <div className="relative flex flex-col gap-4 overflow-hidden">
@@ -152,7 +142,7 @@ const Table: React.FC<TableProps> = ({
             ))}
           </thead>
           <tbody>
-            {tableState?.columnFilters && (
+            {tableState && tableState.columnFilters && (
               <FilterView
                 colSpan={table.getAllColumns().length}
                 columns={tableState.columnFilters?.map((a) =>
@@ -195,7 +185,7 @@ const Table: React.FC<TableProps> = ({
           </tbody>
         </table>
       </div>
-      <Pagination table={table} />
+      {/* <Pagination table={table} /> */}
     </div>
   );
 };

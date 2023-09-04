@@ -8,7 +8,7 @@ interface DeatilsProps {
   expense: string;
   remarks: string;
   filed: string;
-  total: number;
+  amount: number | string;
 }
 
 const Details: React.FC<DeatilsProps> = ({
@@ -17,7 +17,7 @@ const Details: React.FC<DeatilsProps> = ({
   expense,
   remarks,
   filed,
-  total,
+  amount,
 }) => {
   return (
     <List>
@@ -29,14 +29,7 @@ const Details: React.FC<DeatilsProps> = ({
       <List.Item label="Expense" value={expense} />
       <List.Item label="Remarks" value={remarks} />
       <List.Item label="Filed" value={filed} />
-      <List.Item
-        label={statusDetails === "credited" ? "Total" : "Amount"}
-        value={total}
-      />
-      <List.Item
-        label={statusDetails === "credited" ? "Total" : "Amount"}
-        value={total}
-      />
+      <List.Item label="Amount" value={amount} />
 
       <div className="flex flex-col">
         {(statusDetails === "processing" || statusDetails === "credited") && (
