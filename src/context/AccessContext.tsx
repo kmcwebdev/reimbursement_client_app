@@ -60,33 +60,47 @@ export const UserAccessProvider: React.FC<PropsWithChildren> = ({
   const dispatch = useAppDispatch();
   const {
     loading: userIsLoading,
-    user: propelauthUser,
+    user: propel,
     accessToken,
+    isLoggedIn,
   } = useUser();
   const [user, setUser] = useState<IUserData | null>(users[0]);
 
   useEffect(() => {
-    if (user && accessToken) {
+    if (propel && accessToken) {
+      const {
+        userId,
+        email,
+        firstName,
+        lastName,
+        username,
+        pictureUrl,
+        mfaEnabled,
+        legacyUserId,
+        lastActiveAt,
+        createdAt,
+      } = propel;
+
+      const assignedRole = propel.getOrgByName(ORG_KMC_SOLUTIONS)?.assignedRole;
+
       dispatch(
         reduxSetUser({
-          userId: propelauthUser.userId,
-          email: propelauthUser.email,
-          firstName: propelauthUser.firstName,
-          lastName: propelauthUser.lastName,
-          username: propelauthUser.username,
-          assignedRole:
-            propelauthUser.getOrgByName(ORG_KMC_SOLUTIONS)?.assignedRole,
-          pictureUrl: propelauthUser.pictureUrl,
-          mfaEnabled: propelauthUser.mfaEnabled,
-          legacyUserId: propelauthUser.legacyUserId,
-          lastActiveAt: propelauthUser.lastActiveAt,
-          createdAt: propelauthUser.createdAt,
+          userId,
+          email,
+          firstName,
+          lastName,
+          username,
+          assignedRole,
+          pictureUrl,
+          mfaEnabled,
+          legacyUserId,
+          lastActiveAt,
+          createdAt,
         }),
       );
       dispatch(setAccessToken(accessToken));
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, accessToken, dispatch]);
+  }, [propel, accessToken, dispatch]);
 
   const changeUser = (role: IRole) => {
     const u = users.find((a) => a.role === role);
@@ -96,7 +110,7 @@ export const UserAccessProvider: React.FC<PropsWithChildren> = ({
     }
   };
 
-  if (userIsLoading && propelauthUser) {
+  if (userIsLoading && isLoggedIn) {
     return <AuthLoader />;
   }
 
