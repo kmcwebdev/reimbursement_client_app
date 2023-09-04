@@ -9,6 +9,7 @@ import React, {
 } from "react";
 import { useAppDispatch } from "~/app/hook";
 import { setUser as reduxSetUser, setAccessToken } from "~/features/user-slice";
+import { ORG_KMC_SOLUTIONS } from "~/utils/constant";
 
 const AuthLoader = dynamic(() => import("~/components/loaders/AuthLoader"));
 
@@ -69,6 +70,8 @@ export const UserAccessProvider: React.FC<PropsWithChildren> = ({
           firstName: propelUser.firstName,
           lastName: propelUser.lastName,
           username: propelUser.username,
+          assignedRole:
+            propelUser.getOrgByName(ORG_KMC_SOLUTIONS)?.assignedRole,
           pictureUrl: propelUser.pictureUrl,
           mfaEnabled: propelUser.mfaEnabled,
           legacyUserId: propelUser.legacyUserId,
@@ -89,7 +92,7 @@ export const UserAccessProvider: React.FC<PropsWithChildren> = ({
     }
   };
 
-  if (userIsLoading) {
+  if (userIsLoading && propelUser) {
     return <AuthLoader />;
   }
 

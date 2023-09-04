@@ -7,6 +7,7 @@ interface User {
   lastName: string | undefined;
   pictureUrl: string | undefined;
   username: string | undefined;
+  assignedRole: string | undefined;
   mfaEnabled: boolean;
   legacyUserId: string | undefined;
   lastActiveAt: number;
