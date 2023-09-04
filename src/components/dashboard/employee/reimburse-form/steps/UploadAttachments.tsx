@@ -1,6 +1,8 @@
-import React from "react";
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+import React, { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { Button } from "~/components/core/Button";
+import { showToast } from "~/components/core/Toast";
 import Upload from "~/components/core/Upload";
 import {
   useCreateReimbursementMutation,
@@ -10,6 +12,8 @@ import {
   setActiveStep,
   setReimbursementAttachments,
 } from "~/features/reimbursement-form-slice";
+import { MutationError } from "~/types/global-types";
+import { isFetchBaseQueryError } from "~/utils/is-fetch-base-query-error";
 
 const UploadAttachments: React.FC = () => {
   const { activeStep, reimbursementDetails } = useAppSelector(
@@ -28,8 +32,37 @@ const UploadAttachments: React.FC = () => {
 
   const [
     createReimbursement,
-    // { isLoading: isCreating, isSuccess: isCreatingSuccess, data: created },
+    {
+      isLoading: isSubmitting,
+      isSuccess: isSubmissionSuccess,
+      isError: isSubmissionError,
+      error: submissionError,
+    },
   ] = useCreateReimbursementMutation();
+
+  useEffect(() => {
+    if (isSubmissionSuccess) {
+      showToast({
+        type: "success",
+        description:
+          "You have successfully submitted your reimbursement request!",
+      });
+    }
+    if (isSubmissionError && submissionError) {
+      if (isFetchBaseQueryError(submissionError)) {
+        const mutationError = submissionError as MutationError;
+        showToast({
+          type: "error",
+          description: mutationError.data.errors[0].message,
+        });
+      } else {
+        showToast({
+          type: "error",
+          description: "There was a problem submitting your request!",
+        });
+      }
+    }
+  }, [isSubmissionSuccess, isSubmissionError, submissionError]);
 
   const handleReimburse = () => {
     if (uploadedFiles) {
@@ -83,6 +116,7 @@ const UploadAttachments: React.FC = () => {
           onClick={handleReimburse}
           className="w-full"
           disabled={isUploading && !isUploadingSuccess && !uploadedFiles}
+          loading={isSubmitting && !isSubmitting}
         >
           Reimburse
         </Button>

@@ -167,6 +167,7 @@ const EmployeeDashboard: React.FC = () => {
         header: "",
       },
     ],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
 
