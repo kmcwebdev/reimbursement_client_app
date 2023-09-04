@@ -10,6 +10,7 @@ const ExpenseTypeQuerySchema = z.object({
 });
 
 type ExpenseTypeQueryType = z.infer<typeof ExpenseTypeQuerySchema>;
+
 export type ReimbursementDetailsType = z.infer<
   typeof ReimbursementDetailsSchema
 >;
