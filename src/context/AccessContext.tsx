@@ -98,6 +98,7 @@ export const UserAccessProvider: React.FC<PropsWithChildren> = ({
           createdAt,
         }),
       );
+
       dispatch(setAccessToken(accessToken));
     }
   }, [propel, accessToken, dispatch]);
