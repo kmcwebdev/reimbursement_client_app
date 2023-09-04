@@ -1,10 +1,10 @@
 import { type Table } from "@tanstack/react-table";
 import React from "react";
-import { type Reimbursement } from ".";
+import { type ReimbursementRequest } from "~/types/reimbursement.types";
 import { Button } from "../Button";
 
 interface PaginationProps {
-  table: Table<Reimbursement>;
+  table: Table<ReimbursementRequest>;
 }
 
 const Pagination: React.FC<PaginationProps> = ({ table }) => {

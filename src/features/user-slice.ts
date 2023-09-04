@@ -1,4 +1,5 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import { type AppClaims } from "~/types/permission-types";
 
 interface User {
   userId: string;
@@ -12,6 +13,7 @@ interface User {
   legacyUserId?: string;
   lastActiveAt: number;
   createdAt: number;
+  permissions?: AppClaims[];
 }
 
 interface Session {

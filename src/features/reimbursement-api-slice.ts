@@ -4,6 +4,7 @@ import { type ReimbursementDetailsSchema } from "~/schema/reimbursement-details.
 import { type UploadFileResponse } from "~/types/file-upload-response.type";
 import { type ReimbursementExpenseType } from "~/types/reimbursement.expese-type";
 import { type ReimbursementRequestType } from "~/types/reimbursement.request-type";
+import { type ReimbursementRequest } from "~/types/reimbursement.types";
 
 const ExpenseTypeQuerySchema = z.object({
   request_type_id: z.string().uuid(),
@@ -17,7 +18,7 @@ export type ReimbursementDetailsType = z.infer<
 
 export const reimbursementApiSlice = appApiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    getAllRequests: builder.query<unknown, void>({
+    getAllRequests: builder.query<ReimbursementRequest[], void>({
       query: () => "/api/finance/reimbursements/requests",
     }),
     requestTypes: builder.query<ReimbursementRequestType[], void>({

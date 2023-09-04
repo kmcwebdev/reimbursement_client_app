@@ -13,7 +13,7 @@ const AuthLoader: React.FC = () => {
           <RiLoader4Fill className="h-24 w-24 animate-spin text-orange-600" />
         </div>
 
-        <h5>Loading please wait...</h5>
+        <h5>Authenticating,please wait...</h5>
       </div>
     </div>
   );
