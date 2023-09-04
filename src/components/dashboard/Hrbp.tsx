@@ -12,8 +12,9 @@ import { MdCreditCard } from "react-icons-all-files/md/MdCreditCard";
 import { MdSearch } from "react-icons-all-files/md/MdSearch";
 import { Button } from "~/components/core/Button";
 import DashboardCard from "~/components/core/DashboardCard";
-import Table, { type Reimbursement } from "~/components/core/table";
+import Table from "~/components/core/table";
 import { type FilterProps } from "~/components/core/table/filters/StatusFilter";
+import { type ReimbursementRequest } from "~/types/reimbursement.types";
 import { currencyFormat } from "~/utils/currencyFormat";
 import { sampleData } from "~/utils/sampleData";
 import PageAnimation from "../animation/PageAnimation";
@@ -38,7 +39,7 @@ const EmployeeDashboard: React.FC = () => {
     pageSize: 10,
   });
 
-  const columns = React.useMemo<ColumnDef<Reimbursement>[]>(
+  const columns = React.useMemo<ColumnDef<ReimbursementRequest>[]>(
     () => [
       {
         id: "select",
