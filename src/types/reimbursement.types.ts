@@ -18,7 +18,8 @@ export type ReimbursementRequest = {
   request_status: string;
   amount: string;
   attachment: string;
-  full_name: string;
+  full_name: string | null;
   email: string;
   employee_id: string;
+  date_approve: string | null;
 };
