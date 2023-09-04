@@ -5,7 +5,7 @@ import { type IconType } from "react-icons-all-files";
 import { MdDashboard } from "react-icons-all-files/md/MdDashboard";
 import { MdGavel } from "react-icons-all-files/md/MdGavel";
 import { MdPerson } from "react-icons-all-files/md/MdPerson";
-import { Can } from "~/context/permission-context";
+import { Can } from "~/context/AbilityContext";
 import NavigationItem from "./NavigationItem";
 
 interface NavigationProps {
