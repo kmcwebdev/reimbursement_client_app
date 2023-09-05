@@ -25,7 +25,7 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
     }),
     getAllRequests: builder.query<
       ReimbursementRequest[],
-      Partial<GetAllReimbursementRequestType>
+      GetAllReimbursementRequestType
     >({
       query: (query) => {
         return {
