@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import { Provider } from "react-redux";
 import store from "~/app/store";
 import Layout from "~/components/core/layout";
-import { UserAccessProvider } from "~/context/AccessContext";
+import { UserAccessProvider } from "~/context/UserContext";
 import { env } from "~/env.mjs";
 import "~/styles/globals.css";
 

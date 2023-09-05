@@ -3,13 +3,16 @@ import dynamic from "next/dynamic";
 import React, {
   createContext,
   useContext,
+  useEffect,
   useState,
   type PropsWithChildren,
-  useEffect,
 } from "react";
 import { useAppDispatch } from "~/app/hook";
 import { setUser as reduxSetUser, setAccessToken } from "~/features/user-slice";
+import { type AppClaims } from "~/types/permission-types";
 import { ORG_KMC_SOLUTIONS } from "~/utils/constant";
+import { defineAbility } from "~/utils/define-ability";
+import { AbilityContext } from "./AbilityContext";
 
 const AuthLoader = dynamic(() => import("~/components/loaders/AuthLoader"));
 
@@ -49,7 +52,7 @@ interface IUserAccessCtx {
   changeUser: (role: IRole) => void;
 }
 
-const UserAccessContext = createContext<IUserAccessCtx>({
+const UserContext = createContext<IUserAccessCtx>({
   user: users[0],
   changeUser: () => console.log("changed user"),
 });
@@ -58,13 +61,9 @@ export const UserAccessProvider: React.FC<PropsWithChildren> = ({
   children,
 }) => {
   const dispatch = useAppDispatch();
-  const {
-    loading: userIsLoading,
-    user: propel,
-    accessToken,
-    isLoggedIn,
-  } = useUser();
+  const { loading: userIsLoading, user: propel, accessToken } = useUser();
   const [user, setUser] = useState<IUserData | null>(users[0]);
+  const [permissions, setPermissions] = useState<AppClaims[]>();
 
   useEffect(() => {
     if (propel && accessToken) {
@@ -83,6 +82,19 @@ export const UserAccessProvider: React.FC<PropsWithChildren> = ({
 
       const assignedRole = propel.getOrgByName(ORG_KMC_SOLUTIONS)?.assignedRole;
 
+      const permissions = propel.getOrgByName(ORG_KMC_SOLUTIONS)?.permissions;
+
+      const transformedPermissions: AppClaims[] = [];
+
+      if (permissions && permissions.length > 0) {
+        permissions.forEach((permission) => {
+          const sliced = permission.split("::");
+          transformedPermissions.push(sliced[1].toUpperCase() as AppClaims);
+        });
+      }
+
+      setPermissions(transformedPermissions);
+
       dispatch(
         reduxSetUser({
           userId,
@@ -96,6 +108,7 @@ export const UserAccessProvider: React.FC<PropsWithChildren> = ({
           legacyUserId,
           lastActiveAt,
           createdAt,
+          permissions: transformedPermissions,
         }),
       );
 
@@ -111,17 +124,19 @@ export const UserAccessProvider: React.FC<PropsWithChildren> = ({
     }
   };
 
-  if (userIsLoading && isLoggedIn) {
+  if (userIsLoading) {
     return <AuthLoader />;
   }
 
   return (
-    <UserAccessContext.Provider value={{ user, changeUser }}>
-      {children}
-    </UserAccessContext.Provider>
+    <AbilityContext.Provider value={defineAbility(permissions)}>
+      <UserContext.Provider value={{ user, changeUser }}>
+        {children}
+      </UserContext.Provider>
+    </AbilityContext.Provider>
   );
 };
 
-export const useUserAccessContext = () => {
-  return useContext(UserAccessContext);
+export const useUserContext = () => {
+  return useContext(UserContext);
 };

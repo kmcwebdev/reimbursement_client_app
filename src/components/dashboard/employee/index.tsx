@@ -58,7 +58,7 @@ const EmployeeDashboard: React.FC = () => {
   const [focusedReimbursement, setFocusedReimbursement] =
     useState<ReimbursementRequest>();
 
-  const { isLoading, data } = useGetAllRequestsQuery();
+  const { isLoading, data } = useGetAllRequestsQuery({});
 
   const { isVisible, open, close } = useDialogState();
 
@@ -302,10 +302,12 @@ const EmployeeDashboard: React.FC = () => {
           isVisible={isVisible}
           closeDrawer={close}
         >
-          <ReimbursementsCardView
-            closeDrawer={close}
-            data={focusedReimbursement}
-          />
+          {focusedReimbursement && (
+            <ReimbursementsCardView
+              closeDrawer={close}
+              data={focusedReimbursement}
+            />
+          )}
         </SideDrawer>
       </PageAnimation>
     </>

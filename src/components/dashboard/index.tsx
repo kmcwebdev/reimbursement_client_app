@@ -1,12 +1,12 @@
 import React from "react";
-import { useUserAccessContext } from "~/context/AccessContext";
+import { useUserContext } from "~/context/UserContext";
 import FinanceDashboard from "./Finance";
 import HrbpDashboard from "./Hrbp";
 import ManagerDashboard from "./Manager";
 import EmployeeDashboard from "./employee";
 
 const DashboardComponent: React.FC = () => {
-  const { user } = useUserAccessContext();
+  const { user } = useUserContext();
   return (
     <>
       {user && (

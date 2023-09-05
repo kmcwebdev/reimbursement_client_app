@@ -68,3 +68,7 @@ export const ReimbursementDetailsSchema = z
         "Approvers is required for unscheduled reimbursement! or Remarks is required for other expense type!",
     },
   );
+
+export type ReimbursementDetailsType = z.infer<
+  typeof ReimbursementDetailsSchema
+>;
