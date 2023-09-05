@@ -8,7 +8,7 @@ interface PopoverProps {
   btn: JSX.Element;
   content: JSX.Element;
   panelClassName?: string;
-  buttonRef: Ref<HTMLButtonElement>;
+  buttonRef?: Ref<HTMLButtonElement>;
 }
 
 const Popover: React.FC<PopoverProps> = ({
