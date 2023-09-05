@@ -12,7 +12,8 @@ import { MdAccessTimeFilled } from "react-icons-all-files/md/MdAccessTimeFilled"
 import { MdGavel } from "react-icons-all-files/md/MdGavel";
 import Input from "../core/form/fields/Input";
 import { AiOutlineSearch } from "react-icons-all-files/ai/AiOutlineSearch";
-import Table, { type Reimbursement } from "~/components/core/table";
+import Table from "~/components/core/table";
+import { type ReimbursementRequest } from "~/types/reimbursement.types";
 import { sampleData } from "~/utils/sampleData";
 import TableCheckbox from "../core/table/TableCheckbox";
 import StatusBadge, { type StatusType } from "~/components/core/StatusBadge";
@@ -36,7 +37,7 @@ const ManagerApproval: React.FC = () => {
       pageSize: 10,
     });
   
-    const columns = React.useMemo<ColumnDef<Reimbursement>[]>(
+    const columns = React.useMemo<ColumnDef<ReimbursementRequest>[]>(
       () => [
         {
           id: "select",
