@@ -74,6 +74,17 @@ const GetAllReimbursementRequestSchema = z
       .nonempty({
         message: "text_search must not be empty",
       }),
+    page_limit: z.preprocess(
+      (val) => Number(val),
+      z
+        .number({
+          description: "page_limit",
+          invalid_type_error: "page_limit must be a number",
+        })
+        .positive({
+          message: "page_limit must be a positive number",
+        }),
+    ),
     last_id: z.preprocess(
       (val) => Number(val),
       z
