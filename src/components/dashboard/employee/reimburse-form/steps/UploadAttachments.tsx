@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import React from "react";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { Button } from "~/components/core/Button";
+import { showToast } from "~/components/core/Toast";
 import Upload from "~/components/core/Upload";
 import {
   useCreateReimbursementMutation,
@@ -10,6 +12,7 @@ import {
   setActiveStep,
   setReimbursementAttachments,
 } from "~/features/reimbursement-form-slice";
+import { type MutationError } from "~/types/global-types";
 
 const UploadAttachments: React.FC = () => {
   const { activeStep, reimbursementDetails } = useAppSelector(
@@ -26,10 +29,8 @@ const UploadAttachments: React.FC = () => {
     },
   ] = useUploadFileMutation();
 
-  const [
-    createReimbursement,
-    // { isLoading: isCreating, isSuccess: isCreatingSuccess, data: created },
-  ] = useCreateReimbursementMutation();
+  const [createReimbursement, { isLoading: isSubmitting }] =
+    useCreateReimbursementMutation();
 
   const handleReimburse = () => {
     if (uploadedFiles) {
@@ -38,12 +39,23 @@ const UploadAttachments: React.FC = () => {
       if (reimbursementDetails) {
         const { reimbursement_request_type_id, expense_type_id, amount } =
           reimbursementDetails;
+
         void createReimbursement({
           reimbursement_request_type_id,
           expense_type_id,
           amount,
           attachment: uploadedFiles.url,
-        });
+        })
+          .unwrap()
+          .then((data) => {
+            console.log(data);
+          })
+          .catch((error: MutationError) => {
+            showToast({
+              type: "error",
+              description: error.data.errors[0].message,
+            });
+          });
       }
     }
   };
@@ -83,6 +95,7 @@ const UploadAttachments: React.FC = () => {
           onClick={handleReimburse}
           className="w-full"
           disabled={isUploading && !isUploadingSuccess && !uploadedFiles}
+          loading={isSubmitting && !isSubmitting}
         >
           Reimburse
         </Button>

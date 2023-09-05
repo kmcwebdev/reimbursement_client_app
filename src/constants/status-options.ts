@@ -1,7 +1,7 @@
 export const statusOptions = [
-  "approved",
-  "credited",
-  "pending",
-  "processing",
-  "rejected",
+  "Approved",
+  "Credited",
+  "Pending",
+  "Processing",
+  "Rejected",
 ];
