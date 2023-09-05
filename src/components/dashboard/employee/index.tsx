@@ -58,7 +58,7 @@ const EmployeeDashboard: React.FC = () => {
   const [focusedReimbursement, setFocusedReimbursement] =
     useState<ReimbursementRequest>();
 
-  const { isLoading, data } = useGetAllRequestsQuery();
+  const { isLoading, data } = useGetAllRequestsQuery({});
 
   const { isVisible, open, close } = useDialogState();
 
