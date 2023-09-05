@@ -43,6 +43,7 @@ export type ITableStateActions = {
 };
 
 type TableProps = {
+  loading?: boolean;
   data: ReimbursementRequest[];
   columns: ColumnDef<ReimbursementRequest>[];
   tableState?: ITableState;
@@ -61,11 +62,13 @@ const Table: React.FC<TableProps> = ({
   columns,
   tableState,
   tableStateActions,
+  loading,
 }) => {
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
 
   useEffect(() => {
     if (
+      !loading &&
       rowSelection &&
       tableState &&
       tableStateActions &&
@@ -111,8 +114,8 @@ const Table: React.FC<TableProps> = ({
 
   return (
     <div className="relative flex flex-col gap-4 overflow-hidden">
-      <div className="overflow-x-auto bg-white">
-        <table className="w-full overflow-x-scroll whitespace-nowrap bg-white">
+      <div className="min-h-[300px] overflow-x-auto bg-white">
+        <table className=" w-full overflow-x-scroll whitespace-nowrap bg-white">
           <thead className="h-12 border-b border-neutral-300 text-xs">
             {table.getHeaderGroups().map((headerGroup, i) => (
               <tr key={i}>
@@ -125,7 +128,8 @@ const Table: React.FC<TableProps> = ({
                           header.getContext(),
                         )}
 
-                        {header.column.columnDef?.meta &&
+                        {table.getRowModel().rows.length !== 0 &&
+                          header.column.columnDef?.meta &&
                           (header.column.columnDef?.meta as CustomFilterMeta)
                             .filterComponent &&
                           (
@@ -141,23 +145,25 @@ const Table: React.FC<TableProps> = ({
               </tr>
             ))}
           </thead>
-          <tbody>
-            {tableState && tableState.columnFilters && (
-              <FilterView
-                colSpan={table.getAllColumns().length}
-                columns={tableState.columnFilters?.map((a) =>
-                  table.getColumn(a.id),
-                )}
-              />
-            )}
+          <tbody className="min-h-[calc(300px-3rem)]">
+            {table.getRowModel().rows.length !== 0 &&
+              tableState &&
+              tableState.columnFilters && (
+                <FilterView
+                  colSpan={table.getAllColumns().length}
+                  columns={tableState.columnFilters?.map((a) =>
+                    table.getColumn(a.id),
+                  )}
+                />
+              )}
 
             {table.getRowModel().rows.length === 0 && (
-              <tr className="h-72">
+              <tr className="h-72 bg-neutral-100">
                 <td colSpan={table.getAllFlatColumns().length}>
                   <EmptyState
                     icon={MdBrowserNotSupported}
-                    title="Your search returned 0 results."
-                    description="Please try to change your filter values to see records."
+                    title="No Reimbursement Requests Available."
+                    description="You may try to change your filter values to see records."
                   />
                 </td>
               </tr>

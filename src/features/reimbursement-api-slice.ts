@@ -6,12 +6,23 @@ import {
 import { type ReimbursementDetailsType } from "~/schema/reimbursement-details.schema";
 import { type GetAllReimbursementRequestType } from "~/schema/reimbursement-query.schema";
 import { type UploadFileResponse } from "~/types/file-upload-response.type";
+import { type ReimbursementAnalyticsType } from "~/types/reimbursement-analytics";
 import { type ReimbursementExpenseType } from "~/types/reimbursement.expese-type";
 import { type ReimbursementRequestType } from "~/types/reimbursement.request-type";
 import { type ReimbursementRequest } from "~/types/reimbursement.types";
 
 export const reimbursementApiSlice = appApiSlice.injectEndpoints({
   endpoints: (builder) => ({
+    getAnalytics: builder.query<ReimbursementAnalyticsType, void>({
+      query: () => {
+        return {
+          url: "/api/finance/reimbursements/requests/analytics",
+        };
+      },
+      providesTags: (_result, _fetchBaseQuery, query) => [
+        { type: "ReimbursementAnalytics", id: JSON.stringify(query) },
+      ],
+    }),
     getAllRequests: builder.query<
       ReimbursementRequest[],
       GetAllReimbursementRequestType
@@ -24,6 +35,17 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
       },
       providesTags: (_result, _fetchBaseQuery, query) => [
         { type: "ReimbursementRequestList", id: JSON.stringify(query) },
+      ],
+    }),
+    getRequest: builder.query<ReimbursementRequest, { id?: string }>({
+      query: (query) => {
+        return {
+          url: `/api/finance/reimbursements/requests/${query.id}`,
+        };
+      },
+
+      providesTags: (_result, _fetchBaseQuery, query) => [
+        { type: "ReimbursementRequest", id: JSON.stringify(query.id) },
       ],
     }),
     requestTypes: builder.query<ReimbursementRequestType[], void>({
@@ -60,7 +82,10 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
     }),
     createReimbursement: builder.mutation<
       unknown,
-      ReimbursementDetailsType & { attachment: string }
+      Omit<ReimbursementDetailsType, "approvers"> & {
+        approvers?: string[];
+        attachment: string;
+      }
     >({
       query: (data) => {
         return {
@@ -69,12 +94,15 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
           body: data,
         };
       },
+      invalidatesTags: [{ type: "ReimbursementRequestList" }],
     }),
   }),
 });
 
 export const {
+  useGetAnalyticsQuery,
   useGetAllRequestsQuery,
+  useGetRequestQuery,
   useRequestTypesQuery,
   useExpenseTypesQuery,
   useUploadFileMutation,

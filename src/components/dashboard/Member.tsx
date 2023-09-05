@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import React from "react";
-import MyReimbursements from "../shared/MyReimbusements";
+import MyReimbursements from "~/components/shared/MyReimbusements";
 
-const ManagerDashboard: React.FC = () => {
+const MemberDashboard: React.FC = () => {
   return (
     <>
       <MyReimbursements />
@@ -10,4 +10,4 @@ const ManagerDashboard: React.FC = () => {
   );
 };
 
-export default ManagerDashboard;
+export default MemberDashboard;

@@ -1,17 +1,19 @@
+import dayjs from "dayjs";
 import React from "react";
 import StatusBadge, { type StatusType } from "~/components/core/StatusBadge";
+import { currencyFormat } from "~/utils/currencyFormat";
 import List from "../core/List";
 
-interface DeatilsProps {
+interface DetailsProps {
   statusDetails: StatusType;
   type: string;
   expense: string;
-  remarks: string;
   filed: string;
   amount: number | string;
+  remarks: string;
 }
 
-const Details: React.FC<DeatilsProps> = ({
+const Details: React.FC<DetailsProps> = ({
   statusDetails,
   type,
   expense,
@@ -27,9 +29,10 @@ const Details: React.FC<DeatilsProps> = ({
       />
       <List.Item label="Type" value={type} />
       <List.Item label="Expense" value={expense} />
-      <List.Item label="Remarks" value={remarks} />
-      <List.Item label="Filed" value={filed} />
-      <List.Item label="Amount" value={amount} />
+
+      {expense === "Others" && <List.Item label="Remarks" value={remarks} />}
+      <List.Item label="Filed" value={dayjs(filed).format("MMM D,YYYY")} />
+      <List.Item label="Amount" value={currencyFormat(+amount)} />
 
       <div className="flex flex-col">
         {(statusDetails === "processing" || statusDetails === "credited") && (

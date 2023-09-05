@@ -16,18 +16,19 @@ export interface ReimbursementsCardViewProps extends PropsWithChildren {
 const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
   closeDrawer,
   data,
+  isLoading = false,
 }) => {
   return (
     <div className="relative flex h-full w-full flex-col">
-      {data && (
+      {!isLoading && data && (
         <>
           <div className="flex-1 p-5">
             <Details
               statusDetails={data.request_status.toLowerCase() as StatusType}
               type={data.request_type}
               expense={data.expense_type}
-              remarks="Missing details"
-              filed="Missing details"
+              remarks={data.remarks}
+              filed={data.created_at}
               amount={data.amount}
             />
 
@@ -41,7 +42,7 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
               daterejected="Missing details"
             />
 
-            <Attachments attachments="Missing details" />
+            <Attachments attachment={data.attachment} />
           </div>
 
           <div className="absolute bottom-0 grid h-[72px] w-full grid-cols-2 items-center justify-center gap-2 border-t border-neutral-300 px-5">

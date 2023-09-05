@@ -14,6 +14,8 @@ export const sampleData: ReimbursementRequest[] = [
     employee_id: "d9b80042-92a6-474b-cb5c-08d8538da8c1",
     date_approve: null,
     cursor_id: "1",
+    created_at: "2023-09-05T06:40:25.778Z",
+    remarks: "test",
   },
   {
     reimbursement_request_id: "d6ddb546-20ef-475f-859f-46e69aa9ca78",
@@ -28,6 +30,8 @@ export const sampleData: ReimbursementRequest[] = [
     employee_id: "d9b80042-92a6-474b-cb5c-08d8538da8c1",
     date_approve: null,
     cursor_id: "2",
+    created_at: "2023-09-05T06:40:25.778Z",
+    remarks: "test",
   },
   {
     reimbursement_request_id: "def31ccc-4772-4a98-9018-06d7332924e4",
@@ -42,6 +46,8 @@ export const sampleData: ReimbursementRequest[] = [
     employee_id: "d9b80042-92a6-474b-cb5c-08d8538da8c1",
     date_approve: null,
     cursor_id: "3",
+    created_at: "2023-09-05T06:40:25.778Z",
+    remarks: "test",
   },
   {
     reimbursement_request_id: "db5b3796-ed2f-4813-910e-852a48e13482",
@@ -56,6 +62,8 @@ export const sampleData: ReimbursementRequest[] = [
     employee_id: "d9b80042-92a6-474b-cb5c-08d8538da8c1",
     date_approve: null,
     cursor_id: "4",
+    created_at: "2023-09-05T06:40:25.778Z",
+    remarks: "test",
   },
   {
     reimbursement_request_id: "8c6ff5e6-765b-442c-9799-87829ca34539",
@@ -70,6 +78,8 @@ export const sampleData: ReimbursementRequest[] = [
     employee_id: "d9b80042-92a6-474b-cb5c-08d8538da8c1",
     date_approve: null,
     cursor_id: "5",
+    created_at: "2023-09-05T06:40:25.778Z",
+    remarks: "test",
   },
   {
     reimbursement_request_id: "0b95dc0b-0cb7-4788-930d-db6614aa58f9",
@@ -84,6 +94,8 @@ export const sampleData: ReimbursementRequest[] = [
     employee_id: "d9b80042-92a6-474b-cb5c-08d8538da8c1",
     date_approve: null,
     cursor_id: "6",
+    created_at: "2023-09-05T06:40:25.778Z",
+    remarks: "test",
   },
   {
     reimbursement_request_id: "33b7dabd-e20a-46dc-8187-45f6bc87f456",
@@ -98,6 +110,8 @@ export const sampleData: ReimbursementRequest[] = [
     employee_id: "d9b80042-92a6-474b-cb5c-08d8538da8c1",
     date_approve: null,
     cursor_id: "6",
+    created_at: "2023-09-05T06:40:25.778Z",
+    remarks: "test",
   },
   {
     reimbursement_request_id: "e9ebaa75-554a-465c-91a4-c57849f20a38",
@@ -112,6 +126,8 @@ export const sampleData: ReimbursementRequest[] = [
     employee_id: "d9b80042-92a6-474b-cb5c-08d8538da8c1",
     date_approve: null,
     cursor_id: "7",
+    created_at: "2023-09-05T06:40:25.778Z",
+    remarks: "test",
   },
   {
     reimbursement_request_id: "a51f2905-793b-4ec0-be39-91abb02db2cd",
@@ -126,6 +142,8 @@ export const sampleData: ReimbursementRequest[] = [
     employee_id: "d9b80042-92a6-474b-cb5c-08d8538da8c1",
     date_approve: null,
     cursor_id: "8",
+    created_at: "2023-09-05T06:40:25.778Z",
+    remarks: "test",
   },
   {
     reimbursement_request_id: "b0598099-b66c-4f92-9815-304c83c564e5",
@@ -140,5 +158,7 @@ export const sampleData: ReimbursementRequest[] = [
     employee_id: "d9b80042-92a6-474b-cb5c-08d8538da8c1",
     date_approve: null,
     cursor_id: "9",
+    created_at: "2023-09-05T06:40:25.778Z",
+    remarks: "test",
   },
 ];

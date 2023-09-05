@@ -1,22 +1,29 @@
+import Head from "next/head";
 import React from "react";
-import { useUserContext } from "~/context/UserContext";
+import { useAppSelector } from "~/app/hook";
+import PageAnimation from "../animation/PageAnimation";
 import FinanceDashboard from "./Finance";
-import HrbpDashboard from "./Hrbp";
 import ManagerDashboard from "./Manager";
-import EmployeeDashboard from "./employee";
+import MemberDashboard from "./Member";
 
 const DashboardComponent: React.FC = () => {
-  const { user } = useUserContext();
+  const { user } = useAppSelector((state) => state.session);
   return (
     <>
-      {user && (
-        <>
-          {user.role === "employee" && <EmployeeDashboard />}
-          {user.role === "finance" && <FinanceDashboard />}
-          {user.role === "hrbp" && <HrbpDashboard />}
-          {user.role === "manager" && <ManagerDashboard />}
-        </>
-      )}
+      <Head>
+        <title>Dashboard</title>
+      </Head>
+      <PageAnimation>
+        {user && (
+          <>
+            {user.assignedRole ===
+              "External Reimbursement Approver Manager" && <ManagerDashboard />}
+            {user.assignedRole === "Member" && <MemberDashboard />}
+            {user.assignedRole === "HRBP" && <ManagerDashboard />}
+            {user.assignedRole === "Finance" && <FinanceDashboard />}
+          </>
+        )}
+      </PageAnimation>
     </>
   );
 };

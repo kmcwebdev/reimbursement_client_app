@@ -9,15 +9,17 @@ import {
   useUploadFileMutation,
 } from "~/features/reimbursement-api-slice";
 import {
+  clearReimbursementForm,
   setActiveStep,
   setReimbursementAttachments,
+  setUploadedFileUrl,
+  toggleFormDialog,
 } from "~/features/reimbursement-form-slice";
 import { type MutationError } from "~/types/global-types";
 
 const UploadAttachments: React.FC = () => {
-  const { activeStep, reimbursementDetails } = useAppSelector(
-    (state) => state.reimbursementForm,
-  );
+  const { activeStep, reimbursementDetails, fileUploadedUrl, fileSelected } =
+    useAppSelector((state) => state.reimbursementForm);
   const dispatch = useAppDispatch();
 
   const [
@@ -25,7 +27,7 @@ const UploadAttachments: React.FC = () => {
     {
       isLoading: isUploading,
       isSuccess: isUploadingSuccess,
-      data: uploadedFiles,
+      data: uploadedFile,
     },
   ] = useUploadFileMutation();
 
@@ -33,24 +35,56 @@ const UploadAttachments: React.FC = () => {
     useCreateReimbursementMutation();
 
   const handleReimburse = () => {
-    if (uploadedFiles) {
-      dispatch(setReimbursementAttachments(uploadedFiles));
+    if (uploadedFile) {
+      dispatch(setReimbursementAttachments(uploadedFile));
 
       if (reimbursementDetails) {
-        const { reimbursement_request_type_id, expense_type_id, amount } =
-          reimbursementDetails;
-
-        void createReimbursement({
+        const {
           reimbursement_request_type_id,
           expense_type_id,
           amount,
-          attachment: uploadedFiles.url,
-        })
+          approvers,
+          remarks,
+        } = reimbursementDetails;
+
+        let payload: {
+          reimbursement_request_type_id: string;
+          expense_type_id: string;
+          amount: number;
+          attachment: string;
+          approvers?: string[];
+          remarks?: string;
+        } = {
+          reimbursement_request_type_id,
+          expense_type_id,
+          amount,
+          attachment: uploadedFile.url,
+        };
+
+        const emails: string[] = [];
+        if (approvers && approvers.length > 0) {
+          approvers.every((item) => {
+            emails.push(item.email);
+          });
+        }
+
+        if (emails.length > 0) {
+          payload = { ...payload, approvers: emails };
+        }
+
+        if (remarks) {
+          payload = { ...payload, remarks };
+        }
+
+        void createReimbursement(payload)
           .unwrap()
           .then(() => {
+            dispatch(toggleFormDialog());
+            dispatch(clearReimbursementForm());
             showToast({
               type: "success",
-              description: "File uploaded successfully",
+              description:
+                "Your reimbursement request has been submitted successfully!",
             });
           })
           .catch((error: MutationError) => {
@@ -65,15 +99,30 @@ const UploadAttachments: React.FC = () => {
 
   return (
     <div className="flex flex-col gap-4">
+      {isUploading && "loading..."}
       <Upload
+        fileSelected={fileSelected}
+        maxFiles={1}
         uploadButtonProps={{
           loading: isUploading,
           disabled: isUploading,
+          filePath: fileUploadedUrl,
           onClick: (e) => {
             if (e) {
               const formData = new FormData();
               formData.append("file", e);
-              void uploadFiles(formData);
+              void uploadFiles(formData)
+                .unwrap()
+                .then((data) => {
+                  dispatch(setUploadedFileUrl(data.url));
+                })
+                .catch(() => {
+                  showToast({
+                    type: "error",
+                    description:
+                      "There was a problem uploading your file. Please try again!",
+                  });
+                });
             }
           },
         }}
@@ -97,8 +146,8 @@ const UploadAttachments: React.FC = () => {
         <Button
           onClick={handleReimburse}
           className="w-full"
-          disabled={isUploading && !isUploadingSuccess && !uploadedFiles}
-          loading={isSubmitting && !isSubmitting}
+          disabled={isUploading || !fileUploadedUrl || !isUploadingSuccess}
+          loading={isSubmitting}
         >
           Reimburse
         </Button>

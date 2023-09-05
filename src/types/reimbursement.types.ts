@@ -16,6 +16,8 @@ export type ReimbursementRequest = {
   request_type: string;
   expense_type: string;
   request_status: string;
+  remarks: string;
+  created_at: string;
   amount: string;
   attachment: string;
   full_name: string | null;

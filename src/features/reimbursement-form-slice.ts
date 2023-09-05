@@ -1,4 +1,5 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import { type FileWithPath } from "react-dropzone";
 import { type ReimbursementDetailsType } from "~/schema/reimbursement-details.schema";
 import { type UploadFileResponse } from "~/types/file-upload-response.type";
 
@@ -8,6 +9,8 @@ interface ReimburseFormState {
   reimbursementAttachment: UploadFileResponse | null;
   cancelDialogIsOpen: boolean;
   formDialogIsOpen: boolean;
+  fileUploadedUrl: string | null;
+  fileSelected: FileWithPath[] | null;
 }
 
 const initialState: ReimburseFormState = {
@@ -16,6 +19,8 @@ const initialState: ReimburseFormState = {
   reimbursementAttachment: null,
   formDialogIsOpen: false,
   cancelDialogIsOpen: false,
+  fileUploadedUrl: null,
+  fileSelected: null,
 };
 
 const reimbursementFormSlice = createSlice({
@@ -48,6 +53,12 @@ const reimbursementFormSlice = createSlice({
     toggleCancelDialog(state) {
       state.cancelDialogIsOpen = !state.cancelDialogIsOpen;
     },
+    setFileSelected(state, action: PayloadAction<FileWithPath[] | null>) {
+      state.fileSelected = action.payload;
+    },
+    setUploadedFileUrl(state, action: PayloadAction<string | null>) {
+      state.fileUploadedUrl = action.payload;
+    },
   },
 });
 
@@ -58,6 +69,8 @@ export const {
   clearReimbursementForm,
   toggleFormDialog,
   toggleCancelDialog,
+  setFileSelected,
+  setUploadedFileUrl,
 } = reimbursementFormSlice.actions;
 
 export default reimbursementFormSlice.reducer;

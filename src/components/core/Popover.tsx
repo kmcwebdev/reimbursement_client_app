@@ -1,22 +1,29 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Popover as HUIPopover, Transition } from "@headlessui/react";
-import { Fragment } from "react";
+import React, { Fragment, type Ref } from "react";
 import { classNames } from "~/utils/classNames";
 
 interface PopoverProps {
   btn: JSX.Element;
   content: JSX.Element;
   panelClassName?: string;
+  buttonRef?: Ref<HTMLButtonElement>;
 }
 
 const Popover: React.FC<PopoverProps> = ({
   btn,
   content,
   panelClassName,
+  buttonRef,
   ...rest
 }) => {
   return (
     <HUIPopover as="div" className="relative" {...rest}>
-      <HUIPopover.Button as="div" className="cursor-pointer focus:outline-none">
+      <HUIPopover.Button
+        ref={buttonRef}
+        className="cursor-pointer focus:outline-none"
+      >
         {btn}
       </HUIPopover.Button>
       <div className="relative">

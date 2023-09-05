@@ -1,5 +1,7 @@
 import { type NextPage } from "next";
 import Head from "next/head";
+import PageAnimation from "~/components/animation/PageAnimation";
+import MyApprovals from "~/components/shared/MyApprovals";
 
 const Approvals: NextPage = () => {
   return (
@@ -7,7 +9,9 @@ const Approvals: NextPage = () => {
       <Head>
         <title>Approval</title>
       </Head>
-      React FCC
+      <PageAnimation>
+        <MyApprovals />
+      </PageAnimation>
     </div>
   );
 };
