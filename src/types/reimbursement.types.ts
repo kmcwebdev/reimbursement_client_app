@@ -22,5 +22,6 @@ export type ReimbursementRequest = {
   email: string;
   employee_id: string;
   date_approve: string | null;
+  cursor_id: string;
   rank?: number;
 };
