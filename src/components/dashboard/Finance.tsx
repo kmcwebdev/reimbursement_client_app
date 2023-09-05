@@ -36,7 +36,7 @@ const FinanceDashboard: React.FC = () => {
 
 
 
-  const { isLoading, data } = useGetAllRequestsQuery();
+  const { isLoading, data } = useGetAllRequestsQuery({});
 
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);

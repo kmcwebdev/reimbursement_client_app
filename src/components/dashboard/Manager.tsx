@@ -26,7 +26,7 @@ import { useGetAllRequestsQuery } from "~/features/reimbursement-api-slice";
 
 const ManagerDashboard: React.FC = () => {
 
-  const { isLoading, data } = useGetAllRequestsQuery();
+  const { isLoading, data } = useGetAllRequestsQuery({});
 
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
