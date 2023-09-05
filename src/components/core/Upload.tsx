@@ -64,7 +64,7 @@ const Upload: React.FC<UploadProps> = ({
 
       dispatch(setFileSelected(e));
     },
-    [fileToEdit, files, rest.maxFiles],
+    [dispatch, fileToEdit, files, rest.maxFiles],
   );
 
   useMemo(() => {
