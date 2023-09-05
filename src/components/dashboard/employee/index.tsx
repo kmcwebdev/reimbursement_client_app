@@ -21,7 +21,10 @@ import Table from "~/components/core/table";
 import TableCheckbox from "~/components/core/table/TableCheckbox";
 import { type FilterProps } from "~/components/core/table/filters/StatusFilter";
 import ReimbursementsCardView from "~/components/reimbursement-view";
-import { useGetAllRequestsQuery } from "~/features/reimbursement-api-slice";
+import {
+  useGetAllRequestsQuery,
+  useGetRequestQuery,
+} from "~/features/reimbursement-api-slice";
 import {
   clearReimbursementForm,
   toggleCancelDialog,
@@ -55,10 +58,17 @@ const EmployeeDashboard: React.FC = () => {
     useAppSelector((state) => state.reimbursementForm);
   const dispatch = useAppDispatch();
 
-  const [focusedReimbursement, setFocusedReimbursement] =
-    useState<ReimbursementRequest>();
+  const [focusedReimbursementId, setFocusedReimbursementId] =
+    useState<string>();
 
   const { isLoading, data } = useGetAllRequestsQuery({});
+  const {
+    isLoading: reimbursementRequestDataIsLoading,
+    data: reimbursementRequestData,
+  } = useGetRequestQuery(
+    { id: focusedReimbursementId },
+    { skip: !focusedReimbursementId },
+  );
 
   const { isVisible, open, close } = useDialogState();
 
@@ -167,9 +177,10 @@ const EmployeeDashboard: React.FC = () => {
         cell: (info) => (
           <Button
             buttonType="text"
-            onClick={() =>
-              handleOpenReimbursementView(info.getValue() as string)
-            }
+            onClick={() => {
+              setFocusedReimbursementId(info.getValue() as string);
+              open();
+            }}
           >
             View
           </Button>
@@ -179,12 +190,6 @@ const EmployeeDashboard: React.FC = () => {
     ];
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const handleOpenReimbursementView = (id: string) => {
-    const focused = data?.find((a) => a.reimbursement_request_id === id);
-    setFocusedReimbursement(focused);
-    open();
-  };
 
   //Form return for Details
   const useReimbursementDetailsFormReturn = useForm<ReimbursementDetailsDTO>({
@@ -246,6 +251,7 @@ const EmployeeDashboard: React.FC = () => {
 
           {!isLoading && data && (
             <Table
+              loading={isLoading}
               data={data}
               columns={columns}
               tableState={{
@@ -299,17 +305,18 @@ const EmployeeDashboard: React.FC = () => {
 
         <SideDrawer
           title={
-            focusedReimbursement ? focusedReimbursement.reference_no : "..."
+            !isLoading && reimbursementRequestData
+              ? reimbursementRequestData.reference_no
+              : "..."
           }
           isVisible={isVisible}
           closeDrawer={close}
         >
-          {focusedReimbursement && (
-            <ReimbursementsCardView
-              closeDrawer={close}
-              data={focusedReimbursement}
-            />
-          )}
+          <ReimbursementsCardView
+            closeDrawer={close}
+            isLoading={reimbursementRequestDataIsLoading}
+            data={reimbursementRequestData}
+          />
         </SideDrawer>
       </PageAnimation>
     </>

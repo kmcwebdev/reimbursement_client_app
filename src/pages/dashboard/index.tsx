@@ -1,4 +1,3 @@
-import { useLogoutFunction } from "@propelauth/nextjs/client";
 import { getUserFromServerSideProps } from "@propelauth/nextjs/server/pages";
 import { type GetServerSideProps, type NextPage } from "next";
 import dynamic from "next/dynamic";
@@ -22,12 +21,7 @@ const ManagerDashboard = dynamic(
 );
 
 const Dashboard: NextPage<SSRProps> = () => {
-  const logoutFn = useLogoutFunction();
   const { user } = useUserContext();
-
-  // const propel = UserFromToken.fromJSON(props.userJson);
-
-  // console.log(propel);
 
   return (
     <Fragment>
@@ -38,7 +32,6 @@ const Dashboard: NextPage<SSRProps> = () => {
       {user && user.role === "hrbp" && <HrbpDashboard />}
       {user && user.role === "finance" && <FinanceDashboard />}
       {user && user.role === "manager" && <ManagerDashboard />}
-      <button onClick={() => void logoutFn()}>Logout</button>
     </Fragment>
   );
 };

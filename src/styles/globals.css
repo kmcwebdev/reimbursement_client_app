@@ -34,7 +34,7 @@
   }
 
   .btn.filled {
-    @apply px-4 py-[0.3rem] h-[40px] text-white shadow-sm hover:shadow-sm focus:shadow-sm focus:outline-none focus:ring-0 active:shadow-sm disabled:bg-opacity-[64%] disabled:hover:bg-opacity-[64%];
+    @apply px-4 py-[0.3rem] h-[40px] text-white shadow-sm hover:shadow-sm focus:shadow-sm focus:outline-none focus:ring-0 active:shadow-sm;
   }
 
   .btn.outlined {
@@ -42,19 +42,19 @@
   }
 
   .btn.filled.primary {
-    @apply bg-orange-600 hover:bg-orange-700 active:bg-orange-800 disabled:bg-orange-600 disabled:hover:bg-orange-600;
+    @apply bg-orange-600 hover:bg-orange-700 active:bg-orange-800 disabled:bg-opacity-[64%] disabled:hover:bg-orange-600 disabled:hover:bg-opacity-[64%];
   }
 
   .btn.filled.success {
-    @apply bg-orange-600 hover:bg-orange-700 active:bg-orange-800 disabled:bg-orange-600 disabled:hover:bg-orange-600;
+    @apply bg-orange-600 hover:bg-orange-700 active:bg-orange-800 disabled:bg-opacity-[64%] disabled:hover:bg-green-600 disabled:hover:bg-opacity-[64%];
   }
 
   .btn.filled.informative {
-    @apply bg-blue-600 hover:bg-blue-700 active:bg-blue-800 disabled:bg-blue-600 disabled:hover:bg-blue-600;
+    @apply bg-blue-600 hover:bg-blue-700 active:bg-blue-800 disabled:bg-opacity-[64%] disabled:hover:bg-blue-600 disabled:hover:bg-opacity-[64%];
   }
 
   .btn.filled.danger {
-    @apply bg-red-600 hover:bg-red-700 active:bg-red-800 disabled:bg-red-600 disabled:hover:bg-red-600;
+    @apply bg-red-600 hover:bg-red-700 active:bg-red-800 disabled:bg-opacity-[64%] disabled:hover:bg-red-600 disabled:hover:bg-opacity-[64%];
   }
 
 
@@ -107,4 +107,26 @@
   .input-error {
     @apply w-full py-2 rounded text-sm border border-red-600 bg-red-50 text-red-600 ring-red-600 placeholder:text-red-600 focus:ring-1 focus:ring-inset focus:ring-red-600 focus:border-transparent disabled:bg-neutral-100 disabled:border-neutral-300 disabled:text-neutral-300 disabled:cursor-not-allowed;
   }
+
+    .progress {
+      animation: progress 1s infinite linear;
+    }
+  
+    .left-right {
+      transform-origin: 0% 50%;
+    }
+  
+    @keyframes progress {
+      0% {
+        transform: translateX(0) scaleX(0);
+      }
+  
+      40% {
+        transform: translateX(0) scaleX(0.4);
+      }
+  
+      100% {
+        transform: translateX(100%) scaleX(0.5);
+      }
+    }
 }

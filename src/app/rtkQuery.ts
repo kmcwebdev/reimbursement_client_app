@@ -59,7 +59,7 @@ const appApiBaseQueryWithReauth: BaseQueryFn<
 export const appApiSlice = createApi({
   reducerPath: "appApi",
   baseQuery: appApiBaseQueryWithReauth,
-  tagTypes: ["ReimbursementRequestList"],
+  tagTypes: ["ReimbursementRequestList", "ReimbursementRequest"],
   endpoints: (
     _builder: EndpointBuilder<
       BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError>,

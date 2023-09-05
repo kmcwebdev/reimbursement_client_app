@@ -26,6 +26,17 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
         { type: "ReimbursementRequestList", id: JSON.stringify(query) },
       ],
     }),
+    getRequest: builder.query<ReimbursementRequest, { id?: string }>({
+      query: (query) => {
+        return {
+          url: `/api/finance/reimbursements/requests/${query.id}`,
+        };
+      },
+
+      providesTags: (_result, _fetchBaseQuery, query) => [
+        { type: "ReimbursementRequest", id: JSON.stringify(query.id) },
+      ],
+    }),
     requestTypes: builder.query<ReimbursementRequestType[], void>({
       query: () => "/api/finance/reimbursements/request-types",
     }),
@@ -60,7 +71,10 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
     }),
     createReimbursement: builder.mutation<
       unknown,
-      ReimbursementDetailsType & { attachment: string }
+      Omit<ReimbursementDetailsType, "approvers"> & {
+        approvers?: string[];
+        attachment: string;
+      }
     >({
       query: (data) => {
         return {
@@ -69,12 +83,14 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
           body: data,
         };
       },
+      invalidatesTags: [{ type: "ReimbursementRequestList" }],
     }),
   }),
 });
 
 export const {
   useGetAllRequestsQuery,
+  useGetRequestQuery,
   useRequestTypesQuery,
   useExpenseTypesQuery,
   useUploadFileMutation,

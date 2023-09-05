@@ -72,7 +72,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       >
         <div className="flex items-center justify-between gap-4">
           {children}
-          {loading && <BiLoaderCircle className="h5-w-5 animate-spin" />}
+          {loading && <BiLoaderCircle className="h-5 w-5 animate-spin" />}
         </div>
       </button>
     );

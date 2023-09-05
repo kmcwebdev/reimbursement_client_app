@@ -8,14 +8,22 @@ import { BiSpreadsheet } from "react-icons-all-files/bi/BiSpreadsheet";
 import { MdCloudUpload } from "react-icons-all-files/md/MdCloudUpload";
 import { MdOutlineDelete } from "react-icons-all-files/md/MdOutlineDelete";
 import { MdPictureAsPdf } from "react-icons-all-files/md/MdPictureAsPdf";
+import { useDispatch } from "react-redux";
+import {
+  setFileSelected,
+  setUploadedFileUrl,
+} from "~/features/reimbursement-form-slice";
 import { classNames } from "~/utils/classNames";
 import CollapseHeightAnimation from "../animation/CollapseHeight";
+import IndeteminateProgressBar from "../loaders/IndeteminateProgressBar";
 import { Button, type ButtonProps } from "./Button";
 
 export interface UploadProps extends DropzoneOptions {
   uploadButtonProps: Omit<ButtonProps, "onClick"> & {
     onClick: (e: FileWithPath) => void;
+    filePath: string | null;
   };
+  fileSelected: FileWithPath[] | null;
 }
 
 const Upload: React.FC<UploadProps> = ({
@@ -29,14 +37,17 @@ const Upload: React.FC<UploadProps> = ({
     ],
   },
   uploadButtonProps,
+  fileSelected,
   ...rest
 }) => {
+  const dispatch = useDispatch();
   const [files, setFiles] = useState<FileWithPath[]>([]);
   const [fileToEdit, setFileToEdit] = useState<FileWithPath | null>();
 
   const handleDrop = useCallback(
     (e: FileWithPath[]) => {
       if (rest.maxFiles && files.length === rest.maxFiles) {
+        setFiles([...e]);
         return;
       }
 
@@ -50,9 +61,17 @@ const Upload: React.FC<UploadProps> = ({
       }
 
       setFiles((old) => [...old, ...e]);
+
+      dispatch(setFileSelected(e));
     },
     [fileToEdit, files, rest.maxFiles],
   );
+
+  useMemo(() => {
+    if (fileSelected) {
+      setFiles([...fileSelected]);
+    }
+  }, [fileSelected]);
 
   const { getRootProps, getInputProps, fileRejections } = useDropzone({
     onDrop: (e, i, f) => {
@@ -60,7 +79,7 @@ const Upload: React.FC<UploadProps> = ({
       handleDrop(e);
     },
     accept,
-    disabled: !!(rest.maxFiles && files.length === rest.maxFiles),
+    // disabled: !!(rest.maxFiles && files.length === rest.maxFiles),
     ...rest,
   });
 
@@ -69,7 +88,10 @@ const Upload: React.FC<UploadProps> = ({
       const newFiles = [...files];
       newFiles.splice(newFiles.indexOf(e), 1);
       setFiles(newFiles);
+      dispatch(setFileSelected(null));
+      dispatch(setUploadedFileUrl(null));
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [files],
   );
 
@@ -96,24 +118,52 @@ const Upload: React.FC<UploadProps> = ({
                 )}
               </span>
 
-              <span className="flex w-52 flex-col justify-center">
-                <span className="typography-caption truncate">{file.name}</span>
-              </span>
+              {uploadButtonProps.loading && (
+                <span className="flex w-52 flex-col justify-center gap-2">
+                  <span className=" truncate">Uploading...</span>
+                  <IndeteminateProgressBar />
+                </span>
+              )}
+
+              {!uploadButtonProps.loading && (
+                <span className="flex w-52 flex-col justify-center">
+                  <span className="truncate">{file.name}</span>
+                  {uploadButtonProps.filePath && (
+                    <span className="truncate text-xs text-neutral-600">
+                      {uploadButtonProps.filePath}
+                    </span>
+                  )}
+                </span>
+              )}
             </div>
 
-            <div className="flex items-center">
-              <button
+            <div className="flex items-center gap-2 pr-2">
+              <Button
                 type="button"
+                buttonType="text"
+                variant="danger"
                 onClick={() => deleteFile(file)}
-                className="rounded p-2 text-red-600 outline-none hover:text-red-700 focus:ring-1 focus:ring-red-800 focus:ring-offset-2"
               >
                 <MdOutlineDelete className="h-5 w-5" />
-              </button>
+              </Button>
+
+              {!uploadButtonProps.filePath && (
+                <Button
+                  type="button"
+                  buttonType="text"
+                  variant="primary"
+                  onClick={() => {
+                    uploadButtonProps.onClick(files[0]);
+                  }}
+                >
+                  <MdCloudUpload className="h-5 w-5" />
+                </Button>
+              )}
             </div>
           </li>
         );
       }),
-    [files, deleteFile],
+    [files, deleteFile, uploadButtonProps],
   );
 
   return (
@@ -133,7 +183,11 @@ const Upload: React.FC<UploadProps> = ({
           <MdCloudUpload className="h-6 w-6 text-neutral-800" />
         </div>
 
-        <p className="font-bold text-orange-600">Click/Drop to Upload</p>
+        <p className="font-bold text-orange-600">
+          {files && files.length === 1 && rest.maxFiles === 1
+            ? "Replace Selected File"
+            : "Click/Drop to Upload"}
+        </p>
 
         <p className="text-neutral-600">
           PDF or Excel (add the images of particulars)
@@ -146,7 +200,7 @@ const Upload: React.FC<UploadProps> = ({
           <ul className="mt-2 space-y-2">{acceptedFileItems}</ul>
         </aside>
 
-        <div className="mt-4 flex justify-end">
+        {/* <div className="mt-4 flex justify-end">
           <Button
             type="button"
             className="px-5"
@@ -159,7 +213,7 @@ const Upload: React.FC<UploadProps> = ({
           >
             Upload File
           </Button>
-        </div>
+        </div> */}
       </CollapseHeightAnimation>
     </section>
   );

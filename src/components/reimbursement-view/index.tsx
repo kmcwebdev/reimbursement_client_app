@@ -16,10 +16,11 @@ export interface ReimbursementsCardViewProps extends PropsWithChildren {
 const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
   closeDrawer,
   data,
+  isLoading = false,
 }) => {
   return (
     <div className="relative flex h-full w-full flex-col">
-      {data && (
+      {!isLoading && data && (
         <>
           <div className="flex-1 p-5">
             <Details
