@@ -1,25 +1,30 @@
-import { z } from "zod";
 import { appApiSlice } from "~/app/rtkQuery";
-import { type ReimbursementDetailsSchema } from "~/schema/reimbursement-details.schema";
+import {
+  ExpenseTypeQuerySchema,
+  type ExpenseTypeQueryType,
+} from "~/schema/expense-type.schema";
+import { type ReimbursementDetailsType } from "~/schema/reimbursement-details.schema";
+import { type GetAllReimbursementRequestType } from "~/schema/reimbursement-query.schema";
 import { type UploadFileResponse } from "~/types/file-upload-response.type";
 import { type ReimbursementExpenseType } from "~/types/reimbursement.expese-type";
 import { type ReimbursementRequestType } from "~/types/reimbursement.request-type";
 import { type ReimbursementRequest } from "~/types/reimbursement.types";
 
-const ExpenseTypeQuerySchema = z.object({
-  request_type_id: z.string().uuid(),
-});
-
-type ExpenseTypeQueryType = z.infer<typeof ExpenseTypeQuerySchema>;
-
-export type ReimbursementDetailsType = z.infer<
-  typeof ReimbursementDetailsSchema
->;
-
 export const reimbursementApiSlice = appApiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    getAllRequests: builder.query<ReimbursementRequest[], void>({
-      query: () => "/api/finance/reimbursements/requests",
+    getAllRequests: builder.query<
+      ReimbursementRequest[],
+      GetAllReimbursementRequestType
+    >({
+      query: (query) => {
+        return {
+          url: "/api/finance/reimbursements/requests",
+          params: query,
+        };
+      },
+      providesTags: (_result, _fetchBaseQuery, query) => [
+        { type: "ReimbursementRequestList", id: JSON.stringify(query) },
+      ],
     }),
     requestTypes: builder.query<ReimbursementRequestType[], void>({
       query: () => "/api/finance/reimbursements/request-types",

@@ -1,6 +1,6 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import { type ReimbursementDetailsType } from "~/schema/reimbursement-details.schema";
 import { type UploadFileResponse } from "~/types/file-upload-response.type";
-import { type ReimbursementDetailsType } from "./reimbursement-api-slice";
 
 interface ReimburseFormState {
   activeStep: number;

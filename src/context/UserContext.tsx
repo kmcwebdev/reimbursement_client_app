@@ -80,16 +80,14 @@ export const UserAccessProvider: React.FC<PropsWithChildren> = ({
         createdAt,
       } = propel;
 
-      const assignedRole = propel.getOrgByName(ORG_KMC_SOLUTIONS as string)
-        ?.assignedRole;
+      const assignedRole = propel.getOrgByName(ORG_KMC_SOLUTIONS)?.assignedRole;
 
-      const permissions = propel.getOrgByName(ORG_KMC_SOLUTIONS as string)
-        ?.permissions;
+      const permissions = propel.getOrgByName(ORG_KMC_SOLUTIONS)?.permissions;
 
       const transformedPermissions: AppClaims[] = [];
 
       if (permissions && permissions.length > 0) {
-        permissions.every((permission) => {
+        permissions.forEach((permission) => {
           const sliced = permission.split("::");
           transformedPermissions.push(sliced[1].toUpperCase() as AppClaims);
         });
