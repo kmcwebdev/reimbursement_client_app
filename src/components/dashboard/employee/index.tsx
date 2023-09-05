@@ -260,6 +260,8 @@ const EmployeeDashboard: React.FC = () => {
               }}
             />
           )}
+
+          {/* TODO: TableSkeleton */}
         </div>
 
         <Dialog

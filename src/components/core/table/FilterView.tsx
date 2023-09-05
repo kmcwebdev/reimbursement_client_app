@@ -89,11 +89,11 @@ const FilterView: React.FC<FilterViewProps> = ({ columns, colSpan }) => {
 
   const handleClear = () => {
     const statusColumn = columns.find(
-      (column) => column && column.id === "status",
+      (column) => column && column.id === "request_status",
     );
     const typeColumn = columns.find((column) => column && column.id === "type");
     const expenseColumn = columns.find(
-      (column) => column && column.id === "expense",
+      (column) => column && column.id === "expense_type",
     );
     const dateFiledColumn = columns.find(
       (column) => column && column.id === "filed",

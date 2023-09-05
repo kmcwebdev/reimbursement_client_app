@@ -80,11 +80,9 @@ export const UserAccessProvider: React.FC<PropsWithChildren> = ({
         createdAt,
       } = propel;
 
-      const assignedRole = propel.getOrgByName(ORG_KMC_SOLUTIONS as string)
-        ?.assignedRole;
+      const assignedRole = propel.getOrgByName(ORG_KMC_SOLUTIONS)?.assignedRole;
 
-      const permissions = propel.getOrgByName(ORG_KMC_SOLUTIONS as string)
-        ?.permissions;
+      const permissions = propel.getOrgByName(ORG_KMC_SOLUTIONS)?.permissions;
 
       const transformedPermissions: AppClaims[] = [];
 
