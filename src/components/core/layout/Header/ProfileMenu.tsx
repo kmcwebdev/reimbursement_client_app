@@ -1,38 +1,13 @@
 import { useLogoutFunction } from "@propelauth/nextjs/client";
-import { useRouter } from "next/navigation";
 import React, { useRef } from "react";
 import { AiOutlineLogout } from "react-icons-all-files/ai/AiOutlineLogout";
-import { MdPeople } from "react-icons-all-files/md/MdPeople";
-import { type PropsValue } from "react-select";
 import { useAppSelector } from "~/app/hook";
-import { useUserContext, type IRole } from "~/context/UserContext";
 import { useDialogState } from "~/hooks/use-dialog-state";
 import { Button } from "../../Button";
 import Dialog from "../../Dialog";
 import Popover from "../../Popover";
-import Select, { type OptionData } from "../../form/fields/Select";
-
-const options = [
-  {
-    label: "EMPLOYEE",
-    value: "employee",
-  },
-  {
-    label: "HRBP",
-    value: "hrbp",
-  },
-  {
-    label: "MANAGER",
-    value: "manager",
-  },
-  {
-    label: "FINANCE",
-    value: "finance",
-  },
-];
 
 const ProfileMenu: React.FC = () => {
-  const { user: tempUser, changeUser } = useUserContext();
   const buttonRef = useRef<HTMLButtonElement>(null);
 
   const user = useAppSelector((state) => state.session.user);
@@ -45,7 +20,6 @@ const ProfileMenu: React.FC = () => {
 
   const logoutFn = useLogoutFunction();
 
-  const navigation = useRouter();
   return (
     <Popover
       buttonRef={buttonRef}
@@ -64,37 +38,34 @@ const ProfileMenu: React.FC = () => {
       }
       panelClassName="right-0 top-5"
       content={
-        <div className="w-72 space-y-4 p-4">
-          <Select
-            initialValue={
-              options.find((a) => a.value === tempUser?.role) as OptionData
-            }
-            name="user"
-            options={options}
-            onChangeEvent={(e: PropsValue<OptionData>) => {
-              const value = e as OptionData;
-              changeUser(value.value as IRole);
-              buttonRef.current?.click();
-            }}
-          />
-          <div
-            className="flex cursor-pointer items-center gap-4 rounded p-2 transition-all ease-in-out hover:bg-orange-300"
-            onClick={() => navigation.push("/user-management")}
-          >
-            <MdPeople className="h-5 w-5 text-orange-600" />
-            User Management
+        <div className="w-72">
+          <div className="flex gap-4 border-b p-4">
+            <div className="grid h-10 w-10 place-items-center rounded-full bg-orange-600 text-lg font-bold text-white">
+              {user?.firstName?.charAt(0)}
+              {user?.lastName?.charAt(0)}
+            </div>
+
+            <div className="flex flex-1 flex-col gap-2">
+              <p className="font-bold uppercase text-orange-600">
+                {user?.firstName} {user?.lastName}
+              </p>
+
+              <p className="text-xs text-neutral-600">{user?.assignedRole}</p>
+            </div>
           </div>
 
-          <Button
-            variant="neutral"
-            buttonType="text"
-            onClick={openSignoutDialog}
-          >
-            <div className="flex items-center gap-1">
-              <AiOutlineLogout className="h-4 w-4" />
-              Sign out
-            </div>
-          </Button>
+          <div className="flex flex-col gap-4 p-4">
+            <Button
+              variant="neutral"
+              buttonType="text"
+              onClick={openSignoutDialog}
+            >
+              <div className="flex items-center gap-1">
+                <AiOutlineLogout className="h-4 w-4" />
+                Sign out
+              </div>
+            </Button>
+          </div>
 
           <Dialog
             title="Confirm Signout?"

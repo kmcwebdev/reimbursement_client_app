@@ -5,14 +5,13 @@ import {
   type ColumnFiltersState,
   type PaginationState,
 } from "@tanstack/react-table";
+import dayjs from "dayjs";
 import dynamic from "next/dynamic";
-import Head from "next/head";
 import React, { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { MdAccessTimeFilled } from "react-icons-all-files/md/MdAccessTimeFilled";
 import { MdCreditCard } from "react-icons-all-files/md/MdCreditCard";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
-import PageAnimation from "~/components/animation/PageAnimation";
 import { Button } from "~/components/core/Button";
 import DashboardCard, {
   DashboardCardSkeleton,
@@ -40,11 +39,10 @@ import {
   type ReimbursementRequest,
 } from "~/types/reimbursement.types";
 import { currencyFormat } from "~/utils/currencyFormat";
+import DateFiledFilter from "../core/table/filters/DateFiledFilter";
 
 const Dialog = dynamic(() => import("~/components/core/Dialog"));
-const ReimburseForm = dynamic(
-  () => import("~/components/dashboard/employee/reimburse-form"),
-);
+const ReimburseForm = dynamic(() => import("./reimburse-form"));
 
 const StatusFilter = dynamic(
   () => import("~/components/core/table/filters/StatusFilter"),
@@ -56,7 +54,7 @@ const ReimbursementTypeFilter = dynamic(
   () => import("~/components/core/table/filters/ReimbursementTypeFilter"),
 );
 
-const EmployeeDashboard: React.FC = () => {
+const MyReimbursements: React.FC = () => {
   const { formDialogIsOpen, cancelDialogIsOpen, reimbursementDetails } =
     useAppSelector((state) => state.reimbursementForm);
   const dispatch = useAppDispatch();
@@ -163,18 +161,18 @@ const EmployeeDashboard: React.FC = () => {
           ),
         },
       },
-      // {
-      //   id: "filed",
-      //   accessorKey: "filed",
-      //   cell: (info) => info.getValue(),
-      //   header: "Filed",
-      //   filterFn: (row, id, value: string) => {
-      //     return value.includes(row.getValue(id));
-      //   },
-      //   meta: {
-      //     filterComponent: (info: FilterProps) => <DateFiledFilter {...info} />,
-      //   },
-      // },
+      {
+        id: "created_at",
+        accessorKey: "created_at",
+        cell: (info) => dayjs(info.getValue() as string).format("MMM D, YYYY"),
+        header: "Filed",
+        filterFn: (row, id, value: string) => {
+          return value.includes(row.getValue(id));
+        },
+        meta: {
+          filterComponent: (info: FilterProps) => <DateFiledFilter {...info} />,
+        },
+      },
       {
         id: "amount",
         accessorKey: "amount",
@@ -233,126 +231,119 @@ const EmployeeDashboard: React.FC = () => {
 
   return (
     <>
-      <Head>
-        <title>Employee Dashboard</title>
-      </Head>
-
-      <PageAnimation>
-        <div className="grid gap-y-2 p-5">
-          <div className="mb-5 flex place-items-start gap-4">
-            {analyticsIsLoading && (
-              <>
-                <DashboardCardSkeleton />
-                <DashboardCardSkeleton />
-              </>
-            )}
-
-            {!analyticsIsLoading && analytics && (
-              <>
-                <DashboardCard
-                  icon={
-                    <MdAccessTimeFilled className="h-5 w-5 text-yellow-600" />
-                  }
-                  label="Pending Approval"
-                  count={analytics.pending.count}
-                />
-                <DashboardCard
-                  icon={
-                    <MdCreditCard className="text-informative-600 h-5 w-5" />
-                  }
-                  label="Overall Total"
-                  count={analytics.total.count}
-                />
-              </>
-            )}
-          </div>
-
-          <div className="flex justify-between">
-            <h4>Reimbursements</h4>
-            <Button onClick={() => dispatch(toggleFormDialog())}>
-              Reimburse
-            </Button>
-          </div>
-
-          {!isLoading && data && (
-            <Table
-              loading={isLoading}
-              data={data}
-              columns={columns}
-              tableState={{
-                pagination,
-                selectedItems,
-                columnFilters,
-              }}
-              tableStateActions={{
-                setColumnFilters,
-                setSelectedItems,
-                setPagination,
-              }}
-            />
+      <div className="grid gap-y-2 p-5">
+        <div className="mb-5 flex place-items-start gap-4">
+          {analyticsIsLoading && (
+            <>
+              <DashboardCardSkeleton />
+              <DashboardCardSkeleton />
+            </>
           )}
 
-          {/* TODO: TableSkeleton */}
+          {!analyticsIsLoading && analytics && (
+            <>
+              <DashboardCard
+                icon={
+                  <MdAccessTimeFilled className="h-5 w-5 text-yellow-600" />
+                }
+                label="Pending Approval"
+                count={analytics.pending.count}
+              />
+              <DashboardCard
+                icon={<MdCreditCard className="text-informative-600 h-5 w-5" />}
+                label="Overall Total"
+                count={analytics.total.count}
+              />
+            </>
+          )}
         </div>
 
-        <Dialog
-          title="File a Reimbursement"
-          isVisible={formDialogIsOpen}
-          close={handleOpenCancelDialog}
-        >
-          <ReimburseForm
-            formReturn={useReimbursementDetailsFormReturn}
-            handleOpenCancelDialog={handleOpenCancelDialog}
+        <div className="flex justify-between">
+          <h4>Reimbursements</h4>
+          <Button onClick={() => dispatch(toggleFormDialog())}>
+            Reimburse
+          </Button>
+        </div>
+
+        {!isLoading && data && (
+          <Table
+            loading={isLoading}
+            data={data}
+            columns={columns}
+            tableState={{
+              pagination,
+              selectedItems,
+              columnFilters,
+            }}
+            tableStateActions={{
+              setColumnFilters,
+              setSelectedItems,
+              setPagination,
+            }}
           />
-        </Dialog>
+        )}
 
-        <Dialog
-          title="Cancel Reimbursements?"
-          isVisible={cancelDialogIsOpen}
-          close={handleAbortCancellation}
-        >
-          <div className="flex flex-col gap-8 pt-8">
-            <p className="text-neutral-800">
-              Are you sure you want to cancel reimbursement request?
-            </p>
+        {/* TODO: TableSkeleton */}
+      </div>
 
-            <div className="flex items-center gap-4">
-              <Button
-                variant="danger"
-                className="w-1/2"
-                onClick={handleAbortCancellation}
-              >
-                No
-              </Button>
-              <Button
-                variant="danger"
-                className="w-1/2"
-                onClick={handleConfirmCancellation}
-              >
-                Yes
-              </Button>
-            </div>
+      <Dialog
+        title="File a Reimbursement"
+        isVisible={formDialogIsOpen}
+        close={handleOpenCancelDialog}
+      >
+        <ReimburseForm
+          formReturn={useReimbursementDetailsFormReturn}
+          handleOpenCancelDialog={handleOpenCancelDialog}
+        />
+      </Dialog>
+
+      <Dialog
+        title="Cancel Reimbursements?"
+        isVisible={cancelDialogIsOpen}
+        close={handleAbortCancellation}
+      >
+        <div className="flex flex-col gap-8 pt-8">
+          <p className="text-neutral-800">
+            Are you sure you want to cancel reimbursement request?
+          </p>
+
+          <div className="flex items-center gap-4">
+            <Button
+              variant="neutral"
+              buttonType="outlined"
+              className="w-1/2"
+              onClick={handleAbortCancellation}
+            >
+              No
+            </Button>
+            <Button
+              variant="danger"
+              className="w-1/2"
+              onClick={handleConfirmCancellation}
+            >
+              Yes
+            </Button>
           </div>
-        </Dialog>
+        </div>
+      </Dialog>
 
-        <SideDrawer
-          title={
-            !isLoading && reimbursementRequestData
-              ? reimbursementRequestData.reference_no
-              : "..."
-          }
-          isVisible={isVisible}
+      <SideDrawer
+        title={
+          !isLoading && reimbursementRequestData
+            ? reimbursementRequestData.reference_no
+            : "..."
+        }
+        isVisible={isVisible}
+        closeDrawer={close}
+      >
+        <ReimbursementsCardView
           closeDrawer={close}
-        >
-          <ReimbursementsCardView
-            closeDrawer={close}
-            isLoading={reimbursementRequestDataIsLoading}
-            data={reimbursementRequestData}
-          />
-        </SideDrawer>
-      </PageAnimation>
+          isLoading={reimbursementRequestDataIsLoading}
+          data={reimbursementRequestData}
+        />
+      </SideDrawer>
     </>
   );
 };
 
-export default EmployeeDashboard;
+export default MyReimbursements;

@@ -26,10 +26,10 @@ const Navigation: React.FC<NavigationProps> = ({ collapsed }) => {
 
       <Can I="access" a="CAN_APPROVE_REIMBURSEMENT">
         <NavigationItem
-          label="Reimbursements"
+          label="Approval"
           icon={MdReceipt as IconType}
           active={pathname.includes("approval")}
-          href="/reimbursements"
+          href="/approval"
           collapsed={collapsed}
         />
       </Can>

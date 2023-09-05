@@ -16,31 +16,12 @@ import { AbilityContext } from "./AbilityContext";
 
 const AuthLoader = dynamic(() => import("~/components/loaders/AuthLoader"));
 
-const users: IUserData[] = [
-  {
-    name: "hrbp",
-    role: "hrbp",
-  },
-  {
-    name: "employee",
-    role: "employee",
-  },
-  {
-    name: "manager",
-    role: "manager",
-  },
-  {
-    name: "finance",
-    role: "finance",
-  },
-  {
-    name: "sample",
-    role: "sample",
-  },
-];
-
 // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
-export type IRole = "employee" | "manager" | "hrbp" | "finance" | "sample";
+export type IRole =
+  | "Member"
+  | "External Reimbursement Approver Manager"
+  | "HRBP"
+  | "Finance";
 
 export interface IUserData {
   name: string;
@@ -48,12 +29,10 @@ export interface IUserData {
 }
 
 interface IUserAccessCtx {
-  user: IUserData | null;
   changeUser: (role: IRole) => void;
 }
 
 const UserContext = createContext<IUserAccessCtx>({
-  user: users[0],
   changeUser: () => console.log("changed user"),
 });
 
@@ -62,7 +41,6 @@ export const UserAccessProvider: React.FC<PropsWithChildren> = ({
 }) => {
   const dispatch = useAppDispatch();
   const { loading: userIsLoading, user: propel, accessToken } = useUser();
-  const [user, setUser] = useState<IUserData | null>(users[0]);
   const [permissions, setPermissions] = useState<AppClaims[]>();
 
   useEffect(() => {
@@ -116,23 +94,13 @@ export const UserAccessProvider: React.FC<PropsWithChildren> = ({
     }
   }, [propel, accessToken, dispatch]);
 
-  const changeUser = (role: IRole) => {
-    const u = users.find((a) => a.role === role);
-
-    if (u) {
-      setUser(u);
-    }
-  };
-
   if (userIsLoading) {
     return <AuthLoader />;
   }
 
   return (
     <AbilityContext.Provider value={defineAbility(permissions)}>
-      <UserContext.Provider value={{ user, changeUser }}>
-        {children}
-      </UserContext.Provider>
+      {children}
     </AbilityContext.Provider>
   );
 };

@@ -114,8 +114,8 @@ const Table: React.FC<TableProps> = ({
 
   return (
     <div className="relative flex flex-col gap-4 overflow-hidden">
-      <div className="overflow-x-auto bg-white">
-        <table className="w-full overflow-x-scroll whitespace-nowrap bg-white">
+      <div className="min-h-[300px] overflow-x-auto bg-white">
+        <table className=" w-full overflow-x-scroll whitespace-nowrap bg-white">
           <thead className="h-12 border-b border-neutral-300 text-xs">
             {table.getHeaderGroups().map((headerGroup, i) => (
               <tr key={i}>
@@ -145,7 +145,7 @@ const Table: React.FC<TableProps> = ({
               </tr>
             ))}
           </thead>
-          <tbody>
+          <tbody className="min-h-[calc(300px-3rem)]">
             {table.getRowModel().rows.length !== 0 &&
               tableState &&
               tableState.columnFilters && (
