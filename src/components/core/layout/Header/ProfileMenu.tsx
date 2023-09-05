@@ -1,6 +1,6 @@
 import { useLogoutFunction } from "@propelauth/nextjs/client";
 import { useRouter } from "next/navigation";
-import React from "react";
+import React, { useRef } from "react";
 import { AiOutlineLogout } from "react-icons-all-files/ai/AiOutlineLogout";
 import { MdPeople } from "react-icons-all-files/md/MdPeople";
 import { type PropsValue } from "react-select";
@@ -33,6 +33,7 @@ const options = [
 
 const ProfileMenu: React.FC = () => {
   const { user: tempUser, changeUser } = useUserContext();
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   const user = useAppSelector((state) => state.session.user);
 
@@ -47,6 +48,7 @@ const ProfileMenu: React.FC = () => {
   const navigation = useRouter();
   return (
     <Popover
+      buttonRef={buttonRef}
       btn={
         <div
           role="button"
@@ -72,6 +74,7 @@ const ProfileMenu: React.FC = () => {
             onChangeEvent={(e: PropsValue<OptionData>) => {
               const value = e as OptionData;
               changeUser(value.value as IRole);
+              buttonRef.current?.click();
             }}
           />
           <div

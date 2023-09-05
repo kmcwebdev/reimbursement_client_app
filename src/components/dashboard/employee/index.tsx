@@ -14,7 +14,9 @@ import { MdCreditCard } from "react-icons-all-files/md/MdCreditCard";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import PageAnimation from "~/components/animation/PageAnimation";
 import { Button } from "~/components/core/Button";
-import DashboardCard from "~/components/core/DashboardCard";
+import DashboardCard, {
+  DashboardCardSkeleton,
+} from "~/components/core/DashboardCard";
 import SideDrawer from "~/components/core/SideDrawer";
 import StatusBadge, { type StatusType } from "~/components/core/StatusBadge";
 import Table from "~/components/core/table";
@@ -23,6 +25,7 @@ import { type FilterProps } from "~/components/core/table/filters/StatusFilter";
 import ReimbursementsCardView from "~/components/reimbursement-view";
 import {
   useGetAllRequestsQuery,
+  useGetAnalyticsQuery,
   useGetRequestQuery,
 } from "~/features/reimbursement-api-slice";
 import {
@@ -62,6 +65,8 @@ const EmployeeDashboard: React.FC = () => {
     useState<string>();
 
   const { isLoading, data } = useGetAllRequestsQuery({});
+  const { isLoading: analyticsIsLoading, data: analytics } =
+    useGetAnalyticsQuery();
   const {
     isLoading: reimbursementRequestDataIsLoading,
     data: reimbursementRequestData,
@@ -83,13 +88,18 @@ const EmployeeDashboard: React.FC = () => {
     return [
       {
         id: "select",
-        header: ({ table }) => (
-          <TableCheckbox
-            checked={table.getIsAllRowsSelected()}
-            indeterminate={table.getIsSomeRowsSelected()}
-            onChange={table.getToggleAllRowsSelectedHandler()}
-          />
-        ),
+        header: ({ table }) => {
+          if (table.getRowModel().rows.length > 0) {
+            return (
+              <TableCheckbox
+                checked={table.getIsAllRowsSelected()}
+                indeterminate={table.getIsSomeRowsSelected()}
+                onChange={table.getToggleAllRowsSelectedHandler()}
+              />
+            );
+          }
+        },
+
         cell: ({ row }) => (
           <div className="px-4">
             <TableCheckbox
@@ -230,16 +240,31 @@ const EmployeeDashboard: React.FC = () => {
       <PageAnimation>
         <div className="grid gap-y-2 p-5">
           <div className="mb-5 flex place-items-start gap-4">
-            <DashboardCard
-              icon={<MdAccessTimeFilled className="h-5 w-5 text-yellow-600" />}
-              label="Pending Approval"
-              count={2}
-            />
-            <DashboardCard
-              icon={<MdCreditCard className="text-informative-600 h-5 w-5" />}
-              label="Overall Total"
-              count={2}
-            />
+            {analyticsIsLoading && (
+              <>
+                <DashboardCardSkeleton />
+                <DashboardCardSkeleton />
+              </>
+            )}
+
+            {!analyticsIsLoading && analytics && (
+              <>
+                <DashboardCard
+                  icon={
+                    <MdAccessTimeFilled className="h-5 w-5 text-yellow-600" />
+                  }
+                  label="Pending Approval"
+                  count={analytics.pending.count}
+                />
+                <DashboardCard
+                  icon={
+                    <MdCreditCard className="text-informative-600 h-5 w-5" />
+                  }
+                  label="Overall Total"
+                  count={analytics.total.count}
+                />
+              </>
+            )}
           </div>
 
           <div className="flex justify-between">
@@ -291,13 +316,20 @@ const EmployeeDashboard: React.FC = () => {
               Are you sure you want to cancel reimbursement request?
             </p>
 
-            <div className="flex justify-end">
+            <div className="flex items-center gap-4">
+              <Button
+                variant="danger"
+                className="w-1/2"
+                onClick={handleAbortCancellation}
+              >
+                No
+              </Button>
               <Button
                 variant="danger"
                 className="w-1/2"
                 onClick={handleConfirmCancellation}
               >
-                Cancel
+                Yes
               </Button>
             </div>
           </div>

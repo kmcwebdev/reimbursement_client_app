@@ -6,12 +6,23 @@ import {
 import { type ReimbursementDetailsType } from "~/schema/reimbursement-details.schema";
 import { type GetAllReimbursementRequestType } from "~/schema/reimbursement-query.schema";
 import { type UploadFileResponse } from "~/types/file-upload-response.type";
+import { type ReimbursementAnalyticsType } from "~/types/reimbursement-analytics";
 import { type ReimbursementExpenseType } from "~/types/reimbursement.expese-type";
 import { type ReimbursementRequestType } from "~/types/reimbursement.request-type";
 import { type ReimbursementRequest } from "~/types/reimbursement.types";
 
 export const reimbursementApiSlice = appApiSlice.injectEndpoints({
   endpoints: (builder) => ({
+    getAnalytics: builder.query<ReimbursementAnalyticsType, void>({
+      query: () => {
+        return {
+          url: "/api/finance/reimbursements/requests/analytics",
+        };
+      },
+      providesTags: (_result, _fetchBaseQuery, query) => [
+        { type: "ReimbursementAnalytics", id: JSON.stringify(query) },
+      ],
+    }),
     getAllRequests: builder.query<
       ReimbursementRequest[],
       Partial<GetAllReimbursementRequestType>
@@ -89,6 +100,7 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
 });
 
 export const {
+  useGetAnalyticsQuery,
   useGetAllRequestsQuery,
   useGetRequestQuery,
   useRequestTypesQuery,
