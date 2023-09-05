@@ -18,12 +18,12 @@ import Input from "~/components/core/form/fields/Input";
 import Table from "~/components/core/table";
 import { type ReimbursementRequest } from "~/types/reimbursement.types";
 import { currencyFormat } from "~/utils/currencyFormat";
-import { sampleData } from "~/utils/sampleData";
 import PageAnimation from "../animation/PageAnimation";
 import TableCheckbox from "../core/table/TableCheckbox";
 import DateFiledFilter from "../core/table/filters/DateFiledFilter";
 import ExpenseTypeFilter from "../core/table/filters/ExpenseTypeFilter";
 import { type FilterProps } from "../core/table/filters/StatusFilter";
+import { useGetAllRequestsQuery } from "~/features/reimbursement-api-slice";
 
 const ReimbursementTypeFilter = dynamic(
   () => import("../core/table/filters/ReimbursementTypeFilter"),
@@ -33,6 +33,11 @@ const ClientFilter = dynamic(
 );
 
 const FinanceDashboard: React.FC = () => {
+
+
+
+  const { isLoading, data } = useGetAllRequestsQuery();
+
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [pagination, setPagination] = useState<PaginationState>({
@@ -211,16 +216,18 @@ const FinanceDashboard: React.FC = () => {
             />
           </div>
 
-          <Table
-            data={sampleData}
-            columns={columns}
-            tableState={{ pagination, selectedItems, columnFilters }}
-            tableStateActions={{
-              setColumnFilters,
-              setSelectedItems,
-              setPagination,
-            }}
-          />
+          {isLoading && data && (
+            <Table
+              data={data}
+              columns={columns}
+              tableState={{ pagination, selectedItems, columnFilters }}
+              tableStateActions={{
+                setColumnFilters,
+                setSelectedItems,
+                setPagination,
+              }}
+            />
+          )}
         </div>
       </PageAnimation>
     </>
