@@ -47,8 +47,11 @@ const UploadAttachments: React.FC = () => {
           attachment: uploadedFiles.url,
         })
           .unwrap()
-          .then((data) => {
-            console.log(data);
+          .then(() => {
+            showToast({
+              type: "success",
+              description: "File uploaded successfully",
+            });
           })
           .catch((error: MutationError) => {
             showToast({

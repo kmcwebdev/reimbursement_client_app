@@ -87,7 +87,7 @@ export const UserAccessProvider: React.FC<PropsWithChildren> = ({
       const transformedPermissions: AppClaims[] = [];
 
       if (permissions && permissions.length > 0) {
-        permissions.every((permission) => {
+        permissions.forEach((permission) => {
           const sliced = permission.split("::");
           transformedPermissions.push(sliced[1].toUpperCase() as AppClaims);
         });

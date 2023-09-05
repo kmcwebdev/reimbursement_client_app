@@ -18,12 +18,12 @@ import Select, { type OptionData } from "~/components/core/form/fields/Select";
 import {
   useExpenseTypesQuery,
   useRequestTypesQuery,
-  type ReimbursementDetailsType,
 } from "~/features/reimbursement-api-slice";
 import {
   setActiveStep,
   setReimbursementDetails,
 } from "~/features/reimbursement-form-slice";
+import { type ReimbursementDetailsType } from "~/schema/reimbursement-details.schema";
 import { type ReimbursementDetailsDTO } from "~/types/reimbursement.types";
 
 interface ReimbursementDetailsFormProps {
