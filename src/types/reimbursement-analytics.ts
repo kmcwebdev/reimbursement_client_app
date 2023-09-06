@@ -1,4 +1,15 @@
 export type ReimbursementAnalyticsType = {
-  pending: { count: number };
-  total: { count: number };
+  myPendingRequest: { count: number };
+  myTotalRequest: { count: number };
+  others: {
+    totalScheduledRequest: {
+      count: number;
+    };
+    totalUnScheduledRequest: {
+      count: number;
+    };
+    totalOnholdRequest: {
+      count: number;
+    };
+  } | null;
 };

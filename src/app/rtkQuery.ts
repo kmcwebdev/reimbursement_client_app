@@ -13,7 +13,7 @@ import { propelauthUserInfo } from "~/utils/propelauthUserInfo";
 import { type RootState } from "./store";
 
 const appApiBaseQuery = fetchBaseQuery({
-  baseUrl: env.NEXT_PUBLIC_BASE_URL,
+  baseUrl: env.NEXT_PUBLIC_BASEAPI_URL,
   prepareHeaders: (headers, { getState }) => {
     const state = getState() as RootState;
 

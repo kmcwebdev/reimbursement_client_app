@@ -40,11 +40,11 @@ export const UserAccessProvider: React.FC<PropsWithChildren> = ({
   children,
 }) => {
   const dispatch = useAppDispatch();
-  const { loading: userIsLoading, user: propel, accessToken } = useUser();
+  const { loading: userIsLoading, user: propelauth, accessToken } = useUser();
   const [permissions, setPermissions] = useState<AppClaims[]>();
 
   useEffect(() => {
-    if (propel && accessToken) {
+    if (propelauth && accessToken) {
       const {
         userId,
         email,
@@ -56,11 +56,17 @@ export const UserAccessProvider: React.FC<PropsWithChildren> = ({
         legacyUserId,
         lastActiveAt,
         createdAt,
-      } = propel;
+      } = propelauth;
 
-      const assignedRole = propel.getOrgByName(ORG_KMC_SOLUTIONS)?.assignedRole;
+      const org = propelauth.getOrgByName(ORG_KMC_SOLUTIONS);
 
-      const permissions = propel.getOrgByName(ORG_KMC_SOLUTIONS)?.permissions;
+      if (!org) {
+        throw new Error("User does not belong to any off the organization");
+      }
+
+      const assignedRole = org.assignedRole;
+
+      const permissions = org.permissions;
 
       const transformedPermissions: AppClaims[] = [];
 
@@ -92,7 +98,7 @@ export const UserAccessProvider: React.FC<PropsWithChildren> = ({
 
       dispatch(setAccessToken(accessToken));
     }
-  }, [propel, accessToken, dispatch]);
+  }, [propelauth, accessToken, dispatch]);
 
   if (userIsLoading) {
     return <AuthLoader />;
