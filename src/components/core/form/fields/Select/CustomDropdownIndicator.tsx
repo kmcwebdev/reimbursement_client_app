@@ -15,7 +15,7 @@ type CustomDropdownIndicatorProps = DropdownIndicatorProps<
 const CustomDropdownIndicator = ({ ...rest }: CustomDropdownIndicatorProps) => {
   return (
     <components.DropdownIndicator {...rest}>
-      <TbChevronDown className="mr-1 h-4 w-4 text-gray-500" />
+      <TbChevronDown className="mr-1 h-4 w-4 text-neutral-800" />
     </components.DropdownIndicator>
   );
 };

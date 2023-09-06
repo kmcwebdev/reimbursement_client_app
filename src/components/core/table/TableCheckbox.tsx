@@ -22,7 +22,7 @@ const TableCheckbox: React.FC<IndeterminateCheckboxProps> = ({
     <input
       type="checkbox"
       ref={ref}
-      className="h-4 w-4 cursor-pointer rounded border-neutral-subtle text-primary-default focus:ring-0 focus:ring-transparent"
+      className="h-4 w-4 cursor-pointer rounded border-neutral-600 text-orange-600 focus:ring-0 focus:ring-transparent"
       {...rest}
     />
   );

@@ -22,25 +22,12 @@ import {
   type RowSelectionState,
   type Table,
 } from "@tanstack/react-table";
-import { type StatusType } from "../StatusBadge";
 
 import { MdBrowserNotSupported } from "react-icons-all-files/md/MdBrowserNotSupported";
+import { type ReimbursementRequest } from "~/types/reimbursement.types";
 import EmptyState from "../EmptyState";
 import FilterView from "./FilterView";
-import Pagination from "./Pagination";
-
-export type Reimbursement = {
-  status: StatusType;
-  client: string;
-  id: string;
-  name: string;
-  reimbursementId: string;
-  type: string;
-  expense: string;
-  filed: string;
-  payrollAccount: number,
-  total: number;
-};
+// import Pagination from "./Pagination";
 
 export type ITableState = {
   columnFilters?: ColumnFiltersState;
@@ -56,8 +43,9 @@ export type ITableStateActions = {
 };
 
 type TableProps = {
-  data: Reimbursement[];
-  columns: ColumnDef<Reimbursement>[];
+  loading?: boolean;
+  data: ReimbursementRequest[];
+  columns: ColumnDef<ReimbursementRequest>[];
   tableState?: ITableState;
   tableStateActions?: ITableStateActions;
 };
@@ -74,11 +62,13 @@ const Table: React.FC<TableProps> = ({
   columns,
   tableState,
   tableStateActions,
+  loading,
 }) => {
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
 
   useEffect(() => {
     if (
+      !loading &&
       rowSelection &&
       tableState &&
       tableStateActions &&
@@ -89,7 +79,8 @@ const Table: React.FC<TableProps> = ({
 
       Object.keys(rowSelection).forEach((key) => {
         selectedItems.push(
-          data[key as unknown as number].id as unknown as number,
+          data[key as unknown as number]
+            .reimbursement_request_id as unknown as number,
         );
       });
       tableStateActions?.setSelectedItems(selectedItems);
@@ -119,11 +110,13 @@ const Table: React.FC<TableProps> = ({
     manualPagination: true,
   });
 
+  console.log(tableState);
+
   return (
     <div className="relative flex flex-col gap-4 overflow-hidden">
-      <div className="overflow-x-scroll bg-white">
-        <table className="w-full overflow-x-scroll whitespace-nowrap bg-white">
-          <thead className="h-12 border-b border-neutral-subtle text-xs">
+      <div className="min-h-[300px] overflow-x-auto bg-white">
+        <table className=" w-full overflow-x-scroll whitespace-nowrap bg-white">
+          <thead className="h-12 border-b border-neutral-300 text-xs">
             {table.getHeaderGroups().map((headerGroup, i) => (
               <tr key={i}>
                 {headerGroup.headers.map((header, i) => {
@@ -151,23 +144,25 @@ const Table: React.FC<TableProps> = ({
               </tr>
             ))}
           </thead>
-          <tbody>
-            {tableState?.columnFilters && (
-              <FilterView
-                colSpan={table.getAllColumns().length}
-                columns={tableState.columnFilters?.map((a) =>
-                  table.getColumn(a.id),
-                )}
-              />
-            )}
+          <tbody className="min-h-[calc(300px-3rem)]">
+            {table.getRowModel().rows.length !== 0 &&
+              tableState &&
+              tableState.columnFilters && (
+                <FilterView
+                  colSpan={table.getAllColumns().length}
+                  columns={tableState.columnFilters?.map((a) =>
+                    table.getColumn(a.id),
+                  )}
+                />
+              )}
 
             {table.getRowModel().rows.length === 0 && (
-              <tr className="h-72">
+              <tr className="h-72 bg-neutral-100">
                 <td colSpan={table.getAllFlatColumns().length}>
                   <EmptyState
                     icon={MdBrowserNotSupported}
-                    title="Your search returned 0 results."
-                    description="Please try to change your filter values to see records."
+                    title="No Reimbursement Requests Available."
+                    description="You may try to change your filter values to see records."
                   />
                 </td>
               </tr>
@@ -180,7 +175,7 @@ const Table: React.FC<TableProps> = ({
                     return (
                       <td
                         key={i}
-                        className=" border-b border-b-[#F1F2F4] px-4 first:px-0"
+                        className=" border-b border-b-neutral-200 px-4 first:px-0"
                       >
                         {flexRender(
                           cell.column.columnDef.cell,
@@ -195,7 +190,7 @@ const Table: React.FC<TableProps> = ({
           </tbody>
         </table>
       </div>
-      <Pagination table={table} />
+      {/* <Pagination table={table} /> */}
     </div>
   );
 };

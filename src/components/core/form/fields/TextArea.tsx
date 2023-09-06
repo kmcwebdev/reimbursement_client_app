@@ -48,23 +48,20 @@ const TextArea = ({
   const options: RegisterOptions<FieldValues, string> | undefined =
     type === "date"
       ? {
-        valueAsDate:
-          type === "date" && formContext.getValues(name) ? true : false,
-      }
+          valueAsDate:
+            type === "date" && formContext.getValues(name) ? true : false,
+        }
       : type === "number"
-        ? {
+      ? {
           setValueAs: (v: string) => (v === "" ? undefined : parseInt(v, 10)),
         }
-        : undefined;
+      : undefined;
 
   return (
     <div className="space-y-2">
       {label && (
-        <label
-          htmlFor={name}
-          className="text-xs font-semibold text-neutral-800"
-        >
-          {label} {required && <span className="text-primary-default">*</span>}
+        <label htmlFor={name} className="text-xs font-bold text-neutral-900">
+          {label} {required && <span className="text-red-600">*</span>}
         </label>
       )}
 
@@ -75,8 +72,8 @@ const TextArea = ({
               className={classNames(
                 "h-5 w-5",
                 formContext && formContext.formState.errors[name]?.message
-                  ? "text-red-400"
-                  : "text-gray-400",
+                  ? "text-red-600"
+                  : "text-neutral-600",
               )}
               aria-hidden="true"
             />
@@ -99,7 +96,7 @@ const TextArea = ({
             placeholder={placeholder}
             className={classNames(
               hasError ? "input-error" : "input-default",
-              "w-full resize-none rounded-md border-neutral-subtle py-2 placeholder:pt-1 placeholder:text-xs placeholder:text-neutral-subtle focus:border-transparent focus:ring-1 focus:ring-inset focus:ring-primary-default sm:text-sm",
+              "w-full resize-none rounded-md border-neutral-300 py-2 placeholder:pt-1 placeholder:text-xs placeholder:text-neutral-300 focus:border-transparent focus:ring-1 focus:ring-inset focus:ring-orange-600 sm:text-sm",
             )}
             rows={rows}
           />

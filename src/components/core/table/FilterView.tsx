@@ -7,14 +7,14 @@ import { MdAccessTimeFilled } from "react-icons-all-files/md/MdAccessTimeFilled"
 import { MdCalendarToday } from "react-icons-all-files/md/MdCalendarToday";
 import { MdLabel } from "react-icons-all-files/md/MdLabel";
 import { statusOptions } from "~/constants/status-options";
+import { type ReimbursementRequest } from "~/types/reimbursement.types";
 import { classNames } from "~/utils/classNames";
-import { type Reimbursement } from ".";
 import { Button } from "../Button";
 import StatusBadge, { type StatusType } from "../StatusBadge";
 
 interface FilterViewProps {
   colSpan: number;
-  columns: (Column<Reimbursement, unknown> | undefined)[];
+  columns: (Column<ReimbursementRequest, unknown> | undefined)[];
 }
 
 const FilterView: React.FC<FilterViewProps> = ({ columns, colSpan }) => {
@@ -39,16 +39,21 @@ const FilterView: React.FC<FilterViewProps> = ({ columns, colSpan }) => {
     );
     if (statusColumn) {
       const filterValue: string[] = statusColumn.getFilterValue() as string[];
-      setStatusFilterValue(filterValue);
-      setStatusFilterIsVisible(filterValue.length < statusOptions.length);
+      if (filterValue && filterValue.length > 0) {
+        setStatusFilterValue(filterValue);
+        setStatusFilterIsVisible(filterValue.length < statusOptions.length);
+      }
     }
 
     /**Check reimbursement type filter value length if equal to 2 */
     const typeColumn = columns.find((column) => column && column.id === "type");
     if (typeColumn) {
       const filterValue: string[] = typeColumn.getFilterValue() as string[];
-      setTypeFilterValue(filterValue);
-      setTypeFilterIsVisible(filterValue.length < 2);
+
+      if (filterValue && filterValue.length > 0) {
+        setTypeFilterValue(filterValue);
+        setTypeFilterIsVisible(filterValue.length < 2);
+      }
     }
 
     /**Check expense type filter value if equal to expense type = column faceted unique values */
@@ -57,11 +62,14 @@ const FilterView: React.FC<FilterViewProps> = ({ columns, colSpan }) => {
     );
     if (expenseColumn) {
       const filterValue: string[] = expenseColumn.getFilterValue() as string[];
-      setExpenseFilterValue(filterValue);
-      setExpenseFilterIsVisible(
-        filterValue.length <
-          Array.from(expenseColumn.getFacetedUniqueValues().keys()).length,
-      );
+
+      if (filterValue && filterValue.length > 0) {
+        setExpenseFilterValue(filterValue);
+        setExpenseFilterIsVisible(
+          filterValue.length <
+            Array.from(expenseColumn.getFacetedUniqueValues().keys()).length,
+        );
+      }
     }
 
     /**Check date filed filter value if has value */
@@ -81,11 +89,11 @@ const FilterView: React.FC<FilterViewProps> = ({ columns, colSpan }) => {
 
   const handleClear = () => {
     const statusColumn = columns.find(
-      (column) => column && column.id === "status",
+      (column) => column && column.id === "request_status",
     );
     const typeColumn = columns.find((column) => column && column.id === "type");
     const expenseColumn = columns.find(
-      (column) => column && column.id === "expense",
+      (column) => column && column.id === "expense_type",
     );
     const dateFiledColumn = columns.find(
       (column) => column && column.id === "filed",
@@ -127,13 +135,13 @@ const FilterView: React.FC<FilterViewProps> = ({ columns, colSpan }) => {
           )}
         >
           <div className="flex items-center gap-2">
-            <span className="font-bold">Filters: </span>
+            <span className="font-bold text-neutral-900">Filters: </span>
 
             {columns.sort().map((column) => (
               <div key={column?.id} className="flex items-center gap-8">
                 {statusFilterIsVisible && column && column.id === "status" && (
                   <div className="flex items-center gap-2">
-                    <MdLabel className="h-4 w-4" />
+                    <MdLabel className="h-4 w-4 text-neutral-900" />
                     <div className="flex gap-2 divide-x">
                       {statusFilterValue.map((value) => (
                         <StatusBadge key={value} status={value as StatusType} />
@@ -144,12 +152,13 @@ const FilterView: React.FC<FilterViewProps> = ({ columns, colSpan }) => {
 
                 {typeFilterIsVisible && column && column.id === "type" && (
                   <div className="flex items-center gap-2">
-                    <MdAccessTimeFilled className="h-4 w-4" />
+                    <HiCurrencyDollar className="h-4 w-4 text-neutral-900" />
+                    <MdAccessTimeFilled className="h-4 w-4 " />
                     <div className="flex gap-2 divide-x">
                       {typeFilterValue.map((value) => (
                         <p
                           key={value}
-                          className="pl-2 text-sm text-neutral-pressed"
+                          className="pl-2 text-sm text-neutral-800"
                         >
                           {value}
                         </p>
@@ -162,12 +171,12 @@ const FilterView: React.FC<FilterViewProps> = ({ columns, colSpan }) => {
                   column &&
                   column.id === "expense" && (
                     <div className="flex items-center gap-2">
-                      <HiCurrencyDollar className="h-4 w-4" />
+                      <HiCurrencyDollar className="h-4 w-4 text-neutral-900" />
                       <div className="flex gap-2 divide-x">
                         {expenseFilterValue.map((value) => (
                           <p
                             key={value}
-                            className="pl-2 text-sm text-neutral-pressed first:pl-0"
+                            className="pl-2 text-sm text-neutral-800 first:pl-0"
                           >
                             {value}
                           </p>
@@ -178,10 +187,10 @@ const FilterView: React.FC<FilterViewProps> = ({ columns, colSpan }) => {
 
                 {dateFilterIsVisible && column && column.id === "filed" && (
                   <div className="flex items-center gap-2">
-                    <MdCalendarToday className="h-4 w-4" />
+                    <MdCalendarToday className="h-4 w-4 text-neutral-900" />
                     <div className="flex items-center gap-1">
                       {dateFilterValue.map((value, i) => (
-                        <p key={value} className="text-sm text-neutral-pressed">
+                        <p key={value} className="text-sm text-neutral-800">
                           {value}
                           {dateFilterValue.length === 2 && i === 0 && " -"}
                         </p>

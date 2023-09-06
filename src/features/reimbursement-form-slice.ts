@@ -1,23 +1,26 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import {
-  type ReimbursementAttachmentsDTO,
-  type ReimbursementDetailsDTO,
-} from "~/types/reimbursement.types";
+import { type FileWithPath } from "react-dropzone";
+import { type ReimbursementDetailsType } from "~/schema/reimbursement-details.schema";
+import { type UploadFileResponse } from "~/types/file-upload-response.type";
 
 interface ReimburseFormState {
   activeStep: number;
-  reimbursementDetails: ReimbursementDetailsDTO | null;
-  reimbursementAttachments: ReimbursementAttachmentsDTO | [];
+  reimbursementDetails: ReimbursementDetailsType | null;
+  reimbursementAttachment: UploadFileResponse | null;
   cancelDialogIsOpen: boolean;
   formDialogIsOpen: boolean;
+  fileUploadedUrl: string | null;
+  fileSelected: FileWithPath[] | null;
 }
 
 const initialState: ReimburseFormState = {
   activeStep: 0,
   reimbursementDetails: null,
-  reimbursementAttachments: [],
+  reimbursementAttachment: null,
   formDialogIsOpen: false,
   cancelDialogIsOpen: false,
+  fileUploadedUrl: null,
+  fileSelected: null,
 };
 
 const reimbursementFormSlice = createSlice({
@@ -29,26 +32,32 @@ const reimbursementFormSlice = createSlice({
     },
     setReimbursementDetails(
       state,
-      action: PayloadAction<ReimbursementDetailsDTO | null>,
+      action: PayloadAction<ReimbursementDetailsType | null>,
     ) {
       state.reimbursementDetails = action.payload;
     },
     setReimbursementAttachments(
       state,
-      action: PayloadAction<ReimbursementAttachmentsDTO | []>,
+      action: PayloadAction<UploadFileResponse | null>,
     ) {
-      state.reimbursementAttachments = action.payload;
+      state.reimbursementAttachment = action.payload;
     },
     clearReimbursementForm(state) {
       state.activeStep = 0;
       state.reimbursementDetails = null;
-      state.reimbursementAttachments = [];
+      state.reimbursementAttachment = null;
     },
     toggleFormDialog(state) {
       state.formDialogIsOpen = !state.formDialogIsOpen;
     },
     toggleCancelDialog(state) {
       state.cancelDialogIsOpen = !state.cancelDialogIsOpen;
+    },
+    setFileSelected(state, action: PayloadAction<FileWithPath[] | null>) {
+      state.fileSelected = action.payload;
+    },
+    setUploadedFileUrl(state, action: PayloadAction<string | null>) {
+      state.fileUploadedUrl = action.payload;
     },
   },
 });
@@ -60,6 +69,8 @@ export const {
   clearReimbursementForm,
   toggleFormDialog,
   toggleCancelDialog,
+  setFileSelected,
+  setUploadedFileUrl,
 } = reimbursementFormSlice.actions;
 
 export default reimbursementFormSlice.reducer;

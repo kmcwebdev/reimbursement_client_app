@@ -31,7 +31,7 @@ const SideDrawer: React.FC<DrawerProps> = ({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-gray-900 bg-opacity-60 transition-opacity" />
+          <div className="fixed inset-0 bg-black bg-opacity-50 transition-opacity" />
         </Transition.Child>
 
         <div className="fixed inset-0 overflow-hidden">
@@ -47,19 +47,19 @@ const SideDrawer: React.FC<DrawerProps> = ({
                 leaveTo="translate-x-full"
               >
                 <Dialog.Panel className="pointer-events-auto w-screen md:w-[424px]">
-                  <div className="flex h-full flex-col overflow-y-scroll rounded bg-white pb-6 shadow-xl">
+                  <div className="flex h-full flex-col rounded bg-white shadow-xl">
                     <div className="flex h-[72px] items-center justify-between border-b border-neutral-subtle px-4">
-                      <Dialog.Title className="font-karla text-lg font-bold uppercase">
+                      <Dialog.Title className="font-karla text-lg font-bold uppercase text-neutral-900">
                         <span>{title}</span>
                       </Dialog.Title>
 
                       <button type="button" onClick={closeDrawer}>
-                        <MdClose className="h-4 w-4 text-gray-400 transition-all hover:text-gray-900" />
+                        <MdClose className="h-4 w-4 text-neutral-800 transition-all hover:text-neutral-900" />
                       </button>
                     </div>
 
-                    <div className="relative flex-1">
-                      <div className="absolute inset-0 p-4">{children}</div>
+                    <div className="relative flex-1 overflow-y-auto">
+                      <div className="absolute inset-0">{children}</div>
                     </div>
                   </div>
                 </Dialog.Panel>
