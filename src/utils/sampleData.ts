@@ -2,6 +2,7 @@ import { type ReimbursementRequest } from "~/types/reimbursement.types";
 
 export const sampleData: ReimbursementRequest[] = [
   {
+    approval_matrix_id: "asdasd",
     reimbursement_request_id: "b324aa7a-580b-43aa-8238-1c3cc5f8a4d2",
     reference_no: "R2023-64",
     request_type: "Scheduled",
@@ -18,6 +19,7 @@ export const sampleData: ReimbursementRequest[] = [
     remarks: "test",
   },
   {
+    approval_matrix_id: "asdasd",
     reimbursement_request_id: "d6ddb546-20ef-475f-859f-46e69aa9ca78",
     reference_no: "R2023-65",
     request_type: "Scheduled",
@@ -34,6 +36,7 @@ export const sampleData: ReimbursementRequest[] = [
     remarks: "test",
   },
   {
+    approval_matrix_id: "asdasd",
     reimbursement_request_id: "def31ccc-4772-4a98-9018-06d7332924e4",
     reference_no: "R2023-66",
     request_type: "Scheduled",
@@ -50,6 +53,7 @@ export const sampleData: ReimbursementRequest[] = [
     remarks: "test",
   },
   {
+    approval_matrix_id: "asdasd",
     reimbursement_request_id: "db5b3796-ed2f-4813-910e-852a48e13482",
     reference_no: "R2023-67",
     request_type: "Scheduled",
@@ -66,6 +70,7 @@ export const sampleData: ReimbursementRequest[] = [
     remarks: "test",
   },
   {
+    approval_matrix_id: "asdasd",
     reimbursement_request_id: "8c6ff5e6-765b-442c-9799-87829ca34539",
     reference_no: "R2023-68",
     request_type: "Scheduled",
@@ -82,6 +87,7 @@ export const sampleData: ReimbursementRequest[] = [
     remarks: "test",
   },
   {
+    approval_matrix_id: "asdasd",
     reimbursement_request_id: "0b95dc0b-0cb7-4788-930d-db6614aa58f9",
     reference_no: "R2023-69",
     request_type: "Scheduled",
@@ -98,6 +104,7 @@ export const sampleData: ReimbursementRequest[] = [
     remarks: "test",
   },
   {
+    approval_matrix_id: "asdasd",
     reimbursement_request_id: "33b7dabd-e20a-46dc-8187-45f6bc87f456",
     reference_no: "R2023-70",
     request_type: "Scheduled",
@@ -114,6 +121,7 @@ export const sampleData: ReimbursementRequest[] = [
     remarks: "test",
   },
   {
+    approval_matrix_id: "asdasd",
     reimbursement_request_id: "e9ebaa75-554a-465c-91a4-c57849f20a38",
     reference_no: "R2023-71",
     request_type: "Scheduled",
@@ -130,6 +138,7 @@ export const sampleData: ReimbursementRequest[] = [
     remarks: "test",
   },
   {
+    approval_matrix_id: "asdasd",
     reimbursement_request_id: "a51f2905-793b-4ec0-be39-91abb02db2cd",
     reference_no: "R2023-72",
     request_type: "Scheduled",
@@ -146,6 +155,7 @@ export const sampleData: ReimbursementRequest[] = [
     remarks: "test",
   },
   {
+    approval_matrix_id: "asdasd",
     reimbursement_request_id: "b0598099-b66c-4f92-9815-304c83c564e5",
     reference_no: "R2023-73",
     request_type: "Scheduled",
