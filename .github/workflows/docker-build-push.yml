@@ -57,7 +57,7 @@ jobs:
             NODE_ENV=production
             NEXT_PUBLIC_ENVIRONMENT=${{ secrets.NEXT_PUBLIC_ENVIRONMENT }}
             NEXT_PUBLIC_APP_URL=${{ secrets.NEXT_PUBLIC_APP_URL }}
-            NEXT_PUBLIC_BASE_URL=${{ secrets.NEXT_PUBLIC_BASE_URL }}
+            NEXT_PUBLIC_BASEAPI_URL=${{ secrets.NEXT_PUBLIC_BASEAPI_URL }}
             NEXT_PUBLIC_AUTH_URL=${{ secrets.NEXT_PUBLIC_AUTH_URL }}
             PROPELAUTH_API_KEY=${{ secrets.PROPELAUTH_API_KEY }}
             PROPELAUTH_VERIFIER_KEY=${{ secrets.PROPELAUTH_VERIFIER_KEY }}
