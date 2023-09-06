@@ -199,12 +199,12 @@ const MyApprovals: React.FC = () => {
               <DashboardCard
                 icon={<MdGavel className="h-5 w-5 text-yellow-600" />}
                 label="Pending Approval"
-                count={analytics.pending.count}
+                count={analytics.myPendingRequest.count}
               />
               <DashboardCard
                 icon={<MdAccessTimeFilled className="h-5 w-5 text-blue-600" />}
                 label="Scheduled/Unscheduled"
-                count={analytics.total.count}
+                count={analytics.myTotalRequest.count}
                 totalCount={20}
               />
             </>

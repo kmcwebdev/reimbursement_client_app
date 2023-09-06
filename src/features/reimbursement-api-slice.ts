@@ -16,7 +16,7 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
     getAnalytics: builder.query<ReimbursementAnalyticsType, void>({
       query: () => {
         return {
-          url: "/api/finance/reimbursements/requests/analytics",
+          url: "/api/finance/reimbursements/requests/dashboard/analytics",
         };
       },
       providesTags: (_result, _fetchBaseQuery, query) => [

@@ -247,12 +247,12 @@ const MyReimbursements: React.FC = () => {
                   <MdAccessTimeFilled className="h-5 w-5 text-yellow-600" />
                 }
                 label="Pending Approval"
-                count={analytics.pending.count}
+                count={analytics.myPendingRequest.count}
               />
               <DashboardCard
                 icon={<MdCreditCard className="text-informative-600 h-5 w-5" />}
                 label="Overall Total"
-                count={analytics.total.count}
+                count={analytics.myTotalRequest.count}
               />
             </>
           )}
