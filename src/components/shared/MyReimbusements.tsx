@@ -33,11 +33,11 @@ import {
   toggleFormDialog,
 } from "~/features/reimbursement-form-slice";
 import { useDialogState } from "~/hooks/use-dialog-state";
-import { ReimbursementDetailsSchema } from "~/schema/reimbursement-details.schema";
 import {
-  type ReimbursementDetailsDTO,
-  type ReimbursementRequest,
-} from "~/types/reimbursement.types";
+  ReimbursementDetailsSchema,
+  type ReimbursementDetailsType,
+} from "~/schema/reimbursement-details.schema";
+import { type ReimbursementRequest } from "~/types/reimbursement.types";
 import { currencyFormat } from "~/utils/currencyFormat";
 import SkeletonLoading from "../core/SkeletonLoading";
 import TableSkeleton from "../core/table/TableSkeleton";
@@ -177,7 +177,7 @@ const MyReimbursements: React.FC = () => {
   }, []);
 
   //Form return for Details
-  const useReimbursementDetailsFormReturn = useForm<ReimbursementDetailsDTO>({
+  const useReimbursementDetailsFormReturn = useForm<ReimbursementDetailsType>({
     resolver: zodResolver(ReimbursementDetailsSchema),
     defaultValues: useMemo(() => {
       if (reimbursementDetails) {
@@ -203,11 +203,15 @@ const MyReimbursements: React.FC = () => {
   /**Aborts reimbursement request cancellation */
   const handleAbortCancellation = () => {
     dispatch(toggleCancelDialog());
+
+    console.log(useReimbursementDetailsFormReturn.getValues("expense_type_id"));
     dispatch(
       appApiSlice.util.invalidateTags([
         {
           type: "ExpenseTypes",
-          id: useReimbursementDetailsFormReturn.getValues("expense"),
+          id: useReimbursementDetailsFormReturn.getValues(
+            "reimbursement_request_type_id",
+          ),
         },
       ]),
     );

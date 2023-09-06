@@ -86,7 +86,7 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
         };
       },
       providesTags: (_result, _fetchBaseQuery, query) => [
-        { type: "ExpenseTypes", id: JSON.stringify(query) },
+        { type: "ExpenseTypes", id: query.request_type_id },
       ],
     }),
     uploadFile: builder.mutation<UploadFileResponse, FormData>({

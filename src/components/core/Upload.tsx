@@ -137,29 +137,31 @@ const Upload: React.FC<UploadProps> = ({
               )}
             </div>
 
-            <div className="flex items-center gap-2 pr-2">
-              <Button
-                type="button"
-                buttonType="text"
-                variant="danger"
-                onClick={() => deleteFile(file)}
-              >
-                <MdOutlineDelete className="h-5 w-5" />
-              </Button>
-
-              {!uploadButtonProps.filePath && (
+            {!uploadButtonProps.loading && (
+              <div className="flex items-center gap-2 pr-2">
                 <Button
                   type="button"
                   buttonType="text"
-                  variant="primary"
-                  onClick={() => {
-                    uploadButtonProps.onClick(files[0]);
-                  }}
+                  variant="danger"
+                  onClick={() => deleteFile(file)}
                 >
-                  <MdCloudUpload className="h-5 w-5" />
+                  <MdOutlineDelete className="h-5 w-5" />
                 </Button>
-              )}
-            </div>
+
+                {!uploadButtonProps.filePath && (
+                  <Button
+                    type="button"
+                    buttonType="text"
+                    variant="primary"
+                    onClick={() => {
+                      uploadButtonProps.onClick(files[0]);
+                    }}
+                  >
+                    <MdCloudUpload className="h-5 w-5" />
+                  </Button>
+                )}
+              </div>
+            )}
           </li>
         );
       }),
