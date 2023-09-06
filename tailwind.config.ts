@@ -76,6 +76,40 @@ export const base = {
   },
 };
 
+export const tailwindExtendConfig = {
+  fontFamily: {
+    karla: "var(--font-karla)",
+    barlow: "var(--font-barlow)",
+    barlowCondensed: "var(--font-barlow-condensed)",
+  },
+  fontSize: {
+    sm: ["12px", , "16px"],
+    base: ["14px", , "26px"],
+    md: ["16px", , "24px"],
+    lg: ["20px", , "24px"],
+    xl: ["24px", "32px"],
+    "2xl": ["32px", , "40px"],
+    "3xl": ["38px", , "48px"],
+    "4xl": ["48px", , "56px"],
+  },
+  animation: {
+    progress: "progress 1s infinite linear",
+  },
+  keyframes: {
+    progress: {
+      "0%": { transform: " translateX(0) scaleX(0)" },
+      "40%": { transform: "translateX(0) scaleX(0.4)" },
+      "100%": { transform: "translateX(100%) scaleX(0.5)" },
+    },
+  },
+  transformOrigin: {
+    "left-right": "0% 50%",
+  },
+  colors: {
+    ...base,
+  },
+};
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   mode: "jit",
@@ -86,37 +120,7 @@ module.exports = {
   ],
   theme: {
     extend: {
-      fontFamily: {
-        karla: "var(--font-karla)",
-        barlow: "var(--font-barlow)",
-        barlowCondensed: "var(--font-barlow-condensed)",
-      },
-      fontSize: {
-        sm: ["12px", , "16px"],
-        base: ["14px", , "26px"],
-        md: ["16px", , "24px"],
-        lg: ["20px", , "24px"],
-        xl: ["24px", "32px"],
-        "2xl": ["32px", , "40px"],
-        "3xl": ["38px", , "48px"],
-        "4xl": ["48px", , "56px"],
-      },
-      animation: {
-        progress: "progress 1s infinite linear",
-      },
-      keyframes: {
-        progress: {
-          "0%": { transform: " translateX(0) scaleX(0)" },
-          "40%": { transform: "translateX(0) scaleX(0.4)" },
-          "100%": { transform: "translateX(100%) scaleX(0.5)" },
-        },
-      },
-      transformOrigin: {
-        "left-right": "0% 50%",
-      },
-      colors: {
-        ...base,
-      },
+      ...tailwindExtendConfig,
     },
   },
   plugins: [
