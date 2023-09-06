@@ -2,10 +2,12 @@ import { type PropsWithChildren } from "react";
 import { Button } from "~/components/core/Button";
 import { type StatusType } from "~/components/core/StatusBadge";
 import { type ReimbursementRequest } from "~/types/reimbursement.types";
+import EmptyState from "../core/EmptyState";
 import Approvers from "./Approvers";
 import Attachments from "./Attachments";
 import Details from "./Details";
 import Notes from "./Notes";
+import ReimbursementViewSkeleton from "./ReimbursementViewSkeleton";
 
 export interface ReimbursementsCardViewProps extends PropsWithChildren {
   isLoading?: boolean;
@@ -60,9 +62,14 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
           </div>
         </>
       )}
-      {/* TO DOs */}
-      {/* ADD EMPTY STATE IF NO DATA */}
-      {/* ADD LOADER IF LOADING */}
+
+      {isLoading && <ReimbursementViewSkeleton />}
+      {!isLoading && !data && (
+        <EmptyState
+          title="Reimbursement Data not found!"
+          description="Reimbursement request is empty."
+        />
+      )}
     </div>
   );
 };

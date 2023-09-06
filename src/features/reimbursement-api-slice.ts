@@ -43,7 +43,6 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
           url: `/api/finance/reimbursements/requests/${query.id}`,
         };
       },
-
       providesTags: (_result, _fetchBaseQuery, query) => [
         { type: "ReimbursementRequest", id: JSON.stringify(query.id) },
       ],

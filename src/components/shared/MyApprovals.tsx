@@ -29,7 +29,9 @@ import { useDialogState } from "~/hooks/use-dialog-state";
 import { type ReimbursementRequest } from "~/types/reimbursement.types";
 import { classNames } from "~/utils/classNames";
 import { currencyFormat } from "~/utils/currencyFormat";
+import SkeletonLoading from "../core/SkeletonLoading";
 import Input from "../core/form/fields/Input";
+import TableSkeleton from "../core/table/TableSkeleton";
 import DateFiledFilter from "../core/table/filters/DateFiledFilter";
 
 const StatusFilter = dynamic(
@@ -222,25 +224,34 @@ const MyApprovals: React.FC = () => {
               "flex items-center gap-2 overflow-hidden transition-all ease-in-out",
             )}
           >
-            <Input
-              name="searchFilter"
-              placeholder="Find anything..."
-              className="w-64"
-              icon={MdSearch}
-            />
+            {isLoading && <SkeletonLoading className="h-10 w-64 rounded" />}
 
-            <>
-              <Button
-                buttonType="outlined"
-                variant="danger"
-                disabled={selectedItems.length === 0}
-              >
-                Reject
-              </Button>
-              <Button variant="primary" disabled={selectedItems.length === 0}>
-                Approve
-              </Button>
-            </>
+            {!isLoading && (
+              <>
+                <Input
+                  name="searchFilter"
+                  placeholder="Find anything..."
+                  className="w-64"
+                  icon={MdSearch}
+                />
+
+                <>
+                  <Button
+                    buttonType="outlined"
+                    variant="danger"
+                    disabled={selectedItems.length === 0}
+                  >
+                    Reject
+                  </Button>
+                  <Button
+                    variant="primary"
+                    disabled={selectedItems.length === 0}
+                  >
+                    Approve
+                  </Button>
+                </>
+              </>
+            )}
           </div>
         </div>
 
@@ -262,7 +273,7 @@ const MyApprovals: React.FC = () => {
           />
         )}
 
-        {/* TODO: TableSkeleton */}
+        {isLoading && <TableSkeleton />}
       </div>
 
       <SideDrawer

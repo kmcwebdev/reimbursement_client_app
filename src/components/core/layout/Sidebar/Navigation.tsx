@@ -5,6 +5,7 @@ import { type IconType } from "react-icons-all-files";
 import { MdDashboard } from "react-icons-all-files/md/MdDashboard";
 import { MdPerson } from "react-icons-all-files/md/MdPerson";
 import { MdReceipt } from "react-icons-all-files/md/MdReceipt";
+import { useAppSelector } from "~/app/hook";
 import { Can } from "~/context/AbilityContext";
 import NavigationItem from "./NavigationItem";
 
@@ -12,6 +13,7 @@ interface NavigationProps {
   collapsed: boolean;
 }
 const Navigation: React.FC<NavigationProps> = ({ collapsed }) => {
+  const { user } = useAppSelector((state) => state.session);
   const { pathname } = useRouter();
 
   return (
@@ -24,15 +26,28 @@ const Navigation: React.FC<NavigationProps> = ({ collapsed }) => {
         collapsed={collapsed}
       />
 
-      <Can I="access" a="CAN_APPROVE_REIMBURSEMENT">
+      {user &&
+        user.assignedRole === "External Reimbursement Approver Manager" && (
+          <Can I="access" a="CAN_APPROVE_REIMBURSEMENT">
+            <NavigationItem
+              label="Approval"
+              icon={MdReceipt as IconType}
+              active={pathname.includes("approval")}
+              href="/approval"
+              collapsed={collapsed}
+            />
+          </Can>
+        )}
+
+      {user && user.assignedRole === "HRBP" && (
         <NavigationItem
-          label="Approval"
+          label="Reimbursements"
           icon={MdReceipt as IconType}
-          active={pathname.includes("approval")}
-          href="/approval"
+          active={pathname.includes("reimbursements")}
+          href="/reimbursements"
           collapsed={collapsed}
         />
-      </Can>
+      )}
 
       <NavigationItem
         label="Profile"

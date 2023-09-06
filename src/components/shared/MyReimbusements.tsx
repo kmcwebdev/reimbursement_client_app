@@ -39,6 +39,8 @@ import {
   type ReimbursementRequest,
 } from "~/types/reimbursement.types";
 import { currencyFormat } from "~/utils/currencyFormat";
+import SkeletonLoading from "../core/SkeletonLoading";
+import TableSkeleton from "../core/table/TableSkeleton";
 import DateFiledFilter from "../core/table/filters/DateFiledFilter";
 
 const Dialog = dynamic(() => import("~/components/core/Dialog"));
@@ -65,12 +67,13 @@ const MyReimbursements: React.FC = () => {
   const { isLoading, data } = useGetAllRequestsQuery({});
   const { isLoading: analyticsIsLoading, data: analytics } =
     useGetAnalyticsQuery();
+
   const {
-    isLoading: reimbursementRequestDataIsLoading,
+    isFetching: reimbursementRequestDataIsLoading,
     data: reimbursementRequestData,
   } = useGetRequestQuery(
     { id: focusedReimbursementId },
-    { skip: !focusedReimbursementId },
+    { skip: focusedReimbursementId === undefined },
   );
 
   const { isVisible, open, close } = useDialogState();
@@ -229,6 +232,11 @@ const MyReimbursements: React.FC = () => {
     dispatch(toggleFormDialog());
   };
 
+  const handleCloseReimbursementsView = () => {
+    setFocusedReimbursementId(undefined);
+    close();
+  };
+
   return (
     <>
       <div className="grid gap-y-2 p-5">
@@ -260,9 +268,14 @@ const MyReimbursements: React.FC = () => {
 
         <div className="flex justify-between">
           <h4>Reimbursements</h4>
-          <Button onClick={() => dispatch(toggleFormDialog())}>
-            Reimburse
-          </Button>
+
+          {isLoading && <SkeletonLoading className="h-10 w-[5rem] rounded" />}
+
+          {!isLoading && (
+            <Button onClick={() => dispatch(toggleFormDialog())}>
+              Reimburse
+            </Button>
+          )}
         </div>
 
         {!isLoading && data && (
@@ -283,7 +296,7 @@ const MyReimbursements: React.FC = () => {
           />
         )}
 
-        {/* TODO: TableSkeleton */}
+        {isLoading && <TableSkeleton />}
       </div>
 
       <Dialog
@@ -334,10 +347,10 @@ const MyReimbursements: React.FC = () => {
             : "..."
         }
         isVisible={isVisible}
-        closeDrawer={close}
+        closeDrawer={handleCloseReimbursementsView}
       >
         <ReimbursementsCardView
-          closeDrawer={close}
+          closeDrawer={handleCloseReimbursementsView}
           isLoading={reimbursementRequestDataIsLoading}
           data={reimbursementRequestData}
         />

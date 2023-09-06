@@ -128,8 +128,7 @@ const Table: React.FC<TableProps> = ({
                           header.getContext(),
                         )}
 
-                        {table.getRowModel().rows.length !== 0 &&
-                          header.column.columnDef?.meta &&
+                        {header.column.columnDef?.meta &&
                           (header.column.columnDef?.meta as CustomFilterMeta)
                             .filterComponent &&
                           (
