@@ -11,6 +11,7 @@ export type ReimbursementAttachmentsDTO = {
 };
 
 export type ReimbursementRequest = {
+  approval_matrix_id: string;
   reimbursement_request_id: string;
   reference_no: string;
   request_type: string;
@@ -26,4 +27,21 @@ export type ReimbursementRequest = {
   date_approve: string | null;
   cursor_id: string;
   rank?: number;
+};
+
+export type ReimbursementApproval = {
+  approval_matrix_id: string;
+  reimbursement_request_id: string;
+  reference_no: string;
+  request_type: string;
+  expense_type: string;
+  request_status: string;
+  created_at: string;
+  amount: string;
+  date_approve: string | null;
+  approver_id: string;
+  approver_order: number;
+  has_approver: boolean;
+  performed_by_user_id: string | null;
+  description: string | null;
 };

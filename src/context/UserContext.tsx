@@ -1,12 +1,6 @@
 import { useUser } from "@propelauth/nextjs/client";
 import dynamic from "next/dynamic";
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-  type PropsWithChildren,
-} from "react";
+import React, { useEffect, useState, type PropsWithChildren } from "react";
 import { useAppDispatch } from "~/app/hook";
 import { setUser as reduxSetUser, setAccessToken } from "~/features/user-slice";
 import { type AppClaims } from "~/types/permission-types";
@@ -22,19 +16,6 @@ export type IRole =
   | "External Reimbursement Approver Manager"
   | "HRBP"
   | "Finance";
-
-export interface IUserData {
-  name: string;
-  role: IRole;
-}
-
-interface IUserAccessCtx {
-  changeUser: (role: IRole) => void;
-}
-
-const UserContext = createContext<IUserAccessCtx>({
-  changeUser: () => console.log("changed user"),
-});
 
 export const UserAccessProvider: React.FC<PropsWithChildren> = ({
   children,
@@ -109,8 +90,4 @@ export const UserAccessProvider: React.FC<PropsWithChildren> = ({
       {children}
     </AbilityContext.Provider>
   );
-};
-
-export const useUserContext = () => {
-  return useContext(UserContext);
 };

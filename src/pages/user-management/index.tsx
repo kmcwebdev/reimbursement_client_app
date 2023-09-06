@@ -1,8 +1,7 @@
-import { UserFromToken } from "@propelauth/nextjs/client";
 import { getUserFromServerSideProps } from "@propelauth/nextjs/server/pages";
-import { type NextPage, type GetServerSideProps } from "next";
+import { type GetServerSideProps, type NextPage } from "next";
 import Head from "next/head";
-import React, { Fragment } from "react";
+import { Fragment } from "react";
 import { type IconType } from "react-icons-all-files";
 import { MdPerson } from "react-icons-all-files/md/MdPerson";
 import EmptyState from "~/components/core/EmptyState";
@@ -11,10 +10,8 @@ interface DashboardSSRProps {
   userJson: string;
 }
 
-const UserManagement: NextPage<DashboardSSRProps> = (props) => {
-  const propel = UserFromToken.fromJSON(props.userJson);
-
-  console.log(propel);
+const UserManagement: NextPage<DashboardSSRProps> = () => {
+  // const propel = UserFromToken.fromJSON(props.userJson);
 
   return (
     <Fragment>

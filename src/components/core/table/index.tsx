@@ -15,7 +15,6 @@ import {
   getPaginationRowModel,
   useReactTable,
   type Column,
-  type ColumnDef,
   type ColumnFiltersState,
   type FilterMeta,
   type PaginationState,
@@ -24,7 +23,10 @@ import {
 } from "@tanstack/react-table";
 
 import { MdBrowserNotSupported } from "react-icons-all-files/md/MdBrowserNotSupported";
-import { type ReimbursementRequest } from "~/types/reimbursement.types";
+import {
+  type ReimbursementApproval,
+  type ReimbursementRequest,
+} from "~/types/reimbursement.types";
 import EmptyState from "../EmptyState";
 import FilterView from "./FilterView";
 // import Pagination from "./Pagination";
@@ -42,13 +44,22 @@ export type ITableStateActions = {
   setPagination?: Dispatch<SetStateAction<PaginationState>>;
 };
 
+type ReimbursementTable = {
+  type: "reimbursements";
+  data: ReimbursementRequest[];
+};
+
+type ApprovalTable = {
+  type: "approvals";
+  data: ReimbursementApproval[];
+};
+
 type TableProps = {
   loading?: boolean;
-  data: ReimbursementRequest[];
-  columns: ColumnDef<ReimbursementRequest>[];
   tableState?: ITableState;
   tableStateActions?: ITableStateActions;
-};
+  columns: any;
+} & (ReimbursementTable | ApprovalTable);
 
 interface CustomFilterMeta extends FilterMeta {
   filterComponent: (info: {
@@ -57,60 +68,54 @@ interface CustomFilterMeta extends FilterMeta {
   }) => JSX.Element;
 }
 
-const Table: React.FC<TableProps> = ({
-  data,
-  columns,
-  tableState,
-  tableStateActions,
-  loading,
-}) => {
+const Table: React.FC<TableProps> = (props) => {
+  const { data, columns } = props;
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
 
   useEffect(() => {
     if (
-      !loading &&
+      !props.loading &&
       rowSelection &&
-      tableState &&
-      tableStateActions &&
-      tableState.selectedItems &&
-      tableStateActions.setSelectedItems
+      props.tableState &&
+      props.tableStateActions &&
+      props.tableState.selectedItems &&
+      props.tableStateActions.setSelectedItems
     ) {
-      const selectedItems: number[] = [];
+      const selectedItems: string[] = [];
 
       Object.keys(rowSelection).forEach((key) => {
         selectedItems.push(
-          data[key as unknown as number]
-            .reimbursement_request_id as unknown as number,
+          props.data[key as unknown as number].reimbursement_request_id,
         );
       });
-      tableStateActions?.setSelectedItems(selectedItems);
+      props.tableStateActions?.setSelectedItems(selectedItems);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rowSelection]);
 
-  const table = useReactTable({
-    data: data,
-    columns: columns,
+  const table = useReactTable<ReimbursementRequest | ReimbursementApproval>({
+    data,
+    columns,
     state: {
-      ...tableState,
-      rowSelection: tableState?.selectedItems ? rowSelection : undefined,
+      ...props.tableState,
+      rowSelection: props.tableState?.selectedItems ? rowSelection : undefined,
     },
-    onColumnFiltersChange: tableStateActions?.setColumnFilters,
+    onColumnFiltersChange: props.tableStateActions?.setColumnFilters,
     onRowSelectionChange: setRowSelection,
-    onPaginationChange: tableStateActions?.setPagination,
+    onPaginationChange: props.tableStateActions?.setPagination,
     getFacetedUniqueValues: getFacetedUniqueValues(),
     getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: tableStateActions?.setColumnFilters
+    getFilteredRowModel: props.tableStateActions?.setColumnFilters
       ? getFilteredRowModel()
       : undefined,
-    getPaginationRowModel: tableState?.pagination
+    getPaginationRowModel: props.tableState?.pagination
       ? getPaginationRowModel()
       : undefined,
-    enableRowSelection: tableStateActions?.setSelectedItems ? true : false,
+    enableRowSelection: props.tableStateActions?.setSelectedItems
+      ? true
+      : false,
     manualPagination: true,
   });
-
-  console.log(tableState);
 
   return (
     <div className="relative flex flex-col gap-4 overflow-hidden">
@@ -146,11 +151,11 @@ const Table: React.FC<TableProps> = ({
           </thead>
           <tbody className="min-h-[calc(300px-3rem)]">
             {table.getRowModel().rows.length !== 0 &&
-              tableState &&
-              tableState.columnFilters && (
+              props.tableState &&
+              props.tableState.columnFilters && (
                 <FilterView
                   colSpan={table.getAllColumns().length}
-                  columns={tableState.columnFilters?.map((a) =>
+                  columns={props.tableState.columnFilters?.map((a) =>
                     table.getColumn(a.id),
                   )}
                 />

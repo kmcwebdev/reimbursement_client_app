@@ -39,8 +39,6 @@ const appApiBaseQueryWithReauth: BaseQueryFn<
 
     const propelauthRefreshTokenQuery = await propelauthUserInfo();
 
-    console.log(propelauthRefreshTokenQuery);
-
     if (propelauthRefreshTokenQuery?.accessToken) {
       // const user = rootState.user;
       const { accessToken } = propelauthRefreshTokenQuery;
@@ -61,8 +59,10 @@ export const appApiSlice = createApi({
   baseQuery: appApiBaseQueryWithReauth,
   tagTypes: [
     "ReimbursementRequestList",
+    "ReimbursementApprovalList",
     "ReimbursementRequest",
     "ReimbursementAnalytics",
+    "ExpenseTypes",
   ],
   endpoints: (
     _builder: EndpointBuilder<

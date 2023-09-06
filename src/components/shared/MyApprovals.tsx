@@ -21,12 +21,12 @@ import TableCheckbox from "~/components/core/table/TableCheckbox";
 import { type FilterProps } from "~/components/core/table/filters/StatusFilter";
 import ReimbursementsCardView from "~/components/reimbursement-view";
 import {
-  useGetAllRequestsQuery,
+  useGetAllApprovalQuery,
   useGetAnalyticsQuery,
   useGetRequestQuery,
 } from "~/features/reimbursement-api-slice";
 import { useDialogState } from "~/hooks/use-dialog-state";
-import { type ReimbursementRequest } from "~/types/reimbursement.types";
+import { type ReimbursementApproval } from "~/types/reimbursement.types";
 import { classNames } from "~/utils/classNames";
 import { currencyFormat } from "~/utils/currencyFormat";
 import SkeletonLoading from "../core/SkeletonLoading";
@@ -48,27 +48,33 @@ const MyApprovals: React.FC = () => {
   const [focusedReimbursementId, setFocusedReimbursementId] =
     useState<string>();
 
-  const { isLoading, data } = useGetAllRequestsQuery({});
   const { isLoading: analyticsIsLoading, data: analytics } =
     useGetAnalyticsQuery();
   const {
-    isLoading: reimbursementRequestDataIsLoading,
+    isFetching: reimbursementRequestDataIsLoading,
     data: reimbursementRequestData,
   } = useGetRequestQuery(
     { id: focusedReimbursementId },
-    { skip: !focusedReimbursementId },
+    { skip: focusedReimbursementId === undefined },
   );
 
   const { isVisible, open, close } = useDialogState();
 
-  const [selectedItems, setSelectedItems] = useState<number[]>([]);
+  const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10,
   });
 
-  const columns = React.useMemo<ColumnDef<ReimbursementRequest>[]>(() => {
+  const { isLoading, data } = useGetAllApprovalQuery({});
+
+  const handleCloseReimbursementsView = () => {
+    setFocusedReimbursementId(undefined);
+    close();
+  };
+
+  const columns = React.useMemo<ColumnDef<ReimbursementApproval>[]>(() => {
     return [
       {
         id: "select",
@@ -246,6 +252,12 @@ const MyApprovals: React.FC = () => {
                   <Button
                     variant="primary"
                     disabled={selectedItems.length === 0}
+                    onClick={() => {
+                      if (selectedItems && selectedItems.length > 0) {
+                        setFocusedReimbursementId(selectedItems[0]);
+                        open();
+                      }
+                    }}
                   >
                     Approve
                   </Button>
@@ -257,6 +269,7 @@ const MyApprovals: React.FC = () => {
 
         {!isLoading && data && (
           <Table
+            type="approvals"
             loading={isLoading}
             data={data}
             columns={columns}
@@ -286,7 +299,8 @@ const MyApprovals: React.FC = () => {
         closeDrawer={close}
       >
         <ReimbursementsCardView
-          closeDrawer={close}
+          isApproverView
+          closeDrawer={handleCloseReimbursementsView}
           isLoading={reimbursementRequestDataIsLoading}
           data={reimbursementRequestData}
         />
