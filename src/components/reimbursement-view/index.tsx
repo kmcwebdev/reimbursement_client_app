@@ -3,7 +3,7 @@ import { Button } from "~/components/core/Button";
 import { type StatusType } from "~/components/core/StatusBadge";
 import { useApproveReimbursementMutation } from "~/features/reimbursement-api-slice";
 import { useDialogState } from "~/hooks/use-dialog-state";
-import { ReimbursementRequest } from "~/types/reimbursement.types";
+import { type ReimbursementRequest } from "~/types/reimbursement.types";
 import Dialog from "../core/Dialog";
 import EmptyState from "../core/EmptyState";
 import { showToast } from "../core/Toast";

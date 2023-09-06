@@ -26,7 +26,7 @@ import {
   useGetRequestQuery,
 } from "~/features/reimbursement-api-slice";
 import { useDialogState } from "~/hooks/use-dialog-state";
-import { ReimbursementApproval } from "~/types/reimbursement.types";
+import { type ReimbursementApproval } from "~/types/reimbursement.types";
 import { classNames } from "~/utils/classNames";
 import { currencyFormat } from "~/utils/currencyFormat";
 import SkeletonLoading from "../core/SkeletonLoading";
