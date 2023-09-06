@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { AiOutlinePause } from "react-icons-all-files/ai/AiOutlinePause";
 import { MdAccessTimeFilled } from "react-icons-all-files/md/MdAccessTimeFilled";
 import { MdGavel } from "react-icons-all-files/md/MdGavel";
-import DashboardCard from "../core/DashboardCard";
+import DashboardCard, { DashboardCardSkeleton } from "../core/DashboardCard";
 
 import {
   type ColumnDef,
@@ -12,6 +12,7 @@ import {
 import dynamic from "next/dynamic";
 import { type IconType } from "react-icons-all-files";
 import { AiOutlineSearch } from "react-icons-all-files/ai/AiOutlineSearch";
+import { useGetAnalyticsQuery } from "~/features/reimbursement-api-slice";
 import { type ReimbursementRequest } from "~/types/reimbursement.types";
 import { currencyFormat } from "~/utils/currencyFormat";
 import { sampleData } from "~/utils/sampleData";
@@ -38,6 +39,9 @@ const Payables: React.FC = () => {
     pageIndex: 0,
     pageSize: 10,
   });
+
+  const { isLoading: analyticsIsLoading, data: analytics } =
+    useGetAnalyticsQuery();
 
   const columns = React.useMemo<ColumnDef<ReimbursementRequest>[]>(
     () => [
@@ -153,24 +157,37 @@ const Payables: React.FC = () => {
   return (
     <>
       <div className="grid gap-y-2 p-5">
-        {/* card */}
         <div className="mb-5 flex place-items-start gap-4">
-          <DashboardCard
-            icon={<MdGavel className="h-5 w-5 text-orange-600" />}
-            label="Pending Approval"
-            count={16}
-          />
-          <DashboardCard
-            icon={<MdAccessTimeFilled className="h-5 w-5 text-blue-600" />}
-            label="Scheduled/Unscheduled"
-            count={50}
-            totalCount={20}
-          />
-          <DashboardCard
-            icon={<AiOutlinePause className="h-5 w-5 text-yellow-600" />}
-            label="On-Hold"
-            count={5}
-          />
+          {analyticsIsLoading && (
+            <>
+              <DashboardCardSkeleton />
+              <DashboardCardSkeleton />
+              <DashboardCardSkeleton />
+            </>
+          )}
+
+          {!analyticsIsLoading && analytics && (
+            <>
+              <DashboardCard
+                icon={<MdGavel className="h-5 w-5 text-orange-600" />}
+                label="Pending Approval"
+                count={analytics.myPendingRequest.count}
+              />
+              <DashboardCard
+                icon={<MdAccessTimeFilled className="h-5 w-5 text-blue-600" />}
+                label="Scheduled/Unscheduled"
+                count={analytics.others?.totalScheduledRequest.count || 0}
+                totalCount={
+                  analytics.others?.totalUnScheduledRequest.count || 0
+                }
+              />
+              <DashboardCard
+                icon={<AiOutlinePause className="h-5 w-5 text-yellow-600" />}
+                label="On-Hold"
+                count={analytics.others?.totalOnholdRequest.count || 0}
+              />
+            </>
+          )}
         </div>
 
         {/* table */}
