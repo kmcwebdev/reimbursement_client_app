@@ -3,6 +3,7 @@ import React from "react";
 import { useAppSelector } from "~/app/hook";
 import PageAnimation from "../animation/PageAnimation";
 import FinanceDashboard from "./Finance";
+import HrbpDashboard from "./Hrbp";
 import ManagerDashboard from "./Manager";
 import MemberDashboard from "./Member";
 
@@ -19,7 +20,7 @@ const DashboardComponent: React.FC = () => {
             {user.assignedRole ===
               "External Reimbursement Approver Manager" && <ManagerDashboard />}
             {user.assignedRole === "Member" && <MemberDashboard />}
-            {user.assignedRole === "HRBP" && <ManagerDashboard />}
+            {user.assignedRole === "HRBP" && <HrbpDashboard />}
             {user.assignedRole === "Finance" && <FinanceDashboard />}
           </>
         )}

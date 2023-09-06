@@ -2,7 +2,7 @@
 import React from "react";
 import MyApprovals from "../shared/MyApprovals";
 
-const EmployeeDashboard: React.FC = () => {
+const HrbpDashboard: React.FC = () => {
   return (
     <>
       <MyApprovals />
@@ -10,4 +10,4 @@ const EmployeeDashboard: React.FC = () => {
   );
 };
 
-export default EmployeeDashboard;
+export default HrbpDashboard;

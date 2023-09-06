@@ -12,6 +12,7 @@ import { useForm } from "react-hook-form";
 import { MdAccessTimeFilled } from "react-icons-all-files/md/MdAccessTimeFilled";
 import { MdCreditCard } from "react-icons-all-files/md/MdCreditCard";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
+import { appApiSlice } from "~/app/rtkQuery";
 import { Button } from "~/components/core/Button";
 import DashboardCard, {
   DashboardCardSkeleton,
@@ -19,7 +20,6 @@ import DashboardCard, {
 import SideDrawer from "~/components/core/SideDrawer";
 import StatusBadge, { type StatusType } from "~/components/core/StatusBadge";
 import Table from "~/components/core/table";
-import TableCheckbox from "~/components/core/table/TableCheckbox";
 import { type FilterProps } from "~/components/core/table/filters/StatusFilter";
 import ReimbursementsCardView from "~/components/reimbursement-view";
 import {
@@ -64,8 +64,8 @@ const MyReimbursements: React.FC = () => {
   const [focusedReimbursementId, setFocusedReimbursementId] =
     useState<string>();
 
-  const { isLoading, data } = useGetAllRequestsQuery({});
-  const { isLoading: analyticsIsLoading, data: analytics } =
+  const { isFetching, data } = useGetAllRequestsQuery({});
+  const { isFetching: analyticsIsLoading, data: analytics } =
     useGetAnalyticsQuery();
 
   const {
@@ -87,32 +87,6 @@ const MyReimbursements: React.FC = () => {
 
   const columns = React.useMemo<ColumnDef<ReimbursementRequest>[]>(() => {
     return [
-      {
-        id: "select",
-        header: ({ table }) => {
-          if (table.getRowModel().rows.length > 0) {
-            return (
-              <TableCheckbox
-                checked={table.getIsAllRowsSelected()}
-                indeterminate={table.getIsSomeRowsSelected()}
-                onChange={table.getToggleAllRowsSelectedHandler()}
-              />
-            );
-          }
-        },
-
-        cell: ({ row }) => (
-          <div className="px-4">
-            <TableCheckbox
-              checked={row.getIsSelected()}
-              disabled={!row.getCanSelect()}
-              indeterminate={row.getIsSomeSelected()}
-              onChange={row.getToggleSelectedHandler()}
-            />
-          </div>
-        ),
-      },
-
       {
         id: "request_status",
         accessorKey: "request_status",
@@ -229,6 +203,14 @@ const MyReimbursements: React.FC = () => {
   /**Aborts reimbursement request cancellation */
   const handleAbortCancellation = () => {
     dispatch(toggleCancelDialog());
+    dispatch(
+      appApiSlice.util.invalidateTags([
+        {
+          type: "ExpenseTypes",
+          id: useReimbursementDetailsFormReturn.getValues("expense"),
+        },
+      ]),
+    );
     dispatch(toggleFormDialog());
   };
 
@@ -269,18 +251,19 @@ const MyReimbursements: React.FC = () => {
         <div className="flex justify-between">
           <h4>Reimbursements</h4>
 
-          {isLoading && <SkeletonLoading className="h-10 w-[5rem] rounded" />}
+          {isFetching && <SkeletonLoading className="h-10 w-[5rem] rounded" />}
 
-          {!isLoading && (
+          {!isFetching && (
             <Button onClick={() => dispatch(toggleFormDialog())}>
               Reimburse
             </Button>
           )}
         </div>
 
-        {!isLoading && data && (
+        {!isFetching && data && (
           <Table
-            loading={isLoading}
+            type="reimbursements"
+            loading={isFetching}
             data={data}
             columns={columns}
             tableState={{
@@ -296,7 +279,7 @@ const MyReimbursements: React.FC = () => {
           />
         )}
 
-        {isLoading && <TableSkeleton />}
+        {isFetching && <TableSkeleton />}
       </div>
 
       <Dialog
@@ -342,7 +325,7 @@ const MyReimbursements: React.FC = () => {
 
       <SideDrawer
         title={
-          !isLoading && reimbursementRequestData
+          !isFetching && reimbursementRequestData
             ? reimbursementRequestData.reference_no
             : "..."
         }
