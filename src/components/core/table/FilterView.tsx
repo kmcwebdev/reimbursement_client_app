@@ -7,14 +7,20 @@ import { MdAccessTimeFilled } from "react-icons-all-files/md/MdAccessTimeFilled"
 import { MdCalendarToday } from "react-icons-all-files/md/MdCalendarToday";
 import { MdLabel } from "react-icons-all-files/md/MdLabel";
 import { statusOptions } from "~/constants/status-options";
-import { type ReimbursementRequest } from "~/types/reimbursement.types";
+import {
+  type ReimbursementApproval,
+  type ReimbursementRequest,
+} from "~/types/reimbursement.types";
 import { classNames } from "~/utils/classNames";
 import { Button } from "../Button";
 import StatusBadge, { type StatusType } from "../StatusBadge";
 
 interface FilterViewProps {
   colSpan: number;
-  columns: (Column<ReimbursementRequest, unknown> | undefined)[];
+  columns: (
+    | Column<ReimbursementRequest | ReimbursementApproval, unknown>
+    | undefined
+  )[];
 }
 
 const FilterView: React.FC<FilterViewProps> = ({ columns, colSpan }) => {

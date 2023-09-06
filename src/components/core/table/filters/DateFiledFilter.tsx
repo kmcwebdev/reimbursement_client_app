@@ -74,7 +74,6 @@ const DateFiledFilter: React.FC<FilterProps> = ({ column }) => {
 
     if (selectedDatesCopy && value) {
       if (selectedDatesCopy.length >= 1) {
-        console.log("a");
         selectedDatesCopy[0] = value;
         setSelectedDates(selectedDatesCopy);
       }
@@ -91,7 +90,6 @@ const DateFiledFilter: React.FC<FilterProps> = ({ column }) => {
     const selectedDatesCopy = selectedDates;
 
     if (selectedDatesCopy && selectedDatesCopy.length === 2) {
-      console.log("here");
       selectedDatesCopy[1] = value;
     } else if (selectedDatesCopy && selectedDatesCopy.length < 2) {
       selectedDatesCopy.push(value);
@@ -138,7 +136,7 @@ const DateFiledFilter: React.FC<FilterProps> = ({ column }) => {
             />
 
             {hasErrors && error && (
-              <p className="mt-1 text-sm text-danger-default">{error}</p>
+              <p className="text-danger-default mt-1 text-sm">{error}</p>
             )}
 
             <CollapseHeightAnimation

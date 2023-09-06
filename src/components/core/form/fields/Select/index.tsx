@@ -97,8 +97,9 @@ const Select: React.FC<SelectProps> = ({
         options.find((opt) => opt.value === formContext.getValues(name)),
       );
     }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initialValue, formContext]);
+  }, [initialValue, formContext, options]);
 
   const debouncedOnInputChange = useMemo(() => {
     if (onInputChange) {
@@ -214,8 +215,6 @@ const Select: React.FC<SelectProps> = ({
                   onChange(newValue);
                 } else {
                   const selected = newValue as OptionData;
-
-                  console.log(selected);
                   onChange(selected.value);
                 }
               }}
@@ -272,7 +271,7 @@ const Select: React.FC<SelectProps> = ({
         formContext.formState.errors &&
         formContext.formState.errors[name] &&
         formContext.formState.errors[name]?.message && (
-          <p className="mt-1 text-sm text-danger-default" id="email-error">
+          <p className="text-danger-default mt-1 text-sm" id="email-error">
             {formContext.formState.errors[name]?.message as string}
           </p>
         )}

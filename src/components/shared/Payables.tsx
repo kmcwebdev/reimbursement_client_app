@@ -223,6 +223,7 @@ const Payables: React.FC = () => {
         </div>
 
         <Table
+          type="reimbursements"
           data={sampleData}
           columns={columns}
           tableState={{ pagination, selectedItems, columnFilters }}
