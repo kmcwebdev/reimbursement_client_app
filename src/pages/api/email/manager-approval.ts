@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { NewRequest } from "~/components/email-templates/newRequest";
+import { ManagerApproval } from "~/components/email-templates/ManagerApproval";
+
 import { resend } from "~/libs/resend";
 import { NewRequestEmailSchema } from "~/schema/new-request-email.schema";
 
@@ -16,8 +17,6 @@ export default async function handler(
 
     const {
       to,
-      requestId,
-      hrbpManagerName,
       fullName,
       employeeId,
       expenseType,
@@ -29,10 +28,8 @@ export default async function handler(
     const sendEmail = await resend.emails.send({
       from: "KMC Reimbursement <no-reply@kmcc-app.cc>",
       to,
-      subject: `New Reimbursement Request ${requestId}`,
-      react: NewRequest({
-        requestId,
-        hrbpManagerName,
+      subject: `Manager Approval`,
+      react: ManagerApproval({
         fullName,
         employeeId,
         expenseType,
