@@ -54,8 +54,8 @@ const MyApprovals: React.FC = () => {
     isFetching: reimbursementRequestDataIsLoading,
     data: reimbursementRequestData,
   } = useGetRequestQuery(
-    { id: focusedReimbursementId },
-    { skip: focusedReimbursementId === undefined },
+    { reimbursement_request_id: focusedReimbursementId! },
+    { skip: !!focusedReimbursementId },
   );
 
   const { isVisible, open, close } = useDialogState();
