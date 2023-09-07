@@ -8,6 +8,8 @@ interface User {
   lastName?: string;
   pictureUrl?: string;
   username?: string;
+  orgId?: string;
+  orgName?: string;
   assignedRole?: string;
   mfaEnabled: boolean;
   legacyUserId?: string;
