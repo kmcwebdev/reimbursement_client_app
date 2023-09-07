@@ -66,6 +66,8 @@ export const UserAccessProvider: React.FC<PropsWithChildren> = ({
           firstName,
           lastName,
           username,
+          orgId: org[0].orgId,
+          orgName: org[0].orgName,
           assignedRole,
           pictureUrl,
           mfaEnabled,
