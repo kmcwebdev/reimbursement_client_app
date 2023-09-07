@@ -1,8 +1,8 @@
 export type ReimbursementDetailsDTO = {
-  type: string;
-  expense: string;
+  reimbursement_request_type_id: string;
+  expense_type_id: string;
   remarks?: string;
-  total: number;
+  amount: number;
   approvers?: { email: string }[];
 };
 

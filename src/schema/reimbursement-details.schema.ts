@@ -27,6 +27,7 @@ export const ReimbursementDetailsSchema = z
               required_error: "Please input approver!",
               invalid_type_error: "Please input approver!",
             })
+            .email("Please input a valid email!")
             .nonempty("Please input approver!")
             .refine((val) => val.length > 0),
         }),
