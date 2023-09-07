@@ -1,6 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { Rejected } from "~/components/email-templates/Rejected";
-
 import { resend } from "~/libs/resend";
 import { NewRequestEmailSchema } from "~/schema/new-request-email.schema";
 

@@ -4,7 +4,6 @@ import React, { useEffect, useState, type PropsWithChildren } from "react";
 import { useAppDispatch } from "~/app/hook";
 import { setUser as reduxSetUser, setAccessToken } from "~/features/user-slice";
 import { type AppClaims } from "~/types/permission-types";
-import { ORG_KMC_SOLUTIONS } from "~/utils/constant";
 import { defineAbility } from "~/utils/define-ability";
 import { AbilityContext } from "./AbilityContext";
 
@@ -39,15 +38,15 @@ export const UserAccessProvider: React.FC<PropsWithChildren> = ({
         createdAt,
       } = propelauth;
 
-      const org = propelauth.getOrgByName(ORG_KMC_SOLUTIONS);
+      const org = propelauth.getOrgs();
 
-      if (!org) {
+      if (!org.length) {
         throw new Error("User does not belong to any off the organization");
       }
 
-      const assignedRole = org.assignedRole;
+      const assignedRole = org[0].assignedRole;
 
-      const permissions = org.permissions;
+      const permissions = org[0].permissions;
 
       const transformedPermissions: AppClaims[] = [];
 
@@ -67,6 +66,8 @@ export const UserAccessProvider: React.FC<PropsWithChildren> = ({
           firstName,
           lastName,
           username,
+          orgId: org[0].orgId,
+          orgName: org[0].orgName,
           assignedRole,
           pictureUrl,
           mfaEnabled,

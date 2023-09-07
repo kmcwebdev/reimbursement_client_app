@@ -18,8 +18,8 @@ export const NewRequestEmailSchema = z.object({
       required_error: "Request ID is required",
       invalid_type_error: "Request ID is invalid",
     })
-    .nonempty({
-      message: "Request ID is required",
+    .uuid({
+      message: "Request ID is invalid",
     }),
   hrbpManagerName: z
     .string({
@@ -45,7 +45,7 @@ export const NewRequestEmailSchema = z.object({
       required_error: "Employee ID is required",
       invalid_type_error: "Employee ID is invalid",
     })
-    .nonempty({
+    .uuid({
       message: "Employee ID is required",
     }),
   expenseType: z
