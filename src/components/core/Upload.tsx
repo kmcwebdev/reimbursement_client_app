@@ -35,6 +35,10 @@ const Upload: React.FC<UploadProps> = ({
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [
       ".xslx",
     ],
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [
+      ".docx",
+    ],
+    "application/msword": [".doc"],
   },
   uploadButtonProps,
   fileSelected,
@@ -192,7 +196,7 @@ const Upload: React.FC<UploadProps> = ({
         </p>
 
         <p className="text-neutral-600">
-          PDF or Excel (add the images of particulars)
+          PDF,Word or Excel (add the images of particulars)
         </p>
       </div>
 
@@ -217,6 +221,16 @@ const Upload: React.FC<UploadProps> = ({
           </Button>
         </div> */}
       </CollapseHeightAnimation>
+
+      {fileRejections.length > 0 && (
+        <p className="mt-1 text-sm text-red-600">
+          Selected file type is invalid! Only{" "}
+          <span className="font-semibold">
+            .csv,.pdf,.doc,.docx,.xls or .xlsx
+          </span>{" "}
+          files are accepted.
+        </p>
+      )}
     </section>
   );
 };
