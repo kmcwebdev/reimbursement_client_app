@@ -63,6 +63,7 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
           url: `/api/finance/reimbursements/requests/${reimbursement_request_id}`,
         };
       },
+      keepUnusedDataFor: 0,
       providesTags: (
         _result,
         _fetchBaseQuery,
@@ -70,7 +71,7 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
       ) => [
         {
           type: "ReimbursementRequest",
-          id: JSON.stringify(reimbursement_request_id),
+          id: reimbursement_request_id,
         },
       ],
     }),

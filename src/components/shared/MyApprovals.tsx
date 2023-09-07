@@ -193,8 +193,8 @@ const MyApprovals: React.FC = () => {
 
   return (
     <>
-      <div className="grid gap-y-2 p-5">
-        <div className="mb-5 flex place-items-start gap-4">
+      <div className="grid gap-y-2 md:p-5">
+        <div className="mb-5 flex gap-4">
           {analyticsIsLoading && (
             <>
               <DashboardCardSkeleton />
@@ -219,29 +219,31 @@ const MyApprovals: React.FC = () => {
           )}
         </div>
 
-        <div className="flex justify-between">
+        <div className="flex flex-col md:flex-row md:justify-between">
           <h4>For Approval</h4>
 
           <div
             className={classNames(
               selectedItems && selectedItems.length === 0
-                ? "w-64"
-                : "w-[26.2rem]",
-              "flex items-center gap-2 overflow-hidden transition-all ease-in-out",
+                ? "h-12 w-full md:h-auto md:w-64"
+                : "h-[85px] w-full md:h-auto md:w-[26.2rem]",
+              "flex flex-col gap-2 overflow-hidden transition-all ease-in-out md:flex-row md:items-center",
             )}
           >
-            {isLoading && <SkeletonLoading className="h-10 w-64 rounded" />}
+            {isLoading && (
+              <SkeletonLoading className="h-10 w-full rounded md:w-64" />
+            )}
 
             {!isLoading && (
               <>
                 <Input
                   name="searchFilter"
                   placeholder="Find anything..."
-                  className="w-64"
+                  className="w-full md:w-64"
                   icon={MdSearch}
                 />
 
-                <>
+                <div className="flex gap-2">
                   <Button
                     buttonType="outlined"
                     variant="danger"
@@ -261,7 +263,7 @@ const MyApprovals: React.FC = () => {
                   >
                     Approve
                   </Button>
-                </>
+                </div>
               </>
             )}
           </div>
