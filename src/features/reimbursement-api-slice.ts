@@ -54,14 +54,24 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
         { type: "ReimbursementApprovalList", id: JSON.stringify(query) },
       ],
     }),
-    getRequest: builder.query<ReimbursementRequest, { id?: string }>({
-      query: (query) => {
+    getRequest: builder.query<
+      ReimbursementRequest,
+      Pick<ReimbursementRequest, "reimbursement_request_id">
+    >({
+      query: ({ reimbursement_request_id }) => {
         return {
-          url: `/api/finance/reimbursements/requests/${query.id}`,
+          url: `/api/finance/reimbursements/requests/${reimbursement_request_id}`,
         };
       },
-      providesTags: (_result, _fetchBaseQuery, query) => [
-        { type: "ReimbursementRequest", id: JSON.stringify(query.id) },
+      providesTags: (
+        _result,
+        _fetchBaseQuery,
+        { reimbursement_request_id },
+      ) => [
+        {
+          type: "ReimbursementRequest",
+          id: JSON.stringify(reimbursement_request_id),
+        },
       ],
     }),
     requestTypes: builder.query<ReimbursementRequestType[], void>({
