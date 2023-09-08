@@ -1,4 +1,4 @@
-import { Text } from "@react-email/components";
+import { Link, Text } from "@react-email/components";
 import EmailMain from "./email-components/EmailMain";
 
 interface HRBPApprovalTemplateProps {
@@ -29,7 +29,12 @@ export const HRBPApproval: React.FC<Readonly<HRBPApprovalTemplateProps>> = ({
     <Text>Expense Description: {expenseType}</Text>
     <Text>Expense Date: {expenseDate}</Text>
     <Text>Amount: {amount}</Text>
-    <Text>Receipts Attached: {receiptsAttached}</Text>
+    <Text>
+      Receipts Attached:{" "}
+      <Link href={receiptsAttached} target="_blank">
+        Click here to view
+      </Link>
+    </Text>
     <Text className="text-justify">
       Please review the attached receipts and supporting documentation to verify
       the expenses incurred. Your timely response is greatly appreciated. If you

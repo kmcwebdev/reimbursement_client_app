@@ -1,4 +1,4 @@
-import { Text } from "@react-email/components";
+import { Text, Link } from "@react-email/components";
 import EmailMain from "./email-components/EmailMain";
 
 interface ConfirmationTemplateProps {
@@ -32,7 +32,12 @@ export const Confirmation: React.FC<Readonly<ConfirmationTemplateProps>> = ({
     <Text>Expense Description: {expenseType}</Text>
     <Text>Expense Date: {expenseDate}</Text>
     <Text>Amount: {amount}</Text>
-    <Text>Receipts Attached: {receiptsAttached}</Text>
+    <Text>
+      Receipts Attached:{" "}
+      <Link href={receiptsAttached} target="_blank">
+        Click here to view
+      </Link>
+    </Text>
     <Text className="text-justify">
       Your HRBP will review the submitted reimbursement request along with the
       attached receipts and supporting documentation. You will be notified of
