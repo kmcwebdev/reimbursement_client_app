@@ -1,4 +1,4 @@
-import { Text } from "@react-email/components";
+import { Link, Text } from "@react-email/components";
 import EmailMain from "./email-components/EmailMain";
 
 interface ApprovedTemplateProps {
@@ -29,7 +29,9 @@ export const Approved: React.FC<Readonly<ApprovedTemplateProps>> = ({
     <Text>Expense Description: {expenseType}</Text>
     <Text>Expense Date: {expenseDate}</Text>
     <Text>Amount: {amount}</Text>
-    <Text>Receipts Attached: {receiptsAttached}</Text>
+    <Text>
+      Receipts Attached: <Link href={receiptsAttached}>{receiptsAttached}</Link>
+    </Text>
     <Text className="text-justify">
       The approved amount will be processed and added to your next paycheck or
       reimbursed according to our company&apos;s reimbursement schedule. You can
