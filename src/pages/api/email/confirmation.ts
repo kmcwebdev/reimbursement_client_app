@@ -27,7 +27,7 @@ export default async function handler(
     } = validate.data;
 
     const sendEmail = await resend.emails.send({
-      from: "KMC Reimbursement <no-reply@kmcc-app.cc>",
+      from: "KMC Reimbursement <no-reply@reimbursement.kmc.solutions>",
       to,
       subject: `New Reimbursement Request ${requestId}`,
       react: Confirmation({
