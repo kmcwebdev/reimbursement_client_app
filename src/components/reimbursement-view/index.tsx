@@ -61,6 +61,8 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
       });
   };
 
+  console.log("approvers", data);
+
   return (
     <div className="relative flex h-full w-full flex-col">
       {!isLoading && !isError && data && (

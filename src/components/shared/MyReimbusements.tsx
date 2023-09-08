@@ -227,14 +227,10 @@ const MyReimbursements: React.FC = () => {
     dispatch(toggleFormDialog());
   };
 
-  const handleCloseReimbursementsView = () => {
-    close();
-  };
-
   return (
     <>
-      <div className="grid gap-y-2 lg:p-5">
-        <div className="mb-5 flex gap-4">
+      <div className="grid gap-y-2 p-5">
+        <div className="mb-5 flex place-items-start gap-4 md:overflow-x-auto">
           {analyticsIsLoading && (
             <>
               <DashboardCardSkeleton />
@@ -311,6 +307,7 @@ const MyReimbursements: React.FC = () => {
         title="File a Reimbursement"
         isVisible={formDialogIsOpen}
         close={handleOpenCancelDialog}
+        hideCloseIcon
       >
         <ReimburseForm
           formReturn={useReimbursementDetailsFormReturn}
@@ -322,6 +319,7 @@ const MyReimbursements: React.FC = () => {
         title="Cancel Reimbursements?"
         isVisible={cancelDialogIsOpen}
         close={handleAbortCancellation}
+        hideCloseIcon
       >
         <div className="flex flex-col gap-8 pt-8">
           <p className="text-neutral-800">
@@ -342,7 +340,7 @@ const MyReimbursements: React.FC = () => {
               className="w-1/2"
               onClick={handleConfirmCancellation}
             >
-              Yes
+              Yes, cancel
             </Button>
           </div>
         </div>
@@ -357,10 +355,10 @@ const MyReimbursements: React.FC = () => {
             : "..."
         }
         isVisible={isVisible}
-        closeDrawer={handleCloseReimbursementsView}
+        closeDrawer={close}
       >
         <ReimbursementsCardView
-          closeDrawer={handleCloseReimbursementsView}
+          closeDrawer={close}
           isLoading={reimbursementRequestDataIsLoading}
           isError={reimbursementRequestDataIsError}
           data={reimbursementRequestData}

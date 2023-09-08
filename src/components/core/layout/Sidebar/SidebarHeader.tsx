@@ -10,12 +10,12 @@ interface SidebarHeaderProps {
 
 const SidebarHeader: React.FC<SidebarHeaderProps> = ({ collapsed, toggle }) => {
   const iconAttr = {
-    className: "h-5 w-5 cursor-pointer text-white",
+    className: "h-5 w-5 cursor-pointer text-white hidden lg:block",
     onClick: toggle,
   };
 
   return (
-    <div className="flex h-16 items-center justify-between px-2 text-white">
+    <div className="flex h-16 items-center justify-center px-2 text-white lg:justify-between">
       <div
         className={classNames(
           collapsed ? "w-6" : "w-[101px]",

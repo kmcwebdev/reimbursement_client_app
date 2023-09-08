@@ -147,6 +147,21 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
         { type: "ReimbursementAnalytics" },
       ],
     }),
+    changeRole: builder.mutation<
+      unknown,
+      {
+        org_id: string;
+        role: string;
+      }
+    >({
+      query: (data) => {
+        return {
+          url: "/api/auth/user/change-user-role-access-in-propelauth",
+          method: "PATCH",
+          body: data,
+        };
+      },
+    }),
   }),
 });
 
@@ -160,4 +175,5 @@ export const {
   useUploadFileMutation,
   useCreateReimbursementMutation,
   useApproveReimbursementMutation,
+  useChangeRoleMutation,
 } = reimbursementApiSlice;
