@@ -1,16 +1,19 @@
 import { AnimatePresence, motion, type HTMLMotionProps } from "framer-motion";
 import React, { type PropsWithChildren } from "react";
+import { classNames } from "~/utils/classNames";
 
 interface Props extends HTMLMotionProps<"div"> {
   isVisible: boolean;
   yOffset?: number;
   className?: string;
+  hideOverflow?: boolean;
 }
 
 const CollapseHeightAnimation: React.FC<PropsWithChildren<Props>> = ({
   isVisible,
   children,
   className,
+  hideOverflow = true,
   ...rest
 }) => {
   return (
@@ -19,7 +22,7 @@ const CollapseHeightAnimation: React.FC<PropsWithChildren<Props>> = ({
         <motion.div
           {...rest}
           key="content"
-          className={"overflow-hidden " + className}
+          className={classNames(hideOverflow && "overflow-hidden", className)}
           initial="collapsed"
           animate="open"
           exit="collapsed"
