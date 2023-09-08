@@ -1,64 +1,59 @@
+import dayjs from "dayjs";
 import React from "react";
 import { HiCheckCircle } from "react-icons-all-files/hi/HiCheckCircle";
 import { MdAccessTimeFilled } from "react-icons-all-files/md/MdAccessTimeFilled";
-import { MdClose } from "react-icons-all-files/md/MdClose";
+// import { MdClose } from "react-icons-all-files/md/MdClose";
+import { Approvers } from "~/types/reimbursement.types";
 
 interface ApproversProps {
-  status: string;
-  approvers: string;
-  daterejected: string;
+  approvers: Approvers[];
 }
 
-const Approvers: React.FC<ApproversProps> = ({
-  status,
-  approvers,
-  daterejected,
-}) => {
+const Approvers: React.FC<ApproversProps> = ({ approvers }) => {
   return (
     <>
       <div className="mt-3 flex flex-col gap-4">
         <h6 className="text-base font-semibold">Approvers</h6>
-        <div className="flex flex-col gap-2">
-          {/* Pending */}
-          {status === "Pending" && (
+
+        {approvers.map((approver) => (
+          <div
+            key={approver.approval_matrix_id}
+            className="flex flex-col gap-2"
+          >
             <div className="flex items-center gap-2">
-              <MdAccessTimeFilled className="h-4 w-4 text-yellow-600" />
-              <span className="text-sm text-neutral-900">{approvers}</span>
+              {/* TODO: add not rejected condition */}
+              {!approver.has_approved && (
+                <MdAccessTimeFilled className="h-4 w-4 text-yellow-600" />
+              )}
+
+              {/* TODO: Display rejected */}
+              {/* {approver && <MdClose className="h-4 w-4 text-red-600" />} */}
+
+              {approver.has_approved && (
+                <HiCheckCircle className="h-4 w-4 text-green-600" />
+              )}
+
+              <span className="text-sm text-neutral-900">John Doe Gong</span>
             </div>
-          )}
-          {/* Reject */}
-          {status === "Rejected" && (
-            <div className="flex gap-2">
-              <MdClose className="h-4 w-4 text-red-600" />
-              <div className="flex w-full flex-col">
-                <span className="text-sm text-neutral-900">{approvers}</span>
-                <div className="flex w-full justify-between">
-                  <small className="text-xs text-neutral-800">
-                    {daterejected}
-                  </small>
-                  <small className="text-xs text-neutral-800">09:00 AM</small>
-                </div>
+
+            {/* TODO: Display rejected */}
+            {/* {date_rejected && (
+              <div className="flex justify-between">
+                <p>{dayjs(date_rejected).format("MMM D,YYYY")}</p>
+                <p>{dayjs(date_rejected).format("hh:mm a")}</p>
               </div>
+            )} */}
+
+            <div className="flex justify-between">
+              {approver.date_approve && (
+                <>
+                  <p>{dayjs(approver.date_approve).format("MMM D,YYYY")}</p>
+                  <p>{dayjs(approver.date_approve).format("hh:mm a")}</p>
+                </>
+              )}
             </div>
-          )}
-          {/* Approved */}
-          {(status === "Approved" ||
-            status === "credited" ||
-            status === "processing") && (
-            <div className="flex gap-2">
-              <HiCheckCircle className="h-4 w-4 text-success-default" />
-              <div className="flex w-full flex-col">
-                <span className="text-sm text-neutral-900">{approvers}</span>
-                <div className="flex w-full justify-between">
-                  <small className="text-xs text-neutral-800">
-                    {daterejected}
-                  </small>
-                  <small className="text-xs text-gray-500">09:00 AM</small>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
+          </div>
+        ))}
       </div>
     </>
   );

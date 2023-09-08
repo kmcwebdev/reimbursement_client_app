@@ -5,9 +5,13 @@ import { Button } from "../core/Button";
 
 interface AttachmentsProps {
   attachment: string;
+  attachment_mask_name: string;
 }
 
-const Attachments: React.FC<AttachmentsProps> = ({ attachment }) => {
+const Attachments: React.FC<AttachmentsProps> = ({
+  attachment,
+  attachment_mask_name,
+}) => {
   return (
     <>
       <div className="mt-3 flex flex-col gap-4">
@@ -16,7 +20,7 @@ const Attachments: React.FC<AttachmentsProps> = ({ attachment }) => {
           <div className="flex w-10/12 items-center gap-3">
             <AiTwotoneFile className="h-4 w-4 text-neutral-800" />
             <span className="truncate text-sm text-neutral-900">
-              {attachment}
+              {attachment_mask_name}
             </span>
           </div>
 

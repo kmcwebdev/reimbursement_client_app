@@ -4,39 +4,43 @@ import StatusBadge, { type StatusType } from "~/components/core/StatusBadge";
 import { currencyFormat } from "~/utils/currencyFormat";
 import List from "../core/List";
 
-interface DetailsProps {
-  statusDetails: StatusType;
-  type: string;
-  expense: string;
-  filed: string;
+export interface DetailsProps {
+  request_status: string;
+  request_type: string;
+  expense_type: string;
+  created_at: string;
   amount: number | string;
   remarks: string;
 }
 
 const Details: React.FC<DetailsProps> = ({
-  statusDetails,
-  type,
-  expense,
+  request_status,
+  request_type,
+  expense_type,
   remarks,
-  filed,
+  created_at,
   amount,
 }) => {
   return (
     <List>
       <List.Item
         label="Status"
-        value={<StatusBadge status={statusDetails} />}
+        value={
+          <StatusBadge status={request_status.toLowerCase() as StatusType} />
+        }
       />
-      <List.Item label="Type" value={type} />
-      <List.Item label="Expense" value={expense} />
+      <List.Item label="Type" value={request_type} />
+      <List.Item label="Expense" value={expense_type} />
 
-      {expense === "Others" && <List.Item label="Remarks" value={remarks} />}
-      <List.Item label="Filed" value={dayjs(filed).format("MMM D,YYYY")} />
+      {expense_type === "Others" && (
+        <List.Item label="Remarks" value={remarks} />
+      )}
+      <List.Item label="Filed" value={dayjs(created_at).format("MMM D,YYYY")} />
       <List.Item label="Amount" value={currencyFormat(+amount)} />
 
       <div className="flex flex-col">
-        {(statusDetails === "processing" || statusDetails === "credited") && (
-          <List.Item label="Payout" value={filed} />
+        {(request_status === "Processing" || request_status === "Credited") && (
+          <List.Item label="Payout" value={created_at} />
         )}
       </div>
     </List>

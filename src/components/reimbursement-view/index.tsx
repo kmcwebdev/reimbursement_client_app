@@ -1,6 +1,7 @@
 import { type PropsWithChildren } from "react";
+import { useAppDispatch } from "~/app/hook";
+import { appApiSlice } from "~/app/rtkQuery";
 import { Button } from "~/components/core/Button";
-import { type StatusType } from "~/components/core/StatusBadge";
 import { useApproveReimbursementMutation } from "~/features/reimbursement-api-slice";
 import { useDialogState } from "~/hooks/use-dialog-state";
 import { type ReimbursementRequest } from "~/types/reimbursement.types";
@@ -31,6 +32,8 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
   const [approveReimbursement, { isLoading: isSubmitting }] =
     useApproveReimbursementMutation();
 
+  const dispatch = useAppDispatch();
+
   const {
     isVisible: cancelDialogIsOpen,
     open: openCancelDialog,
@@ -43,13 +46,17 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
   };
 
   const handleApprove = (matrixId: string) => {
-    void approveReimbursement({ matrixId })
+    const payload = { approval_matrix_ids: [matrixId] };
+
+    void approveReimbursement(payload)
       .unwrap()
       .then(() => {
+        dispatch(
+          appApiSlice.util.invalidateTags([{ type: "ReimbursementRequest" }]),
+        );
         showToast({
           type: "success",
-          description:
-            "Your reimbursement request has been submitted successfully!",
+          description: "Reimbursement Request successfully approved!",
         });
         closeDrawer();
       })
@@ -61,33 +68,30 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
       });
   };
 
-  console.log("approvers", data);
-
   return (
     <div className="relative flex h-full w-full flex-col">
       {!isLoading && !isError && data && (
         <>
           <div className="flex-1 p-5">
             <Details
-              statusDetails={data.request_status.toLowerCase() as StatusType}
-              type={data.request_type}
-              expense={data.expense_type}
-              remarks={data.remarks}
-              filed={data.created_at}
+              request_status={data.request_status}
+              request_type={data.request_type}
+              expense_type={data.expense_type}
+              created_at={data.created_at}
               amount={data.amount}
+              remarks={data.remarks}
             />
 
-            {data.request_status === "rejected" && (
+            {data.request_status === "Rejected" && (
               <Notes note="Missing details" />
             )}
 
-            <Approvers
-              status={data.request_status}
-              approvers="Missing details"
-              daterejected="Missing details"
-            />
+            <Approvers approvers={data.approvers} />
 
-            <Attachments attachment={data.attachment} />
+            <Attachments
+              attachment={data.attachment}
+              attachment_mask_name={data.attachment_mask_name}
+            />
           </div>
 
           <div className="absolute bottom-0 grid h-[72px] w-full grid-cols-2 items-center justify-center gap-2 border-t border-neutral-300 px-5">

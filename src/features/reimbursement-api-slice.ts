@@ -132,7 +132,7 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
     approveReimbursement: builder.mutation<
       unknown,
       {
-        matrixId: string;
+        approval_matrix_ids: string[];
       }
     >({
       query: (data) => {

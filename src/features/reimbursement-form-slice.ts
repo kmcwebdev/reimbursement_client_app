@@ -10,7 +10,7 @@ interface ReimburseFormState {
   cancelDialogIsOpen: boolean;
   formDialogIsOpen: boolean;
   fileUploadedUrl: string | null;
-  fileSelected: FileWithPath[] | null;
+  fileSelected: FileWithPath | null;
 }
 
 const initialState: ReimburseFormState = {
@@ -55,7 +55,7 @@ const reimbursementFormSlice = createSlice({
     toggleCancelDialog(state) {
       state.cancelDialogIsOpen = !state.cancelDialogIsOpen;
     },
-    setFileSelected(state, action: PayloadAction<FileWithPath[] | null>) {
+    setFileSelected(state, action: PayloadAction<FileWithPath | null>) {
       state.fileSelected = action.payload;
     },
     setUploadedFileUrl(state, action: PayloadAction<string | null>) {
