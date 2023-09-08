@@ -46,6 +46,8 @@ const reimbursementFormSlice = createSlice({
       state.activeStep = 0;
       state.reimbursementDetails = null;
       state.reimbursementAttachment = null;
+      state.fileSelected = null;
+      state.fileUploadedUrl = null;
     },
     toggleFormDialog(state) {
       state.formDialogIsOpen = !state.formDialogIsOpen;

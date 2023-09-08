@@ -1,15 +1,14 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { Confirmation } from "~/components/email-templates/Confirmation";
-
 import { resend } from "~/libs/resend";
-import { NewRequestEmailSchema } from "~/schema/new-request-email.schema";
+import { ConfirmationEmailSchema } from "~/schema/email-templates.schema";
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
   try {
-    const validate = await NewRequestEmailSchema.safeParseAsync(req.body);
+    const validate = await ConfirmationEmailSchema.safeParseAsync(req.body);
 
     if (!validate.success) {
       return res.status(400).json(validate.error);
@@ -28,7 +27,7 @@ export default async function handler(
     } = validate.data;
 
     const sendEmail = await resend.emails.send({
-      from: "KMC Reimbursement <no-reply@kmcc-app.cc>",
+      from: "KMC Reimbursement <no-reply@reimbursement.kmc.solutions>",
       to,
       subject: `New Reimbursement Request ${requestId}`,
       react: Confirmation({

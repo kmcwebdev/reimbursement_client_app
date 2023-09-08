@@ -48,11 +48,9 @@ const ReimbursementDetailsForm: React.FC<ReimbursementDetailsFormProps> = ({
   const [selectedExpense, setSelectedExpense] = useState<string>();
   const { isLoading: requestTypesIsLoading, data: requestTypes } =
     useRequestTypesQuery();
-  const { isLoading: expenseTypesIsLoading, data: expenseTypes } =
-    useExpenseTypesQuery(
-      { request_type_id: selectedType! },
-      { skip: !selectedType },
-    );
+
+  const { isFetching: expenseTypesIsLoading, data: expenseTypes } =
+    useExpenseTypesQuery({ request_type_id: selectedType! });
 
   useMemo(() => {
     if (reimbursementDetails) {
@@ -60,6 +58,12 @@ const ReimbursementDetailsForm: React.FC<ReimbursementDetailsFormProps> = ({
       setSelectedExpense(reimbursementDetails.expense_type_id);
     }
   }, [reimbursementDetails]);
+
+  useMemo(() => {
+    if (formReturn) {
+      setSelectedType(formReturn.getValues("reimbursement_request_type_id"));
+    }
+  }, [formReturn]);
 
   const { fields, append, remove } = useFieldArray({
     control: formReturn.control, // control props comes from useForm (optional: if you are using FormContext)

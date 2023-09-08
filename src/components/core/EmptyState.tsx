@@ -1,5 +1,6 @@
 import React, { type PropsWithChildren } from "react";
 import { type IconType } from "react-icons-all-files";
+import { MdBrowserNotSupported } from "react-icons-all-files/md/MdBrowserNotSupported";
 
 interface EmptyStateProps extends PropsWithChildren {
   title: string;
@@ -10,7 +11,7 @@ interface EmptyStateProps extends PropsWithChildren {
 const EmptyState: React.FC<EmptyStateProps> = ({
   title,
   description,
-  icon: Icon,
+  icon: Icon = MdBrowserNotSupported as IconType,
   children,
 }) => {
   return (
@@ -18,10 +19,10 @@ const EmptyState: React.FC<EmptyStateProps> = ({
       <div className="flex flex-col items-center gap-5">
         {Icon && <Icon className="h-8 w-8 text-neutral-600" />}
         <h4 className="font-barlowCondensed font-semibold">{title}</h4>
-        <p className="text-neutral-600">{description}</p>
+        <p className="text-center text-neutral-600">{description}</p>
       </div>
 
-      <div className="flex justify-center">{children}</div>
+      {children && <div className="flex justify-center">{children}</div>}
     </div>
   );
 };

@@ -1,6 +1,7 @@
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment, type PropsWithChildren } from "react";
 import { MdClose } from "react-icons-all-files/md/MdClose";
+import { barlow_Condensed } from "~/styles/fonts/barlowCondensed";
 import { karla } from "~/styles/fonts/karla";
 
 export interface DrawerProps extends PropsWithChildren {
@@ -19,7 +20,7 @@ const SideDrawer: React.FC<DrawerProps> = ({
     <Transition.Root show={isVisible} as={Fragment}>
       <Dialog
         as="div"
-        className={`${karla.variable} relative z-20`}
+        className={`${karla.variable} ${barlow_Condensed.variable} relative z-20`}
         onClose={closeDrawer}
       >
         <Transition.Child
@@ -48,7 +49,7 @@ const SideDrawer: React.FC<DrawerProps> = ({
               >
                 <Dialog.Panel className="pointer-events-auto w-[300px] md:w-[424px]">
                   <div className="flex h-full flex-col rounded bg-white shadow-xl">
-                    <div className="flex h-[72px] items-center justify-between border-b border-neutral-subtle px-4">
+                    <div className="border-neutral-subtle flex h-[72px] items-center justify-between border-b px-4">
                       <Dialog.Title className="font-karla text-lg font-bold uppercase text-neutral-900">
                         <span>{title}</span>
                       </Dialog.Title>
