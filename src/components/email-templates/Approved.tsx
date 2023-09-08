@@ -29,10 +29,10 @@ export const Approved: React.FC<Readonly<ApprovedTemplateProps>> = ({
     <Text>Expense Description: {expenseType}</Text>
     <Text>Expense Date: {expenseDate}</Text>
     <Text>Amount: {amount}</Text>
-    <Text className="flex">
+    <Text>
       Receipts Attached:{" "}
       <Link href={receiptsAttached} target="_blank">
-        {receiptsAttached}
+        Click here to view
       </Link>
     </Text>
     <Text className="text-justify">
