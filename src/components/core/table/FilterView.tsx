@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 import { type Column } from "@tanstack/react-table";
-import React, { useEffect, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { HiCurrencyDollar } from "react-icons-all-files/hi/HiCurrencyDollar";
 import { IoMdClose } from "react-icons-all-files/io/IoMdClose";
 import { MdAccessTimeFilled } from "react-icons-all-files/md/MdAccessTimeFilled";
@@ -23,64 +23,84 @@ interface FilterViewProps {
   )[];
 }
 
+interface FilterState {
+  key: string;
+  value: string[];
+}
+
 const FilterView: React.FC<FilterViewProps> = ({ columns, colSpan }) => {
-  const [statusFilterIsVisible, setStatusFilterIsVisible] =
-    useState<boolean>(false);
-  const [typeFilterIsVisible, setTypeFilterIsVisible] =
-    useState<boolean>(false);
-  const [expenseFilterIsVisible, setExpenseFilterIsVisible] =
-    useState<boolean>(false);
-  const [dateFilterIsVisible, setDateFilterIsVisible] =
-    useState<boolean>(false);
-
-  const [statusFilterValue, setStatusFilterValue] = useState<string[]>([]);
-  const [typeFilterValue, setTypeFilterValue] = useState<string[]>([]);
-  const [expenseFilterValue, setExpenseFilterValue] = useState<string[]>([]);
   const [dateFilterValue, setDateFilterValue] = useState<string[]>([]);
+  const [dateFilterIsVisible, setDateFilterIsVisible] = useState<boolean>();
+  const [filterViewState, setFilterViewState] = useState<FilterState[]>([]);
 
-  useEffect(() => {
-    /**Check status filter value if equal to status options */
-    const statusColumn = columns.find(
-      (column) => column && column.id === "status",
-    );
-    if (statusColumn) {
-      const filterValue: string[] = statusColumn.getFilterValue() as string[];
-      if (filterValue && filterValue.length > 0) {
-        setStatusFilterValue(filterValue);
-        setStatusFilterIsVisible(filterValue.length < statusOptions.length);
-      }
-    }
+  useMemo(() => {
+    const filterOrder = ["request_status", "request_type", "expense_type"];
+    const columnsThatHasFilters = columns.filter((a) => a?.getIsFiltered());
+    const headers = columnsThatHasFilters.map((a) => a?.id);
+    const filterViewStateCopy: FilterState[] = [];
 
-    /**Check reimbursement type filter value length if equal to 2 */
-    const typeColumn = columns.find((column) => column && column.id === "type");
-    if (typeColumn) {
-      const filterValue: string[] = typeColumn.getFilterValue() as string[];
+    if (headers && headers.length > 0) {
+      headers
+        .sort((a, b) => {
+          const index1 = filterOrder.indexOf(a as string);
+          const index2 = filterOrder.indexOf(b as string);
+          return index1 == -1 ? 1 : index2 == -1 ? -1 : index1 - index2;
+        })
+        .map((header) => {
+          const filteredColumn = columnsThatHasFilters.find(
+            (a) => a?.id === header,
+          );
 
-      if (filterValue && filterValue.length > 0) {
-        setTypeFilterValue(filterValue);
-        setTypeFilterIsVisible(filterValue.length < 2);
-      }
-    }
-
-    /**Check expense type filter value if equal to expense type = column faceted unique values */
-    const expenseColumn = columns.find(
-      (column) => column && column.id === "expense",
-    );
-    if (expenseColumn) {
-      const filterValue: string[] = expenseColumn.getFilterValue() as string[];
-
-      if (filterValue && filterValue.length > 0) {
-        setExpenseFilterValue(filterValue);
-        setExpenseFilterIsVisible(
-          filterValue.length <
-            Array.from(expenseColumn.getFacetedUniqueValues().keys()).length,
-        );
-      }
+          if (filteredColumn && header) {
+            if (header === "request_status") {
+              const filterValue = filteredColumn.getFilterValue() as string[];
+              if (filterValue !== statusOptions) {
+                if (filterViewStateCopy.find((a) => a.key === header)) {
+                  const filtered = filterViewStateCopy.filter(
+                    (a) => a.key !== header,
+                  );
+                  filtered.push({ key: header, value: filterValue });
+                  setFilterViewState(filtered);
+                } else {
+                  filterViewStateCopy.push({ key: header, value: filterValue });
+                  setFilterViewState(filterViewStateCopy);
+                }
+              } else {
+                const copy = filterViewStateCopy.filter(
+                  (a) => a.key !== header,
+                );
+                setFilterViewState(copy);
+              }
+            } else {
+              const filterValue = filteredColumn.getFilterValue() as string[];
+              const sortedUniqueValues = Array.from(
+                filteredColumn.getFacetedUniqueValues().keys(),
+              ).sort() as string[];
+              if (filterValue.length < sortedUniqueValues.length) {
+                if (filterViewStateCopy.find((a) => a.key === header)) {
+                  const filtered = filterViewStateCopy.filter(
+                    (a) => a.key !== header,
+                  );
+                  filtered.push({ key: header, value: filterValue });
+                  setFilterViewState(filtered);
+                } else {
+                  filterViewStateCopy.push({ key: header, value: filterValue });
+                  setFilterViewState(filterViewStateCopy);
+                }
+              } else {
+                const copy = filterViewStateCopy.filter(
+                  (a) => a.key !== header,
+                );
+                setFilterViewState(copy);
+              }
+            }
+          }
+        });
     }
 
     /**Check date filed filter value if has value */
     const dateFiledColumn = columns.find(
-      (column) => column && column.id === "filed",
+      (column) => column && column.id === "created_at",
     );
 
     if (dateFiledColumn) {
@@ -97,12 +117,14 @@ const FilterView: React.FC<FilterViewProps> = ({ columns, colSpan }) => {
     const statusColumn = columns.find(
       (column) => column && column.id === "request_status",
     );
-    const typeColumn = columns.find((column) => column && column.id === "type");
+    const typeColumn = columns.find(
+      (column) => column && column.id === "request_type",
+    );
     const expenseColumn = columns.find(
       (column) => column && column.id === "expense_type",
     );
     const dateFiledColumn = columns.find(
-      (column) => column && column.id === "filed",
+      (column) => column && column.id === "created_at",
     );
 
     if (statusColumn) {
@@ -131,10 +153,7 @@ const FilterView: React.FC<FilterViewProps> = ({ columns, colSpan }) => {
       <td colSpan={colSpan}>
         <div
           className={classNames(
-            statusFilterIsVisible ||
-              typeFilterIsVisible ||
-              expenseFilterIsVisible ||
-              dateFilterIsVisible
+            filterViewState.length > 0
               ? "h-16 border-b  border-b-[#F1F2F4] px-4 opacity-100 first:px-0"
               : "h-0 p-0 opacity-0",
             "flex items-center justify-between gap-4 overflow-hidden transition-all duration-500 ease-in-out",
@@ -143,69 +162,58 @@ const FilterView: React.FC<FilterViewProps> = ({ columns, colSpan }) => {
           <div className="flex items-center gap-2">
             <span className="font-bold text-neutral-900">Filters: </span>
 
-            {columns.sort().map((column) => (
-              <div key={column?.id} className="flex items-center gap-8">
-                {statusFilterIsVisible && column && column.id === "status" && (
-                  <div className="flex items-center gap-2">
-                    <MdLabel className="h-4 w-4 text-neutral-900" />
-                    <div className="flex gap-2 divide-x">
-                      {statusFilterValue.map((value) => (
-                        <StatusBadge key={value} status={value as StatusType} />
-                      ))}
-                    </div>
-                  </div>
-                )}
+            <div className="flex items-center gap-8">
+              {filterViewState.length > 0 &&
+                filterViewState.map((state) => (
+                  <div key={state.key} className="flex items-center gap-2">
+                    {state.key === "request_status" && (
+                      <MdLabel className="h-4 w-4 text-neutral-900" />
+                    )}
 
-                {typeFilterIsVisible && column && column.id === "type" && (
-                  <div className="flex items-center gap-2">
-                    <HiCurrencyDollar className="h-4 w-4 text-neutral-900" />
-                    <MdAccessTimeFilled className="h-4 w-4 " />
-                    <div className="flex gap-2 divide-x">
-                      {typeFilterValue.map((value) => (
-                        <p
-                          key={value}
-                          className="pl-2 text-sm text-neutral-800"
-                        >
-                          {value}
-                        </p>
-                      ))}
-                    </div>
-                  </div>
-                )}
+                    {state.key === "request_type" && (
+                      <MdAccessTimeFilled className="h-4 w-4 text-neutral-900" />
+                    )}
 
-                {expenseFilterIsVisible &&
-                  column &&
-                  column.id === "expense" && (
-                    <div className="flex items-center gap-2">
+                    {state.key === "expense_type" && (
                       <HiCurrencyDollar className="h-4 w-4 text-neutral-900" />
-                      <div className="flex gap-2 divide-x">
-                        {expenseFilterValue.map((value) => (
-                          <p
-                            key={value}
-                            className="pl-2 text-sm text-neutral-800 first:pl-0"
-                          >
-                            {value}
-                          </p>
-                        ))}
-                      </div>
-                    </div>
-                  )}
+                    )}
 
-                {dateFilterIsVisible && column && column.id === "filed" && (
-                  <div className="flex items-center gap-2">
-                    <MdCalendarToday className="h-4 w-4 text-neutral-900" />
-                    <div className="flex items-center gap-1">
-                      {dateFilterValue.map((value, i) => (
-                        <p key={value} className="text-sm text-neutral-800">
-                          {value}
-                          {dateFilterValue.length === 2 && i === 0 && " -"}
-                        </p>
+                    <div className="flex gap-2 divide-x">
+                      {state.value.map((value) => (
+                        <>
+                          {state.key === "request_status" ? (
+                            <StatusBadge
+                              key={value}
+                              status={value.toLowerCase() as StatusType}
+                            />
+                          ) : (
+                            <p
+                              key={value}
+                              className="pl-2 text-sm text-neutral-800"
+                            >
+                              {value}
+                            </p>
+                          )}
+                        </>
                       ))}
                     </div>
                   </div>
-                )}
-              </div>
-            ))}
+                ))}
+
+              {dateFilterIsVisible && (
+                <div className="flex items-center gap-2">
+                  <MdCalendarToday className="h-4 w-4 text-neutral-900" />
+                  <div className="flex items-center gap-1">
+                    {dateFilterValue.map((value, i) => (
+                      <p key={value} className="text-sm text-neutral-800">
+                        {value}
+                        {dateFilterValue.length === 2 && i === 0 && " -"}
+                      </p>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
 
           <Button buttonType="text" variant="danger" onClick={handleClear}>

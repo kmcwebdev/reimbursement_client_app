@@ -126,7 +126,18 @@ const Table: React.FC<TableProps> = (props) => {
               <tr key={i}>
                 {headerGroup.headers.map((header, i) => {
                   return (
-                    <th key={i} colSpan={header.colSpan} className=" px-4">
+                    <th
+                      {...{
+                        style: {
+                          width: header.getSize(),
+                          minWidth: header.getSize(),
+                          maxWidth: header.getSize(),
+                        },
+                      }}
+                      key={i}
+                      colSpan={header.colSpan}
+                      className=" px-4"
+                    >
                       <div className="flex items-center justify-between">
                         {flexRender(
                           header.column.columnDef.header,
@@ -150,16 +161,14 @@ const Table: React.FC<TableProps> = (props) => {
             ))}
           </thead>
           <tbody className="min-h-[calc(300px-3rem)]">
-            {table.getRowModel().rows.length !== 0 &&
-              props.tableState &&
-              props.tableState.columnFilters && (
-                <FilterView
-                  colSpan={table.getAllColumns().length}
-                  columns={props.tableState.columnFilters?.map((a) =>
-                    table.getColumn(a.id),
-                  )}
-                />
-              )}
+            {props.tableState && props.tableState.columnFilters && (
+              <FilterView
+                colSpan={table.getAllColumns().length}
+                columns={props.tableState.columnFilters?.map((a) =>
+                  table.getColumn(a.id),
+                )}
+              />
+            )}
 
             {table.getRowModel().rows.length === 0 && (
               <tr className="h-72 bg-neutral-100">

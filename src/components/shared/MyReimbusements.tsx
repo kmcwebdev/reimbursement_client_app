@@ -9,6 +9,7 @@ import dayjs from "dayjs";
 import dynamic from "next/dynamic";
 import React, { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
+import { HiPlusCircle } from "react-icons-all-files/hi/HiPlusCircle";
 import { MdAccessTimeFilled } from "react-icons-all-files/md/MdAccessTimeFilled";
 import { MdCreditCard } from "react-icons-all-files/md/MdCreditCard";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
@@ -70,10 +71,11 @@ const MyReimbursements: React.FC = () => {
 
   const {
     isFetching: reimbursementRequestDataIsLoading,
-    data: reimbursementRequestData,
+    isError: reimbursementRequestDataIsError,
+    currentData: reimbursementRequestData,
   } = useGetRequestQuery(
     { reimbursement_request_id: focusedReimbursementId! },
-    { skip: !!focusedReimbursementId },
+    { skip: !focusedReimbursementId },
   );
 
   const { isVisible, open, close } = useDialogState();
@@ -100,6 +102,7 @@ const MyReimbursements: React.FC = () => {
           return value.includes(row.getValue(id));
         },
         enableColumnFilter: true,
+        size: 10,
         meta: {
           filterComponent: (info: FilterProps) => <StatusFilter {...info} />,
         },
@@ -109,6 +112,7 @@ const MyReimbursements: React.FC = () => {
         accessorKey: "reference_no",
         cell: (info) => info.getValue(),
         header: "R-ID",
+        size: 20,
       },
       {
         id: "request_type",
@@ -123,6 +127,7 @@ const MyReimbursements: React.FC = () => {
             <ReimbursementTypeFilter {...info} />
           ),
         },
+        size: 10,
       },
       {
         id: "expense_type",
@@ -132,6 +137,7 @@ const MyReimbursements: React.FC = () => {
         filterFn: (row, id, value: string) => {
           return value.includes(row.getValue(id));
         },
+        size: 10,
         meta: {
           filterComponent: (info: FilterProps) => (
             <ExpenseTypeFilter {...info} />
@@ -149,12 +155,14 @@ const MyReimbursements: React.FC = () => {
         meta: {
           filterComponent: (info: FilterProps) => <DateFiledFilter {...info} />,
         },
+        size: 10,
       },
       {
         id: "amount",
         accessorKey: "amount",
         cell: (info) => currencyFormat(info.getValue() as number),
         header: "Amount",
+        size: 10,
       },
       {
         id: "actions",
@@ -171,6 +179,7 @@ const MyReimbursements: React.FC = () => {
           </Button>
         ),
         header: "",
+        size: 5,
       },
     ];
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -219,14 +228,13 @@ const MyReimbursements: React.FC = () => {
   };
 
   const handleCloseReimbursementsView = () => {
-    setFocusedReimbursementId(undefined);
     close();
   };
 
   return (
     <>
-      <div className="grid gap-y-2 p-5">
-        <div className="mb-5 flex place-items-start gap-4">
+      <div className="grid gap-y-2 lg:p-5">
+        <div className="mb-5 flex gap-4">
           {analyticsIsLoading && (
             <>
               <DashboardCardSkeleton />
@@ -258,9 +266,22 @@ const MyReimbursements: React.FC = () => {
           {isFetching && <SkeletonLoading className="h-10 w-[5rem] rounded" />}
 
           {!isFetching && (
-            <Button onClick={() => dispatch(toggleFormDialog())}>
-              Reimburse
-            </Button>
+            <>
+              <Button
+                className="hidden md:block"
+                onClick={() => dispatch(toggleFormDialog())}
+              >
+                Reimburse
+              </Button>
+
+              <Button
+                buttonType="text"
+                className="block md:hidden"
+                onClick={() => dispatch(toggleFormDialog())}
+              >
+                <HiPlusCircle className="h-5 w-5" />
+              </Button>
+            </>
           )}
         </div>
 
@@ -329,8 +350,10 @@ const MyReimbursements: React.FC = () => {
 
       <SideDrawer
         title={
-          !isFetching && reimbursementRequestData
+          !reimbursementRequestDataIsLoading && reimbursementRequestData
             ? reimbursementRequestData.reference_no
+            : reimbursementRequestDataIsError
+            ? "Error"
             : "..."
         }
         isVisible={isVisible}
@@ -339,6 +362,7 @@ const MyReimbursements: React.FC = () => {
         <ReimbursementsCardView
           closeDrawer={handleCloseReimbursementsView}
           isLoading={reimbursementRequestDataIsLoading}
+          isError={reimbursementRequestDataIsError}
           data={reimbursementRequestData}
         />
       </SideDrawer>

@@ -18,6 +18,7 @@ export interface ReimbursementsCardViewProps extends PropsWithChildren {
   isLoading?: boolean;
   data?: ReimbursementRequest;
   closeDrawer: () => void;
+  isError?: boolean;
 }
 
 const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
@@ -25,6 +26,7 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
   closeDrawer,
   data,
   isLoading = false,
+  isError = false,
 }) => {
   const [approveReimbursement, { isLoading: isSubmitting }] =
     useApproveReimbursementMutation();
@@ -61,7 +63,7 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
 
   return (
     <div className="relative flex h-full w-full flex-col">
-      {!isLoading && data && (
+      {!isLoading && !isError && data && (
         <>
           <div className="flex-1 p-5">
             <Details
@@ -132,11 +134,14 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
       )}
 
       {isLoading && <ReimbursementViewSkeleton />}
-      {!isLoading && !data && (
-        <EmptyState
-          title="Reimbursement Data not found!"
-          description="Reimbursement request is empty."
-        />
+
+      {!isLoading && isError && (
+        <div className="grid px-8 pt-16">
+          <EmptyState
+            title="Reimbursement Request not found!"
+            description="Sorry, the reimbursement request you are looking for could not be found."
+          />
+        </div>
       )}
 
       <Dialog
