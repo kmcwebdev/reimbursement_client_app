@@ -29,8 +29,11 @@ export const Rejected: React.FC<Readonly<RejectedTemplateProps>> = ({
     <Text>Expense Description: {expenseType}</Text>
     <Text>Expense Date: {expenseDate}</Text>
     <Text>Amount: {amount}</Text>
-    <Text>
-      Receipts Attached: <Link href={receiptsAttached}>{receiptsAttached}</Link>
+    <Text className="flex">
+      Receipts Attached:{" "}
+      <Link href={receiptsAttached} target="_blank">
+        {receiptsAttached}
+      </Link>
     </Text>
     <Text className="text-justify">
       We understand that this outcome might be disappointing. If you have any
