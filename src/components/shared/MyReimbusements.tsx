@@ -227,10 +227,6 @@ const MyReimbursements: React.FC = () => {
     dispatch(toggleFormDialog());
   };
 
-  const handleCloseReimbursementsView = () => {
-    close();
-  };
-
   return (
     <>
       <div className="grid gap-y-2 p-5">
@@ -359,10 +355,10 @@ const MyReimbursements: React.FC = () => {
             : "..."
         }
         isVisible={isVisible}
-        closeDrawer={handleCloseReimbursementsView}
+        closeDrawer={close}
       >
         <ReimbursementsCardView
-          closeDrawer={handleCloseReimbursementsView}
+          closeDrawer={close}
           isLoading={reimbursementRequestDataIsLoading}
           isError={reimbursementRequestDataIsError}
           data={reimbursementRequestData}

@@ -52,10 +52,10 @@ const MyApprovals: React.FC = () => {
     useGetAnalyticsQuery();
   const {
     isFetching: reimbursementRequestDataIsLoading,
-    data: reimbursementRequestData,
+    currentData: reimbursementRequestData,
   } = useGetRequestQuery(
     { reimbursement_request_id: focusedReimbursementId! },
-    { skip: !!focusedReimbursementId },
+    { skip: !focusedReimbursementId },
   );
 
   const { isVisible, open, close } = useDialogState();
@@ -68,11 +68,6 @@ const MyApprovals: React.FC = () => {
   });
 
   const { isLoading, data } = useGetAllApprovalQuery({});
-
-  const handleCloseReimbursementsView = () => {
-    setFocusedReimbursementId(undefined);
-    close();
-  };
 
   const columns = React.useMemo<ColumnDef<ReimbursementApproval>[]>(() => {
     return [
@@ -293,7 +288,7 @@ const MyApprovals: React.FC = () => {
 
       <SideDrawer
         title={
-          !isLoading && reimbursementRequestData
+          !reimbursementRequestDataIsLoading && reimbursementRequestData
             ? reimbursementRequestData.reference_no
             : "..."
         }
@@ -302,7 +297,7 @@ const MyApprovals: React.FC = () => {
       >
         <ReimbursementsCardView
           isApproverView
-          closeDrawer={handleCloseReimbursementsView}
+          closeDrawer={close}
           isLoading={reimbursementRequestDataIsLoading}
           data={reimbursementRequestData}
         />
