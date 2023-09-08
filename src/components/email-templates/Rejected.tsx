@@ -1,4 +1,4 @@
-import { Text } from "@react-email/components";
+import { Link, Text } from "@react-email/components";
 import EmailMain from "./email-components/EmailMain";
 
 interface RejectedTemplateProps {
@@ -29,7 +29,12 @@ export const Rejected: React.FC<Readonly<RejectedTemplateProps>> = ({
     <Text>Expense Description: {expenseType}</Text>
     <Text>Expense Date: {expenseDate}</Text>
     <Text>Amount: {amount}</Text>
-    <Text>Receipts Attached: {receiptsAttached}</Text>
+    <Text>
+      Receipts Attached:{" "}
+      <Link href={receiptsAttached} target="_blank">
+        Click here to view
+      </Link>
+    </Text>
     <Text className="text-justify">
       We understand that this outcome might be disappointing. If you have any
       questions or need further clarification on the rejection, please do not

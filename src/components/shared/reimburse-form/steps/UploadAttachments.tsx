@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import React from "react";
+import { type UseFormReturn } from "react-hook-form";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { Button } from "~/components/core/Button";
 import { showToast } from "~/components/core/Toast";
@@ -16,8 +17,15 @@ import {
   toggleFormDialog,
 } from "~/features/reimbursement-form-slice";
 import { type MutationError } from "~/types/global-types";
+import { type ReimbursementDetailsDTO } from "~/types/reimbursement.types";
 
-const UploadAttachments: React.FC = () => {
+interface UploadAttachmentsProps {
+  formReturn: UseFormReturn<ReimbursementDetailsDTO>;
+}
+
+const UploadAttachments: React.FC<UploadAttachmentsProps> = ({
+  formReturn,
+}) => {
   const { activeStep, reimbursementDetails, fileUploadedUrl, fileSelected } =
     useAppSelector((state) => state.reimbursementForm);
   const dispatch = useAppDispatch();
@@ -75,6 +83,7 @@ const UploadAttachments: React.FC = () => {
           .then(() => {
             dispatch(toggleFormDialog());
             dispatch(clearReimbursementForm());
+            formReturn.reset();
             showToast({
               type: "success",
               description:
