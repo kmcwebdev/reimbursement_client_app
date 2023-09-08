@@ -78,6 +78,7 @@ const MyApprovals: React.FC = () => {
     return [
       {
         id: "select",
+        size: 10,
         header: ({ table }) => {
           if (table.getRowModel().rows.length > 0) {
             return (

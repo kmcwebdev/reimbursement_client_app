@@ -22,14 +22,8 @@ const UploadAttachments: React.FC = () => {
     useAppSelector((state) => state.reimbursementForm);
   const dispatch = useAppDispatch();
 
-  const [
-    uploadFiles,
-    {
-      isLoading: isUploading,
-      isSuccess: isUploadingSuccess,
-      data: uploadedFile,
-    },
-  ] = useUploadFileMutation();
+  const [uploadFiles, { isLoading: isUploading, data: uploadedFile }] =
+    useUploadFileMutation();
 
   const [createReimbursement, { isLoading: isSubmitting }] =
     useCreateReimbursementMutation();
@@ -146,7 +140,7 @@ const UploadAttachments: React.FC = () => {
         <Button
           onClick={handleReimburse}
           className="w-full"
-          disabled={isUploading || !fileUploadedUrl || !isUploadingSuccess}
+          disabled={isUploading || !fileUploadedUrl}
           loading={isSubmitting}
         >
           Reimburse
