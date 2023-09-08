@@ -20,14 +20,14 @@ const Approvers: React.FC<ApproversProps> = ({
         <h6 className="text-base font-semibold">Approvers</h6>
         <div className="flex flex-col gap-2">
           {/* Pending */}
-          {status === "pending" && (
+          {status === "Pending" && (
             <div className="flex items-center gap-2">
-              <MdAccessTimeFilled className="h-4 w-4 text-orange-600" />
+              <MdAccessTimeFilled className="h-4 w-4 text-yellow-600" />
               <span className="text-sm text-neutral-900">{approvers}</span>
             </div>
           )}
           {/* Reject */}
-          {status === "rejected" && (
+          {status === "Rejected" && (
             <div className="flex gap-2">
               <MdClose className="h-4 w-4 text-red-600" />
               <div className="flex w-full flex-col">
@@ -42,7 +42,7 @@ const Approvers: React.FC<ApproversProps> = ({
             </div>
           )}
           {/* Approved */}
-          {(status === "approved" ||
+          {(status === "Approved" ||
             status === "credited" ||
             status === "processing") && (
             <div className="flex gap-2">

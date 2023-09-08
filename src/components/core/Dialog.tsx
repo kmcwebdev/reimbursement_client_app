@@ -13,6 +13,7 @@ export interface DialogProps
   close: () => void;
   title?: string;
   size?: "md" | "lg" | "xl" | "xxl";
+  hideCloseIcon?: boolean;
 }
 
 const Dialog: React.FC<DialogProps> = ({
@@ -22,10 +23,11 @@ const Dialog: React.FC<DialogProps> = ({
   children,
   className,
   size = "md",
+  hideCloseIcon,
 }) => {
   const cancelButtonRef = useRef<HTMLButtonElement | null>(null);
 
-  return (
+  return ( 
     <>
       <Transition appear show={isVisible} as={Fragment}>
         <DialogComp
@@ -86,9 +88,11 @@ const Dialog: React.FC<DialogProps> = ({
                     </DialogComp.Title>
                   )}
 
-                  <button onClick={close} ref={cancelButtonRef}>
+                  {!hideCloseIcon && (
+                    <button onClick={close} ref={cancelButtonRef}>
                     <MdClose className="h-4 w-4 text-neutral-900 transition-all hover:text-neutral-800" />
                   </button>
+                  )}
                 </div>
 
                 <div>{children}</div>
