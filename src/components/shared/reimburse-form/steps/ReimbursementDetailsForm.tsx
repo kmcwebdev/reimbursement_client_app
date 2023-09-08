@@ -49,8 +49,11 @@ const ReimbursementDetailsForm: React.FC<ReimbursementDetailsFormProps> = ({
   const { isLoading: requestTypesIsLoading, data: requestTypes } =
     useRequestTypesQuery();
 
-  const { isFetching: expenseTypesIsLoading, data: expenseTypes } =
-    useExpenseTypesQuery({ request_type_id: selectedType! });
+  const { isFetching: expenseTypesIsLoading, currentData: expenseTypes } =
+    useExpenseTypesQuery(
+      { request_type_id: selectedType! },
+      { skip: !selectedType },
+    );
 
   useMemo(() => {
     if (reimbursementDetails) {
@@ -116,7 +119,8 @@ const ReimbursementDetailsForm: React.FC<ReimbursementDetailsFormProps> = ({
       />
 
       <CollapseHeightAnimation
-        isVisible={selectedType === UNSCHEDULED ? true : false || selectedType === SCHEDULED ? true : false}
+        hideOverflow={!selectedType}
+        isVisible={!!selectedType}
       >
         <Select
           label="Expense"
@@ -129,7 +133,7 @@ const ReimbursementDetailsForm: React.FC<ReimbursementDetailsFormProps> = ({
             expenseTypes?.map((item) => ({
               label: item.expense_type,
               value: item.expense_type_id,
-            })) ?? []
+            })) || []
           }
         />
       </CollapseHeightAnimation>
@@ -145,9 +149,7 @@ const ReimbursementDetailsForm: React.FC<ReimbursementDetailsFormProps> = ({
         />
       </CollapseHeightAnimation>
 
-      <CollapseHeightAnimation
-        isVisible={selectedType === UNSCHEDULED ? true : false || selectedType === SCHEDULED ? true : false}
-      >
+      <CollapseHeightAnimation isVisible={!!selectedType}>
         <Input
           type="number"
           label="Total"
@@ -201,12 +203,18 @@ const ReimbursementDetailsForm: React.FC<ReimbursementDetailsFormProps> = ({
       </CollapseHeightAnimation>
 
       <CollapseHeightAnimation
-        isVisible={selectedType === UNSCHEDULED ? true : false || selectedType === SCHEDULED ? true : false}
+        isVisible={
+          selectedType === UNSCHEDULED
+            ? true
+            : false || selectedType === SCHEDULED
+            ? true
+            : false
+        }
       >
-      <div className="my-4 flex items-center justify-center gap-2">
-        <div className="h-2 w-2 rounded-full bg-orange-600"></div>
-        <div className="h-2 w-2 rounded-full bg-orange-200"></div>
-      </div>
+        <div className="my-4 flex items-center justify-center gap-2">
+          <div className="h-2 w-2 rounded-full bg-orange-600"></div>
+          <div className="h-2 w-2 rounded-full bg-orange-200"></div>
+        </div>
       </CollapseHeightAnimation>
 
       <div className="grid grid-cols-2 items-center gap-4">

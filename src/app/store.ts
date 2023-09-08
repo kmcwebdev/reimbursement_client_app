@@ -12,7 +12,10 @@ const store = configureStore({
     reimbursementForm: reimbursementFormSlice,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(appApiSlice.middleware),
+    getDefaultMiddleware({
+      serializableCheck: false
+    }
+    ).concat(appApiSlice.middleware),
   devTools: env.NEXT_PUBLIC_ENVIRONMENT === "development",
 });
 
