@@ -4,7 +4,11 @@ import Head from "next/head";
 import PageAnimation from "~/components/animation/PageAnimation";
 import MyReimbursements from "~/components/shared/MyReimbusements";
 
-const Reimbursements: NextPage = () => {
+interface DashboardSSRProps {
+  userJson: string;
+}
+
+const Reimbursements: NextPage<DashboardSSRProps> = () => {
   return (
     <div>
       <Head>

@@ -1,12 +1,16 @@
 import { getUserFromServerSideProps } from "@propelauth/nextjs/server/pages";
-import { type GetServerSideProps } from "next";
+import { type NextPage, type GetServerSideProps } from "next";
 import Head from "next/head";
 import React, { Fragment } from "react";
 import { type IconType } from "react-icons-all-files";
 import { MdPerson } from "react-icons-all-files/md/MdPerson";
 import EmptyState from "~/components/core/EmptyState";
 
-const Profile: React.FC = () => {
+interface DashboardSSRProps {
+  userJson: string;
+}
+
+const Profile: NextPage<DashboardSSRProps> = () => {
   return (
     <Fragment>
       <Head>
