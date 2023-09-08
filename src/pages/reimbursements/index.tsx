@@ -22,8 +22,6 @@ export default Reimbursements;
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const user = await getUserFromServerSideProps(context);
 
-  console.log(user?.getOrgs());
-
   if (!user) {
     return {
       redirect: {
