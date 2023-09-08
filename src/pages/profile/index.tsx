@@ -1,10 +1,16 @@
+import { getUserFromServerSideProps } from "@propelauth/nextjs/server/pages";
+import { type NextPage, type GetServerSideProps } from "next";
 import Head from "next/head";
 import React, { Fragment } from "react";
 import { type IconType } from "react-icons-all-files";
 import { MdPerson } from "react-icons-all-files/md/MdPerson";
 import EmptyState from "~/components/core/EmptyState";
 
-const Profile: React.FC = () => {
+interface DashboardSSRProps {
+  userJson: string;
+}
+
+const Profile: NextPage<DashboardSSRProps> = () => {
   return (
     <Fragment>
       <Head>
@@ -24,3 +30,22 @@ const Profile: React.FC = () => {
 };
 
 export default Profile;
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const user = await getUserFromServerSideProps(context);
+
+  if (!user) {
+    return {
+      redirect: {
+        destination: "/api/auth/login",
+        permanent: false,
+      },
+    };
+  }
+
+  return {
+    props: {
+      userJson: JSON.stringify(user),
+    },
+  };
+};

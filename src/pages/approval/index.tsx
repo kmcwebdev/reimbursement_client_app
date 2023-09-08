@@ -4,7 +4,11 @@ import Head from "next/head";
 import PageAnimation from "~/components/animation/PageAnimation";
 import MyApprovals from "~/components/shared/MyApprovals";
 
-const Approvals: NextPage = () => {
+interface DashboardSSRProps {
+  userJson: string;
+}
+
+const Approvals: NextPage<DashboardSSRProps> = () => {
   return (
     <div>
       <Head>
