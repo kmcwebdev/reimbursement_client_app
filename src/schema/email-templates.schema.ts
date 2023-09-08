@@ -113,7 +113,7 @@ export const DefaultEmailSchema = z.object({
       required_error: "Employee ID is required",
       invalid_type_error: "Employee ID is invalid",
     })
-    .uuid({
+    .nonempty({
       message: "Employee ID is required",
     }),
   expenseType: z
