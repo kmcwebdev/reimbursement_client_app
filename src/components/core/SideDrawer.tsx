@@ -46,7 +46,7 @@ const SideDrawer: React.FC<DrawerProps> = ({
                 leaveFrom="translate-x-0"
                 leaveTo="translate-x-full"
               >
-                <Dialog.Panel className="pointer-events-auto w-screen md:w-[424px]">
+                <Dialog.Panel className="pointer-events-auto w-[300px] md:w-[424px]">
                   <div className="flex h-full flex-col rounded bg-white shadow-xl">
                     <div className="flex h-[72px] items-center justify-between border-b border-neutral-subtle px-4">
                       <Dialog.Title className="font-karla text-lg font-bold uppercase text-neutral-900">

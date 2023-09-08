@@ -222,7 +222,7 @@ const MyReimbursements: React.FC = () => {
   return (
     <>
       <div className="grid gap-y-2 p-5">
-        <div className="mb-5 flex place-items-start gap-4">
+        <div className="mb-5 flex place-items-start gap-4 md:overflow-x-auto">
           {analyticsIsLoading && (
             <>
               <DashboardCardSkeleton />
@@ -286,6 +286,7 @@ const MyReimbursements: React.FC = () => {
         title="File a Reimbursement"
         isVisible={formDialogIsOpen}
         close={handleOpenCancelDialog}
+        hideCloseIcon
       >
         <ReimburseForm
           formReturn={useReimbursementDetailsFormReturn}
@@ -297,6 +298,7 @@ const MyReimbursements: React.FC = () => {
         title="Cancel Reimbursements?"
         isVisible={cancelDialogIsOpen}
         close={handleAbortCancellation}
+        hideCloseIcon
       >
         <div className="flex flex-col gap-8 pt-8">
           <p className="text-neutral-800">
@@ -317,7 +319,7 @@ const MyReimbursements: React.FC = () => {
               className="w-1/2"
               onClick={handleConfirmCancellation}
             >
-              Yes
+              Yes, cancel
             </Button>
           </div>
         </div>
