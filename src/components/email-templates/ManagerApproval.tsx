@@ -31,8 +31,11 @@ export const ManagerApproval: React.FC<
     <Text>Expense Description: {expenseType}</Text>
     <Text>Expense Date: {expenseDate}</Text>
     <Text>Amount: {amount}</Text>
-    <Text>
-      Receipts Attached: <Link href={receiptsAttached}>{receiptsAttached}</Link>
+    <Text className="flex">
+      Receipts Attached:{" "}
+      <Link href={receiptsAttached} target="_blank">
+        {receiptsAttached}
+      </Link>
     </Text>
     <Text className="text-justify">
       Please review the attached receipts and supporting documentation to verify

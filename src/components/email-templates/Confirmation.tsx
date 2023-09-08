@@ -32,8 +32,11 @@ export const Confirmation: React.FC<Readonly<ConfirmationTemplateProps>> = ({
     <Text>Expense Description: {expenseType}</Text>
     <Text>Expense Date: {expenseDate}</Text>
     <Text>Amount: {amount}</Text>
-    <Text>
-      Receipts Attached: <Link href={receiptsAttached}>{receiptsAttached}</Link>
+    <Text className="flex">
+      Receipts Attached:{" "}
+      <Link href={receiptsAttached} target="_blank">
+        {receiptsAttached}
+      </Link>
     </Text>
     <Text className="text-justify">
       Your HRBP will review the submitted reimbursement request along with the
