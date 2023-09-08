@@ -2,6 +2,7 @@ import { useLogoutFunction } from "@propelauth/nextjs/client";
 import React, { useRef } from "react";
 import { AiOutlineLogout } from "react-icons-all-files/ai/AiOutlineLogout";
 import { MdChangeCircle } from "react-icons-all-files/md/MdChangeCircle";
+import { RiLoader4Fill } from "react-icons-all-files/ri/RiLoader4Fill";
 import { type PropsValue } from "react-select";
 import { useAppSelector } from "~/app/hook";
 import { useChangeRoleMutation } from "~/features/reimbursement-api-slice";
@@ -17,8 +18,8 @@ const roleOptions = [
     label: "HRBP",
   },
   {
-    value: "Manager",
-    label: "External Reimbursement Approver Manager",
+    label: "Manager",
+    value: "External Reimbursement Approver Manager",
   },
 
   {
@@ -34,6 +35,7 @@ const roleOptions = [
 
 const ProfileMenu: React.FC = () => {
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const buttonChildRef = useRef<HTMLButtonElement>(null);
   const user = useAppSelector((state) => state.session.user);
 
   const {
@@ -42,20 +44,25 @@ const ProfileMenu: React.FC = () => {
     close: closeSignoutDialog,
   } = useDialogState();
 
-  const [changeRole] = useChangeRoleMutation();
+  const [changeRole, { isLoading: changeRoleIsLoading }] =
+    useChangeRoleMutation();
   const logoutFn = useLogoutFunction();
 
   const onRoleChanged = (selected: PropsValue<OptionData>) => {
     const selectedOption = selected as OptionData;
 
     if (user && user.orgId) {
+      buttonChildRef.current?.click();
       const payload = {
         org_id: user.orgId,
         role: selectedOption.value,
       };
       void changeRole(payload)
         .unwrap()
-        .then(() => window.location.reload());
+        .then(() => {
+          window.location.reload();
+          buttonRef.current?.click();
+        });
     }
   };
 
@@ -77,7 +84,7 @@ const ProfileMenu: React.FC = () => {
       }
       panelClassName="right-0 top-5"
       content={
-        <div className="w-72">
+        <div className="relative w-72">
           <div className="flex gap-4 border-b p-4">
             <div className="grid h-10 w-10 place-items-center rounded-full bg-orange-600 text-lg font-bold text-white">
               {user?.firstName?.charAt(0)}
@@ -97,6 +104,7 @@ const ProfileMenu: React.FC = () => {
                   user?.email === "jomar.perante@kmc.solutions") && (
                   <Popover
                     panelClassName="-translate-x-1/2"
+                    buttonRef={buttonChildRef}
                     btn={
                       <div className="flex items-center gap-1 text-xs text-yellow-600 transition-all ease-in-out hover:text-yellow-700">
                         <MdChangeCircle className="h-4 w-4" />
@@ -160,6 +168,15 @@ const ProfileMenu: React.FC = () => {
               </div>
             </div>
           </Dialog>
+
+          {changeRoleIsLoading && (
+            <div className="absolute top-0 grid h-full w-full place-items-center rounded-md bg-white">
+              <div className="flex flex-col items-center gap-2">
+                <RiLoader4Fill className="h-16 w-16 animate-spin text-orange-600" />
+                <h5>Changing your role,please wait...</h5>
+              </div>
+            </div>
+          )}
         </div>
       }
     />
