@@ -61,8 +61,8 @@ const MyApprovals: React.FC = () => {
   );
   const dispatch = useAppDispatch();
 
-  const setSelected = (selectedItems: string[]) => {
-    dispatch(setSelectedItems(selectedItems));
+  const setSelectedItemsState = (value: string[]) => {
+    dispatch(setSelectedItems(value));
   };
 
   const setColumnFiltersState = (value: ColumnFiltersState) => {
@@ -149,7 +149,12 @@ const MyApprovals: React.FC = () => {
         },
         enableColumnFilter: true,
         meta: {
-          filterComponent: (info: FilterProps) => <StatusFilter {...info} />,
+          filterComponent: (info: FilterProps) => (
+            <StatusFilter
+              {...info}
+              isButtonHidden={data && data.length === 0}
+            />
+          ),
         },
       },
       {
@@ -168,7 +173,10 @@ const MyApprovals: React.FC = () => {
         },
         meta: {
           filterComponent: (info: FilterProps) => (
-            <ReimbursementTypeFilter {...info} />
+            <ReimbursementTypeFilter
+              {...info}
+              isButtonHidden={data && data.length === 0}
+            />
           ),
         },
       },
@@ -182,7 +190,10 @@ const MyApprovals: React.FC = () => {
         },
         meta: {
           filterComponent: (info: FilterProps) => (
-            <ExpenseTypeFilter {...info} />
+            <ExpenseTypeFilter
+              {...info}
+              isButtonHidden={data && data.length === 0}
+            />
           ),
         },
       },
@@ -195,7 +206,12 @@ const MyApprovals: React.FC = () => {
           return value.includes(row.getValue(id));
         },
         meta: {
-          filterComponent: (info: FilterProps) => <DateFiledFilter {...info} />,
+          filterComponent: (info: FilterProps) => (
+            <DateFiledFilter
+              {...info}
+              isButtonHidden={data && data.length === 0}
+            />
+          ),
         },
       },
       {
@@ -259,7 +275,7 @@ const MyApprovals: React.FC = () => {
               description: "Reimbursement Requests successfully approved!",
             });
 
-            setSelected([]);
+            setSelectedItemsState([]);
             closeBulkApproveDialog();
           })
           .catch(() => {
@@ -352,7 +368,7 @@ const MyApprovals: React.FC = () => {
             }}
             tableStateActions={{
               setColumnFilters: setColumnFiltersState,
-              setSelectedItems: setSelected,
+              setSelectedItems: setSelectedItemsState,
               setPagination,
             }}
           />

@@ -119,14 +119,19 @@ const MyReimbursements: React.FC = () => {
         enableColumnFilter: true,
         size: 10,
         meta: {
-          filterComponent: (info: FilterProps) => <StatusFilter {...info} />,
+          filterComponent: (info: FilterProps) => (
+            <StatusFilter
+              {...info}
+              isButtonHidden={data && data.length === 0}
+            />
+          ),
         },
       },
       {
         id: "reference_no",
         accessorKey: "reference_no",
         cell: (info) => info.getValue(),
-        header: "ID",
+        header: "R-ID",
         size: 20,
       },
       {
@@ -139,7 +144,10 @@ const MyReimbursements: React.FC = () => {
         },
         meta: {
           filterComponent: (info: FilterProps) => (
-            <ReimbursementTypeFilter {...info} />
+            <ReimbursementTypeFilter
+              {...info}
+              isButtonHidden={data && data.length === 0}
+            />
           ),
         },
         size: 10,
@@ -155,7 +163,10 @@ const MyReimbursements: React.FC = () => {
         size: 10,
         meta: {
           filterComponent: (info: FilterProps) => (
-            <ExpenseTypeFilter {...info} />
+            <ExpenseTypeFilter
+              {...info}
+              isButtonHidden={data && data.length === 0}
+            />
           ),
         },
       },
@@ -168,7 +179,12 @@ const MyReimbursements: React.FC = () => {
           return value.includes(row.getValue(id));
         },
         meta: {
-          filterComponent: (info: FilterProps) => <DateFiledFilter {...info} />,
+          filterComponent: (info: FilterProps) => (
+            <DateFiledFilter
+              {...info}
+              isButtonHidden={data && data.length === 0}
+            />
+          ),
         },
         size: 10,
       },

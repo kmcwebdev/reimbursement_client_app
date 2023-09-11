@@ -2,6 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 // import testReducer from "../features/test-slice";
 import { env } from "~/env.mjs";
 import approvalPageStateSlice from "~/features/approval-page-state-slice";
+import financePageStateSlice from "~/features/finance-page-slice";
 import layoutStateSlice from "~/features/layout-state-slice";
 import reimbursementFormSlice from "~/features/reimbursement-form-slice";
 import reimbursementRequestPageSlice from "~/features/reimbursement-request-page-slice";
@@ -15,7 +16,8 @@ const store = configureStore({
     reimbursementForm: reimbursementFormSlice,
     layoutState: layoutStateSlice,
     approvalPageState: approvalPageStateSlice,
-    reimbursementRequestPageState: reimbursementRequestPageSlice
+    reimbursementRequestPageState: reimbursementRequestPageSlice,
+    financePageState: financePageStateSlice
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

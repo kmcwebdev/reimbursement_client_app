@@ -1,12 +1,16 @@
 import React, { useEffect, useMemo, useState, type ChangeEvent } from "react";
 import { FaCaretDown } from "react-icons-all-files/fa/FaCaretDown";
 import CollapseHeightAnimation from "~/components/animation/CollapseHeight";
+import { classNames } from "~/utils/classNames";
 import { Button } from "../../Button";
 import Popover from "../../Popover";
 import Checkbox from "../../form/fields/Checkbox";
 import { type FilterProps } from "./StatusFilter";
 
-const ReimbursementTypeFilter: React.FC<FilterProps> = ({ column }) => {
+const ReimbursementTypeFilter: React.FC<FilterProps> = ({
+  column,
+  isButtonHidden = false,
+}) => {
   const sortedUniqueValues = useMemo(
     () => Array.from(column.getFacetedUniqueValues().keys()).sort() as string[],
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -50,7 +54,14 @@ const ReimbursementTypeFilter: React.FC<FilterProps> = ({ column }) => {
 
   return (
     <Popover
-      btn={<FaCaretDown className="text-neutral-900 hover:text-neutral-800" />}
+      btn={
+        <FaCaretDown
+          className={classNames(
+            isButtonHidden && "hidden",
+            "text-neutral-900 hover:text-neutral-800",
+          )}
+        />
+      }
       content={
         <div className="w-32 p-4">
           <div className="flex flex-col gap-2 capitalize">
