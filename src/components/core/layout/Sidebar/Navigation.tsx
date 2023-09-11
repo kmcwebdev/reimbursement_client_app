@@ -39,15 +39,16 @@ const Navigation: React.FC<NavigationProps> = ({ collapsed }) => {
           </Can>
         )}
 
-      {user && user.assignedRole === "HRBP" && (
-        <NavigationItem
-          label="Reimbursements"
-          icon={MdReceipt as IconType}
-          active={pathname.includes("reimbursements")}
-          href="/reimbursements"
-          collapsed={collapsed}
-        />
-      )}
+      {user &&
+        (user.assignedRole === "HRBP" || user.assignedRole === "Finance") && (
+          <NavigationItem
+            label="Reimbursements"
+            icon={MdReceipt as IconType}
+            active={pathname.includes("reimbursements")}
+            href="/reimbursements"
+            collapsed={collapsed}
+          />
+        )}
 
       <NavigationItem
         label="Profile"

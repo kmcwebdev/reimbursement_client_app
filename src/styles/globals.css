@@ -46,7 +46,7 @@
   }
 
   .btn.filled.success {
-    @apply bg-orange-600 hover:bg-orange-700 active:bg-orange-800 disabled:bg-opacity-[64%] disabled:hover:bg-green-600 disabled:hover:bg-opacity-[64%];
+    @apply bg-green-600 hover:bg-green-700 active:bg-green-800 disabled:bg-opacity-[64%] disabled:hover:bg-green-600 disabled:hover:bg-opacity-[64%];
   }
 
   .btn.filled.informative {

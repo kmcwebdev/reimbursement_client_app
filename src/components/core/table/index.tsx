@@ -39,8 +39,8 @@ export type ITableState = {
 };
 
 export type ITableStateActions = {
-  setColumnFilters?: Dispatch<SetStateAction<ColumnFiltersState>>;
-  setSelectedItems?: Dispatch<SetStateAction<any>>;
+  setColumnFilters?: (value: ColumnFiltersState) => void;
+  setSelectedItems?: (value: string[]) => void;
   setPagination?: Dispatch<SetStateAction<PaginationState>>;
 };
 
@@ -71,6 +71,7 @@ interface CustomFilterMeta extends FilterMeta {
 const Table: React.FC<TableProps> = (props) => {
   const { data, columns } = props;
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+  const [filterState, setFilterState] = useState<ColumnFiltersState>([]);
 
   useEffect(() => {
     if (
@@ -93,6 +94,20 @@ const Table: React.FC<TableProps> = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rowSelection]);
 
+  useEffect(() => {
+    if (
+      !props.loading &&
+      filterState &&
+      props.tableState &&
+      props.tableStateActions &&
+      props.tableState.columnFilters &&
+      props.tableStateActions.setColumnFilters
+    ) {
+      props.tableStateActions.setColumnFilters(filterState);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filterState]);
+
   const table = useReactTable<ReimbursementRequest | ReimbursementApproval>({
     data,
     columns,
@@ -100,7 +115,7 @@ const Table: React.FC<TableProps> = (props) => {
       ...props.tableState,
       rowSelection: props.tableState?.selectedItems ? rowSelection : undefined,
     },
-    onColumnFiltersChange: props.tableStateActions?.setColumnFilters,
+    onColumnFiltersChange: setFilterState,
     onRowSelectionChange: setRowSelection,
     onPaginationChange: props.tableStateActions?.setPagination,
     getFacetedUniqueValues: getFacetedUniqueValues(),
@@ -184,7 +199,7 @@ const Table: React.FC<TableProps> = (props) => {
 
             {table.getRowModel().rows.map((row, i) => {
               return (
-                <tr key={i} className="h-16">
+                <tr key={i} className="group h-16">
                   {row.getVisibleCells().map((cell, i) => {
                     return (
                       <td

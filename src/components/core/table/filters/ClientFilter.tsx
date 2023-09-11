@@ -3,12 +3,16 @@ import { useEffect, useMemo, useState } from "react";
 import { FaCaretDown } from "react-icons-all-files/fa/FaCaretDown";
 import { type PropsValue } from "react-select";
 import CollapseHeightAnimation from "~/components/animation/CollapseHeight";
+import { classNames } from "~/utils/classNames";
 import { Button } from "../../Button";
 import Popover from "../../Popover";
 import Select, { type OptionData } from "../../form/fields/Select";
 import { type FilterProps } from "./StatusFilter";
 
-const ClientFilter: React.FC<FilterProps> = ({ column }) => {
+const ClientFilter: React.FC<FilterProps> = ({
+  column,
+  isButtonHidden = false,
+}) => {
   const sortedUniqueValues = useMemo(
     () => Array.from(column.getFacetedUniqueValues().keys()).sort() as string[],
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -38,7 +42,14 @@ const ClientFilter: React.FC<FilterProps> = ({ column }) => {
 
   return (
     <Popover
-      btn={<FaCaretDown className="text-neutral-900 hover:text-neutral-800" />}
+      btn={
+        <FaCaretDown
+          className={classNames(
+            isButtonHidden && "hidden",
+            "text-neutral-900 hover:text-neutral-800",
+          )}
+        />
+      }
       content={
         <div className="w-80 p-4">
           <div className="flex flex-col gap-2">

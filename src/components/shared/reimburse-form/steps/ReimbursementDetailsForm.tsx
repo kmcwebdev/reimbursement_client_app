@@ -136,20 +136,18 @@ const ReimbursementDetailsForm: React.FC<ReimbursementDetailsFormProps> = ({
             })) || []
           }
         />
-      </CollapseHeightAnimation>
 
-      <CollapseHeightAnimation
-        isVisible={selectedExpense === OTHER_EXPENSE ? true : false}
-      >
-        <Input
-          name="remarks"
-          label="Remarks"
-          placeholder="Remarks for others"
-          required
-        />
-      </CollapseHeightAnimation>
+        <CollapseHeightAnimation
+          isVisible={selectedExpense === OTHER_EXPENSE ? true : false}
+        >
+          <Input
+            name="remarks"
+            label="Remarks"
+            placeholder="Remarks for others"
+            required
+          />
+        </CollapseHeightAnimation>
 
-      <CollapseHeightAnimation isVisible={!!selectedType}>
         <Input
           type="number"
           label="Total"

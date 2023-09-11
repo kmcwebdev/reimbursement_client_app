@@ -33,6 +33,10 @@ import {
   toggleCancelDialog,
   toggleFormDialog,
 } from "~/features/reimbursement-form-slice";
+import {
+  setColumnFilters,
+  setSelectedItems,
+} from "~/features/reimbursement-request-page-slice";
 import { useDialogState } from "~/hooks/use-dialog-state";
 import {
   ReimbursementDetailsSchema,
@@ -60,7 +64,19 @@ const ReimbursementTypeFilter = dynamic(
 const MyReimbursements: React.FC = () => {
   const { formDialogIsOpen, cancelDialogIsOpen, reimbursementDetails } =
     useAppSelector((state) => state.reimbursementForm);
+
+  const { selectedItems, columnFilters } = useAppSelector(
+    (state) => state.reimbursementRequestPageState,
+  );
   const dispatch = useAppDispatch();
+
+  const setSelectedItemsState = (value: string[]) => {
+    dispatch(setSelectedItems(value));
+  };
+
+  const setColumnFiltersState = (value: ColumnFiltersState) => {
+    dispatch(setColumnFilters(value));
+  };
 
   const [focusedReimbursementId, setFocusedReimbursementId] =
     useState<string>();
@@ -72,6 +88,7 @@ const MyReimbursements: React.FC = () => {
   const {
     isFetching: reimbursementRequestDataIsLoading,
     isError: reimbursementRequestDataIsError,
+
     currentData: reimbursementRequestData,
   } = useGetRequestQuery(
     { reimbursement_request_id: focusedReimbursementId! },
@@ -80,8 +97,6 @@ const MyReimbursements: React.FC = () => {
 
   const { isVisible, open, close } = useDialogState();
 
-  const [selectedItems, setSelectedItems] = useState<number[]>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10,
@@ -104,7 +119,12 @@ const MyReimbursements: React.FC = () => {
         enableColumnFilter: true,
         size: 10,
         meta: {
-          filterComponent: (info: FilterProps) => <StatusFilter {...info} />,
+          filterComponent: (info: FilterProps) => (
+            <StatusFilter
+              {...info}
+              isButtonHidden={data && data.length === 0}
+            />
+          ),
         },
       },
       {
@@ -124,7 +144,10 @@ const MyReimbursements: React.FC = () => {
         },
         meta: {
           filterComponent: (info: FilterProps) => (
-            <ReimbursementTypeFilter {...info} />
+            <ReimbursementTypeFilter
+              {...info}
+              isButtonHidden={data && data.length === 0}
+            />
           ),
         },
         size: 10,
@@ -140,7 +163,10 @@ const MyReimbursements: React.FC = () => {
         size: 10,
         meta: {
           filterComponent: (info: FilterProps) => (
-            <ExpenseTypeFilter {...info} />
+            <ExpenseTypeFilter
+              {...info}
+              isButtonHidden={data && data.length === 0}
+            />
           ),
         },
       },
@@ -153,7 +179,12 @@ const MyReimbursements: React.FC = () => {
           return value.includes(row.getValue(id));
         },
         meta: {
-          filterComponent: (info: FilterProps) => <DateFiledFilter {...info} />,
+          filterComponent: (info: FilterProps) => (
+            <DateFiledFilter
+              {...info}
+              isButtonHidden={data && data.length === 0}
+            />
+          ),
         },
         size: 10,
       },
@@ -161,7 +192,7 @@ const MyReimbursements: React.FC = () => {
         id: "amount",
         accessorKey: "amount",
         cell: (info) => currencyFormat(info.getValue() as number),
-        header: "Amount",
+        header: "Total",
         size: 10,
       },
       {
@@ -212,8 +243,6 @@ const MyReimbursements: React.FC = () => {
   /**Aborts reimbursement request cancellation */
   const handleAbortCancellation = () => {
     dispatch(toggleCancelDialog());
-
-    console.log(useReimbursementDetailsFormReturn.getValues("expense_type_id"));
     dispatch(
       appApiSlice.util.invalidateTags([
         {
@@ -293,8 +322,8 @@ const MyReimbursements: React.FC = () => {
               columnFilters,
             }}
             tableStateActions={{
-              setColumnFilters,
-              setSelectedItems,
+              setColumnFilters: setColumnFiltersState,
+              setSelectedItems: setSelectedItemsState,
               setPagination,
             }}
           />

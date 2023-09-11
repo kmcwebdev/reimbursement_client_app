@@ -16,7 +16,7 @@ const DEFAULT_TITLE = {
   success: "Success!",
   warning: "Warning!",
   info: "Hi there!",
-  error: "Oh snap!",
+  error: "Oh shit!",
 };
 
 const DEFAULT_THEME_BG = {

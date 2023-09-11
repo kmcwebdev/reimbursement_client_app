@@ -10,6 +10,8 @@ import React, { useState } from "react";
 import { MdAccessTimeFilled } from "react-icons-all-files/md/MdAccessTimeFilled";
 import { MdGavel } from "react-icons-all-files/md/MdGavel";
 import { MdSearch } from "react-icons-all-files/md/MdSearch";
+import { useAppDispatch, useAppSelector } from "~/app/hook";
+import { appApiSlice } from "~/app/rtkQuery";
 import { Button } from "~/components/core/Button";
 import DashboardCard, {
   DashboardCardSkeleton,
@@ -20,7 +22,13 @@ import Table from "~/components/core/table";
 import TableCheckbox from "~/components/core/table/TableCheckbox";
 import { type FilterProps } from "~/components/core/table/filters/StatusFilter";
 import ReimbursementsCardView from "~/components/reimbursement-view";
+import { Can } from "~/context/AbilityContext";
 import {
+  setColumnFilters,
+  setSelectedItems,
+} from "~/features/approval-page-state-slice";
+import {
+  useApproveReimbursementMutation,
   useGetAllApprovalQuery,
   useGetAnalyticsQuery,
   useGetRequestQuery,
@@ -29,7 +37,10 @@ import { useDialogState } from "~/hooks/use-dialog-state";
 import { type ReimbursementApproval } from "~/types/reimbursement.types";
 import { classNames } from "~/utils/classNames";
 import { currencyFormat } from "~/utils/currencyFormat";
+import CollapseWidthAnimation from "../animation/CollapseWidth";
+import Dialog from "../core/Dialog";
 import SkeletonLoading from "../core/SkeletonLoading";
+import { showToast } from "../core/Toast";
 import Input from "../core/form/fields/Input";
 import TableSkeleton from "../core/table/TableSkeleton";
 import DateFiledFilter from "../core/table/filters/DateFiledFilter";
@@ -45,8 +56,24 @@ const ReimbursementTypeFilter = dynamic(
 );
 
 const MyApprovals: React.FC = () => {
+  const { selectedItems, columnFilters } = useAppSelector(
+    (state) => state.approvalPageState,
+  );
+  const dispatch = useAppDispatch();
+
+  const setSelectedItemsState = (value: string[]) => {
+    dispatch(setSelectedItems(value));
+  };
+
+  const setColumnFiltersState = (value: ColumnFiltersState) => {
+    dispatch(setColumnFilters(value));
+  };
+
   const [focusedReimbursementId, setFocusedReimbursementId] =
     useState<string>();
+
+  const [approveReimbursement, { isLoading: isSubmitting }] =
+    useApproveReimbursementMutation();
 
   const { isLoading: analyticsIsLoading, data: analytics } =
     useGetAnalyticsQuery();
@@ -58,10 +85,18 @@ const MyApprovals: React.FC = () => {
     { skip: !focusedReimbursementId },
   );
 
-  const { isVisible, open, close } = useDialogState();
+  const {
+    isVisible,
+    open: openReimbursementView,
+    close: closeReimbursementView,
+  } = useDialogState();
 
-  const [selectedItems, setSelectedItems] = useState<string[]>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const {
+    isVisible: bulkApproveDialogIsOpen,
+    open: openBulkApproveDialog,
+    close: closeBulkApproveDialog,
+  } = useDialogState();
+
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10,
@@ -81,6 +116,7 @@ const MyApprovals: React.FC = () => {
                 checked={table.getIsAllRowsSelected()}
                 indeterminate={table.getIsSomeRowsSelected()}
                 onChange={table.getToggleAllRowsSelectedHandler()}
+                showOnHover={false}
               />
             );
           }
@@ -90,6 +126,7 @@ const MyApprovals: React.FC = () => {
           <div className="px-4">
             <TableCheckbox
               checked={row.getIsSelected()}
+              tableHasChecked={selectedItems.length > 0}
               disabled={!row.getCanSelect()}
               indeterminate={row.getIsSomeSelected()}
               onChange={row.getToggleSelectedHandler()}
@@ -112,7 +149,12 @@ const MyApprovals: React.FC = () => {
         },
         enableColumnFilter: true,
         meta: {
-          filterComponent: (info: FilterProps) => <StatusFilter {...info} />,
+          filterComponent: (info: FilterProps) => (
+            <StatusFilter
+              {...info}
+              isButtonHidden={data && data.length === 0}
+            />
+          ),
         },
       },
       {
@@ -131,7 +173,10 @@ const MyApprovals: React.FC = () => {
         },
         meta: {
           filterComponent: (info: FilterProps) => (
-            <ReimbursementTypeFilter {...info} />
+            <ReimbursementTypeFilter
+              {...info}
+              isButtonHidden={data && data.length === 0}
+            />
           ),
         },
       },
@@ -145,7 +190,10 @@ const MyApprovals: React.FC = () => {
         },
         meta: {
           filterComponent: (info: FilterProps) => (
-            <ExpenseTypeFilter {...info} />
+            <ExpenseTypeFilter
+              {...info}
+              isButtonHidden={data && data.length === 0}
+            />
           ),
         },
       },
@@ -158,7 +206,12 @@ const MyApprovals: React.FC = () => {
           return value.includes(row.getValue(id));
         },
         meta: {
-          filterComponent: (info: FilterProps) => <DateFiledFilter {...info} />,
+          filterComponent: (info: FilterProps) => (
+            <DateFiledFilter
+              {...info}
+              isButtonHidden={data && data.length === 0}
+            />
+          ),
         },
       },
       {
@@ -175,7 +228,7 @@ const MyApprovals: React.FC = () => {
             buttonType="text"
             onClick={() => {
               setFocusedReimbursementId(info.getValue() as string);
-              open();
+              openReimbursementView();
             }}
           >
             View
@@ -185,7 +238,55 @@ const MyApprovals: React.FC = () => {
       },
     ];
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [selectedItems]);
+
+  const handleBulkApprove = () => {
+    openBulkApproveDialog();
+  };
+
+  const handleConfirmBulkApprove = () => {
+    if (data && selectedItems) {
+      const matrixIds: string[] = [];
+
+      selectedItems.forEach((a) => {
+        const reimbursement = data.find(
+          (b) => a === b.reimbursement_request_id,
+        );
+        if (reimbursement) {
+          matrixIds.push(reimbursement.approval_matrix_id);
+        }
+      });
+
+      if (matrixIds) {
+        const payload = {
+          approval_matrix_ids: matrixIds,
+        };
+
+        void approveReimbursement(payload)
+          .unwrap()
+          .then(() => {
+            dispatch(
+              appApiSlice.util.invalidateTags([
+                { type: "ReimbursementRequest" },
+              ]),
+            );
+            showToast({
+              type: "success",
+              description: "Reimbursement Requests successfully approved!",
+            });
+
+            setSelectedItemsState([]);
+            closeBulkApproveDialog();
+          })
+          .catch(() => {
+            showToast({
+              type: "error",
+              description: "Approval failed!",
+            });
+          });
+      }
+    }
+  };
 
   return (
     <>
@@ -208,8 +309,8 @@ const MyApprovals: React.FC = () => {
               <DashboardCard
                 icon={<MdAccessTimeFilled className="h-5 w-5 text-blue-600" />}
                 label="Scheduled/Unscheduled"
-                count={analytics.myTotalRequest.count}
-                totalCount={20}
+                count={analytics.others?.totalScheduledRequest.count}
+                totalCount={analytics.others?.totalUnScheduledRequest.count}
               />
             </>
           )}
@@ -220,10 +321,7 @@ const MyApprovals: React.FC = () => {
 
           <div
             className={classNames(
-              selectedItems && selectedItems.length === 0
-                ? "h-12 w-full md:h-auto md:w-64"
-                : "h-[85px] w-full md:h-auto md:w-[26.2rem]",
-              "flex flex-col gap-2 overflow-hidden transition-all ease-in-out md:flex-row md:items-center",
+              "flex flex-col gap-2 md:flex-row md:items-center",
             )}
           >
             {isLoading && (
@@ -239,27 +337,19 @@ const MyApprovals: React.FC = () => {
                   icon={MdSearch}
                 />
 
-                <div className="flex gap-2">
-                  <Button
-                    buttonType="outlined"
-                    variant="danger"
-                    disabled={selectedItems.length === 0}
-                  >
-                    Reject
-                  </Button>
-                  <Button
-                    variant="primary"
-                    disabled={selectedItems.length === 0}
-                    onClick={() => {
-                      if (selectedItems && selectedItems.length > 0) {
-                        setFocusedReimbursementId(selectedItems[0]);
-                        open();
-                      }
-                    }}
-                  >
-                    Approve
-                  </Button>
-                </div>
+                <CollapseWidthAnimation
+                  isVisible={selectedItems && selectedItems.length > 0}
+                >
+                  <Can I="access" a="CAN_BULK_APPROVE_REIMBURSEMENT">
+                    <Button
+                      variant="primary"
+                      disabled={selectedItems.length === 0}
+                      onClick={handleBulkApprove}
+                    >
+                      Approve
+                    </Button>
+                  </Can>
+                </CollapseWidthAnimation>
               </>
             )}
           </div>
@@ -277,8 +367,8 @@ const MyApprovals: React.FC = () => {
               columnFilters,
             }}
             tableStateActions={{
-              setColumnFilters,
-              setSelectedItems,
+              setColumnFilters: setColumnFiltersState,
+              setSelectedItems: setSelectedItemsState,
               setPagination,
             }}
           />
@@ -294,15 +384,79 @@ const MyApprovals: React.FC = () => {
             : "..."
         }
         isVisible={isVisible}
-        closeDrawer={close}
+        closeDrawer={closeReimbursementView}
       >
         <ReimbursementsCardView
           isApproverView
-          closeDrawer={close}
+          closeDrawer={closeReimbursementView}
           isLoading={reimbursementRequestDataIsLoading}
           data={reimbursementRequestData}
         />
       </SideDrawer>
+
+      <Dialog
+        title={
+          selectedItems && selectedItems.length > 1
+            ? "Approve Reimbursements?"
+            : "Approve Reimbursement?"
+        }
+        isVisible={bulkApproveDialogIsOpen}
+        close={closeBulkApproveDialog}
+        hideCloseIcon
+      >
+        <div className="flex flex-col gap-8 pt-8">
+          {data && (
+            <>
+              <p className="text-neutral-800">
+                {selectedItems && selectedItems.length === 1 && data && (
+                  <>
+                    Are you sure you want to approve reimbursement request{" "}
+                    {
+                      data.find(
+                        (a) => a.reimbursement_request_id === selectedItems[0],
+                      )?.reference_no
+                    }{" "}
+                    with total amount of{" "}
+                    {currencyFormat(
+                      // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
+                      +data.find(
+                        (a) => a.reimbursement_request_id === selectedItems[0],
+                      )?.amount!,
+                    )}
+                    ?
+                  </>
+                )}
+
+                {selectedItems && selectedItems.length > 1 && (
+                  <>
+                    Are you sure you want to approve {selectedItems.length}{" "}
+                    selected reimbursement request?
+                  </>
+                )}
+              </p>
+
+              <div className="flex items-center gap-4">
+                <Button
+                  variant="neutral"
+                  buttonType="outlined"
+                  className="w-1/2"
+                  onClick={closeBulkApproveDialog}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  className="w-1/2"
+                  onClick={handleConfirmBulkApprove}
+                  disabled={isSubmitting}
+                  loading={isSubmitting}
+                >
+                  Approve
+                </Button>
+              </div>
+            </>
+          )}
+        </div>
+      </Dialog>
     </>
   );
 };
