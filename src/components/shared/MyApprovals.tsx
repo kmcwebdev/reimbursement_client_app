@@ -22,6 +22,11 @@ import Table from "~/components/core/table";
 import TableCheckbox from "~/components/core/table/TableCheckbox";
 import { type FilterProps } from "~/components/core/table/filters/StatusFilter";
 import ReimbursementsCardView from "~/components/reimbursement-view";
+import { Can } from "~/context/AbilityContext";
+import {
+  setColumnFilters,
+  setSelectedItems,
+} from "~/features/approval-page-state-slice";
 import {
   useApproveReimbursementMutation,
   useGetAllApprovalQuery,
@@ -51,15 +56,24 @@ const ReimbursementTypeFilter = dynamic(
 );
 
 const MyApprovals: React.FC = () => {
+  const { selectedItems, columnFilters } = useAppSelector(
+    (state) => state.approvalPageState,
+  );
+  const dispatch = useAppDispatch();
+
+  const setSelected = (selectedItems: string[]) => {
+    dispatch(setSelectedItems(selectedItems));
+  };
+
+  const setColumnFiltersState = (value: ColumnFiltersState) => {
+    dispatch(setColumnFilters(value));
+  };
+
   const [focusedReimbursementId, setFocusedReimbursementId] =
     useState<string>();
 
-  const user = useAppSelector((state) => state.session);
-
   const [approveReimbursement, { isLoading: isSubmitting }] =
     useApproveReimbursementMutation();
-
-  const dispatch = useAppDispatch();
 
   const { isLoading: analyticsIsLoading, data: analytics } =
     useGetAnalyticsQuery();
@@ -76,14 +90,13 @@ const MyApprovals: React.FC = () => {
     open: openReimbursementView,
     close: closeReimbursementView,
   } = useDialogState();
+
   const {
     isVisible: bulkApproveDialogIsOpen,
     open: openBulkApproveDialog,
     close: closeBulkApproveDialog,
   } = useDialogState();
 
-  const [selectedItems, setSelectedItems] = useState<string[]>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10,
@@ -103,6 +116,7 @@ const MyApprovals: React.FC = () => {
                 checked={table.getIsAllRowsSelected()}
                 indeterminate={table.getIsSomeRowsSelected()}
                 onChange={table.getToggleAllRowsSelectedHandler()}
+                showOnHover={false}
               />
             );
           }
@@ -112,6 +126,7 @@ const MyApprovals: React.FC = () => {
           <div className="px-4">
             <TableCheckbox
               checked={row.getIsSelected()}
+              tableHasChecked={selectedItems.length > 0}
               disabled={!row.getCanSelect()}
               indeterminate={row.getIsSomeSelected()}
               onChange={row.getToggleSelectedHandler()}
@@ -207,10 +222,9 @@ const MyApprovals: React.FC = () => {
       },
     ];
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [selectedItems]);
 
   const handleBulkApprove = () => {
-    closeReimbursementView();
     openBulkApproveDialog();
   };
 
@@ -244,6 +258,8 @@ const MyApprovals: React.FC = () => {
               type: "success",
               description: "Reimbursement Requests successfully approved!",
             });
+
+            setSelected([]);
             closeBulkApproveDialog();
           })
           .catch(() => {
@@ -308,18 +324,7 @@ const MyApprovals: React.FC = () => {
                 <CollapseWidthAnimation
                   isVisible={selectedItems && selectedItems.length > 0}
                 >
-                  <div className="flex gap-2">
-                    {/* TO DO: Change condition to casl */}
-                    {user && user.user?.assignedRole !== "HRBP" && (
-                      <Button
-                        buttonType="outlined"
-                        variant="danger"
-                        disabled={selectedItems.length === 0}
-                      >
-                        Reject
-                      </Button>
-                    )}
-
+                  <Can I="access" a="CAN_BULK_APPROVE_REIMBURSEMENT">
                     <Button
                       variant="primary"
                       disabled={selectedItems.length === 0}
@@ -327,7 +332,7 @@ const MyApprovals: React.FC = () => {
                     >
                       Approve
                     </Button>
-                  </div>
+                  </Can>
                 </CollapseWidthAnimation>
               </>
             )}
@@ -346,8 +351,8 @@ const MyApprovals: React.FC = () => {
               columnFilters,
             }}
             tableStateActions={{
-              setColumnFilters,
-              setSelectedItems,
+              setColumnFilters: setColumnFiltersState,
+              setSelectedItems: setSelected,
               setPagination,
             }}
           />

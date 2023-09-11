@@ -147,6 +147,43 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
         { type: "ReimbursementAnalytics" },
       ],
     }),
+    rejectReimbursement: builder.mutation<
+      unknown,
+      {
+        reason_for_rejection: string,
+        approval_matrix_id: string
+      }
+    >({
+      query: (data) => {
+        return {
+          url: "/api/finance/reimbursement/requests/reject",
+          method: "POST",
+          body: data,
+        };
+      },
+      invalidatesTags: [
+        { type: "ReimbursementApprovalList" },
+        { type: "ReimbursementAnalytics" },
+      ],
+    }),
+     cancelReimbursement: builder.mutation<
+      unknown,
+      {
+        reimbursement_request_id: string,
+      }
+    >({
+      query: (data) => {
+        return {
+          url: "/api/finance/reimbursement/requests/cancel",
+          method: "POST",
+          body: data,
+        };
+      },
+      invalidatesTags: [
+        { type: "ReimbursementApprovalList" },
+        { type: "ReimbursementAnalytics" },
+      ],
+    }),
     changeRole: builder.mutation<
       unknown,
       {
@@ -175,5 +212,7 @@ export const {
   useUploadFileMutation,
   useCreateReimbursementMutation,
   useApproveReimbursementMutation,
+  useRejectReimbursementMutation,
+  useCancelReimbursementMutation,
   useChangeRoleMutation,
 } = reimbursementApiSlice;

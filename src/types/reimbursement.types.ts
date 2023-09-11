@@ -10,14 +10,15 @@ export type ReimbursementAttachmentsDTO = {
   files: string[];
 };
 
-export type Approvers ={
+export type Approvers = {
   approval_matrix_id: string;
+  approver_id: string;
   approver_order: number;
   has_approved: boolean;
+  has_rejected: boolean;
   performed_by_user_id: string;
   description: string;
-  date_approve: string;
-  signatory_id: string;
+  approver_name: string | null;
   is_group_of_approvers: boolean;
   table_reference: string;
 }
@@ -41,6 +42,8 @@ export type ReimbursementRequest = {
   date_approve: string | null;
   cursor_id: string;
   rank?: number;
+  next_approval_matrix_id: string;
+  next_approver_order:number;
   approvers: Approvers[];
 };
 

@@ -27,6 +27,17 @@ const StatusFilter: React.FC<FilterProps> = ({ column }) => {
 
   const [checked, setChecked] = useState(statusOptions);
 
+  /**
+   * Resets the status options
+   *
+   */
+  useEffect(() => {
+    if (checked.length === statusOptions.length) {
+      column.setFilterValue(statusOptions);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [checked]);
+
   const onChange = (e: ChangeEvent<HTMLInputElement>, value: string) => {
     if (checked.includes(value)) {
       setChecked(checked.filter((a) => a !== value));

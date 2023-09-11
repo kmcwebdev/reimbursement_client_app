@@ -2,7 +2,7 @@ import { getUserFromServerSideProps } from "@propelauth/nextjs/server/pages";
 import { type GetServerSideProps, type NextPage } from "next";
 import Head from "next/head";
 import PageAnimation from "~/components/animation/PageAnimation";
-import MyReimbursements from "~/components/shared/MyReimbusements";
+import MyReimbursements from "~/components/shared/MyReimbursements";
 
 interface DashboardSSRProps {
   userJson: string;

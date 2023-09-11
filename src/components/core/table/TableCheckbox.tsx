@@ -1,12 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { type HTMLProps } from "react";
+import { classNames } from "~/utils/classNames";
 
 export type IndeterminateCheckboxProps = {
   indeterminate?: boolean;
+  showOnHover?: boolean;
+  tableHasChecked?: boolean;
 } & HTMLProps<HTMLInputElement>;
 
 const TableCheckbox: React.FC<IndeterminateCheckboxProps> = ({
   indeterminate,
+  showOnHover = true,
+  tableHasChecked,
   ...rest
 }) => {
   const ref = React.useRef<HTMLInputElement>(null!);
@@ -22,7 +27,11 @@ const TableCheckbox: React.FC<IndeterminateCheckboxProps> = ({
     <input
       type="checkbox"
       ref={ref}
-      className="h-4 w-4 cursor-pointer rounded border-neutral-600 text-orange-600 focus:ring-0 focus:ring-transparent"
+      className={classNames(
+        showOnHover && "opacity-0 group-hover:opacity-100",
+        tableHasChecked && "opacity-100",
+        "h-4 w-4 cursor-pointer rounded border-neutral-600 text-orange-600 transition-all ease-in-out checked:opacity-100 focus:ring-0 focus:ring-transparent ",
+      )}
       {...rest}
     />
   );
