@@ -15,15 +15,14 @@ import {
 } from "~/features/reimbursement-form-slice";
 import { classNames } from "~/utils/classNames";
 import CollapseHeightAnimation from "../animation/CollapseHeight";
-import IndeteminateProgressBar from "../loaders/IndeteminateProgressBar";
-import { Button, type ButtonProps } from "./Button";
+import IndeterminateProgressBar from "../loaders/IndeterminateProgressBar";
+import { Button } from "./Button";
 
 export interface UploadProps extends DropzoneOptions {
-  uploadButtonProps: Omit<ButtonProps, "onClick"> & {
-    onClick: (e: FileWithPath) => void;
-    filePath: string | null;
-  };
-  fileSelected: FileWithPath[] | null;
+  isUploading?: boolean;
+  isUploaded?: boolean;
+  uploadedFileUrl?: string;
+  fileSelected: FileWithPath | null;
 }
 
 const Upload: React.FC<UploadProps> = ({
@@ -40,47 +39,33 @@ const Upload: React.FC<UploadProps> = ({
     ],
     "application/msword": [".doc"],
   },
-  uploadButtonProps,
+  isUploading = false,
+  isUploaded = false,
+  uploadedFileUrl,
   fileSelected,
   ...rest
 }) => {
   const dispatch = useDispatch();
-  const [files, setFiles] = useState<FileWithPath[]>([]);
-  const [fileToEdit, setFileToEdit] = useState<FileWithPath | null>();
+  const [file, setFile] = useState<FileWithPath | null>();
 
   const handleDrop = useCallback(
-    (e: FileWithPath[]) => {
-      if (rest.maxFiles && files.length === rest.maxFiles) {
-        setFiles([...e]);
-        return;
-      }
-
-      if (fileToEdit) {
-        const newFiles = [...files, ...e];
-        newFiles.splice(newFiles.indexOf(fileToEdit), 1);
-        setFiles(newFiles);
-
-        setFileToEdit(null);
-        return;
-      }
-
-      setFiles((old) => [...old, ...e]);
-
+    (e: FileWithPath) => {
+      setFile(e);
       dispatch(setFileSelected(e));
     },
-    [dispatch, fileToEdit, files, rest.maxFiles],
+    [dispatch],
   );
 
   useMemo(() => {
     if (fileSelected) {
-      setFiles([...fileSelected]);
+      setFile(fileSelected);
     }
   }, [fileSelected]);
 
   const { getRootProps, getInputProps, fileRejections } = useDropzone({
     onDrop: (e, i, f) => {
       onDrop && onDrop(e, i, f);
-      handleDrop(e);
+      handleDrop(e[0]);
     },
     accept,
     // disabled: !!(rest.maxFiles && files.length === rest.maxFiles),
@@ -88,138 +73,119 @@ const Upload: React.FC<UploadProps> = ({
   });
 
   const deleteFile = useCallback(
-    (e: FileWithPath) => {
-      const newFiles = [...files];
-      newFiles.splice(newFiles.indexOf(e), 1);
-      setFiles(newFiles);
+    () => {
+      setFile(null);
       dispatch(setFileSelected(null));
       dispatch(setUploadedFileUrl(null));
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [files],
+    [file],
   );
 
-  const acceptedFileItems = useMemo(
-    () =>
-      files.map((file: FileWithPath, idx) => {
-        const isPDF = file.type === "application/pdf";
+  const acceptedFileItem = useMemo(() => {
+    if (file) {
+      const isPDF = file.type === "application/pdf";
+      const isSpreadsheet =
+        file.type === "text/csv" ||
+        file.type === "application/vnd.ms-excel" ||
+        file.type ===
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+      return (
+        <li
+          className={classNames(
+            isUploading || uploadedFileUrl
+              ? "justify-normal"
+              : "justify-between",
+            "flex gap-4 rounded border border-neutral-300 p-2",
+          )}
+        >
+          <div className="flex flex-1 items-center gap-2">
+            <span className="relative flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border border-neutral-300">
+              {isPDF && <MdPictureAsPdf className="h-5 w-5 text-navy" />}
+              {isSpreadsheet && <BiSpreadsheet className="h-5 w-5 text-navy" />}
+            </span>
 
-        const isSpreadsheet =
-          file.type === "text/csv" ||
-          file.type === "application/vnd.ms-excel" ||
-          file.type ===
-            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-        return (
-          <li
-            className="flex justify-between gap-4 rounded border border-neutral-300 p-2"
-            key={file.path + `${idx}`}
-          >
-            <div className="flex items-center gap-2">
-              <span className="relative flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border border-neutral-300">
-                {isPDF && <MdPictureAsPdf className="h-5 w-5 text-navy" />}
-                {isSpreadsheet && (
-                  <BiSpreadsheet className="h-5 w-5 text-navy" />
-                )}
-              </span>
+            <span
+              className={classNames(
+                isUploading || uploadedFileUrl ? "w-full" : "w-52",
+                "relative flex w-full flex-col justify-center gap-2",
+              )}
+            >
+              <span className="truncate">{file.name}</span>
 
-              {uploadButtonProps.loading && (
-                <span className="flex w-52 flex-col justify-center gap-2">
-                  <span className=" truncate">Uploading...</span>
-                  <IndeteminateProgressBar />
+              {isUploading && <IndeterminateProgressBar />}
+
+              {isUploaded && uploadedFileUrl && (
+                <span className="truncate text-xs text-neutral-600">
+                  {uploadedFileUrl}
                 </span>
               )}
+            </span>
+          </div>
 
-              {!uploadButtonProps.loading && (
-                <span className="flex w-52 flex-col justify-center">
-                  <span className="truncate">{file.name}</span>
-                  {uploadButtonProps.filePath && (
-                    <span className="truncate text-xs text-neutral-600">
-                      {uploadButtonProps.filePath}
-                    </span>
-                  )}
-                </span>
-              )}
-            </div>
-
-            {!uploadButtonProps.loading && (
-              <div className="flex items-center gap-2 pr-2">
-                <Button
-                  type="button"
-                  buttonType="text"
-                  variant="danger"
-                  onClick={() => deleteFile(file)}
-                >
-                  <MdOutlineDelete className="h-5 w-5" />
+          {!isUploading && !uploadedFileUrl && (
+            <div className="flex items-center gap-2 pr-2">
+              <div {...getRootProps({ className: "dropzone" })}>
+                <input {...getInputProps()} />
+                <Button type="button" buttonType="text">
+                  Replace
                 </Button>
-
-                {!uploadButtonProps.filePath && (
-                  <Button
-                    type="button"
-                    buttonType="text"
-                    variant="primary"
-                    onClick={() => {
-                      uploadButtonProps.onClick(files[0]);
-                    }}
-                  >
-                    <MdCloudUpload className="h-5 w-5" />
-                  </Button>
-                )}
               </div>
-            )}
-          </li>
-        );
-      }),
-    [files, deleteFile, uploadButtonProps],
-  );
+
+              <Button
+                type="button"
+                buttonType="text"
+                variant="danger"
+                onClick={deleteFile}
+              >
+                <MdOutlineDelete className="h-5 w-5" />
+              </Button>
+            </div>
+          )}
+        </li>
+      );
+    }
+  }, [
+    file,
+    isUploading,
+    isUploaded,
+    uploadedFileUrl,
+    getRootProps,
+    getInputProps,
+    deleteFile,
+  ]);
 
   return (
     <section className="container p-0">
-      <div
-        {...getRootProps({ className: "dropzone" })}
-        className={classNames(
-          "group flex cursor-pointer flex-col items-center gap-4 rounded border border-neutral-300 bg-white p-4 text-center outline-none transition-all hover:border-orange-700 focus:ring-1 focus:ring-orange-600",
-          fileRejections.length > 0
-            ? "border-red-600 focus:ring-red-600"
-            : "border-neutral-300 focus:ring-orange-600",
-        )}
-      >
-        <input {...getInputProps()} />
+      <CollapseHeightAnimation isVisible={!file}>
+        <div
+          {...getRootProps({ className: "dropzone" })}
+          className={classNames(
+            "group flex cursor-pointer flex-col items-center gap-4 rounded border border-neutral-300 bg-white p-4 text-center outline-none transition-all hover:border-orange-700 focus:ring-1 focus:ring-orange-600",
+            fileRejections.length > 0
+              ? "border-red-600 focus:ring-red-600"
+              : "border-neutral-300 focus:ring-orange-600",
+          )}
+        >
+          <input {...getInputProps()} />
 
-        <div className="grid h-12 w-12 place-items-center rounded-full bg-neutral-300">
-          <MdCloudUpload className="h-6 w-6 text-neutral-800" />
+          <div className="grid h-12 w-12 place-items-center rounded-full bg-neutral-300">
+            <MdCloudUpload className="h-6 w-6 text-neutral-800" />
+          </div>
+
+          <p className="font-bold text-orange-600">Click/Drop to Upload</p>
+
+          <p className="text-neutral-600">
+            PDF,Word or Excel (add the images of particulars)
+          </p>
         </div>
+      </CollapseHeightAnimation>
 
-        <p className="font-bold text-orange-600">
-          {files && files.length === 1 && rest.maxFiles === 1
-            ? "Replace Selected File"
-            : "Click/Drop to Upload"}
-        </p>
-
-        <p className="text-neutral-600">
-          PDF,Word or Excel (add the images of particulars)
-        </p>
-      </div>
-
-      <CollapseHeightAnimation isVisible={acceptedFileItems.length > 0}>
+      <CollapseHeightAnimation isVisible={!!acceptedFileItem}>
         <aside className="space-y-4 py-4">
           <p className="text-xs font-medium text-neutral-900">Uploaded Files</p>
-          <ul className="mt-2 space-y-2">{acceptedFileItems}</ul>
+          <ul className="mt-2 space-y-2">{acceptedFileItem}</ul>
         </aside>
-
-        {/* <div className="mt-4 flex justify-end">
-          <Button
-            type="button"
-            className="px-5"
-            {...{
-              ...uploadButtonProps,
-              onClick: () => {
-                uploadButtonProps.onClick(files[0]);
-              },
-            }}
-          >
-            Upload File
-          </Button>
-        </div> */}
       </CollapseHeightAnimation>
 
       {fileRejections.length > 0 && (

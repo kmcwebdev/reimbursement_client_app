@@ -180,7 +180,7 @@ const FilterView: React.FC<FilterViewProps> = ({ columns, colSpan }) => {
 
                     <div className="flex gap-2 divide-x">
                       {state.value.map((value) => (
-                        <>
+                        <span key={state.key + "-" + value}>
                           {state.key === "request_status" ? (
                             <StatusBadge
                               key={value}
@@ -194,7 +194,7 @@ const FilterView: React.FC<FilterViewProps> = ({ columns, colSpan }) => {
                               {value}
                             </p>
                           )}
-                        </>
+                        </span>
                       ))}
                     </div>
                   </div>

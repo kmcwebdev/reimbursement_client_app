@@ -1,6 +1,7 @@
 import { Dialog as DialogComp, Transition } from "@headlessui/react";
 import React, { Fragment, useRef } from "react";
 import { MdClose } from "react-icons-all-files/md/MdClose";
+import { useAppSelector } from "~/app/hook";
 import { karla } from "~/styles/fonts/karla";
 import { classNames } from "~/utils/classNames";
 
@@ -26,8 +27,9 @@ const Dialog: React.FC<DialogProps> = ({
   hideCloseIcon,
 }) => {
   const cancelButtonRef = useRef<HTMLButtonElement | null>(null);
+  const { sideBarCollapsed } = useAppSelector((state) => state.layoutState);
 
-  return ( 
+  return (
     <>
       <Transition appear show={isVisible} as={Fragment}>
         <DialogComp
@@ -69,6 +71,7 @@ const Dialog: React.FC<DialogProps> = ({
                 as="div"
                 className={classNames(
                   "my-8 inline-block w-full transform rounded-md bg-white p-4 text-left align-middle shadow-xl transition-all",
+                  sideBarCollapsed ? "ml-[88px]" : "ml-64",
                   className && className,
                   dialogSize[size],
                 )}
@@ -90,8 +93,8 @@ const Dialog: React.FC<DialogProps> = ({
 
                   {!hideCloseIcon && (
                     <button onClick={close} ref={cancelButtonRef}>
-                    <MdClose className="h-4 w-4 text-neutral-900 transition-all hover:text-neutral-800" />
-                  </button>
+                      <MdClose className="h-4 w-4 text-neutral-900 transition-all hover:text-neutral-800" />
+                    </button>
                   )}
                 </div>
 

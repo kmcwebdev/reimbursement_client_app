@@ -12,15 +12,23 @@ import {
 import dynamic from "next/dynamic";
 import { type IconType } from "react-icons-all-files";
 import { AiOutlineSearch } from "react-icons-all-files/ai/AiOutlineSearch";
-import { useGetAnalyticsQuery } from "~/features/reimbursement-api-slice";
+import { useAppDispatch, useAppSelector } from "~/app/hook";
+import {
+  setColumnFilters,
+  setSelectedItems,
+} from "~/features/finance-page-slice";
+import {
+  useGetAllApprovalQuery,
+  useGetAnalyticsQuery,
+} from "~/features/reimbursement-api-slice";
 import { type ReimbursementRequest } from "~/types/reimbursement.types";
 import { currencyFormat } from "~/utils/currencyFormat";
-import { sampleData } from "~/utils/sampleData";
+import CollapseWidthAnimation from "../animation/CollapseWidth";
 import { Button } from "../core/Button";
 import ButtonGroup from "../core/form/fields/ButtonGroup";
 import Input from "../core/form/fields/Input";
 import Table from "../core/table";
-import TableCheckbox from "../core/table/TableCheckbox";
+import TableSkeleton from "../core/table/TableSkeleton";
 import DateFiledFilter from "../core/table/filters/DateFiledFilter";
 import ExpenseTypeFilter from "../core/table/filters/ExpenseTypeFilter";
 import { type FilterProps } from "../core/table/filters/StatusFilter";
@@ -33,8 +41,21 @@ const ClientFilter = dynamic(
 );
 
 const Payables: React.FC = () => {
-  const [selectedItems, setSelectedItems] = useState<number[]>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const { selectedItems, columnFilters } = useAppSelector(
+    (state) => state.financePageState,
+  );
+  const dispatch = useAppDispatch();
+
+  const setSelectedItemsState = (value: string[]) => {
+    dispatch(setSelectedItems(value));
+  };
+
+  const { isLoading, data } = useGetAllApprovalQuery({});
+
+  const setColumnFiltersState = (value: ColumnFiltersState) => {
+    dispatch(setColumnFilters(value));
+  };
+
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10,
@@ -46,30 +67,6 @@ const Payables: React.FC = () => {
   const columns = React.useMemo<ColumnDef<ReimbursementRequest>[]>(
     () => [
       {
-        id: "select",
-        header: ({ table }) => (
-          <TableCheckbox
-            {...{
-              checked: table.getIsAllRowsSelected(),
-              indeterminate: table.getIsSomeRowsSelected(),
-              onChange: table.getToggleAllRowsSelectedHandler(),
-            }}
-          />
-        ),
-        cell: ({ row }) => (
-          <div className="px-4">
-            <TableCheckbox
-              {...{
-                checked: row.getIsSelected(),
-                disabled: !row.getCanSelect(),
-                indeterminate: row.getIsSomeSelected(),
-                onChange: row.getToggleSelectedHandler(),
-              }}
-            />
-          </div>
-        ),
-      },
-      {
         id: "client",
         accessorKey: "client",
         cell: (info) => info.getValue(),
@@ -78,7 +75,12 @@ const Payables: React.FC = () => {
           return value.includes(row.getValue(id));
         },
         meta: {
-          filterComponent: (info: FilterProps) => <ClientFilter {...info} />,
+          filterComponent: (info: FilterProps) => (
+            <ClientFilter
+              {...info}
+              isButtonHidden={data && data.length === 0}
+            />
+          ),
         },
       },
       {
@@ -109,7 +111,10 @@ const Payables: React.FC = () => {
         },
         meta: {
           filterComponent: (info: FilterProps) => (
-            <ReimbursementTypeFilter {...info} />
+            <ReimbursementTypeFilter
+              {...info}
+              isButtonHidden={data && data.length === 0}
+            />
           ),
         },
       },
@@ -123,7 +128,10 @@ const Payables: React.FC = () => {
         },
         meta: {
           filterComponent: (info: FilterProps) => (
-            <ExpenseTypeFilter {...info} />
+            <ExpenseTypeFilter
+              {...info}
+              isButtonHidden={data && data.length === 0}
+            />
           ),
         },
       },
@@ -136,7 +144,12 @@ const Payables: React.FC = () => {
           return value.includes(row.getValue(id));
         },
         meta: {
-          filterComponent: (info: FilterProps) => <DateFiledFilter {...info} />,
+          filterComponent: (info: FilterProps) => (
+            <DateFiledFilter
+              {...info}
+              isButtonHidden={data && data.length === 0}
+            />
+          ),
         },
       },
       {
@@ -152,8 +165,9 @@ const Payables: React.FC = () => {
         header: "Total",
       },
     ],
-    [],
+    [data],
   );
+
   return (
     <>
       <div className="grid gap-y-2 p-5">
@@ -193,46 +207,60 @@ const Payables: React.FC = () => {
         {/* table */}
         <div className="flex justify-between">
           <h4>For Processing</h4>
-          <div className="flex gap-2">
+
+          <div className="flex gap-4">
             <Input
               name="inputText"
               placeholder="Find anything..."
               icon={AiOutlineSearch as IconType}
             />
 
-            <Button variant="neutral" buttonType="outlined">
-              Hold
-            </Button>
-            <Button variant="danger" buttonType="outlined">
-              Reject
-            </Button>
-            <Button variant="success">Download Report</Button>
+            <CollapseWidthAnimation
+              isVisible={data && data.length > 0 ? true : false}
+            >
+              <Button variant="success" className="whitespace-nowrap">
+                Download Report
+              </Button>
+            </CollapseWidthAnimation>
           </div>
         </div>
 
-        <div className="w-52">
-          <ButtonGroup
-            handleChange={(e) => console.log(e)}
-            label=""
-            name=""
-            options={[
-              { label: "Pending", value: "Pending" },
-              { label: "On-Hold", value: "On-Hold" },
-            ]}
-          />
-        </div>
+        <CollapseWidthAnimation
+          isVisible={data && data.length > 0 ? true : false}
+        >
+          <div className="w-52">
+            <ButtonGroup
+              handleChange={(e) => console.log(e)}
+              label=""
+              name=""
+              options={[
+                { label: "Pending", value: "Pending" },
+                { label: "On-Hold", value: "On-Hold" },
+              ]}
+            />
+          </div>
+        </CollapseWidthAnimation>
 
-        <Table
-          type="reimbursements"
-          data={sampleData}
-          columns={columns}
-          tableState={{ pagination, selectedItems, columnFilters }}
-          tableStateActions={{
-            setColumnFilters,
-            setSelectedItems,
-            setPagination,
-          }}
-        />
+        {!isLoading && data && (
+          <Table
+            type="approvals"
+            loading={isLoading}
+            data={data}
+            columns={columns}
+            tableState={{
+              pagination,
+              selectedItems,
+              columnFilters,
+            }}
+            tableStateActions={{
+              setColumnFilters: setColumnFiltersState,
+              setSelectedItems: setSelectedItemsState,
+              setPagination,
+            }}
+          />
+        )}
+
+        {isLoading && <TableSkeleton />}
       </div>
     </>
   );

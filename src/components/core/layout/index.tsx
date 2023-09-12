@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import React, { useState, type PropsWithChildren } from "react";
+import React, { type PropsWithChildren } from "react";
 import { MdDashboard } from "react-icons-all-files/md/MdDashboard";
 import { MdGavel } from "react-icons-all-files/md/MdGavel";
 import { MdPerson } from "react-icons-all-files/md/MdPerson";
@@ -12,22 +12,18 @@ import Header from "./Header";
 import Sidebar from "./Sidebar";
 
 const Layout: React.FC<PropsWithChildren> = ({ children }) => {
-  const [collapsed, setIsCollapsed] = useState<boolean>(false);
+  const { sideBarCollapsed } = useAppSelector((state) => state.layoutState);
 
   const { user } = useAppSelector((state) => state.session);
   const router = useRouter();
 
-  const toggleSidebarWidth = () => {
-    setIsCollapsed(!collapsed);
-  };
-
   return (
     <div className="flex min-h-screen">
-      <Sidebar collapsed={collapsed} toggleSidebarWidth={toggleSidebarWidth} />
+      <Sidebar />
 
       <main
         className={classNames(
-          collapsed
+          sideBarCollapsed
             ? "md:max-w-[calc(100vw_-_24px)]"
             : "md:max-w-[calc(100vw_-_101px)]",
           `${karla.variable} ${barlow_Condensed.variable} w-full flex-1 overflow-y-auto bg-white font-karla`,

@@ -3,12 +3,16 @@ import dayjs from "dayjs";
 import { useEffect, useState, type ChangeEvent } from "react";
 import { MdCalendarToday } from "react-icons-all-files/md/MdCalendarToday";
 import CollapseHeightAnimation from "~/components/animation/CollapseHeight";
+import { classNames } from "~/utils/classNames";
 import { Button } from "../../Button";
 import Popover from "../../Popover";
 import Input from "../../form/fields/Input";
 import { type FilterProps } from "./StatusFilter";
 
-const DateFiledFilter: React.FC<FilterProps> = ({ column }) => {
+const DateFiledFilter: React.FC<FilterProps> = ({
+  column,
+  isButtonHidden = false,
+}) => {
   useEffect(() => {
     column.setFilterValue(undefined);
   }, [column]);
@@ -103,7 +107,12 @@ const DateFiledFilter: React.FC<FilterProps> = ({ column }) => {
   return (
     <Popover
       btn={
-        <MdCalendarToday className="text-neutral-900 hover:text-neutral-800" />
+        <MdCalendarToday
+          className={classNames(
+            isButtonHidden && "hidden",
+            "text-neutral-900 hover:text-neutral-800",
+          )}
+        />
       }
       content={
         <div className="w-64 p-4">
