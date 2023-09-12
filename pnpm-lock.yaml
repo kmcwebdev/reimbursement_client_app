@@ -18,8 +18,8 @@ dependencies:
     specifier: ^3.1.1
     version: 3.1.1(react-hook-form@7.45.4)
   '@propelauth/nextjs':
-    specifier: ^0.0.92
-    version: 0.0.92(next@13.4.19)(react@18.2.0)
+    specifier: ^0.0.93
+    version: 0.0.93(next@13.4.19)(react@18.2.0)
   '@react-email/components':
     specifier: ^0.0.7
     version: 0.0.7
@@ -693,8 +693,8 @@ packages:
       tslib: 2.6.1
     dev: true
 
-  /@propelauth/nextjs@0.0.92(next@13.4.19)(react@18.2.0):
-    resolution: {integrity: sha512-2uCHjqimtcP8vYiGIPGqihUhgJfID4C98kPexJmpN+7e2iQNE/sC5uGj1cCYfp2rhpJhMJVODP2Xqx3PwZiquw==}
+  /@propelauth/nextjs@0.0.93(next@13.4.19)(react@18.2.0):
+    resolution: {integrity: sha512-tHry2XCko6sxWb5vgNzdqDiqfYg5ZK+jZ90H9F8Qw4bVpEFcLLPnvz88/hIMK6OU7N9sbTa2KPV1PtWBuQg1FQ==}
     peerDependencies:
       next: ^13.1.0
       react: ^18.2.0
