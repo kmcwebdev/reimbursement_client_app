@@ -21,6 +21,7 @@ export type Approvers = {
   approver_name: string | null;
   is_group_of_approvers: boolean;
   table_reference: string;
+  updated_at: string;
 }
 
 export type ReimbursementRequest = {

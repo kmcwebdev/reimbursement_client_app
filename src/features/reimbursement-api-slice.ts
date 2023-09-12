@@ -4,7 +4,9 @@ import {
   type ExpenseTypeQueryType,
 } from "~/schema/expense-type.schema";
 import { type ReimbursementDetailsType } from "~/schema/reimbursement-details.schema";
+import { OnholdReimbursementType } from "~/schema/reimbursement-onhold-form.schema";
 import { type GetAllReimbursementRequestType } from "~/schema/reimbursement-query.schema";
+import { RejectReimbursementType } from "~/schema/reimbursement-reject-form.schema";
 import { type UploadFileResponse } from "~/types/file-upload-response.type";
 import { type ReimbursementAnalyticsType } from "~/types/reimbursement-analytics";
 import { type ReimbursementExpenseType } from "~/types/reimbursement.expese-type";
@@ -149,10 +151,7 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
     }),
     rejectReimbursement: builder.mutation<
       unknown,
-      {
-        reason_for_rejection: string,
-        approval_matrix_id: string
-      }
+       RejectReimbursementType & {approval_matrix_id:string}
     >({
       query: (data) => {
         return {
@@ -175,6 +174,25 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
       query: (data) => {
         return {
           url: "/api/finance/reimbursement/requests/cancel",
+          method: "POST",
+          body: data,
+        };
+      },
+      invalidatesTags: [
+        { type: "ReimbursementApprovalList" },
+        { type: "ReimbursementAnalytics" },
+      ],
+    }),
+     
+      holdReimbursement: builder.mutation<
+      unknown,
+      OnholdReimbursementType & {
+        reimbursement_request_id: string,
+      }
+    >({
+      query: (data) => {
+        return {
+          url: "/api/finance/reimbursement/requests/onhold",
           method: "POST",
           body: data,
         };
@@ -213,6 +231,7 @@ export const {
   useCreateReimbursementMutation,
   useApproveReimbursementMutation,
   useRejectReimbursementMutation,
+  useHoldReimbursementMutation,
   useCancelReimbursementMutation,
   useChangeRoleMutation,
 } = reimbursementApiSlice;

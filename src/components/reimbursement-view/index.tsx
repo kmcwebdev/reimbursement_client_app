@@ -1,20 +1,26 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { type PropsWithChildren } from "react";
 import { useForm } from "react-hook-form";
-import { useAppDispatch } from "~/app/hook";
+import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { appApiSlice } from "~/app/rtkQuery";
 import { Button } from "~/components/core/Button";
 import {
   useApproveReimbursementMutation,
   useCancelReimbursementMutation,
+  useHoldReimbursementMutation,
   useRejectReimbursementMutation,
 } from "~/features/reimbursement-api-slice";
 import { useDialogState } from "~/hooks/use-dialog-state";
+import {
+  OnholdReimbursementSchema,
+  OnholdReimbursementType,
+} from "~/schema/reimbursement-onhold-form.schema";
 import {
   RejectReimbursementSchema,
   type RejectReimbursementType,
 } from "~/schema/reimbursement-reject-form.schema";
 import { type ReimbursementRequest } from "~/types/reimbursement.types";
+import { classNames } from "~/utils/classNames";
 import { currencyFormat } from "~/utils/currencyFormat";
 import Dialog from "../core/Dialog";
 import EmptyState from "../core/EmptyState";
@@ -42,11 +48,16 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
   isLoading = false,
   isError = false,
 }) => {
+  const { user } = useAppSelector((state) => state.session);
+
   const [approveReimbursement, { isLoading: isApproving }] =
     useApproveReimbursementMutation();
 
   const [rejectReimbursement, { isLoading: isRejecting }] =
     useRejectReimbursementMutation();
+
+  const [holdReimbursement, { isLoading: isOnHolding }] =
+    useHoldReimbursementMutation();
 
   const [cancelReimbursement, { isLoading: isCancelling }] =
     useCancelReimbursementMutation();
@@ -71,8 +82,19 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
     close: closeRejectDialog,
   } = useDialogState();
 
+  const {
+    isVisible: holdDialogIsOpen,
+    open: openHoldDialog,
+    close: closeHoldDialog,
+  } = useDialogState();
+
   const useRejectFormReturn = useForm<RejectReimbursementType>({
     resolver: zodResolver(RejectReimbursementSchema),
+    mode: "onChange",
+  });
+
+  const useHoldFormReturn = useForm<OnholdReimbursementType>({
+    resolver: zodResolver(OnholdReimbursementSchema),
     mode: "onChange",
   });
 
@@ -128,8 +150,8 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
   const handleConfirmReject = (values: RejectReimbursementType) => {
     if (data) {
       const payload = {
-        approval_matrix_id: data.approval_matrix_id,
-        reason_for_rejection: values.reason_for_rejection,
+        approval_matrix_id: data.next_approval_matrix_id,
+        rejection_reason: values.rejection_reason,
       };
 
       void rejectReimbursement(payload)
@@ -152,9 +174,41 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
     }
   };
 
+  const handleConfirmHold = (values: OnholdReimbursementType) => {
+    if (data) {
+      const payload = {
+        reimbursement_request_id: data.reimbursement_request_id,
+        onhold_reason: values.onhold_reason,
+      };
+
+      void holdReimbursement(payload)
+        .unwrap()
+        .then(() => {
+          showToast({
+            type: "success",
+            description: "Reimbursement Request successfully rejected!",
+          });
+          closeRejectDialog();
+          closeDrawer();
+          useRejectFormReturn.reset();
+        })
+        .catch(() => {
+          showToast({
+            type: "error",
+            description: "Rejection failed!",
+          });
+        });
+    }
+  };
+
   const handleCloseRejectDialog = () => {
     useRejectFormReturn.reset();
     closeRejectDialog();
+  };
+
+  const handleCloseOnHoldDialog = () => {
+    useHoldFormReturn.reset();
+    closeHoldDialog();
   };
 
   return (
@@ -205,17 +259,44 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
             )}
 
             {isApproverView && (
-              <>
-                <Button
-                  className="w-full"
-                  buttonType="outlined"
-                  variant="danger"
-                  onClick={openRejectDialog}
+              <div
+                className={classNames(
+                  user && user.assignedRole === "Finance"
+                    ? "grid-cols-3"
+                    : "grid-cols-2",
+                  "col-span-2 grid gap-2",
+                )}
+              >
+                <div
+                  className={classNames(
+                    user && user.assignedRole === "Finance" && "grid-cols-2",
+                    "grid gap-2",
+                  )}
                 >
-                  Reject
-                </Button>
+                  {/* {user && user.assignedRole === "Finance" && ( */}
+                  <Button
+                    className="w-full"
+                    buttonType="outlined"
+                    variant="warning"
+                    onClick={openHoldDialog}
+                  >
+                    Hold
+                  </Button>
+                  {/* )} */}
+                  <Button
+                    className="w-full"
+                    buttonType="outlined"
+                    variant="danger"
+                    onClick={openRejectDialog}
+                  >
+                    Reject
+                  </Button>
+                </div>
                 <Button
-                  className="w-full"
+                  className={classNames(
+                    user && user.assignedRole === "Finance" && "col-span-2",
+                    "w-full",
+                  )}
                   variant="primary"
                   disabled={isApproving}
                   loading={isApproving}
@@ -223,7 +304,7 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
                 >
                   Approve
                 </Button>
-              </>
+              </div>
             )}
           </div>
         </>
@@ -253,7 +334,7 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
         >
           <div className="flex flex-col gap-8 pt-8">
             <TextArea
-              name="reason_for_rejection"
+              name="rejection_reason"
               label="Reasons for Rejection"
               required
             />
@@ -276,6 +357,48 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
                 loading={isRejecting}
               >
                 Reject
+              </Button>
+            </div>
+          </div>
+        </Form>
+      </Dialog>
+
+      <Dialog
+        title="Hold Reimbursement?"
+        isVisible={holdDialogIsOpen}
+        close={closeHoldDialog}
+        hideCloseIcon
+      >
+        <Form
+          name="holdReimbursementForm"
+          useFormReturn={useHoldFormReturn}
+          onSubmit={handleConfirmHold}
+        >
+          <div className="flex flex-col gap-8 pt-8">
+            <TextArea
+              name="onhold_reason"
+              label="Reasons for putting on hold"
+              required
+            />
+
+            <div className="flex items-center gap-4">
+              <Button
+                type="button"
+                variant="neutral"
+                buttonType="outlined"
+                className="w-1/2"
+                onClick={handleCloseOnHoldDialog}
+              >
+                Cancel
+              </Button>
+              <Button
+                className="w-1/2"
+                variant="warning"
+                type="submit"
+                disabled={isOnHolding}
+                loading={isOnHolding}
+              >
+                Hold
               </Button>
             </div>
           </div>
