@@ -13,7 +13,7 @@ import {
 import { useDialogState } from "~/hooks/use-dialog-state";
 import {
   OnholdReimbursementSchema,
-  OnholdReimbursementType,
+  type OnholdReimbursementType,
 } from "~/schema/reimbursement-onhold-form.schema";
 import {
   RejectReimbursementSchema,

@@ -4,9 +4,9 @@ import {
   type ExpenseTypeQueryType,
 } from "~/schema/expense-type.schema";
 import { type ReimbursementDetailsType } from "~/schema/reimbursement-details.schema";
-import { OnholdReimbursementType } from "~/schema/reimbursement-onhold-form.schema";
+import { type OnholdReimbursementType } from "~/schema/reimbursement-onhold-form.schema";
 import { type GetAllReimbursementRequestType } from "~/schema/reimbursement-query.schema";
-import { RejectReimbursementType } from "~/schema/reimbursement-reject-form.schema";
+import { type RejectReimbursementType } from "~/schema/reimbursement-reject-form.schema";
 import { type UploadFileResponse } from "~/types/file-upload-response.type";
 import { type ReimbursementAnalyticsType } from "~/types/reimbursement-analytics";
 import { type ReimbursementExpenseType } from "~/types/reimbursement.expese-type";
