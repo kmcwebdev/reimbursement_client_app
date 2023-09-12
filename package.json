@@ -20,7 +20,7 @@
     "@casl/react": "^3.1.0",
     "@headlessui/react": "^1.7.16",
     "@hookform/resolvers": "^3.1.1",
-    "@propelauth/nextjs": "^0.0.92",
+    "@propelauth/nextjs": "^0.0.93",
     "@react-email/components": "^0.0.7",
     "@reduxjs/toolkit": "^1.9.5",
     "@t3-oss/env-nextjs": "^0.6.1",
