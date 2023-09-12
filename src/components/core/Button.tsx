@@ -17,6 +17,7 @@ const buttonVariants = cva("btn", {
       danger: "danger",
       neutral: "neutral",
       success: "success",
+      warning: "warning",
     },
     width: {
       default: "w-fit",

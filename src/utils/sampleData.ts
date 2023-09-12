@@ -1,0 +1,46 @@
+import { type ReimbursementRequest } from "~/types/reimbursement.types";
+
+export const sampleData: ReimbursementRequest[] = [
+  {
+    approval_matrix_id: "asdasd",
+    reimbursement_request_id: "b324aa7a-580b-43aa-8238-1c3cc5f8a4d2",
+    reference_no: "R2023-64",
+    request_type: "Scheduled",
+    expense_type: "Wellness",
+    request_status: "Pending",
+    amount: "5000.00",
+    attachment: "https://cdn.filestack.com/record-1",
+    attachment_mask_name: "https://cdn.filestack.com/record-1",
+
+    full_name: null,
+    email: "christian.sulit@kmc.solutions",
+    employee_id: "d9b80042-92a6-474b-cb5c-08d8538da8c1",
+    date_approve: null,
+    cursor_id: "1",
+    created_at: "2023-09-05T06:40:25.778Z",
+    remarks: "test",
+    approvers: [],
+    hrbp_approver_email:'',
+  },
+  {
+    approval_matrix_id: "asdasd1",
+    reimbursement_request_id: "d6ddb546-20ef-475f-859f-46e69aa9ca78",
+    reference_no: "R2023-65",
+    request_type: "Scheduled",
+    expense_type: "Wellness",
+    request_status: "Pending",
+    amount: "5000.00",
+    attachment: "https://cdn.filestack.com/record-1",
+    attachment_mask_name: "https://cdn.filestack.com/record-1",
+    full_name: null,
+    email: "christian.sulit@kmc.solutions",
+    employee_id: "d9b80042-92a6-474b-cb5c-08d8538da8c1",
+    date_approve: null,
+    cursor_id: "2",
+    created_at: "2023-09-05T06:40:25.778Z",
+    remarks: "test",
+    approvers: [],
+    hrbp_approver_email:'',
+  },
+ 
+];
