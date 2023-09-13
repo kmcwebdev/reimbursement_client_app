@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import React, { useState } from "react";
 import { AiOutlinePause } from "react-icons-all-files/ai/AiOutlinePause";
 import { MdAccessTimeFilled } from "react-icons-all-files/md/MdAccessTimeFilled";
@@ -32,6 +33,8 @@ import TableSkeleton from "../core/table/TableSkeleton";
 import DateFiledFilter from "../core/table/filters/DateFiledFilter";
 import ExpenseTypeFilter from "../core/table/filters/ExpenseTypeFilter";
 import { type FilterProps } from "../core/table/filters/StatusFilter";
+import { env } from "~/env.mjs";
+import axios from 'axios';
 
 const ReimbursementTypeFilter = dynamic(
   () => import("../core/table/filters/ReimbursementTypeFilter"),
@@ -44,6 +47,32 @@ const Payables: React.FC = () => {
   const { selectedItems, columnFilters } = useAppSelector(
     (state) => state.financePageState,
   );
+
+  const { accessToken } = useAppSelector((state) => state.session)
+
+  const downloadReport = async () => {
+    const response = await axios.get(`${env.NEXT_PUBLIC_BASEAPI_URL}/api/finance/reimbursements/requests/reports/finance`, {
+        responseType: 'blob', // Important to set this
+        headers: {
+          accept: '*/*',
+          Authorization: `Bearer ${accessToken}`,
+        },
+    });
+
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+
+    const link = document.createElement('a');
+    link.href = url;
+
+    link.setAttribute('download', 'filename.csv');
+
+    document.body.appendChild(link);
+
+    link.click();
+
+    document.body.removeChild(link);
+  }
+
   const dispatch = useAppDispatch();
 
   const setSelectedItemsState = (value: string[]) => {
@@ -167,7 +196,6 @@ const Payables: React.FC = () => {
     ],
     [data],
   );
-
   return (
     <>
       <div className="grid gap-y-2 p-5">
@@ -218,7 +246,7 @@ const Payables: React.FC = () => {
             <CollapseWidthAnimation
               isVisible={data && data.length > 0 ? true : false}
             >
-              <Button variant="success" className="whitespace-nowrap">
+              <Button variant="success" className="whitespace-nowrap" onClick={() => void downloadReport()}>
                 Download Report
               </Button>
             </CollapseWidthAnimation>
