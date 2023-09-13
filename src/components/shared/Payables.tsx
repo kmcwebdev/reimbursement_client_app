@@ -10,10 +10,12 @@ import {
   type ColumnFiltersState,
   type PaginationState,
 } from "@tanstack/react-table";
+import axios, { AxiosResponse } from "axios";
 import dynamic from "next/dynamic";
 import { type IconType } from "react-icons-all-files";
 import { AiOutlineSearch } from "react-icons-all-files/ai/AiOutlineSearch";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
+import { env } from "~/env.mjs";
 import {
   setColumnFilters,
   setSelectedItems,
@@ -33,8 +35,6 @@ import TableSkeleton from "../core/table/TableSkeleton";
 import DateFiledFilter from "../core/table/filters/DateFiledFilter";
 import ExpenseTypeFilter from "../core/table/filters/ExpenseTypeFilter";
 import { type FilterProps } from "../core/table/filters/StatusFilter";
-import { env } from "~/env.mjs";
-import axios from 'axios';
 
 const ReimbursementTypeFilter = dynamic(
   () => import("../core/table/filters/ReimbursementTypeFilter"),
@@ -48,30 +48,29 @@ const Payables: React.FC = () => {
     (state) => state.financePageState,
   );
 
-  const { accessToken } = useAppSelector((state) => state.session)
+  const { accessToken } = useAppSelector((state) => state.session);
 
   const downloadReport = async () => {
-    const response = await axios.get(`${env.NEXT_PUBLIC_BASEAPI_URL}/api/finance/reimbursements/requests/reports/finance`, {
-        responseType: 'blob', // Important to set this
+    const response = await axios.get<unknown, AxiosResponse<Blob>>(
+      `${env.NEXT_PUBLIC_BASEAPI_URL}/api/finance/reimbursements/requests/reports/finance`,
+      {
+        responseType: "blob", // Important to set this
         headers: {
-          accept: '*/*',
+          accept: "*/*",
           Authorization: `Bearer ${accessToken}`,
         },
-    });
+      },
+    );
 
     const url = window.URL.createObjectURL(new Blob([response.data]));
 
-    const link = document.createElement('a');
+    const link = document.createElement("a");
     link.href = url;
-
-    link.setAttribute('download', 'filename.csv');
-
+    link.setAttribute("download", "filename.csv");
     document.body.appendChild(link);
-
     link.click();
-
     document.body.removeChild(link);
-  }
+  };
 
   const dispatch = useAppDispatch();
 
@@ -246,7 +245,11 @@ const Payables: React.FC = () => {
             <CollapseWidthAnimation
               isVisible={data && data.length > 0 ? true : false}
             >
-              <Button variant="success" className="whitespace-nowrap" onClick={() => void downloadReport()}>
+              <Button
+                variant="success"
+                className="whitespace-nowrap"
+                onClick={() => void downloadReport()}
+              >
                 Download Report
               </Button>
             </CollapseWidthAnimation>
