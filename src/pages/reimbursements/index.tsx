@@ -2,7 +2,6 @@ import { getUserFromServerSideProps } from "@propelauth/nextjs/server/pages";
 import { type GetServerSideProps, type NextPage } from "next";
 import Head from "next/head";
 import PageAnimation from "~/components/animation/PageAnimation";
-import ReimbursementList from "~/components/shared/ReimbursementList";
 
 interface DashboardSSRProps {
   userJson: string;
@@ -14,9 +13,7 @@ const Reimbursements: NextPage<DashboardSSRProps> = () => {
       <Head>
         <title>Reimbursements</title>
       </Head>
-      <PageAnimation>
-        <ReimbursementList />
-      </PageAnimation>
+      <PageAnimation></PageAnimation>
     </div>
   );
 };

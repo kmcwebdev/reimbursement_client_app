@@ -179,7 +179,7 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
         };
       },
       invalidatesTags: [
-        { type: "ReimbursementApprovalList" },
+        { type: "ReimbursementRequestList" },
         { type: "ReimbursementAnalytics" },
       ],
     }),

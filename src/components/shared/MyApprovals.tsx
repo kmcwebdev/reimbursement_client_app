@@ -596,7 +596,6 @@ const MyApprovals: React.FC = () => {
         closeDrawer={closeReimbursementView}
       >
         <ReimbursementsCardView
-          isApproverView
           closeDrawer={closeReimbursementView}
           isLoading={reimbursementRequestDataIsLoading}
           data={reimbursementRequestData}

@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import React from "react";
 import { type IconType } from "react-icons-all-files";
 import { MdDashboard } from "react-icons-all-files/md/MdDashboard";
+import { MdGavel } from "react-icons-all-files/md/MdGavel";
 import { MdPerson } from "react-icons-all-files/md/MdPerson";
 import { MdReceipt } from "react-icons-all-files/md/MdReceipt";
 import { useAppSelector } from "~/app/hook";
@@ -31,7 +32,7 @@ const Navigation: React.FC<NavigationProps> = ({ collapsed }) => {
           <Can I="access" a="CAN_APPROVE_REIMBURSEMENT">
             <NavigationItem
               label="Approval"
-              icon={MdReceipt as IconType}
+              icon={MdGavel as IconType}
               active={pathname.includes("approval")}
               href="/approval"
               collapsed={collapsed}
@@ -40,7 +41,7 @@ const Navigation: React.FC<NavigationProps> = ({ collapsed }) => {
         )}
 
       {user &&
-        (user.assignedRole === "Finance" || user?.assignedRole === "HRBP") && (
+        (user.assignedRole === "Finance" || user.assignedRole === "HRBP") && (
           <NavigationItem
             label="Reimbursements"
             icon={MdReceipt as IconType}

@@ -20,7 +20,6 @@ import {
   type RejectReimbursementType,
 } from "~/schema/reimbursement-reject-form.schema";
 import { type ReimbursementRequest } from "~/types/reimbursement.types";
-import { classNames } from "~/utils/classNames";
 import { currencyFormat } from "~/utils/currencyFormat";
 import Dialog from "../core/Dialog";
 import EmptyState from "../core/EmptyState";
@@ -34,7 +33,6 @@ import Notes from "./Notes";
 import ReimbursementViewSkeleton from "./ReimbursementViewSkeleton";
 
 export interface ReimbursementsCardViewProps extends PropsWithChildren {
-  isApproverView?: boolean;
   isLoading?: boolean;
   data?: ReimbursementRequest;
   closeDrawer: () => void;
@@ -42,7 +40,6 @@ export interface ReimbursementsCardViewProps extends PropsWithChildren {
 }
 
 const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
-  isApproverView = false,
   closeDrawer,
   data,
   isLoading = false,
@@ -240,7 +237,7 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
           </div>
 
           <div className="absolute bottom-0 grid h-[72px] w-full grid-cols-2 items-center justify-center gap-2 border-t border-neutral-300 px-5">
-            {!isApproverView && (
+            {user && user.assignedRole === "Member" && (
               <>
                 <Button
                   onClick={closeDrawer}
@@ -250,43 +247,25 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
                 >
                   Back
                 </Button>
-                <Button
-                  className="w-full"
-                  variant="danger"
-                  onClick={openCancelDialog}
-                  disabled={data.request_status === "canceled"}
-                >
-                  Cancel Request
-                </Button>
+
+                {data.request_status !== "Cancelled" && (
+                  <Button
+                    className="w-full"
+                    variant="danger"
+                    onClick={openCancelDialog}
+                    disabled={data.request_status === "canceled"}
+                  >
+                    Cancel
+                  </Button>
+                )}
               </>
             )}
 
-            {isApproverView && (
-              <div
-                className={classNames(
-                  user && user.assignedRole === "Finance"
-                    ? "grid-cols-3"
-                    : "grid-cols-2",
-                  "col-span-2 grid gap-2",
-                )}
-              >
-                <div
-                  className={classNames(
-                    user && user.assignedRole === "Finance" && "grid-cols-2",
-                    "grid gap-2",
-                  )}
-                >
-                  {user && user.assignedRole === "Finance" && (
-                    <Button
-                      className="w-full"
-                      buttonType="outlined"
-                      variant="warning"
-                      onClick={openHoldDialog}
-                      disabled={data.request_status === "On-hold"}
-                    >
-                      {data.request_status === "On-hold" ? "Pending" : "Hold"}
-                    </Button>
-                  )}
+            {user &&
+              (user.assignedRole === "HRBP" ||
+                user.assignedRole ===
+                  "External Reimbursement Approver Manager") && (
+                <>
                   <Button
                     className="w-full"
                     buttonType="outlined"
@@ -295,20 +274,44 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
                   >
                     Reject
                   </Button>
+
+                  <Button
+                    className="w-full"
+                    variant="primary"
+                    disabled={isApproving}
+                    loading={isApproving}
+                    onClick={openApproveDialog}
+                  >
+                    Approve
+                  </Button>
+                </>
+              )}
+
+            {user && user.assignedRole === "Finance" && (
+              <>
+                <div className="grid w-full grid-cols-2 gap-2">
+                  <Button
+                    className="w-full"
+                    buttonType="outlined"
+                    variant="warning"
+                    onClick={openHoldDialog}
+                    disabled={data.request_status === "On-hold"}
+                    loading={isOnHolding}
+                  >
+                    Hold
+                  </Button>
+
+                  <Button
+                    className="w-full"
+                    buttonType="outlined"
+                    variant="danger"
+                    loading={isRejecting}
+                    onClick={openRejectDialog}
+                  >
+                    Reject
+                  </Button>
                 </div>
-                <Button
-                  className={classNames(
-                    user && user.assignedRole === "Finance" && "col-span-2",
-                    "w-full",
-                  )}
-                  variant="primary"
-                  disabled={isApproving}
-                  loading={isApproving}
-                  onClick={openApproveDialog}
-                >
-                  Approve
-                </Button>
-              </div>
+              </>
             )}
           </div>
         </>
