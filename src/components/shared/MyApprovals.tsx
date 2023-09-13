@@ -44,6 +44,8 @@ import { showToast } from "../core/Toast";
 import Input from "../core/form/fields/Input";
 import TableSkeleton from "../core/table/TableSkeleton";
 import DateFiledFilter from "../core/table/filters/DateFiledFilter";
+import { env } from "~/env.mjs";
+import axios from 'axios';
 
 const StatusFilter = dynamic(
   () => import("~/components/core/table/filters/StatusFilter"),
@@ -103,6 +105,33 @@ const MyApprovals: React.FC = () => {
   });
 
   const { isLoading, data } = useGetAllApprovalQuery({});
+
+  const { accessToken } = useAppSelector((state) => state.session)
+
+  const downloadReport = async () => {
+      const response = await axios.get(`${env.NEXT_PUBLIC_BASEAPI_URL}/api/finance/reimbursements/requests/reports/hrbp`, {
+          responseType: 'blob', // Important to set this
+          headers: {
+            accept: '*/*',
+            Authorization: `Bearer ${accessToken}`,
+          },
+      });
+
+
+      console.log(response);
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+
+      const link = document.createElement('a');
+      link.href = url;
+
+      link.setAttribute('download', 'filename.csv');
+
+      document.body.appendChild(link);
+
+      link.click();
+
+      document.body.removeChild(link);
+  }
 
   const columns = React.useMemo<ColumnDef<ReimbursementApproval>[]>(() => {
     return [
@@ -349,6 +378,14 @@ const MyApprovals: React.FC = () => {
                       Approve
                     </Button>
                   </Can>
+                </CollapseWidthAnimation>
+
+                <CollapseWidthAnimation
+                  isVisible={data && data.length > 0 ? true : false}
+                >
+                  <Button variant="success" className="whitespace-nowrap" onClick={() => void downloadReport()}>
+                    Download Report
+                  </Button>
                 </CollapseWidthAnimation>
               </>
             )}
