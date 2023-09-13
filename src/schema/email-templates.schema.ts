@@ -2,7 +2,8 @@ import { z } from "zod";
 
 export const NewUserEmailSchema = z.object({
   to: z.array(
-    z.string({
+    z
+      .string({
         description: "Email address",
         required_error: "Email address is required",
         invalid_type_error: "Email address is invalid",
@@ -20,16 +21,17 @@ export const NewUserEmailSchema = z.object({
     .nonempty({
       message: "Full Name is required",
     }),
-    email: z
+  email: z
     .string({
       description: "Email",
       required_error: "Email is required",
       invalid_type_error: "Email is invalid",
-    }).email("Please input valid email!")
+    })
+    .email("Please input valid email!")
     .nonempty({
       message: "Email is required",
     }),
-      password: z
+  password: z
     .string({
       description: "Password",
       required_error: "Password is required",
@@ -38,7 +40,6 @@ export const NewUserEmailSchema = z.object({
     .nonempty({
       message: "Password is required",
     }),
-
 });
 
 export const ConfirmationEmailSchema = z.object({
@@ -194,3 +195,17 @@ export const DefaultEmailSchema = z.object({
       message: "Receipts Attached is required",
     }),
 });
+
+export const HrbpApprovalSchema = z
+  .object({
+    approverFullName: z
+      .string({
+        description: "Approver Full Name",
+        required_error: "Approver Full Name is required",
+        invalid_type_error: "Approver Full Name is invalid",
+      })
+      .nonempty({
+        message: "Approver Full Name is required",
+      }),
+  })
+  .merge(DefaultEmailSchema);
