@@ -2,6 +2,7 @@ import { Link, Text } from "@react-email/components";
 import EmailMain from "./email-components/EmailMain";
 
 interface HRBPApprovalTemplateProps {
+  approverFullName: string;
   fullName: string;
   employeeId: string;
   expenseType: string;
@@ -11,6 +12,7 @@ interface HRBPApprovalTemplateProps {
 }
 
 export const HRBPApproval: React.FC<Readonly<HRBPApprovalTemplateProps>> = ({
+  approverFullName,
   fullName,
   employeeId,
   expenseType,
@@ -18,7 +20,7 @@ export const HRBPApproval: React.FC<Readonly<HRBPApprovalTemplateProps>> = ({
   amount,
   receiptsAttached,
 }) => (
-  <EmailMain receiver={fullName} subject="HRBP Approval">
+  <EmailMain receiver={approverFullName} subject="HRBP Approval">
     <Text>
       I hope this email finds you well. {fullName} has submitted a reimbursement
       claim that requires your approval.
