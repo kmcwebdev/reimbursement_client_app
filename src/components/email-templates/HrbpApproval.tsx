@@ -42,6 +42,5 @@ export const HRBPApproval: React.FC<Readonly<HRBPApprovalTemplateProps>> = ({
       reach out to the employee directly or contact your respective HRBP&apos;s
     </Text>
     <Text>Thank you for your attention to this matter.</Text>
-    <Text>Best regards,</Text>
   </EmailMain>
 );
