@@ -1,5 +1,46 @@
 import { z } from "zod";
 
+export const NewUserEmailSchema = z.object({
+  to: z.array(
+    z.string({
+        description: "Email address",
+        required_error: "Email address is required",
+        invalid_type_error: "Email address is invalid",
+      })
+      .email({
+        message: "Email address is invalid",
+      }),
+  ),
+  fullName: z
+    .string({
+      description: "Full Name",
+      required_error: "Full Name is required",
+      invalid_type_error: "Full Name is invalid",
+    })
+    .nonempty({
+      message: "Full Name is required",
+    }),
+    email: z
+    .string({
+      description: "Email",
+      required_error: "Email is required",
+      invalid_type_error: "Email is invalid",
+    }).email("Please input valid email!")
+    .nonempty({
+      message: "Email is required",
+    }),
+      password: z
+    .string({
+      description: "Password",
+      required_error: "Password is required",
+      invalid_type_error: "Password is invalid",
+    })
+    .nonempty({
+      message: "Password is required",
+    }),
+
+});
+
 export const ConfirmationEmailSchema = z.object({
   to: z.array(
     z

@@ -182,7 +182,7 @@ const Upload: React.FC<UploadProps> = ({
             </p>
           </div>
 
-          <p className="flex gap-2">
+          <p className="flex items-center gap-2">
             <HiInformationCircle className="h-4 w-4 text-blue-600" />
             You can only upload 1 PDF, Excel or Word file.
           </p>
