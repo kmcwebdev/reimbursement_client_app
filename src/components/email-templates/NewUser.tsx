@@ -22,6 +22,5 @@ export const NewUser: React.FC<Readonly<NewUserTemplateProps>> = ({
     <Text>Username: {email}</Text>
     <Text>Password: {password}</Text>
     <Text>Thank you and good luck to your new journey.</Text>
-    <Text>Best regards,</Text>
   </EmailMain>
 );
