@@ -25,11 +25,25 @@ export default Reimbursements;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const user = await getUserFromServerSideProps(context);
-
   if (!user) {
     return {
       redirect: {
         destination: "/api/auth/login",
+        permanent: false,
+      },
+    };
+  }
+
+  const userOrgs = user.getOrgs();
+  const assignedRole = userOrgs[0].assignedRole;
+
+  if (
+    assignedRole === "HRBP" ||
+    assignedRole === "External Reimbursement Approver Manager"
+  ) {
+    return {
+      redirect: {
+        destination: "/dashboard",
         permanent: false,
       },
     };

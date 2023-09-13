@@ -4,6 +4,7 @@ import {
   type ColumnFiltersState,
   type PaginationState,
 } from "@tanstack/react-table";
+import axios, { type AxiosResponse } from "axios";
 import dayjs from "dayjs";
 import dynamic from "next/dynamic";
 import React, { useState } from "react";
@@ -23,6 +24,7 @@ import TableCheckbox from "~/components/core/table/TableCheckbox";
 import { type FilterProps } from "~/components/core/table/filters/StatusFilter";
 import ReimbursementsCardView from "~/components/reimbursement-view";
 import { Can } from "~/context/AbilityContext";
+import { env } from "~/env.mjs";
 import {
   setColumnFilters,
   setSelectedItems,
@@ -43,9 +45,8 @@ import SkeletonLoading from "../core/SkeletonLoading";
 import { showToast } from "../core/Toast";
 import Input from "../core/form/fields/Input";
 import TableSkeleton from "../core/table/TableSkeleton";
+import ClientFilter from "../core/table/filters/ClientFilter";
 import DateFiledFilter from "../core/table/filters/DateFiledFilter";
-import { env } from "~/env.mjs";
-import axios from 'axios';
 
 const StatusFilter = dynamic(
   () => import("~/components/core/table/filters/StatusFilter"),
@@ -58,6 +59,7 @@ const ReimbursementTypeFilter = dynamic(
 );
 
 const MyApprovals: React.FC = () => {
+  const { user } = useAppSelector((state) => state.session);
   const { selectedItems, columnFilters } = useAppSelector(
     (state) => state.approvalPageState,
   );
@@ -106,34 +108,194 @@ const MyApprovals: React.FC = () => {
 
   const { isLoading, data } = useGetAllApprovalQuery({});
 
-  const { accessToken } = useAppSelector((state) => state.session)
+  const { accessToken } = useAppSelector((state) => state.session);
 
   const downloadReport = async () => {
-      const response = await axios.get(`${env.NEXT_PUBLIC_BASEAPI_URL}/api/finance/reimbursements/requests/reports/hrbp`, {
-          responseType: 'blob', // Important to set this
-          headers: {
-            accept: '*/*',
-            Authorization: `Bearer ${accessToken}`,
-          },
-      });
+    const response = await axios.get<unknown, AxiosResponse<Blob>>(
+      `${env.NEXT_PUBLIC_BASEAPI_URL}/api/finance/reimbursements/requests/reports/hrbp`,
+      {
+        responseType: "blob", // Important to set this
+        headers: {
+          accept: "*/*",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      },
+    );
 
+    console.log(response);
+    const url = window.URL.createObjectURL(new Blob([response.data]));
 
-      console.log(response);
-      const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement("a");
+    link.href = url;
 
-      const link = document.createElement('a');
-      link.href = url;
+    link.setAttribute("download", "filename.csv");
 
-      link.setAttribute('download', 'filename.csv');
+    document.body.appendChild(link);
 
-      document.body.appendChild(link);
+    link.click();
 
-      link.click();
-
-      document.body.removeChild(link);
-  }
+    document.body.removeChild(link);
+  };
 
   const columns = React.useMemo<ColumnDef<ReimbursementApproval>[]>(() => {
+    if (user?.assignedRole === "HRBP") {
+      return [
+        {
+          id: "select",
+          size: 10,
+          header: ({ table }) => {
+            if (table.getRowModel().rows.length > 0) {
+              return (
+                <TableCheckbox
+                  checked={table.getIsAllRowsSelected()}
+                  indeterminate={table.getIsSomeRowsSelected()}
+                  onChange={table.getToggleAllRowsSelectedHandler()}
+                  showOnHover={false}
+                />
+              );
+            }
+          },
+
+          cell: ({ row }) => (
+            <div className="px-4">
+              <TableCheckbox
+                checked={row.getIsSelected()}
+                tableHasChecked={selectedItems.length > 0}
+                disabled={!row.getCanSelect()}
+                indeterminate={row.getIsSomeSelected()}
+                onChange={row.getToggleSelectedHandler()}
+              />
+            </div>
+          ),
+        },
+        {
+          id: "request_status",
+          accessorKey: "request_status",
+          header: "Status",
+          cell: (info) => (
+            <StatusBadge
+              status={(info.getValue() as string).toLowerCase() as StatusType}
+            />
+          ),
+          filterFn: (row, id, value: string) => {
+            return value.includes(row.getValue(id));
+          },
+          enableColumnFilter: true,
+          meta: {
+            filterComponent: (info: FilterProps) => (
+              <StatusFilter
+                {...info}
+                isButtonHidden={data && data.length === 0}
+              />
+            ),
+          },
+        },
+        {
+          id: "client_name",
+          accessorKey: "client_name",
+          header: "Client",
+          cell: (info) => info.getValue(),
+          filterFn: (row, id, value: string) => {
+            return value.includes(row.getValue(id));
+          },
+          enableColumnFilter: true,
+          meta: {
+            filterComponent: (info: FilterProps) => (
+              <ClientFilter
+                {...info}
+                isButtonHidden={data && data.length === 0}
+              />
+            ),
+          },
+        },
+        {
+          id: "full_name",
+          accessorKey: "full_name",
+          cell: (info) => info.getValue(),
+          header: "Name",
+        },
+        {
+          id: "reference_no",
+          accessorKey: "reference_no",
+          cell: (info) => info.getValue(),
+          header: "R-ID",
+        },
+        {
+          id: "request_type",
+          accessorKey: "request_type",
+          cell: (info) => info.getValue(),
+          header: "Type",
+          filterFn: (row, id, value: string) => {
+            return value.includes(row.getValue(id));
+          },
+          meta: {
+            filterComponent: (info: FilterProps) => (
+              <ReimbursementTypeFilter
+                {...info}
+                isButtonHidden={data && data.length === 0}
+              />
+            ),
+          },
+        },
+        {
+          id: "expense_type",
+          accessorKey: "expense_type",
+          cell: (info) => info.getValue(),
+          header: "Expense",
+          filterFn: (row, id, value: string) => {
+            return value.includes(row.getValue(id));
+          },
+          meta: {
+            filterComponent: (info: FilterProps) => (
+              <ExpenseTypeFilter
+                {...info}
+                isButtonHidden={data && data.length === 0}
+              />
+            ),
+          },
+        },
+        {
+          id: "created_at",
+          accessorKey: "created_at",
+          cell: (info) =>
+            dayjs(info.getValue() as string).format("MMM D, YYYY"),
+          header: "Filed",
+          filterFn: (row, id, value: string) => {
+            return value.includes(row.getValue(id));
+          },
+          meta: {
+            filterComponent: (info: FilterProps) => (
+              <DateFiledFilter
+                {...info}
+                isButtonHidden={data && data.length === 0}
+              />
+            ),
+          },
+        },
+        {
+          id: "amount",
+          accessorKey: "amount",
+          cell: (info) => currencyFormat(info.getValue() as number),
+          header: "Amount",
+        },
+        {
+          id: "actions",
+          accessorKey: "reimbursement_request_id",
+          cell: (info) => (
+            <Button
+              buttonType="text"
+              onClick={() => {
+                setFocusedReimbursementId(info.getValue() as string);
+                openReimbursementView();
+              }}
+            >
+              View
+            </Button>
+          ),
+          header: "",
+        },
+      ];
+    }
     return [
       {
         id: "select",
@@ -267,7 +429,7 @@ const MyApprovals: React.FC = () => {
       },
     ];
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedItems]);
+  }, [selectedItems, user]);
 
   const handleBulkApprove = () => {
     openBulkApproveDialog();
@@ -359,12 +521,14 @@ const MyApprovals: React.FC = () => {
 
             {!isLoading && (
               <>
-                <Input
-                  name="searchFilter"
-                  placeholder="Find anything..."
-                  className="w-full md:w-64"
-                  icon={MdSearch}
-                />
+                {data && data.length > 0 && (
+                  <Input
+                    name="searchFilter"
+                    placeholder="Find anything..."
+                    className="w-full md:w-64"
+                    icon={MdSearch}
+                  />
+                )}
 
                 <CollapseWidthAnimation
                   isVisible={selectedItems && selectedItems.length > 0}
@@ -380,13 +544,21 @@ const MyApprovals: React.FC = () => {
                   </Can>
                 </CollapseWidthAnimation>
 
-                <CollapseWidthAnimation
-                  isVisible={data && data.length > 0 ? true : false}
-                >
-                  <Button variant="success" className="whitespace-nowrap" onClick={() => void downloadReport()}>
-                    Download Report
-                  </Button>
-                </CollapseWidthAnimation>
+                {user &&
+                  (user.assignedRole === "HRBP" ||
+                    user.assignedRole === "Finance") && (
+                    <CollapseWidthAnimation
+                      isVisible={data && data.length > 0 ? true : false}
+                    >
+                      <Button
+                        variant="success"
+                        className="whitespace-nowrap"
+                        onClick={() => void downloadReport()}
+                      >
+                        Download Report
+                      </Button>
+                    </CollapseWidthAnimation>
+                  )}
               </>
             )}
           </div>

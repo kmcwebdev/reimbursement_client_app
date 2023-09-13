@@ -8,6 +8,8 @@ export type StatusType =
   | "approved"
   | "rejected"
   | "credited"
+  | "cancelled"
+  | "on-hold"
   | "default";
 
 type StatusBadgeProps = {
@@ -24,6 +26,8 @@ const statusVariant = cva(
         pending: "bg-yellow-50 text-yellow-600 border-yellow-600",
         approved: "bg-green-50 text-green-600 border-green-600",
         rejected: "bg-red-50 text-red-600 border-red-600",
+        cancelled: "bg-red-50 text-red-600 border-red-600",
+        "on-hold": "bg-neutral-50 text-neutral-900 border-neutral-600",
         credited: "bg-blue-50 text-blue-600 border-blue-600",
         default: "bg-neutral-50 text-neutral-600 border-neutral-600",
       },

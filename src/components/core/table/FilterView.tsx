@@ -32,6 +32,7 @@ const FilterView: React.FC<FilterViewProps> = ({ columns, colSpan }) => {
   const [dateFilterValue, setDateFilterValue] = useState<string[]>([]);
   const [dateFilterIsVisible, setDateFilterIsVisible] = useState<boolean>();
   const [filterViewState, setFilterViewState] = useState<FilterState[]>([]);
+  const [isMounted, setisMounted] = useState<boolean>(false);
 
   useMemo(() => {
     const filterOrder = ["request_status", "request_type", "expense_type"];
@@ -111,6 +112,8 @@ const FilterView: React.FC<FilterViewProps> = ({ columns, colSpan }) => {
     } else {
       setDateFilterIsVisible(false);
     }
+
+    setisMounted(true);
   }, [columns]);
 
   const handleClear = () => {
@@ -154,9 +157,11 @@ const FilterView: React.FC<FilterViewProps> = ({ columns, colSpan }) => {
         <div
           className={classNames(
             filterViewState.length > 0
-              ? "h-16 border-b  border-b-[#F1F2F4] px-4 opacity-100 first:px-0"
+              ? !isMounted
+                ? "h-0 p-0 opacity-0"
+                : "h-16 border-b  border-b-[#F1F2F4] px-4 opacity-100 first:px-0"
               : "h-0 p-0 opacity-0",
-            "flex items-center justify-between gap-4 overflow-hidden transition-all duration-500 ease-in-out",
+            "flex items-center justify-between gap-4 overflow-hidden transition-all ease-in-out",
           )}
         >
           <div className="flex items-center gap-2">

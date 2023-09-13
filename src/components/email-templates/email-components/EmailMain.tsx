@@ -19,7 +19,8 @@ export type SubjectTypes =
   | "Manager Approval"
   | "HRBP Approval"
   | "Approved"
-  | "Rejected";
+  | "Rejected"
+  | "Welcome to Reimbursement";
 
 interface EmailMainProps {
   subject: SubjectTypes;

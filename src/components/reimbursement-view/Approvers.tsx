@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import React from "react";
+import React, { useMemo, useState } from "react";
 import { HiCheckCircle } from "react-icons-all-files/hi/HiCheckCircle";
 import { MdAccessTimeFilled } from "react-icons-all-files/md/MdAccessTimeFilled";
 import { MdClose } from "react-icons-all-files/md/MdClose";
@@ -11,6 +11,17 @@ interface ApproversProps {
 }
 
 const Approvers: React.FC<ApproversProps> = ({ approvers }) => {
+  const [lastApproverRejected, setLastApproverRejected] = useState<Approvers>();
+
+  useMemo(() => {
+    const approversWhoRejected = approvers.filter((a) => a.has_rejected);
+
+    if (approversWhoRejected && approversWhoRejected.length > 0) {
+      setLastApproverRejected(
+        approversWhoRejected[approversWhoRejected.length - 1],
+      );
+    }
+  }, [approvers]);
   return (
     <>
       <div className="mt-3 flex flex-col gap-4">
@@ -22,10 +33,16 @@ const Approvers: React.FC<ApproversProps> = ({ approvers }) => {
             className="flex flex-col gap-4"
           >
             <div className="flex gap-4">
-              {/* TODO: add not rejected condition */}
-              {!approver.has_approved && (
-                <MdAccessTimeFilled className="mt-0.1 h-4 w-4 text-yellow-600" />
-              )}
+              {!approver.has_rejected &&
+                !approver.has_approved &&
+                !lastApproverRejected && (
+                  <MdAccessTimeFilled className="mt-0.1 h-4 w-4 text-yellow-600" />
+                )}
+
+              {lastApproverRejected &&
+                lastApproverRejected.approver_id !== approver.approver_id && (
+                  <MdClose className="h-4 w-4 text-neutral-600" />
+                )}
 
               {approver.has_rejected && (
                 <MdClose className="h-4 w-4 text-red-600" />
@@ -42,29 +59,18 @@ const Approvers: React.FC<ApproversProps> = ({ approvers }) => {
                     : `Approver ID: ${approver.approver_id}`}
                 </span>
 
-                <div className="flex justify-between">
-                  {approver.has_approved && (
+                {(approver.has_approved || approver.has_rejected) && (
+                  <div className="flex justify-between">
                     <>
                       <p className="text-xs text-neutral-600">
-                        {dayjs().format("MMM D, YYYY")}
+                        {dayjs(approver.updated_at).format("MMM D, YYYY")}
                       </p>
                       <p className="text-xs text-neutral-600">
-                        {dayjs().format("hh:mm A")}
+                        {dayjs(approver.updated_at).format("hh:mm A")}
                       </p>
                     </>
-                  )}
-
-                  {approver.has_rejected && (
-                    <>
-                      <p className="text-xs text-neutral-600">
-                        {dayjs().format("MMM D, YYYY")}
-                      </p>
-                      <p className="text-xs text-neutral-600">
-                        {dayjs().format("hh:mm A")}
-                      </p>
-                    </>
-                  )}
-                </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>

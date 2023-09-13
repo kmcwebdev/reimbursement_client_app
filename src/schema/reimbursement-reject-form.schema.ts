@@ -2,8 +2,8 @@ import { z } from "zod";
 
 export const RejectReimbursementSchema = z
   .object({
-    reason_for_rejection: z
-      .string({ required_error: "Please enter reason!" }),
+    rejection_reason: z
+      .string({ required_error: "Please enter reason!" }).nonempty('This field is required'),
   })
   ;
 
