@@ -369,7 +369,7 @@ const MyReimbursements: React.FC = () => {
               className="w-1/2"
               onClick={handleConfirmCancellation}
             >
-              Yes, cancel
+              Yes, Cancel
             </Button>
           </div>
         </div>

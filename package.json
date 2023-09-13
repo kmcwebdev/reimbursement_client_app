@@ -20,12 +20,13 @@
     "@casl/react": "^3.1.0",
     "@headlessui/react": "^1.7.16",
     "@hookform/resolvers": "^3.1.1",
-    "@propelauth/nextjs": "^0.0.92",
+    "@propelauth/nextjs": "^0.0.93",
     "@react-email/components": "^0.0.7",
     "@reduxjs/toolkit": "^1.9.5",
     "@t3-oss/env-nextjs": "^0.6.1",
     "@tailwindcss/forms": "^0.5.4",
     "@tanstack/react-table": "^8.9.3",
+    "axios": "^1.5.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
     "dayjs": "^1.11.9",
@@ -62,5 +63,8 @@
     "prettier-plugin-tailwindcss": "^0.5.3",
     "tailwindcss": "3.3.3",
     "typescript": "5.1.6"
+  },
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": true
   }
 }
