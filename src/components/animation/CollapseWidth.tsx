@@ -9,7 +9,7 @@ interface Props extends HTMLMotionProps<"div"> {
   hideOverflow?: boolean;
 }
 
-const CollapseHeightAnimation: React.FC<PropsWithChildren<Props>> = ({
+const CollapseWidthAnimation: React.FC<PropsWithChildren<Props>> = ({
   isVisible,
   children,
   className,
@@ -27,8 +27,8 @@ const CollapseHeightAnimation: React.FC<PropsWithChildren<Props>> = ({
           animate="open"
           exit="collapsed"
           variants={{
-            open: { opacity: 1, height: "auto" },
-            collapsed: { opacity: 0, height: 0 },
+            open: { opacity: 1, width: "auto" },
+            collapsed: { opacity: 0, width: 0 },
           }}
           transition={{ duration: 0.6, ease: [0.04, 0.62, 0.23, 0.98] }}
         >
@@ -39,4 +39,4 @@ const CollapseHeightAnimation: React.FC<PropsWithChildren<Props>> = ({
   );
 };
 
-export default CollapseHeightAnimation;
+export default CollapseWidthAnimation;

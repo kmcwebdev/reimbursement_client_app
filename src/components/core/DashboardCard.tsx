@@ -4,7 +4,7 @@ import SkeletonLoading from "./SkeletonLoading";
 interface DashboardCardProps {
   icon: JSX.Element;
   label: string;
-  count: number;
+  count?: number;
   totalCount?: number;
 }
 
@@ -19,7 +19,7 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
       <span>{icon}</span>
       <p className="text-sm text-neutral-800 md:text-base">{label}</p>
       <div className="text-md font-bold text-neutral-900 lg:text-lg">
-        {count} {totalCount && `/ ${totalCount}`}
+        {count && count} {totalCount && `/ ${totalCount}`}
       </div>
     </div>
   );

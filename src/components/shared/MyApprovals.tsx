@@ -4,12 +4,15 @@ import {
   type ColumnFiltersState,
   type PaginationState,
 } from "@tanstack/react-table";
+import axios, { type AxiosResponse } from "axios";
 import dayjs from "dayjs";
 import dynamic from "next/dynamic";
 import React, { useState } from "react";
 import { MdAccessTimeFilled } from "react-icons-all-files/md/MdAccessTimeFilled";
 import { MdGavel } from "react-icons-all-files/md/MdGavel";
 import { MdSearch } from "react-icons-all-files/md/MdSearch";
+import { useAppDispatch, useAppSelector } from "~/app/hook";
+import { appApiSlice } from "~/app/rtkQuery";
 import { Button } from "~/components/core/Button";
 import DashboardCard, {
   DashboardCardSkeleton,
@@ -20,7 +23,14 @@ import Table from "~/components/core/table";
 import TableCheckbox from "~/components/core/table/TableCheckbox";
 import { type FilterProps } from "~/components/core/table/filters/StatusFilter";
 import ReimbursementsCardView from "~/components/reimbursement-view";
+import { Can } from "~/context/AbilityContext";
+import { env } from "~/env.mjs";
 import {
+  setColumnFilters,
+  setSelectedItems,
+} from "~/features/approval-page-state-slice";
+import {
+  useApproveReimbursementMutation,
   useGetAllApprovalQuery,
   useGetAnalyticsQuery,
   useGetRequestQuery,
@@ -29,7 +39,10 @@ import { useDialogState } from "~/hooks/use-dialog-state";
 import { type ReimbursementApproval } from "~/types/reimbursement.types";
 import { classNames } from "~/utils/classNames";
 import { currencyFormat } from "~/utils/currencyFormat";
+import CollapseWidthAnimation from "../animation/CollapseWidth";
+import Dialog from "../core/Dialog";
 import SkeletonLoading from "../core/SkeletonLoading";
+import { showToast } from "../core/Toast";
 import Input from "../core/form/fields/Input";
 import TableSkeleton from "../core/table/TableSkeleton";
 import DateFiledFilter from "../core/table/filters/DateFiledFilter";
@@ -45,23 +58,48 @@ const ReimbursementTypeFilter = dynamic(
 );
 
 const MyApprovals: React.FC = () => {
+  const { user } = useAppSelector((state) => state.session);
+  const { selectedItems, columnFilters } = useAppSelector(
+    (state) => state.approvalPageState,
+  );
+  const dispatch = useAppDispatch();
+
+  const setSelectedItemsState = (value: string[]) => {
+    dispatch(setSelectedItems(value));
+  };
+
+  const setColumnFiltersState = (value: ColumnFiltersState) => {
+    dispatch(setColumnFilters(value));
+  };
+
   const [focusedReimbursementId, setFocusedReimbursementId] =
     useState<string>();
+
+  const [approveReimbursement, { isLoading: isSubmitting }] =
+    useApproveReimbursementMutation();
 
   const { isLoading: analyticsIsLoading, data: analytics } =
     useGetAnalyticsQuery();
   const {
     isFetching: reimbursementRequestDataIsLoading,
-    data: reimbursementRequestData,
+    currentData: reimbursementRequestData,
   } = useGetRequestQuery(
     { reimbursement_request_id: focusedReimbursementId! },
-    { skip: !!focusedReimbursementId },
+    { skip: !focusedReimbursementId },
   );
 
-  const { isVisible, open, close } = useDialogState();
+  const {
+    isVisible,
+    open: openReimbursementView,
+    close: closeReimbursementView,
+  } = useDialogState();
 
-  const [selectedItems, setSelectedItems] = useState<string[]>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const {
+    isVisible: bulkApproveDialogIsOpen,
+    open: openBulkApproveDialog,
+    close: closeBulkApproveDialog,
+  } = useDialogState();
+
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10,
@@ -69,12 +107,177 @@ const MyApprovals: React.FC = () => {
 
   const { isLoading, data } = useGetAllApprovalQuery({});
 
-  const handleCloseReimbursementsView = () => {
-    setFocusedReimbursementId(undefined);
-    close();
+  const { accessToken } = useAppSelector((state) => state.session);
+
+  const downloadReport = async () => {
+    const response = await axios.get<unknown, AxiosResponse<Blob>>(
+      `${env.NEXT_PUBLIC_BASEAPI_URL}/api/finance/reimbursements/requests/reports/hrbp`,
+      {
+        responseType: "blob", // Important to set this
+        headers: {
+          accept: "*/*",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      },
+    );
+
+    console.log(response);
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+
+    const link = document.createElement("a");
+    link.href = url;
+
+    link.setAttribute("download", "filename.csv");
+
+    document.body.appendChild(link);
+
+    link.click();
+
+    document.body.removeChild(link);
   };
 
   const columns = React.useMemo<ColumnDef<ReimbursementApproval>[]>(() => {
+    if (user?.assignedRole === "HRBP") {
+      return [
+        {
+          id: "select",
+          size: 10,
+          header: ({ table }) => {
+            if (table.getRowModel().rows.length > 0) {
+              return (
+                <TableCheckbox
+                  checked={table.getIsAllRowsSelected()}
+                  indeterminate={table.getIsSomeRowsSelected()}
+                  onChange={table.getToggleAllRowsSelectedHandler()}
+                  showOnHover={false}
+                />
+              );
+            }
+          },
+
+          cell: ({ row }) => (
+            <div className="px-4">
+              <TableCheckbox
+                checked={row.getIsSelected()}
+                tableHasChecked={selectedItems.length > 0}
+                disabled={!row.getCanSelect()}
+                indeterminate={row.getIsSomeSelected()}
+                onChange={row.getToggleSelectedHandler()}
+              />
+            </div>
+          ),
+        },
+
+        {
+          id: "request_status",
+          accessorKey: "request_status",
+          header: "Status",
+          cell: (info) => (
+            <StatusBadge
+              status={(info.getValue() as string).toLowerCase() as StatusType}
+            />
+          ),
+          filterFn: (row, id, value: string) => {
+            return value.includes(row.getValue(id));
+          },
+          enableColumnFilter: true,
+          meta: {
+            filterComponent: (info: FilterProps) => (
+              <StatusFilter
+                {...info}
+                isButtonHidden={data && data.length === 0}
+              />
+            ),
+          },
+        },
+        {
+          id: "full_name",
+          accessorKey: "full_name",
+          cell: (info) => info.getValue(),
+          header: "Name",
+        },
+        {
+          id: "reference_no",
+          accessorKey: "reference_no",
+          cell: (info) => info.getValue(),
+          header: "R-ID",
+        },
+        {
+          id: "request_type",
+          accessorKey: "request_type",
+          cell: (info) => info.getValue(),
+          header: "Type",
+          filterFn: (row, id, value: string) => {
+            return value.includes(row.getValue(id));
+          },
+          meta: {
+            filterComponent: (info: FilterProps) => (
+              <ReimbursementTypeFilter
+                {...info}
+                isButtonHidden={data && data.length === 0}
+              />
+            ),
+          },
+        },
+        {
+          id: "expense_type",
+          accessorKey: "expense_type",
+          cell: (info) => info.getValue(),
+          header: "Expense",
+          filterFn: (row, id, value: string) => {
+            return value.includes(row.getValue(id));
+          },
+          meta: {
+            filterComponent: (info: FilterProps) => (
+              <ExpenseTypeFilter
+                {...info}
+                isButtonHidden={data && data.length === 0}
+              />
+            ),
+          },
+        },
+        {
+          id: "created_at",
+          accessorKey: "created_at",
+          cell: (info) =>
+            dayjs(info.getValue() as string).format("MMM D, YYYY"),
+          header: "Filed",
+          filterFn: (row, id, value: string) => {
+            return value.includes(row.getValue(id));
+          },
+          meta: {
+            filterComponent: (info: FilterProps) => (
+              <DateFiledFilter
+                {...info}
+                isButtonHidden={data && data.length === 0}
+              />
+            ),
+          },
+        },
+        {
+          id: "amount",
+          accessorKey: "amount",
+          cell: (info) => currencyFormat(info.getValue() as number),
+          header: "Amount",
+        },
+        {
+          id: "actions",
+          accessorKey: "reimbursement_request_id",
+          cell: (info) => (
+            <Button
+              buttonType="text"
+              onClick={() => {
+                setFocusedReimbursementId(info.getValue() as string);
+                openReimbursementView();
+              }}
+            >
+              View
+            </Button>
+          ),
+          header: "",
+        },
+      ];
+    }
     return [
       {
         id: "select",
@@ -86,6 +289,7 @@ const MyApprovals: React.FC = () => {
                 checked={table.getIsAllRowsSelected()}
                 indeterminate={table.getIsSomeRowsSelected()}
                 onChange={table.getToggleAllRowsSelectedHandler()}
+                showOnHover={false}
               />
             );
           }
@@ -95,6 +299,7 @@ const MyApprovals: React.FC = () => {
           <div className="px-4">
             <TableCheckbox
               checked={row.getIsSelected()}
+              tableHasChecked={selectedItems.length > 0}
               disabled={!row.getCanSelect()}
               indeterminate={row.getIsSomeSelected()}
               onChange={row.getToggleSelectedHandler()}
@@ -117,7 +322,12 @@ const MyApprovals: React.FC = () => {
         },
         enableColumnFilter: true,
         meta: {
-          filterComponent: (info: FilterProps) => <StatusFilter {...info} />,
+          filterComponent: (info: FilterProps) => (
+            <StatusFilter
+              {...info}
+              isButtonHidden={data && data.length === 0}
+            />
+          ),
         },
       },
       {
@@ -136,7 +346,10 @@ const MyApprovals: React.FC = () => {
         },
         meta: {
           filterComponent: (info: FilterProps) => (
-            <ReimbursementTypeFilter {...info} />
+            <ReimbursementTypeFilter
+              {...info}
+              isButtonHidden={data && data.length === 0}
+            />
           ),
         },
       },
@@ -150,7 +363,10 @@ const MyApprovals: React.FC = () => {
         },
         meta: {
           filterComponent: (info: FilterProps) => (
-            <ExpenseTypeFilter {...info} />
+            <ExpenseTypeFilter
+              {...info}
+              isButtonHidden={data && data.length === 0}
+            />
           ),
         },
       },
@@ -163,7 +379,12 @@ const MyApprovals: React.FC = () => {
           return value.includes(row.getValue(id));
         },
         meta: {
-          filterComponent: (info: FilterProps) => <DateFiledFilter {...info} />,
+          filterComponent: (info: FilterProps) => (
+            <DateFiledFilter
+              {...info}
+              isButtonHidden={data && data.length === 0}
+            />
+          ),
         },
       },
       {
@@ -180,7 +401,7 @@ const MyApprovals: React.FC = () => {
             buttonType="text"
             onClick={() => {
               setFocusedReimbursementId(info.getValue() as string);
-              open();
+              openReimbursementView();
             }}
           >
             View
@@ -190,7 +411,55 @@ const MyApprovals: React.FC = () => {
       },
     ];
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [selectedItems, user]);
+
+  const handleBulkApprove = () => {
+    openBulkApproveDialog();
+  };
+
+  const handleConfirmBulkApprove = () => {
+    if (data && selectedItems) {
+      const matrixIds: string[] = [];
+
+      selectedItems.forEach((a) => {
+        const reimbursement = data.find(
+          (b) => a === b.reimbursement_request_id,
+        );
+        if (reimbursement) {
+          matrixIds.push(reimbursement.approval_matrix_id);
+        }
+      });
+
+      if (matrixIds) {
+        const payload = {
+          approval_matrix_ids: matrixIds,
+        };
+
+        void approveReimbursement(payload)
+          .unwrap()
+          .then(() => {
+            dispatch(
+              appApiSlice.util.invalidateTags([
+                { type: "ReimbursementRequest" },
+              ]),
+            );
+            showToast({
+              type: "success",
+              description: "Reimbursement Requests successfully approved!",
+            });
+
+            setSelectedItemsState([]);
+            closeBulkApproveDialog();
+          })
+          .catch(() => {
+            showToast({
+              type: "error",
+              description: "Approval failed!",
+            });
+          });
+      }
+    }
+  };
 
   return (
     <>
@@ -213,8 +482,8 @@ const MyApprovals: React.FC = () => {
               <DashboardCard
                 icon={<MdAccessTimeFilled className="h-5 w-5 text-blue-600" />}
                 label="Scheduled/Unscheduled"
-                count={analytics.myTotalRequest.count}
-                totalCount={20}
+                count={analytics.others?.totalScheduledRequest.count}
+                totalCount={analytics.others?.totalUnScheduledRequest.count}
               />
             </>
           )}
@@ -225,10 +494,7 @@ const MyApprovals: React.FC = () => {
 
           <div
             className={classNames(
-              selectedItems && selectedItems.length === 0
-                ? "h-12 w-full md:h-auto md:w-64"
-                : "h-[85px] w-full md:h-auto md:w-[26.2rem]",
-              "flex flex-col gap-2 overflow-hidden transition-all ease-in-out md:flex-row md:items-center",
+              "flex flex-col gap-2 md:flex-row md:items-center",
             )}
           >
             {isLoading && (
@@ -237,34 +503,40 @@ const MyApprovals: React.FC = () => {
 
             {!isLoading && (
               <>
-                <Input
-                  name="searchFilter"
-                  placeholder="Find anything..."
-                  className="w-full md:w-64"
-                  icon={MdSearch}
-                />
+                {data && data.length > 0 && (
+                  <Input
+                    name="searchFilter"
+                    placeholder="Find anything..."
+                    className="w-full md:w-64"
+                    icon={MdSearch}
+                  />
+                )}
 
-                <div className="flex gap-2">
+                <CollapseWidthAnimation
+                  isVisible={selectedItems && selectedItems.length > 0}
+                >
+                  <Can I="access" a="CAN_BULK_APPROVE_REIMBURSEMENT">
+                    <Button
+                      variant="primary"
+                      disabled={selectedItems.length === 0}
+                      onClick={handleBulkApprove}
+                    >
+                      Approve
+                    </Button>
+                  </Can>
+                </CollapseWidthAnimation>
+
+                <CollapseWidthAnimation
+                  isVisible={data && data.length > 0 ? true : false}
+                >
                   <Button
-                    buttonType="outlined"
-                    variant="danger"
-                    disabled={selectedItems.length === 0}
+                    variant="success"
+                    className="whitespace-nowrap"
+                    onClick={() => void downloadReport()}
                   >
-                    Reject
+                    Download Report
                   </Button>
-                  <Button
-                    variant="primary"
-                    disabled={selectedItems.length === 0}
-                    onClick={() => {
-                      if (selectedItems && selectedItems.length > 0) {
-                        setFocusedReimbursementId(selectedItems[0]);
-                        open();
-                      }
-                    }}
-                  >
-                    Approve
-                  </Button>
-                </div>
+                </CollapseWidthAnimation>
               </>
             )}
           </div>
@@ -282,8 +554,8 @@ const MyApprovals: React.FC = () => {
               columnFilters,
             }}
             tableStateActions={{
-              setColumnFilters,
-              setSelectedItems,
+              setColumnFilters: setColumnFiltersState,
+              setSelectedItems: setSelectedItemsState,
               setPagination,
             }}
           />
@@ -294,20 +566,84 @@ const MyApprovals: React.FC = () => {
 
       <SideDrawer
         title={
-          !isLoading && reimbursementRequestData
+          !reimbursementRequestDataIsLoading && reimbursementRequestData
             ? reimbursementRequestData.reference_no
             : "..."
         }
         isVisible={isVisible}
-        closeDrawer={close}
+        closeDrawer={closeReimbursementView}
       >
         <ReimbursementsCardView
           isApproverView
-          closeDrawer={handleCloseReimbursementsView}
+          closeDrawer={closeReimbursementView}
           isLoading={reimbursementRequestDataIsLoading}
           data={reimbursementRequestData}
         />
       </SideDrawer>
+
+      <Dialog
+        title={
+          selectedItems && selectedItems.length > 1
+            ? "Approve Reimbursements?"
+            : "Approve Reimbursement?"
+        }
+        isVisible={bulkApproveDialogIsOpen}
+        close={closeBulkApproveDialog}
+        hideCloseIcon
+      >
+        <div className="flex flex-col gap-8 pt-8">
+          {data && (
+            <>
+              <p className="text-neutral-800">
+                {selectedItems && selectedItems.length === 1 && data && (
+                  <>
+                    Are you sure you want to approve reimbursement request{" "}
+                    {
+                      data.find(
+                        (a) => a.reimbursement_request_id === selectedItems[0],
+                      )?.reference_no
+                    }{" "}
+                    with total amount of{" "}
+                    {currencyFormat(
+                      // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
+                      +data.find(
+                        (a) => a.reimbursement_request_id === selectedItems[0],
+                      )?.amount!,
+                    )}
+                    ?
+                  </>
+                )}
+
+                {selectedItems && selectedItems.length > 1 && (
+                  <>
+                    Are you sure you want to approve {selectedItems.length}{" "}
+                    selected reimbursement request?
+                  </>
+                )}
+              </p>
+
+              <div className="flex items-center gap-4">
+                <Button
+                  variant="neutral"
+                  buttonType="outlined"
+                  className="w-1/2"
+                  onClick={closeBulkApproveDialog}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  className="w-1/2"
+                  onClick={handleConfirmBulkApprove}
+                  disabled={isSubmitting}
+                  loading={isSubmitting}
+                >
+                  Approve
+                </Button>
+              </div>
+            </>
+          )}
+        </div>
+      </Dialog>
     </>
   );
 };

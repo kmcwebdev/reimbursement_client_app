@@ -13,11 +13,11 @@ const buttonVariants = cva("btn", {
     },
     variant: {
       primary: "primary",
-      filled: "primary",
       informative: "informative",
       danger: "danger",
       neutral: "neutral",
       success: "success",
+      warning: "warning",
     },
     width: {
       default: "w-fit",

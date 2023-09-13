@@ -4,7 +4,9 @@ import {
   type ExpenseTypeQueryType,
 } from "~/schema/expense-type.schema";
 import { type ReimbursementDetailsType } from "~/schema/reimbursement-details.schema";
+import { type OnholdReimbursementType } from "~/schema/reimbursement-onhold-form.schema";
 import { type GetAllReimbursementRequestType } from "~/schema/reimbursement-query.schema";
+import { type RejectReimbursementType } from "~/schema/reimbursement-reject-form.schema";
 import { type UploadFileResponse } from "~/types/file-upload-response.type";
 import { type ReimbursementAnalyticsType } from "~/types/reimbursement-analytics";
 import { type ReimbursementExpenseType } from "~/types/reimbursement.expese-type";
@@ -132,12 +134,65 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
     approveReimbursement: builder.mutation<
       unknown,
       {
-        matrixId: string;
+        approval_matrix_ids: string[];
       }
     >({
       query: (data) => {
         return {
           url: "/api/finance/reimbursement/requests/approve",
+          method: "POST",
+          body: data,
+        };
+      },
+      invalidatesTags: [
+        { type: "ReimbursementApprovalList" },
+        { type: "ReimbursementAnalytics" },
+      ],
+    }),
+    rejectReimbursement: builder.mutation<
+      unknown,
+       RejectReimbursementType & {approval_matrix_id:string}
+    >({
+      query: (data) => {
+        return {
+          url: "/api/finance/reimbursement/requests/reject",
+          method: "POST",
+          body: data,
+        };
+      },
+      invalidatesTags: [
+        { type: "ReimbursementApprovalList" },
+        { type: "ReimbursementAnalytics" },
+      ],
+    }),
+     cancelReimbursement: builder.mutation<
+      unknown,
+      {
+        reimbursement_request_id: string,
+      }
+    >({
+      query: (data) => {
+        return {
+          url: "/api/finance/reimbursement/requests/cancel",
+          method: "POST",
+          body: data,
+        };
+      },
+      invalidatesTags: [
+        { type: "ReimbursementApprovalList" },
+        { type: "ReimbursementAnalytics" },
+      ],
+    }),
+     
+      holdReimbursement: builder.mutation<
+      unknown,
+      OnholdReimbursementType & {
+        reimbursement_request_id: string,
+      }
+    >({
+      query: (data) => {
+        return {
+          url: "/api/finance/reimbursement/requests/onhold",
           method: "POST",
           body: data,
         };
@@ -175,5 +230,8 @@ export const {
   useUploadFileMutation,
   useCreateReimbursementMutation,
   useApproveReimbursementMutation,
+  useRejectReimbursementMutation,
+  useHoldReimbursementMutation,
+  useCancelReimbursementMutation,
   useChangeRoleMutation,
 } = reimbursementApiSlice;

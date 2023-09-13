@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import React from "react";
-import MyReimbursements from "../shared/MyReimbusements";
+import MyReimbursements from "../shared/MyReimbursements";
 
 const ManagerDashboard: React.FC = () => {
   return (

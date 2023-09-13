@@ -28,7 +28,7 @@ const ReimburseForm: React.FC<ReimburseFormProps> = ({
           handleOpenCancelDialog={handleOpenCancelDialog}
         />
       )}
-      {activeStep === 1 && <UploadAttachments />}
+      {activeStep === 1 && <UploadAttachments formReturn={formReturn} />}
     </div>
   );
 };

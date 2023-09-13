@@ -4,7 +4,11 @@ import Head from "next/head";
 import PageAnimation from "~/components/animation/PageAnimation";
 import MyApprovals from "~/components/shared/MyApprovals";
 
-const Approvals: NextPage = () => {
+interface DashboardSSRProps {
+  userJson: string;
+}
+
+const Approvals: NextPage<DashboardSSRProps> = () => {
   return (
     <div>
       <Head>
@@ -26,6 +30,19 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     return {
       redirect: {
         destination: "/api/auth/login",
+        permanent: false,
+      },
+    };
+  }
+
+  const userOrgs = user.getOrgs();
+  const assignedRole = userOrgs[0].assignedRole;
+  console.log(assignedRole);
+
+  if (assignedRole === "HRBP") {
+    return {
+      redirect: {
+        destination: "/dashboard",
         permanent: false,
       },
     };

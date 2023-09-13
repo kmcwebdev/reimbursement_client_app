@@ -2,7 +2,7 @@ import React, { useMemo, useState } from "react";
 import { useFieldArray, type UseFormReturn } from "react-hook-form";
 import { type IconType } from "react-icons-all-files";
 import { AiOutlineMinusCircle } from "react-icons-all-files/ai/AiOutlineMinusCircle";
-import { AiOutlinePlus } from "react-icons-all-files/ai/AiOutlinePlus";
+// import { AiOutlinePlus } from "react-icons-all-files/ai/AiOutlinePlus";
 import { MdAccessTime } from "react-icons-all-files/md/MdAccessTime";
 import { MdMail } from "react-icons-all-files/md/MdMail";
 import { type PropsValue } from "react-select";
@@ -32,6 +32,7 @@ interface ReimbursementDetailsFormProps {
 }
 
 const UNSCHEDULED = "9850f2aa-40c4-4fd5-8708-c8edf734d83f";
+const SCHEDULED = "83ad9a7a-3ff6-469f-a4e0-20c202ac6ba4";
 const OTHER_EXPENSE = "1de6c849-39d9-421b-b0db-2fb3202cb7c6";
 
 const ReimbursementDetailsForm: React.FC<ReimbursementDetailsFormProps> = ({
@@ -48,8 +49,11 @@ const ReimbursementDetailsForm: React.FC<ReimbursementDetailsFormProps> = ({
   const { isLoading: requestTypesIsLoading, data: requestTypes } =
     useRequestTypesQuery();
 
-  const { isFetching: expenseTypesIsLoading, data: expenseTypes } =
-    useExpenseTypesQuery({ request_type_id: selectedType! });
+  const { isFetching: expenseTypesIsLoading, currentData: expenseTypes } =
+    useExpenseTypesQuery(
+      { request_type_id: selectedType! },
+      { skip: !selectedType },
+    );
 
   useMemo(() => {
     if (reimbursementDetails) {
@@ -114,40 +118,45 @@ const ReimbursementDetailsForm: React.FC<ReimbursementDetailsFormProps> = ({
         }
       />
 
-      <Select
-        label="Expense"
-        name="expense_type_id"
-        placeholder="Type of expense"
-        required
-        onChangeEvent={handleExpenseTypeChange}
-        isLoading={expenseTypesIsLoading}
-        options={
-          expenseTypes?.map((item) => ({
-            label: item.expense_type,
-            value: item.expense_type_id,
-          })) ?? []
-        }
-      />
-
       <CollapseHeightAnimation
-        isVisible={selectedExpense === OTHER_EXPENSE ? true : false}
+        hideOverflow={!selectedType}
+        isVisible={!!selectedType}
       >
-        <Input
-          name="remarks"
-          label="Remarks"
-          placeholder="Remarks for others"
+        <Select
+          label="Expense"
+          name="expense_type_id"
+          placeholder="Type of expense"
           required
+          onChangeEvent={handleExpenseTypeChange}
+          isLoading={expenseTypesIsLoading}
+          options={
+            expenseTypes?.map((item) => ({
+              label: item.expense_type,
+              value: item.expense_type_id,
+            })) || []
+          }
+        />
+
+        <CollapseHeightAnimation
+          isVisible={selectedExpense === OTHER_EXPENSE ? true : false}
+        >
+          <Input
+            name="remarks"
+            label="Remarks"
+            placeholder="Remarks for others"
+            required
+          />
+        </CollapseHeightAnimation>
+
+        <Input
+          type="number"
+          label="Total"
+          name="amount"
+          placeholder="Total"
+          required
+          step={0.01}
         />
       </CollapseHeightAnimation>
-
-      <Input
-        type="number"
-        label="Total"
-        name="amount"
-        placeholder="Total"
-        required
-        step={0.01}
-      />
 
       <CollapseHeightAnimation
         isVisible={selectedType === UNSCHEDULED ? true : false}
@@ -183,18 +192,28 @@ const ReimbursementDetailsForm: React.FC<ReimbursementDetailsFormProps> = ({
           </div>
         ))}
 
-        <Button buttonType="text" onClick={() => append({ email: "" })}>
+        {/* <Button buttonType="text" onClick={() => append({ email: "" })}>
           <div className="flex items-center gap-2">
             <AiOutlinePlus className="h-5 w-5" />
             Add Another
           </div>
-        </Button>
+        </Button> */}
       </CollapseHeightAnimation>
 
-      <div className="my-4 flex items-center justify-center gap-2">
-        <div className="h-2 w-2 rounded-full bg-orange-600"></div>
-        <div className="h-2 w-2 rounded-full bg-orange-200"></div>
-      </div>
+      <CollapseHeightAnimation
+        isVisible={
+          selectedType === UNSCHEDULED
+            ? true
+            : false || selectedType === SCHEDULED
+            ? true
+            : false
+        }
+      >
+        <div className="my-4 flex items-center justify-center gap-2">
+          <div className="h-2 w-2 rounded-full bg-orange-600"></div>
+          <div className="h-2 w-2 rounded-full bg-orange-200"></div>
+        </div>
+      </CollapseHeightAnimation>
 
       <div className="grid grid-cols-2 items-center gap-4">
         <Button

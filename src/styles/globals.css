@@ -45,9 +45,13 @@
     @apply bg-orange-600 hover:bg-orange-700 active:bg-orange-800 disabled:bg-opacity-[64%] disabled:hover:bg-orange-600 disabled:hover:bg-opacity-[64%];
   }
 
-  .btn.filled.success {
-    @apply bg-orange-600 hover:bg-orange-700 active:bg-orange-800 disabled:bg-opacity-[64%] disabled:hover:bg-green-600 disabled:hover:bg-opacity-[64%];
+  .btn.filled.warning {
+    @apply bg-yellow-600 hover:bg-yellow-700 active:bg-yellow-800 disabled:bg-opacity-[64%] disabled:hover:bg-yellow-600 disabled:hover:bg-opacity-[64%];
   }
+
+     .btn.filled.success {
+       @apply bg-green-600 hover:bg-green-700 active:bg-green-800 disabled:bg-opacity-[64%] disabled:hover:bg-green-600 disabled:hover:bg-opacity-[64%];
+     }
 
   .btn.filled.informative {
     @apply bg-blue-600 hover:bg-blue-700 active:bg-blue-800 disabled:bg-opacity-[64%] disabled:hover:bg-blue-600 disabled:hover:bg-opacity-[64%];
@@ -59,29 +63,37 @@
 
 
   .btn.outlined.primary {
-    @apply border border-orange-600 text-orange-600 outline-none hover:bg-orange-50 focus:ring-transparent focus-visible:outline-none focus-visible:ring-transparent active:border-orange-700 active:text-orange-700;
+    @apply border border-orange-600 text-orange-600 outline-none hover:bg-orange-50 focus:ring-transparent focus-visible:outline-none focus-visible:ring-transparent active:border-orange-700 active:text-orange-700 disabled:hover:bg-transparent;
   }
 
+     .btn.outlined.warning {
+       @apply border border-yellow-600 text-yellow-600 outline-none hover:bg-yellow-50 focus:ring-transparent focus-visible:outline-none focus-visible:ring-transparent active:border-yellow-700 active:text-yellow-700 disabled:hover:bg-transparent;
+     }
+
   .btn.outlined.success {
-    @apply border border-green-600 text-green-600 outline-none hover:bg-green-50 focus:ring-transparent focus-visible:outline-none focus-visible:ring-transparent active:border-green-700 active:text-green-700;
+    @apply border border-green-600 text-green-600 outline-none hover:bg-green-50 focus:ring-transparent focus-visible:outline-none focus-visible:ring-transparent active:border-green-700 active:text-green-700 disabled:hover:bg-transparent;
    }
 
   .btn.outlined.informative {
-    @apply border border-blue-600 text-blue-600 outline-none hover:bg-blue-50 focus:ring-transparent focus-visible:outline-none focus-visible:ring-transparent active:border-blue-700 active:text-blue-700;
+    @apply border border-blue-600 text-blue-600 outline-none hover:bg-blue-50 focus:ring-transparent focus-visible:outline-none focus-visible:ring-transparent active:border-blue-700 active:text-blue-700 disabled:hover:bg-transparent;
   }
 
   .btn.outlined.danger {
-    @apply border border-red-600 text-red-600 outline-none hover:bg-red-50 focus:ring-transparent focus-visible:outline-none focus-visible:ring-transparent active:border-red-700 active:text-red-700;
+    @apply border border-red-600 text-red-600 outline-none hover:bg-red-50 focus:ring-transparent focus-visible:outline-none focus-visible:ring-transparent active:border-red-700 active:text-red-700 disabled:hover:bg-transparent;
   }
 
   .btn.outlined.neutral {
-    @apply border border-neutral-500 text-neutral-900 outline-none hover:bg-neutral-100 focus:ring-transparent focus-visible:outline-none focus-visible:ring-transparent active:border-neutral-700 ;
+    @apply border border-neutral-500 text-neutral-900 outline-none hover:bg-neutral-100 focus:ring-transparent focus-visible:outline-none focus-visible:ring-transparent active:border-neutral-700 disabled:hover:bg-transparent;
   }
 
 
   .btn.text.primary {
     @apply text-orange-600 outline-none hover:text-orange-700 focus:ring-transparent focus-visible:outline-none focus-visible:ring-transparent active:text-orange-800;
   }
+
+     .btn.text.warning {
+       @apply text-yellow-600 outline-none hover:text-yellow-700 focus:ring-transparent focus-visible:outline-none focus-visible:ring-transparent active:text-yellow-800;
+     }
 
   .btn.text.success {
     @apply text-green-600 outline-none hover:text-green-700 focus:ring-transparent focus-visible:outline-none focus-visible:ring-transparent active:text-green-800;

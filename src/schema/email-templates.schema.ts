@@ -18,8 +18,8 @@ export const ConfirmationEmailSchema = z.object({
       required_error: "Request ID is required",
       invalid_type_error: "Request ID is invalid",
     })
-    .uuid({
-      message: "Request ID is invalid",
+    .nonempty({
+      message: "Request ID is required",
     }),
   hrbpManagerName: z
     .string({
@@ -45,7 +45,7 @@ export const ConfirmationEmailSchema = z.object({
       required_error: "Employee ID is required",
       invalid_type_error: "Employee ID is invalid",
     })
-    .uuid({
+    .nonempty({
       message: "Employee ID is required",
     }),
   expenseType: z
@@ -113,7 +113,7 @@ export const DefaultEmailSchema = z.object({
       required_error: "Employee ID is required",
       invalid_type_error: "Employee ID is invalid",
     })
-    .uuid({
+    .nonempty({
       message: "Employee ID is required",
     }),
   expenseType: z

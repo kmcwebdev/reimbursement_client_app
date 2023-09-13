@@ -4,15 +4,20 @@ import { FaCaretDown } from "react-icons-all-files/fa/FaCaretDown";
 import CollapseHeightAnimation from "~/components/animation/CollapseHeight";
 import { statusOptions } from "~/constants/status-options";
 import { type ReimbursementRequest } from "~/types/reimbursement.types";
+import { classNames } from "~/utils/classNames";
 import { Button } from "../../Button";
 import Popover from "../../Popover";
 import StatusBadge, { type StatusType } from "../../StatusBadge";
 import Checkbox from "../../form/fields/Checkbox";
 export interface FilterProps {
   column: Column<ReimbursementRequest, unknown>;
+  isButtonHidden?: boolean;
 }
 
-const StatusFilter: React.FC<FilterProps> = ({ column }) => {
+const StatusFilter: React.FC<FilterProps> = ({
+  column,
+  isButtonHidden = false,
+}) => {
   useEffect(() => {
     column.setFilterValue(statusOptions);
   }, [column]);
@@ -26,6 +31,17 @@ const StatusFilter: React.FC<FilterProps> = ({ column }) => {
   }, [column.getFilterValue()]);
 
   const [checked, setChecked] = useState(statusOptions);
+
+  /**
+   * Resets the status options
+   *
+   */
+  useEffect(() => {
+    if (checked.length === statusOptions.length) {
+      column.setFilterValue(statusOptions);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [checked]);
 
   const onChange = (e: ChangeEvent<HTMLInputElement>, value: string) => {
     if (checked.includes(value)) {
@@ -52,7 +68,14 @@ const StatusFilter: React.FC<FilterProps> = ({ column }) => {
 
   return (
     <Popover
-      btn={<FaCaretDown className="text-neutral-900 hover:text-neutral-800" />}
+      btn={
+        <FaCaretDown
+          className={classNames(
+            isButtonHidden && "hidden",
+            "text-neutral-900 hover:text-neutral-800",
+          )}
+        />
+      }
       content={
         <div className="w-32 p-4">
           <div className="flex flex-col gap-2 capitalize">

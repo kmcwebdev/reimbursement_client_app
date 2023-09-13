@@ -39,7 +39,7 @@ const Navigation: React.FC<NavigationProps> = ({ collapsed }) => {
           </Can>
         )}
 
-      {user && user.assignedRole === "HRBP" && (
+      {user && user.assignedRole === "Finance" && (
         <NavigationItem
           label="Reimbursements"
           icon={MdReceipt as IconType}

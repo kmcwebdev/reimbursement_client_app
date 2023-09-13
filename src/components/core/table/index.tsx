@@ -39,8 +39,8 @@ export type ITableState = {
 };
 
 export type ITableStateActions = {
-  setColumnFilters?: Dispatch<SetStateAction<ColumnFiltersState>>;
-  setSelectedItems?: Dispatch<SetStateAction<any>>;
+  setColumnFilters?: (value: ColumnFiltersState) => void;
+  setSelectedItems?: (value: string[]) => void;
   setPagination?: Dispatch<SetStateAction<PaginationState>>;
 };
 
@@ -54,12 +54,17 @@ type ApprovalTable = {
   data: ReimbursementApproval[];
 };
 
+type FinanceTable = {
+  type: "finance";
+  data: ReimbursementApproval[];
+};
+
 type TableProps = {
   loading?: boolean;
   tableState?: ITableState;
   tableStateActions?: ITableStateActions;
   columns: any;
-} & (ReimbursementTable | ApprovalTable);
+} & (ReimbursementTable | ApprovalTable | FinanceTable);
 
 interface CustomFilterMeta extends FilterMeta {
   filterComponent: (info: {
@@ -71,6 +76,7 @@ interface CustomFilterMeta extends FilterMeta {
 const Table: React.FC<TableProps> = (props) => {
   const { data, columns } = props;
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+  const [filterState, setFilterState] = useState<ColumnFiltersState>([]);
 
   useEffect(() => {
     if (
@@ -93,6 +99,20 @@ const Table: React.FC<TableProps> = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rowSelection]);
 
+  useEffect(() => {
+    if (
+      !props.loading &&
+      filterState &&
+      props.tableState &&
+      props.tableStateActions &&
+      props.tableState.columnFilters &&
+      props.tableStateActions.setColumnFilters
+    ) {
+      props.tableStateActions.setColumnFilters(filterState);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filterState]);
+
   const table = useReactTable<ReimbursementRequest | ReimbursementApproval>({
     data,
     columns,
@@ -100,7 +120,7 @@ const Table: React.FC<TableProps> = (props) => {
       ...props.tableState,
       rowSelection: props.tableState?.selectedItems ? rowSelection : undefined,
     },
-    onColumnFiltersChange: props.tableStateActions?.setColumnFilters,
+    onColumnFiltersChange: setFilterState,
     onRowSelectionChange: setRowSelection,
     onPaginationChange: props.tableStateActions?.setPagination,
     getFacetedUniqueValues: getFacetedUniqueValues(),
@@ -161,30 +181,77 @@ const Table: React.FC<TableProps> = (props) => {
             ))}
           </thead>
           <tbody className="min-h-[calc(300px-3rem)]">
-            {props.tableState && props.tableState.columnFilters && (
-              <FilterView
-                colSpan={table.getAllColumns().length}
-                columns={props.tableState.columnFilters?.map((a) =>
-                  table.getColumn(a.id),
-                )}
-              />
-            )}
+            {!props.loading &&
+              data &&
+              data.length > 0 &&
+              props.tableState &&
+              props.tableState.columnFilters && (
+                <FilterView
+                  colSpan={table.getAllColumns().length}
+                  columns={props.tableState.columnFilters.map((a) =>
+                    table.getColumn(a.id),
+                  )}
+                />
+              )}
 
-            {table.getRowModel().rows.length === 0 && (
-              <tr className="h-72 bg-neutral-100">
+            {/* Data is empty */}
+
+            {data && data.length === 0 && (
+              <tr>
                 <td colSpan={table.getAllFlatColumns().length}>
-                  <EmptyState
-                    icon={MdBrowserNotSupported}
-                    title="No Reimbursement Requests Available."
-                    description="You may try to change your filter values to see records."
-                  />
+                  <div className="py-4">
+                    <div className="grid h-96 place-items-center rounded-md  bg-neutral-100 py-10">
+                      {props.type === "approvals" && (
+                        <EmptyState
+                          icon={MdBrowserNotSupported}
+                          title="No Reimbursement Requests to Approve."
+                          description="You have 0 pending approvals."
+                        />
+                      )}
+
+                      {props.type === "reimbursements" && (
+                        <EmptyState
+                          icon={MdBrowserNotSupported}
+                          title="No Pending Reimbursement Requests"
+                          description={`Submit a reimbursement request by clicking the "Reimburse" button above the table.`}
+                        />
+                      )}
+
+                      {props.type === "finance" && (
+                        <EmptyState
+                          icon={MdBrowserNotSupported}
+                          title="No Reimbursement Requests"
+                          description="You have 0 pending approvals."
+                        />
+                      )}
+                    </div>
+                  </div>
                 </td>
               </tr>
             )}
 
+            {/* Filter returns 0 record */}
+            {data &&
+              data.length > 0 &&
+              table.getRowModel().rows.length === 0 && (
+                <tr className="h-72 bg-neutral-100">
+                  <td colSpan={table.getAllFlatColumns().length}>
+                    <div className="py-4">
+                      <div className="grid h-96 place-items-center rounded-md  bg-neutral-100 py-10">
+                        <EmptyState
+                          icon={MdBrowserNotSupported}
+                          title="No Reimbursement Requests Available."
+                          description="You may try to change your filter values to see records."
+                        />
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              )}
+
             {table.getRowModel().rows.map((row, i) => {
               return (
-                <tr key={i} className="h-16">
+                <tr key={i} className="group h-16">
                   {row.getVisibleCells().map((cell, i) => {
                     return (
                       <td
