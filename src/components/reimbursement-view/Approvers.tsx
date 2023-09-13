@@ -16,8 +16,6 @@ const Approvers: React.FC<ApproversProps> = ({ approvers }) => {
   useMemo(() => {
     const approversWhoRejected = approvers.filter((a) => a.has_rejected);
 
-    console.log(approversWhoRejected);
-
     if (approversWhoRejected && approversWhoRejected.length > 0) {
       setLastApproverRejected(
         approversWhoRejected[approversWhoRejected.length - 1],

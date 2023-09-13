@@ -5,6 +5,7 @@ import {
   type FileWithPath,
 } from "react-dropzone";
 import { BiSpreadsheet } from "react-icons-all-files/bi/BiSpreadsheet";
+import { HiInformationCircle } from "react-icons-all-files/hi/HiInformationCircle";
 import { MdCloudUpload } from "react-icons-all-files/md/MdCloudUpload";
 import { MdOutlineDelete } from "react-icons-all-files/md/MdOutlineDelete";
 import { MdPictureAsPdf } from "react-icons-all-files/md/MdPictureAsPdf";
@@ -158,25 +159,32 @@ const Upload: React.FC<UploadProps> = ({
   return (
     <section className="container p-0">
       <CollapseHeightAnimation isVisible={!file}>
-        <div
-          {...getRootProps({ className: "dropzone" })}
-          className={classNames(
-            "group flex cursor-pointer flex-col items-center gap-4 rounded border border-neutral-300 bg-white p-4 text-center outline-none transition-all hover:border-orange-700 focus:ring-1 focus:ring-orange-600",
-            fileRejections.length > 0
-              ? "border-red-600 focus:ring-red-600"
-              : "border-neutral-300 focus:ring-orange-600",
-          )}
-        >
-          <input {...getInputProps()} />
+        <div className="flex flex-col gap-2">
+          <div
+            {...getRootProps({ className: "dropzone" })}
+            className={classNames(
+              "group flex cursor-pointer flex-col items-center gap-4 rounded border border-neutral-300 bg-white p-4 text-center outline-none transition-all hover:border-orange-700 focus:ring-1 focus:ring-orange-600",
+              fileRejections.length > 0
+                ? "border-red-600 focus:ring-red-600"
+                : "border-neutral-300 focus:ring-orange-600",
+            )}
+          >
+            <input {...getInputProps()} />
 
-          <div className="grid h-12 w-12 place-items-center rounded-full bg-neutral-300">
-            <MdCloudUpload className="h-6 w-6 text-neutral-800" />
+            <div className="grid h-12 w-12 place-items-center rounded-full bg-neutral-300">
+              <MdCloudUpload className="h-6 w-6 text-neutral-800" />
+            </div>
+
+            <p className="font-bold text-orange-600">Click/Drop to Upload</p>
+
+            <p className="text-neutral-600">
+              PDF,Word or Excel (add the images of particulars)
+            </p>
           </div>
 
-          <p className="font-bold text-orange-600">Click/Drop to Upload</p>
-
-          <p className="text-neutral-600">
-            PDF,Word or Excel (add the images of particulars)
+          <p className="flex gap-2">
+            <HiInformationCircle className="h-4 w-4 text-blue-600" />
+            You can only upload 1 PDF, Excel or Word file.
           </p>
         </div>
       </CollapseHeightAnimation>

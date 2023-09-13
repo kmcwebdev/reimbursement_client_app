@@ -186,7 +186,7 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
         .then(() => {
           showToast({
             type: "success",
-            description: "Reimbursement Request successfully rejected!",
+            description: "Reimbursement Request successfully put onhold!",
           });
           closeRejectDialog();
           closeDrawer();
@@ -252,6 +252,7 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
                   className="w-full"
                   variant="danger"
                   onClick={openCancelDialog}
+                  disabled={data.request_status === "canceled"}
                 >
                   Cancel Request
                 </Button>
@@ -273,16 +274,17 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
                     "grid gap-2",
                   )}
                 >
-                  {/* {user && user.assignedRole === "Finance" && ( */}
-                  <Button
-                    className="w-full"
-                    buttonType="outlined"
-                    variant="warning"
-                    onClick={openHoldDialog}
-                  >
-                    Hold
-                  </Button>
-                  {/* )} */}
+                  {user && user.assignedRole === "Finance" && (
+                    <Button
+                      className="w-full"
+                      buttonType="outlined"
+                      variant="warning"
+                      onClick={openHoldDialog}
+                      disabled={data.request_status === "On-hold"}
+                    >
+                      {data.request_status === "On-hold" ? "Pending" : "Hold"}
+                    </Button>
+                  )}
                   <Button
                     className="w-full"
                     buttonType="outlined"

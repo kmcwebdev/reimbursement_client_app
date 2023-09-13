@@ -4,4 +4,6 @@ export const statusOptions = [
   "Pending",
   "Processing",
   "Rejected",
+  "On-hold",
+  "Cancelled",
 ];
