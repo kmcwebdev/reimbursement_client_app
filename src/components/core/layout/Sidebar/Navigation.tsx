@@ -15,7 +15,7 @@ interface NavigationProps {
 const Navigation: React.FC<NavigationProps> = ({ collapsed }) => {
   const { user } = useAppSelector((state) => state.session);
   const { pathname } = useRouter();
-
+  
   return (
     <div className="flex flex-col gap-2">
       <NavigationItem
@@ -39,12 +39,12 @@ const Navigation: React.FC<NavigationProps> = ({ collapsed }) => {
           </Can>
         )}
 
-      {user && user.assignedRole === "Finance" && (
+      {user && (user.assignedRole === "Finance" || user.assignedRole === "HRBP" || user.assignedRole === "External Reimbursement Approver Manager") && (
         <NavigationItem
-          label="Reimbursements"
+          label="History"
           icon={MdReceipt as IconType}
-          active={pathname.includes("reimbursements")}
-          href="/reimbursements"
+          active={pathname.includes("history")}
+          href="/history"
           collapsed={collapsed}
         />
       )}
