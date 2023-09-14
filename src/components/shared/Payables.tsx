@@ -24,7 +24,7 @@ import {
   useGetAllApprovalQuery,
   useGetAnalyticsQuery,
 } from "~/features/reimbursement-api-slice";
-import { type ReimbursementRequest } from "~/types/reimbursement.types";
+import { type ReimbursementApproval } from "~/types/reimbursement.types";
 import { currencyFormat } from "~/utils/currencyFormat";
 import CollapseWidthAnimation from "../animation/CollapseWidth";
 import { Button } from "../core/Button";
@@ -78,7 +78,7 @@ const Payables: React.FC = () => {
     dispatch(setSelectedItems(value));
   };
 
-  const { isLoading, data } = useGetAllApprovalQuery({});
+  const { isFetching, data } = useGetAllApprovalQuery({});
 
   const setColumnFiltersState = (value: ColumnFiltersState) => {
     dispatch(setColumnFilters(value));
@@ -92,11 +92,11 @@ const Payables: React.FC = () => {
   const { isLoading: analyticsIsLoading, data: analytics } =
     useGetAnalyticsQuery();
 
-  const columns = React.useMemo<ColumnDef<ReimbursementRequest>[]>(
+  const columns = React.useMemo<ColumnDef<ReimbursementApproval>[]>(
     () => [
       {
-        id: "client",
-        accessorKey: "client",
+        id: "client_name",
+        accessorKey: "client_name",
         cell: (info) => info.getValue(),
         header: "Client",
         filterFn: (row, id, value: string) => {
@@ -112,26 +112,26 @@ const Payables: React.FC = () => {
         },
       },
       {
-        id: "id",
-        accessorKey: "id",
+        id: "employee_id",
+        accessorKey: "employee_id",
         cell: (info) => info.getValue(),
         header: "ID",
       },
       {
-        id: "name",
-        accessorKey: "name",
+        id: "full_name",
+        accessorKey: "full_name",
         cell: (info) => info.getValue(),
         header: "Name",
       },
       {
-        id: "reimbursementId",
-        accessorKey: "reimbursementId",
+        id: "reference_no",
+        accessorKey: "reference_no",
         cell: (info) => info.getValue(),
         header: "R-ID",
       },
       {
-        id: "type",
-        accessorKey: "type",
+        id: "request_type",
+        accessorKey: "request_type",
         cell: (info) => info.getValue(),
         header: "Type",
         filterFn: (row, id, value: string) => {
@@ -147,8 +147,8 @@ const Payables: React.FC = () => {
         },
       },
       {
-        id: "expense",
-        accessorKey: "expense",
+        id: "expense_type",
+        accessorKey: "expense_type",
         cell: (info) => info.getValue(),
         header: "Expense",
         filterFn: (row, id, value: string) => {
@@ -164,8 +164,8 @@ const Payables: React.FC = () => {
         },
       },
       {
-        id: "filed",
-        accessorKey: "filed",
+        id: "created_at",
+        accessorKey: "created_at",
         cell: (info) => info.getValue(),
         header: "Approved",
         filterFn: (row, id, value: string) => {
@@ -181,14 +181,14 @@ const Payables: React.FC = () => {
         },
       },
       {
-        id: "payrollAccount",
-        accessorKey: "payrollAccount",
+        id: "payroll_account",
+        accessorKey: "payroll_account",
         cell: (info) => info.getValue(),
         header: "Payroll Account",
       },
       {
-        id: "total",
-        accessorKey: "total",
+        id: "amount",
+        accessorKey: "amount",
         cell: (info) => currencyFormat(info.getValue() as number),
         header: "Total",
       },
@@ -233,7 +233,7 @@ const Payables: React.FC = () => {
 
         {/* table */}
         <div className="flex justify-between">
-          <h4>For Processing</h4>
+          <h4>For Appproval</h4>
 
           <div className="flex gap-4">
             <Input
@@ -271,11 +271,12 @@ const Payables: React.FC = () => {
             />
           </div>
         </CollapseWidthAnimation>
-
-        {!isLoading && data && (
+        
+        
+        {!isFetching && data && (
           <Table
             type="approvals"
-            loading={isLoading}
+            loading={isFetching}
             data={data}
             columns={columns}
             tableState={{
@@ -291,7 +292,7 @@ const Payables: React.FC = () => {
           />
         )}
 
-        {isLoading && <TableSkeleton />}
+        {isFetching && <TableSkeleton />}
       </div>
     </>
   );
