@@ -43,6 +43,7 @@ import SkeletonLoading from "../core/SkeletonLoading";
 import { showToast } from "../core/Toast";
 import Input from "../core/form/fields/Input";
 import TableSkeleton from "../core/table/TableSkeleton";
+import ClientFilter from "../core/table/filters/ClientFilter";
 import DateFiledFilter from "../core/table/filters/DateFiledFilter";
 
 const StatusFilter = dynamic(
@@ -136,7 +137,6 @@ const MyApprovals: React.FC = () => {
             </div>
           ),
         },
-
         {
           id: "request_status",
           accessorKey: "request_status",
@@ -153,6 +153,24 @@ const MyApprovals: React.FC = () => {
           meta: {
             filterComponent: (info: FilterProps) => (
               <StatusFilter
+                {...info}
+                isButtonHidden={data && data.length === 0}
+              />
+            ),
+          },
+        },
+        {
+          id: "client_name",
+          accessorKey: "client_name",
+          header: "Client",
+          cell: (info) => info.getValue(),
+          filterFn: (row, id, value: string) => {
+            return value.includes(row.getValue(id));
+          },
+          enableColumnFilter: true,
+          meta: {
+            filterComponent: (info: FilterProps) => (
+              <ClientFilter
                 {...info}
                 isButtonHidden={data && data.length === 0}
               />

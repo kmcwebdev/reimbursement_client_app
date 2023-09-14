@@ -49,7 +49,9 @@ const EmailActions: React.FC<EmailActionsProps> = ({ subject }) => {
         </Container>
       )}
 
-      {(subject === "Approved" || subject === "Rejected") && (
+      {(subject === "Approved" ||
+        subject === "Rejected" ||
+        subject === "Welcome to Reimbursement") && (
         <Container className="mb-4">
           <Row>
             <Column align="right">

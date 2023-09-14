@@ -229,7 +229,9 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
               <Notes note="Missing details" />
             )}
 
-            <Approvers approvers={data.approvers} />
+            {data.approvers && data.approvers.length > 0 && (
+              <Approvers approvers={data.approvers} />
+            )}
 
             <Attachments
               attachment={data.attachment}

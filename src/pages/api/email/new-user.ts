@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { HRBPApproval } from "~/components/email-templates/HrbpApproval";
+import { NewUser } from "~/components/email-templates/NewUser";
 import { resend } from "~/libs/resend";
-import { HrbpApprovalSchema } from "~/schema/email-templates.schema";
+import { NewUserEmailSchema } from "~/schema/email-templates.schema";
 
 export default async function handler(
   req: NextApiRequest,
@@ -12,35 +12,27 @@ export default async function handler(
       return res.status(405).json({ message: "Method not allowed" });
     }
 
-    const validate = await HrbpApprovalSchema.safeParseAsync(req.body);
+    const validate = await NewUserEmailSchema.safeParseAsync(req.body);
 
     if (!validate.success) {
-      return res.status(400).json(validate.error.errors);
+      return res.status(400).json(validate.error);
     }
 
     const {
       to,
-      approverFullName,
       fullName,
-      employeeId,
-      expenseType,
-      expenseDate,
-      amount,
-      receiptsAttached,
+      email,
+       password
     } = validate.data;
 
     const sendEmail = await resend.emails.send({
       from: "KMC Reimbursement <no-reply@reimbursement.kmc.solutions>",
       to,
-      subject: `HRBP Approval`,
-      react: HRBPApproval({
-        approverFullName,
+      subject: "Welcome to Reimbursement!",
+      react: NewUser({
         fullName,
-        employeeId,
-        expenseType,
-        expenseDate,
-        amount,
-        receiptsAttached,
+        email,
+        password
       }),
       text: JSON.stringify(validate.data, null, 2),
     });
