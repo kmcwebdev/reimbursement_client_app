@@ -198,7 +198,7 @@ const Payables: React.FC = () => {
   return (
     <>
       <div className="grid gap-y-2 p-5">
-        <div className="mb-5 flex place-items-start gap-4">
+        <div className="mb-5 place-items-start gap-4 md:overflow-x-auto">
           {analyticsIsLoading && (
             <>
               <DashboardCardSkeleton />
@@ -209,33 +209,35 @@ const Payables: React.FC = () => {
 
           {!analyticsIsLoading && analytics && (
             <>
+            <div className="grid grid-cols-2 sm:flex gap-3">
               <DashboardCard
-                icon={<MdGavel className="h-5 w-5 text-orange-600" />}
-                label="Pending Approval"
-                count={analytics.myPendingRequest.count}
-              />
-              <DashboardCard
-                icon={<MdAccessTimeFilled className="h-5 w-5 text-blue-600" />}
-                label="Scheduled/Unscheduled"
-                count={analytics.others?.totalScheduledRequest.count || 0}
-                totalCount={
-                  analytics.others?.totalUnScheduledRequest.count || 0
-                }
-              />
-              <DashboardCard
-                icon={<AiOutlinePause className="h-5 w-5 text-yellow-600" />}
-                label="On-Hold"
-                count={analytics.others?.totalOnholdRequest.count || 0}
-              />
+                  icon={<MdGavel className="h-4 w-4 sm:h-5 sm:w-5 text-orange-600" />}
+                  label="Pending Approval"
+                  count={analytics.myPendingRequest.count}
+                />
+                <DashboardCard
+                  icon={<MdAccessTimeFilled className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" />}
+                  label="Scheduled/Unscheduled"
+                  count={analytics.others?.totalScheduledRequest.count || 0}
+                  totalCount={
+                    analytics.others?.totalUnScheduledRequest.count || 0
+                  }
+                />
+                <DashboardCard
+                  icon={<AiOutlinePause className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-600" />}
+                  label="On-Hold"
+                  count={analytics.others?.totalOnholdRequest.count || 0}
+                />
+              </div>
             </>
           )}
         </div>
 
         {/* table */}
-        <div className="flex justify-between">
+        <div className="flex justify-between flex-col md:flex-row gap-2">
           <h4>For Appproval</h4>
 
-          <div className="flex gap-4">
+          <div className="flex flex-col md:flex-row gap-2 md:gap-4">
             <Input
               name="inputText"
               placeholder="Find anything..."

@@ -15,13 +15,24 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
   totalCount,
 }) => {
   return (
-    <div className="flex h-[120px] w-full flex-col gap-2 rounded border border-neutral-300 bg-white p-4 md:w-[312px]">
-      <span>{icon}</span>
-      <p className="text-sm text-neutral-800 md:text-base">{label}</p>
-      <div className="text-md font-bold text-neutral-900 lg:text-lg">
-        {count && count} {totalCount && `/ ${totalCount}`}
+    <>
+      <div className="hidden sm:flex h-[120px] w-full flex-col gap-2 rounded border border-neutral-300 bg-white p-4 md:w-[312px]">
+        <span>{icon}</span>
+        <p className="text-sm text-neutral-800 md:text-base">{label}</p>
+        <div className="text-md font-bold text-neutral-900 lg:text-lg">
+          {count && count} {totalCount && `- ${totalCount}`}
+        </div>
       </div>
-    </div>
+      <div className="flex justify-between sm:hidden h-[80px] w-full sm:h-[120px] flex-col rounded border border-neutral-300 bg-white px-3 py-4 md:w-[312px]">
+        <div className="flex justify-between">
+          <span>{icon}</span>
+          <div className="text-md font-bold text-neutral-900 lg:text-lg">
+            {count && count} {totalCount && `- ${totalCount}`}
+          </div>
+        </div>
+        <p className="text-sm text-neutral-800 md:text-base">{label}</p>
+      </div>
+    </>
   );
 };
 
