@@ -138,8 +138,8 @@ const MyApprovals: React.FC = () => {
           ),
         },
         {
-          id: "request_status",
-          accessorKey: "request_status",
+          id: "requestor_request_status",
+          accessorKey: "requestor_request_status",
           header: "Status",
           cell: (info) => (
             <StatusBadge
@@ -296,8 +296,8 @@ const MyApprovals: React.FC = () => {
       },
 
       {
-        id: "request_status",
-        accessorKey: "request_status",
+        id: "requestor_request_status",
+        accessorKey: "requestor_request_status",
         header: "Status",
         cell: (info) => (
           <StatusBadge

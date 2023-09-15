@@ -58,6 +58,9 @@ export type ReimbursementApproval = {
   request_type: string;
   expense_type: string;
   request_status: string;
+  requestor_request_status: string;
+  hrbp_request_status: string;
+  finance_request_status: string;
   created_at: string;
   amount: string;
   date_approve: string | null;
