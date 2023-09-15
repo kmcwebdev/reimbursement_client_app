@@ -217,15 +217,15 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
         <>
           <div className="flex-1 p-5">
             <Details
-              request_status={data.request_status}
               request_type={data.request_type}
+              requestor_request_status={data.requestor_request_status}
               expense_type={data.expense_type}
               created_at={data.created_at}
               amount={data.amount}
               remarks={data.remarks}
             />
 
-            {data.request_status === "Rejected" && (
+            {data.requestor_request_status === "Rejected" && (
               <Notes note="Missing details" />
             )}
 
@@ -254,7 +254,7 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
                   className="w-full"
                   variant="danger"
                   onClick={openCancelDialog}
-                  disabled={data.request_status === "canceled"}
+                  disabled={data.requestor_request_status === "canceled"}
                 >
                   Cancel Request
                 </Button>
@@ -282,9 +282,9 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
                       buttonType="outlined"
                       variant="warning"
                       onClick={openHoldDialog}
-                      disabled={data.request_status === "On-hold"}
+                      disabled={data.requestor_request_status === "On-hold"}
                     >
-                      {data.request_status === "On-hold" ? "Pending" : "Hold"}
+                      {data.requestor_request_status === "On-hold" ? "Pending" : "Hold"}
                     </Button>
                   )}
                   <Button

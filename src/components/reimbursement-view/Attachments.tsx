@@ -14,7 +14,7 @@ const Attachments: React.FC<AttachmentsProps> = ({
 }) => {
   return (
     <>
-      <div className="mt-3 flex flex-col gap-4">
+      <div className="mt-7 flex flex-col gap-4">
         <h6 className="text-base font-semibold">Attachment</h6>
         <div className="flex w-full items-center justify-between rounded border p-3">
           <div className="flex w-10/12 items-center gap-3">

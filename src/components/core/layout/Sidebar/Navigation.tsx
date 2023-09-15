@@ -5,6 +5,7 @@ import { type IconType } from "react-icons-all-files";
 import { MdDashboard } from "react-icons-all-files/md/MdDashboard";
 import { MdPerson } from "react-icons-all-files/md/MdPerson";
 import { MdReceipt } from "react-icons-all-files/md/MdReceipt";
+import { MdGavel } from "react-icons-all-files/md/MdGavel";
 import { useAppSelector } from "~/app/hook";
 import { Can } from "~/context/AbilityContext";
 import NavigationItem from "./NavigationItem";
@@ -31,7 +32,7 @@ const Navigation: React.FC<NavigationProps> = ({ collapsed }) => {
           <Can I="access" a="CAN_APPROVE_REIMBURSEMENT">
             <NavigationItem
               label="Approval"
-              icon={MdReceipt as IconType}
+              icon={MdGavel as IconType}
               active={pathname.includes("approval")}
               href="/approval"
               collapsed={collapsed}
