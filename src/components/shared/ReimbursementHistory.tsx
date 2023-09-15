@@ -275,12 +275,12 @@ const MyReimbursements: React.FC = () => {
     <>
       <div className="grid gap-y-2 p-5">
 
-        <div className="flex justify-between">
+        <div className="flex justify-between flex-col md:flex-row gap-2">
           <h4>Reimbursements History</h4>
 
           {isFetching && <SkeletonLoading className="h-10 w-[5rem] rounded" />}
 
-          <div className="flex gap-4">
+          <div className="flex flex-col md:flex-row gap-2 md:gap-4">
             <Input
               name="inputText"
               placeholder="Find anything..."

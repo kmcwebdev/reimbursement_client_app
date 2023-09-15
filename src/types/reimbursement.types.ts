@@ -31,6 +31,9 @@ export type ReimbursementRequest = {
   request_type: string;
   expense_type: string;
   request_status: string;
+  requestor_request_status: string;
+  hrbp_request_status: string;
+  finance_request_status: string;
   remarks: string;
   created_at: string;
   amount: string;
