@@ -222,7 +222,7 @@ const Payables: React.FC = () => {
         header: "Total",
       },
     ],
-    [data],
+    [data, selectedItems],
   );
   return (
     <>
