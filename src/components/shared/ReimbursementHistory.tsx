@@ -41,6 +41,7 @@ import CollapseWidthAnimation from "../animation/CollapseWidth";
 import { env } from "~/env.mjs";
 import axios, { type AxiosResponse } from "axios";
 import Input from "../core/form/fields/Input";
+import TableCheckbox from "../core/table/TableCheckbox";
 
 const Dialog = dynamic(() => import("~/components/core/Dialog"));
 const ReimburseForm = dynamic(() => import("./reimburse-form"));
@@ -84,6 +85,34 @@ const MyReimbursements: React.FC = () => {
 
   const columns = React.useMemo<ColumnDef<ReimbursementRequest>[]>(() => {
     return [
+      {
+        id: "select",
+        size: 10,
+        header: ({ table }) => {
+          if (table.getRowModel().rows.length > 0) {
+            return (
+              <TableCheckbox
+                checked={table.getIsAllRowsSelected()}
+                indeterminate={table.getIsSomeRowsSelected()}
+                onChange={table.getToggleAllRowsSelectedHandler()}
+                showOnHover={false}
+              />
+            );
+          }
+        },
+
+        cell: ({ row }) => (
+          <div className="px-4">
+            <TableCheckbox
+              checked={row.getIsSelected()}
+              tableHasChecked={selectedItems.length > 0}
+              disabled={!row.getCanSelect()}
+              indeterminate={row.getIsSomeSelected()}
+              onChange={row.getToggleSelectedHandler()}
+            />
+          </div>
+        ),
+      },
       {
         id: "request_status",
         accessorKey: "request_status",
