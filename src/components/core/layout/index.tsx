@@ -33,7 +33,7 @@ const Layout: React.FC<PropsWithChildren> = ({ children }) => {
         <div className="relative flex h-[calc(100vh_-_4rem)] w-full flex-col">
           <div
             className={classNames(
-              "relative h-full w-full overflow-hidden overflow-y-auto bg-white sm:p-4",
+              "relative h-full w-full overflow-hidden overflow-y-auto bg-white p-4",
             )}
           >
             {children}

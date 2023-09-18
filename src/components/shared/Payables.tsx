@@ -35,6 +35,7 @@ import TableSkeleton from "../core/table/TableSkeleton";
 import DateFiledFilter from "../core/table/filters/DateFiledFilter";
 import ExpenseTypeFilter from "../core/table/filters/ExpenseTypeFilter";
 import { type FilterProps } from "../core/table/filters/StatusFilter";
+import TableCheckbox from "../core/table/TableCheckbox";
 
 const ReimbursementTypeFilter = dynamic(
   () => import("../core/table/filters/ReimbursementTypeFilter"),
@@ -94,6 +95,34 @@ const Payables: React.FC = () => {
 
   const columns = React.useMemo<ColumnDef<ReimbursementApproval>[]>(
     () => [
+      {
+        id: "select",
+        size: 10,
+        header: ({ table }) => {
+          if (table.getRowModel().rows.length > 0) {
+            return (
+              <TableCheckbox
+                checked={table.getIsAllRowsSelected()}
+                indeterminate={table.getIsSomeRowsSelected()}
+                onChange={table.getToggleAllRowsSelectedHandler()}
+                showOnHover={false}
+              />
+            );
+          }
+        },
+
+        cell: ({ row }) => (
+          <div className="px-4">
+            <TableCheckbox
+              checked={row.getIsSelected()}
+              tableHasChecked={selectedItems.length > 0}
+              disabled={!row.getCanSelect()}
+              indeterminate={row.getIsSomeSelected()}
+              onChange={row.getToggleSelectedHandler()}
+            />
+          </div>
+        ),
+      },
       {
         id: "client_name",
         accessorKey: "client_name",
@@ -200,11 +229,11 @@ const Payables: React.FC = () => {
       <div className="grid gap-y-2 p-5">
         <div className="mb-5 place-items-start gap-4 md:overflow-x-auto">
           {analyticsIsLoading && (
-            <>
+            <div className="grid grid-cols-2 sm:flex gap-3">
               <DashboardCardSkeleton />
               <DashboardCardSkeleton />
               <DashboardCardSkeleton />
-            </>
+            </div>
           )}
 
           {!analyticsIsLoading && analytics && (

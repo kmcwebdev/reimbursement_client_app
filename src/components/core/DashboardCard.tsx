@@ -30,7 +30,7 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
             {count && count} {totalCount && `- ${totalCount}`}
           </div>
         </div>
-        <p className="text-sm text-neutral-800 md:text-base">{label}</p>
+        <p className="text-sm text-neutral-800 md:text-base truncate">{label}</p>
       </div>
     </>
   );
