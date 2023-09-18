@@ -24,7 +24,7 @@ import {
   useGetAllApprovalQuery,
   useGetAnalyticsQuery,
 } from "~/features/reimbursement-api-slice";
-import { type ReimbursementRequest } from "~/types/reimbursement.types";
+import { type ReimbursementApproval } from "~/types/reimbursement.types";
 import { currencyFormat } from "~/utils/currencyFormat";
 import CollapseWidthAnimation from "../animation/CollapseWidth";
 import { Button } from "../core/Button";
@@ -78,7 +78,7 @@ const Payables: React.FC = () => {
     dispatch(setSelectedItems(value));
   };
 
-  const { isLoading, data } = useGetAllApprovalQuery({});
+  const { isFetching, data } = useGetAllApprovalQuery({});
 
   const setColumnFiltersState = (value: ColumnFiltersState) => {
     dispatch(setColumnFilters(value));
@@ -92,11 +92,11 @@ const Payables: React.FC = () => {
   const { isLoading: analyticsIsLoading, data: analytics } =
     useGetAnalyticsQuery();
 
-  const columns = React.useMemo<ColumnDef<ReimbursementRequest>[]>(
+  const columns = React.useMemo<ColumnDef<ReimbursementApproval>[]>(
     () => [
       {
-        id: "client",
-        accessorKey: "client",
+        id: "client_name",
+        accessorKey: "client_name",
         cell: (info) => info.getValue(),
         header: "Client",
         filterFn: (row, id, value: string) => {
@@ -112,26 +112,26 @@ const Payables: React.FC = () => {
         },
       },
       {
-        id: "id",
-        accessorKey: "id",
+        id: "employee_id",
+        accessorKey: "employee_id",
         cell: (info) => info.getValue(),
         header: "ID",
       },
       {
-        id: "name",
-        accessorKey: "name",
+        id: "full_name",
+        accessorKey: "full_name",
         cell: (info) => info.getValue(),
         header: "Name",
       },
       {
-        id: "reimbursementId",
-        accessorKey: "reimbursementId",
+        id: "reference_no",
+        accessorKey: "reference_no",
         cell: (info) => info.getValue(),
         header: "R-ID",
       },
       {
-        id: "type",
-        accessorKey: "type",
+        id: "request_type",
+        accessorKey: "request_type",
         cell: (info) => info.getValue(),
         header: "Type",
         filterFn: (row, id, value: string) => {
@@ -147,8 +147,8 @@ const Payables: React.FC = () => {
         },
       },
       {
-        id: "expense",
-        accessorKey: "expense",
+        id: "expense_type",
+        accessorKey: "expense_type",
         cell: (info) => info.getValue(),
         header: "Expense",
         filterFn: (row, id, value: string) => {
@@ -164,8 +164,8 @@ const Payables: React.FC = () => {
         },
       },
       {
-        id: "filed",
-        accessorKey: "filed",
+        id: "created_at",
+        accessorKey: "created_at",
         cell: (info) => info.getValue(),
         header: "Approved",
         filterFn: (row, id, value: string) => {
@@ -181,14 +181,14 @@ const Payables: React.FC = () => {
         },
       },
       {
-        id: "payrollAccount",
-        accessorKey: "payrollAccount",
+        id: "payroll_account",
+        accessorKey: "payroll_account",
         cell: (info) => info.getValue(),
         header: "Payroll Account",
       },
       {
-        id: "total",
-        accessorKey: "total",
+        id: "amount",
+        accessorKey: "amount",
         cell: (info) => currencyFormat(info.getValue() as number),
         header: "Total",
       },
@@ -198,7 +198,7 @@ const Payables: React.FC = () => {
   return (
     <>
       <div className="grid gap-y-2 p-5">
-        <div className="mb-5 flex place-items-start gap-4">
+        <div className="mb-5 place-items-start gap-4 md:overflow-x-auto">
           {analyticsIsLoading && (
             <>
               <DashboardCardSkeleton />
@@ -209,33 +209,35 @@ const Payables: React.FC = () => {
 
           {!analyticsIsLoading && analytics && (
             <>
+            <div className="grid grid-cols-2 sm:flex gap-3">
               <DashboardCard
-                icon={<MdGavel className="h-5 w-5 text-orange-600" />}
-                label="Pending Approval"
-                count={analytics.myPendingRequest.count}
-              />
-              <DashboardCard
-                icon={<MdAccessTimeFilled className="h-5 w-5 text-blue-600" />}
-                label="Scheduled/Unscheduled"
-                count={analytics.others?.totalScheduledRequest.count || 0}
-                totalCount={
-                  analytics.others?.totalUnScheduledRequest.count || 0
-                }
-              />
-              <DashboardCard
-                icon={<AiOutlinePause className="h-5 w-5 text-yellow-600" />}
-                label="On-Hold"
-                count={analytics.others?.totalOnholdRequest.count || 0}
-              />
+                  icon={<MdGavel className="h-4 w-4 sm:h-5 sm:w-5 text-orange-600" />}
+                  label="Pending Approval"
+                  count={analytics.myPendingRequest.count}
+                />
+                <DashboardCard
+                  icon={<MdAccessTimeFilled className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" />}
+                  label="Scheduled/Unscheduled"
+                  count={analytics.others?.totalScheduledRequest.count || 0}
+                  totalCount={
+                    analytics.others?.totalUnScheduledRequest.count || 0
+                  }
+                />
+                <DashboardCard
+                  icon={<AiOutlinePause className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-600" />}
+                  label="On-Hold"
+                  count={analytics.others?.totalOnholdRequest.count || 0}
+                />
+              </div>
             </>
           )}
         </div>
 
         {/* table */}
-        <div className="flex justify-between">
-          <h4>For Processing</h4>
+        <div className="flex justify-between flex-col md:flex-row gap-2">
+          <h4>For Appproval</h4>
 
-          <div className="flex gap-4">
+          <div className="flex flex-col md:flex-row gap-2 md:gap-4">
             <Input
               name="inputText"
               placeholder="Find anything..."
@@ -271,11 +273,12 @@ const Payables: React.FC = () => {
             />
           </div>
         </CollapseWidthAnimation>
-
-        {!isLoading && data && (
+        
+        
+        {!isFetching && data && (
           <Table
             type="approvals"
-            loading={isLoading}
+            loading={isFetching}
             data={data}
             columns={columns}
             tableState={{
@@ -291,7 +294,7 @@ const Payables: React.FC = () => {
           />
         )}
 
-        {isLoading && <TableSkeleton />}
+        {isFetching && <TableSkeleton />}
       </div>
     </>
   );

@@ -41,6 +41,5 @@ export const Approved: React.FC<Readonly<ApprovedTemplateProps>> = ({
       also check the Reimbursement Application to track the payout.
     </Text>
     <Text>Thank you for your attention to this matter.</Text>
-    <Text>Best regards,</Text>
   </EmailMain>
 );

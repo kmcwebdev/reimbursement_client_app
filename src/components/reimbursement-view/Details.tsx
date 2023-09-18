@@ -5,7 +5,7 @@ import { currencyFormat } from "~/utils/currencyFormat";
 import List from "../core/List";
 
 export interface DetailsProps {
-  request_status: string;
+  requestor_request_status: string;
   request_type: string;
   expense_type: string;
   created_at: string;
@@ -14,7 +14,7 @@ export interface DetailsProps {
 }
 
 const Details: React.FC<DetailsProps> = ({
-  request_status,
+  requestor_request_status,
   request_type,
   expense_type,
   remarks,
@@ -26,7 +26,7 @@ const Details: React.FC<DetailsProps> = ({
       <List.Item
         label="Status"
         value={
-          <StatusBadge status={request_status.toLowerCase() as StatusType} />
+          <StatusBadge status={requestor_request_status.toLowerCase() as StatusType} />
         }
       />
       <List.Item label="Type" value={request_type} />
@@ -39,7 +39,7 @@ const Details: React.FC<DetailsProps> = ({
       <List.Item label="Amount" value={currencyFormat(+amount)} />
 
       <div className="flex flex-col">
-        {(request_status === "Processing" || request_status === "Credited") && (
+        {(requestor_request_status === "Processing" || requestor_request_status === "Credited") && (
           <List.Item label="Payout" value={created_at} />
         )}
       </div>
