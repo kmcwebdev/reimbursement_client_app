@@ -78,6 +78,8 @@ export const UserAccessProvider: React.FC<PropsWithChildren> = ({
         }),
       );
 
+      console.log({ propelauth, assignedRole, permissions });
+
       dispatch(setAccessToken(accessToken));
     }
   }, [propelauth, accessToken, dispatch]);
