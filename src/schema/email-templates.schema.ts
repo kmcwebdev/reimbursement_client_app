@@ -122,14 +122,14 @@ export const ConfirmationEmailSchema = z.object({
         message: "Email address is invalid",
       }),
   ),
-  requestId: z
+  referenceNo: z
     .string({
-      description: "Request ID",
-      required_error: "Request ID is required",
-      invalid_type_error: "Request ID is invalid",
+      description: "Reference no",
+      required_error: "Reference no is required",
+      invalid_type_error: "Reference no is invalid",
     })
     .nonempty({
-      message: "Request ID is required",
+      message: "Reference no is required",
     }),
   hrbpManagerName: z
     .string({
