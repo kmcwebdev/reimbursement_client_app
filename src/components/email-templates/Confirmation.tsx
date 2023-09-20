@@ -2,7 +2,7 @@ import { Text, Link } from "@react-email/components";
 import EmailMain from "./email-components/EmailMain";
 
 interface ConfirmationTemplateProps {
-  requestId: string;
+  referenceNo: string;
   hrbpManagerName: string;
   fullName: string;
   employeeId: string;
@@ -13,7 +13,7 @@ interface ConfirmationTemplateProps {
 }
 
 export const Confirmation: React.FC<Readonly<ConfirmationTemplateProps>> = ({
-  requestId,
+  referenceNo,
   hrbpManagerName,
   fullName,
   employeeId,
@@ -24,8 +24,8 @@ export const Confirmation: React.FC<Readonly<ConfirmationTemplateProps>> = ({
 }) => (
   <EmailMain receiver={fullName} subject="Confirmation">
     <Text>
-      We want to inform you that your reimbursement request {requestId} has been
-      successfully submitted to {hrbpManagerName} for review.
+      We want to inform you that your reimbursement request {referenceNo} has
+      been successfully submitted to {hrbpManagerName} for review.
     </Text>
     <Text>Below are the details of your submission:</Text>
     <Text>Employee ID: {employeeId}</Text>
