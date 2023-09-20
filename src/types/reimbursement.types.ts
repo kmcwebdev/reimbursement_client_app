@@ -22,7 +22,7 @@ export type Approvers = {
   is_group_of_approvers: boolean;
   table_reference: string;
   updated_at: string;
-}
+};
 
 export type ReimbursementRequest = {
   approval_matrix_id: string;
@@ -31,6 +31,9 @@ export type ReimbursementRequest = {
   request_type: string;
   expense_type: string;
   request_status: string;
+  requestor_request_status: string;
+  hrbp_request_status: string;
+  finance_request_status: string;
   remarks: string;
   created_at: string;
   amount: string;
@@ -44,7 +47,7 @@ export type ReimbursementRequest = {
   cursor_id: string;
   rank?: number;
   next_approval_matrix_id: string;
-  next_approver_order:number;
+  next_approver_order: number;
   approvers: Approvers[];
 };
 
@@ -55,6 +58,9 @@ export type ReimbursementApproval = {
   request_type: string;
   expense_type: string;
   request_status: string;
+  requestor_request_status: string;
+  hrbp_request_status: string;
+  finance_request_status: string;
   created_at: string;
   amount: string;
   date_approve: string | null;
@@ -63,4 +69,13 @@ export type ReimbursementApproval = {
   has_approver: boolean;
   performed_by_user_id: string | null;
   description: string | null;
+  attachment: string;
+  attachment_mask_name: string;
+  remarks?: string;
+  full_name: string | null;
+  email: string;
+  client_id: string;
+  hrbp_approver_email: string;
+  payroll_account?: string;
+  employee_id: string;
 };

@@ -41,6 +41,5 @@ export const Rejected: React.FC<Readonly<RejectedTemplateProps>> = ({
       hesitate to contact your manager or your HRBP.
     </Text>
     <Text>Thank you for your attention to this matter.</Text>
-    <Text>Best regards,</Text>
   </EmailMain>
 );

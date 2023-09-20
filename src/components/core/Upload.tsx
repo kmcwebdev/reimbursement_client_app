@@ -100,7 +100,7 @@ const Upload: React.FC<UploadProps> = ({
             "flex gap-4 rounded border border-neutral-300 p-2",
           )}
         >
-          <div className="flex flex-1 items-center gap-2">
+          <div className="flex flex-1 items-center gap-2 truncate">
             <span className="relative flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border border-neutral-300">
               {isPDF && <MdPictureAsPdf className="h-5 w-5 text-navy" />}
               {isSpreadsheet && <BiSpreadsheet className="h-5 w-5 text-navy" />}

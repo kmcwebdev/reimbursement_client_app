@@ -4,7 +4,6 @@ import {
   type ColumnFiltersState,
   type PaginationState,
 } from "@tanstack/react-table";
-import axios, { type AxiosResponse } from "axios";
 import dayjs from "dayjs";
 import dynamic from "next/dynamic";
 import React, { useState } from "react";
@@ -24,7 +23,6 @@ import TableCheckbox from "~/components/core/table/TableCheckbox";
 import { type FilterProps } from "~/components/core/table/filters/StatusFilter";
 import ReimbursementsCardView from "~/components/reimbursement-view";
 import { Can } from "~/context/AbilityContext";
-import { env } from "~/env.mjs";
 import {
   setColumnFilters,
   setSelectedItems,
@@ -108,35 +106,6 @@ const MyApprovals: React.FC = () => {
 
   const { isLoading, data } = useGetAllApprovalQuery({});
 
-  const { accessToken } = useAppSelector((state) => state.session);
-
-  const downloadReport = async () => {
-    const response = await axios.get<unknown, AxiosResponse<Blob>>(
-      `${env.NEXT_PUBLIC_BASEAPI_URL}/api/finance/reimbursements/requests/reports/hrbp`,
-      {
-        responseType: "blob", // Important to set this
-        headers: {
-          accept: "*/*",
-          Authorization: `Bearer ${accessToken}`,
-        },
-      },
-    );
-
-    console.log(response);
-    const url = window.URL.createObjectURL(new Blob([response.data]));
-
-    const link = document.createElement("a");
-    link.href = url;
-
-    link.setAttribute("download", "filename.csv");
-
-    document.body.appendChild(link);
-
-    link.click();
-
-    document.body.removeChild(link);
-  };
-
   const columns = React.useMemo<ColumnDef<ReimbursementApproval>[]>(() => {
     if (user?.assignedRole === "HRBP") {
       return [
@@ -169,8 +138,8 @@ const MyApprovals: React.FC = () => {
           ),
         },
         {
-          id: "request_status",
-          accessorKey: "request_status",
+          id: "requestor_request_status",
+          accessorKey: "requestor_request_status",
           header: "Status",
           cell: (info) => (
             <StatusBadge
@@ -327,8 +296,8 @@ const MyApprovals: React.FC = () => {
       },
 
       {
-        id: "request_status",
-        accessorKey: "request_status",
+        id: "requestor_request_status",
+        accessorKey: "requestor_request_status",
         header: "Status",
         cell: (info) => (
           <StatusBadge
@@ -543,22 +512,6 @@ const MyApprovals: React.FC = () => {
                     </Button>
                   </Can>
                 </CollapseWidthAnimation>
-
-                {user &&
-                  (user.assignedRole === "HRBP" ||
-                    user.assignedRole === "Finance") && (
-                    <CollapseWidthAnimation
-                      isVisible={data && data.length > 0 ? true : false}
-                    >
-                      <Button
-                        variant="success"
-                        className="whitespace-nowrap"
-                        onClick={() => void downloadReport()}
-                      >
-                        Download Report
-                      </Button>
-                    </CollapseWidthAnimation>
-                  )}
               </>
             )}
           </div>
