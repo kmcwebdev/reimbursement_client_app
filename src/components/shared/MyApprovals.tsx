@@ -6,7 +6,7 @@ import {
 } from "@tanstack/react-table";
 import dayjs from "dayjs";
 import dynamic from "next/dynamic";
-import React, { useState } from "react";
+import React, { ChangeEvent, useState } from "react";
 import { MdAccessTimeFilled } from "react-icons-all-files/md/MdAccessTimeFilled";
 import { MdGavel } from "react-icons-all-files/md/MdGavel";
 import { MdSearch } from "react-icons-all-files/md/MdSearch";
@@ -39,7 +39,6 @@ import { classNames } from "~/utils/classNames";
 import { currencyFormat } from "~/utils/currencyFormat";
 import CollapseWidthAnimation from "../animation/CollapseWidth";
 import Dialog from "../core/Dialog";
-import SkeletonLoading from "../core/SkeletonLoading";
 import { showToast } from "../core/Toast";
 import Input from "../core/form/fields/Input";
 import TableSkeleton from "../core/table/TableSkeleton";
@@ -104,7 +103,11 @@ const MyApprovals: React.FC = () => {
     pageSize: 10,
   });
 
-  const { isLoading, data } = useGetAllApprovalQuery({});
+  const [textSearch, setTextSearch] = useState<string>();
+
+  const { isFetching: isLoading, data } = useGetAllApprovalQuery({
+    text_search: textSearch,
+  });
 
   const columns = React.useMemo<ColumnDef<ReimbursementApproval>[]>(() => {
     if (user?.assignedRole === "HRBP") {
@@ -182,6 +185,141 @@ const MyApprovals: React.FC = () => {
           accessorKey: "full_name",
           cell: (info) => info.getValue(),
           header: "Name",
+        },
+        {
+          id: "reference_no",
+          accessorKey: "reference_no",
+          cell: (info) => info.getValue(),
+          header: "R-ID",
+        },
+        {
+          id: "request_type",
+          accessorKey: "request_type",
+          cell: (info) => info.getValue(),
+          header: "Type",
+          filterFn: (row, id, value: string) => {
+            return value.includes(row.getValue(id));
+          },
+          meta: {
+            filterComponent: (info: FilterProps) => (
+              <ReimbursementTypeFilter
+                {...info}
+                isButtonHidden={data && data.length === 0}
+              />
+            ),
+          },
+        },
+        {
+          id: "expense_type",
+          accessorKey: "expense_type",
+          cell: (info) => info.getValue(),
+          header: "Expense",
+          filterFn: (row, id, value: string) => {
+            return value.includes(row.getValue(id));
+          },
+          meta: {
+            filterComponent: (info: FilterProps) => (
+              <ExpenseTypeFilter
+                {...info}
+                isButtonHidden={data && data.length === 0}
+              />
+            ),
+          },
+        },
+        {
+          id: "created_at",
+          accessorKey: "created_at",
+          cell: (info) =>
+            dayjs(info.getValue() as string).format("MMM D, YYYY"),
+          header: "Filed",
+          filterFn: (row, id, value: string) => {
+            return value.includes(row.getValue(id));
+          },
+          meta: {
+            filterComponent: (info: FilterProps) => (
+              <DateFiledFilter
+                {...info}
+                isButtonHidden={data && data.length === 0}
+              />
+            ),
+          },
+        },
+        {
+          id: "amount",
+          accessorKey: "amount",
+          cell: (info) => currencyFormat(info.getValue() as number),
+          header: "Amount",
+        },
+        {
+          id: "actions",
+          accessorKey: "reimbursement_request_id",
+          cell: (info) => (
+            <Button
+              buttonType="text"
+              onClick={() => {
+                setFocusedReimbursementId(info.getValue() as string);
+                openReimbursementView();
+              }}
+            >
+              View
+            </Button>
+          ),
+          header: "",
+        },
+      ];
+    }
+    if (user?.assignedRole === "Finance") {
+      return [
+        {
+          id: "select",
+          size: 10,
+          header: ({ table }) => {
+            if (table.getRowModel().rows.length > 0) {
+              return (
+                <TableCheckbox
+                  checked={table.getIsAllRowsSelected()}
+                  indeterminate={table.getIsSomeRowsSelected()}
+                  onChange={table.getToggleAllRowsSelectedHandler()}
+                  showOnHover={false}
+                />
+              );
+            }
+          },
+
+          cell: ({ row }) => (
+            <div className="px-4">
+              <TableCheckbox
+                checked={row.getIsSelected()}
+                tableHasChecked={selectedItems.length > 0}
+                disabled={!row.getCanSelect()}
+                indeterminate={row.getIsSomeSelected()}
+                onChange={row.getToggleSelectedHandler()}
+              />
+            </div>
+          ),
+        },
+
+        {
+          id: "finance_request_status",
+          accessorKey: "finance_request_status",
+          header: "Status",
+          cell: (info) => (
+            <StatusBadge
+              status={(info.getValue() as string).toLowerCase() as StatusType}
+            />
+          ),
+          filterFn: (row, id, value: string) => {
+            return value.includes(row.getValue(id));
+          },
+          enableColumnFilter: true,
+          meta: {
+            filterComponent: (info: FilterProps) => (
+              <StatusFilter
+                {...info}
+                isButtonHidden={data && data.length === 0}
+              />
+            ),
+          },
         },
         {
           id: "reference_no",
@@ -448,6 +586,14 @@ const MyApprovals: React.FC = () => {
     }
   };
 
+  const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
+    const searchValue = e.target.value;
+
+    setTimeout(() => {
+      setTextSearch(searchValue);
+    }, 300);
+  };
+
   return (
     <>
       <div className="grid gap-y-2 md:p-5">
@@ -484,36 +630,35 @@ const MyApprovals: React.FC = () => {
               "flex flex-col gap-2 md:flex-row md:items-center",
             )}
           >
-            {isLoading && (
+            {/* {isLoading && (
               <SkeletonLoading className="h-10 w-full rounded md:w-64" />
             )}
 
-            {!isLoading && (
-              <>
-                {data && data.length > 0 && (
-                  <Input
-                    name="searchFilter"
-                    placeholder="Find anything..."
-                    className="w-full md:w-64"
-                    icon={MdSearch}
-                  />
-                )}
+            {!isLoading && ( */}
+            {/* <> */}
+            <Input
+              name="searchFilter"
+              placeholder="Find anything..."
+              className="w-full md:w-64"
+              icon={MdSearch}
+              onChange={handleSearch}
+            />
 
-                <CollapseWidthAnimation
-                  isVisible={selectedItems && selectedItems.length > 0}
+            <CollapseWidthAnimation
+              isVisible={selectedItems && selectedItems.length > 0}
+            >
+              <Can I="access" a="CAN_BULK_APPROVE_REIMBURSEMENT">
+                <Button
+                  variant="primary"
+                  disabled={selectedItems.length === 0}
+                  onClick={handleBulkApprove}
                 >
-                  <Can I="access" a="CAN_BULK_APPROVE_REIMBURSEMENT">
-                    <Button
-                      variant="primary"
-                      disabled={selectedItems.length === 0}
-                      onClick={handleBulkApprove}
-                    >
-                      Approve
-                    </Button>
-                  </Can>
-                </CollapseWidthAnimation>
-              </>
-            )}
+                  Approve
+                </Button>
+              </Can>
+            </CollapseWidthAnimation>
+            {/* </>
+            )} */}
           </div>
         </div>
 
@@ -549,10 +694,10 @@ const MyApprovals: React.FC = () => {
         closeDrawer={closeReimbursementView}
       >
         <ReimbursementsCardView
-          isApproverView
           closeDrawer={closeReimbursementView}
           isLoading={reimbursementRequestDataIsLoading}
           data={reimbursementRequestData}
+          isApproverView
         />
       </SideDrawer>
 

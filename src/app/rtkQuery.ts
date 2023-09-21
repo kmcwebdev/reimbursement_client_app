@@ -63,6 +63,7 @@ export const appApiSlice = createApi({
     "ReimbursementRequest",
     "ReimbursementAnalytics",
     "ExpenseTypes",
+    "AllExpenseTypes",
   ],
   endpoints: (
     _builder: EndpointBuilder<

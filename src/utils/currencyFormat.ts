@@ -4,7 +4,7 @@ export const currencyFormat = (amount?: number, options?: Intl.NumberFormatOptio
         style: 'currency',
         currency: 'PHP',
         minimumFractionDigits: 0,
-        maximumFractionDigits: 0,
+      maximumFractionDigits: 2,
         currencyDisplay: 'code',
         ...options,
       }).format(amount)

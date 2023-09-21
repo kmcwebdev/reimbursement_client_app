@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState, type ChangeEvent } from "react";
 import { FaCaretDown } from "react-icons-all-files/fa/FaCaretDown";
 import CollapseHeightAnimation from "~/components/animation/CollapseHeight";
+import { useAllExpenseTypesQuery } from "~/features/reimbursement-api-slice";
 import { classNames } from "~/utils/classNames";
 import { Button } from "../../Button";
 import Popover from "../../Popover";
@@ -11,6 +12,9 @@ const ExpenseTypeFilter: React.FC<FilterProps> = ({
   column,
   isButtonHidden = false,
 }) => {
+  const { data: allExpenseTypes, isLoading: allExpenseTypesIsLoading } =
+    useAllExpenseTypesQuery({});
+
   const sortedUniqueValues = useMemo(
     () => Array.from(column.getFacetedUniqueValues().keys()).sort() as string[],
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -64,18 +68,22 @@ const ExpenseTypeFilter: React.FC<FilterProps> = ({
         />
       }
       content={
-        <div className="w-32 p-4">
+        <div className="w-full p-4">
           <div className="flex flex-col gap-2 capitalize">
-            {sortedUniqueValues &&
-              sortedUniqueValues.length > 0 &&
-              sortedUniqueValues.map((option: string) => (
+            {!allExpenseTypesIsLoading &&
+              allExpenseTypes &&
+              allExpenseTypes.length > 0 &&
+              allExpenseTypes.map((option) => (
                 <Checkbox
-                  key={option}
-                  label={option}
-                  name={option}
-                  checked={checked.includes(option)}
-                  disabled={checked.length === 1 && checked.includes(option)}
-                  onChange={(e) => onChange(e, option)}
+                  key={option.expense_type_id}
+                  label={option.expense_type}
+                  name={option.expense_type_id}
+                  checked={checked.includes(option.expense_type_id)}
+                  disabled={
+                    checked.length === 1 &&
+                    checked.includes(option.expense_type_id)
+                  }
+                  onChange={(e) => onChange(e, option.expense_type_id)}
                 />
               ))}
 

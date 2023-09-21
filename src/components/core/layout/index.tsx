@@ -17,6 +17,18 @@ const Layout: React.FC<PropsWithChildren> = ({ children }) => {
   const { user } = useAppSelector((state) => state.session);
   const router = useRouter();
 
+  if (router.pathname === "/") {
+    return (
+      <main
+        className={classNames(
+          `${karla.variable} ${barlow_Condensed.variable} h-screen w-screen flex-1 overflow-y-auto bg-white font-karla`,
+        )}
+      >
+        <div className="grid h-full place-items-center">{children}</div>
+      </main>
+    );
+  }
+
   return (
     <div className="flex min-h-screen">
       <Sidebar />
@@ -74,22 +86,26 @@ const Layout: React.FC<PropsWithChildren> = ({ children }) => {
                   <p className="text-[10px] text-white">Approval</p>
                 </div>
               )}
-            {user && (user.assignedRole === "Finance" || user.assignedRole === "HRBP" || user.assignedRole === "External Reimbursement Approver Manager") && (
-              <div
-                className="flex flex-col items-center justify-center gap-1"
-                onClick={() => void router.push("/history")}
-              >
-                <MdReceipt
-                  className={classNames(
-                    router.pathname.includes("history")
-                      ? "h-5 w-5 text-orange-600"
-                      : "h-3 w-3 text-neutral-600",
-                    "transition-all ease-in-out",
-                  )}
-                />
-                <p className="text-[10px] text-white">History</p>
-              </div>
-            )}
+            {user &&
+              (user.assignedRole === "Finance" ||
+                user.assignedRole === "HRBP" ||
+                user.assignedRole ===
+                  "External Reimbursement Approver Manager") && (
+                <div
+                  className="flex flex-col items-center justify-center gap-1"
+                  onClick={() => void router.push("/history")}
+                >
+                  <MdReceipt
+                    className={classNames(
+                      router.pathname.includes("history")
+                        ? "h-5 w-5 text-orange-600"
+                        : "h-3 w-3 text-neutral-600",
+                      "transition-all ease-in-out",
+                    )}
+                  />
+                  <p className="text-[10px] text-white">History</p>
+                </div>
+              )}
 
             <div
               className="flex flex-col items-center justify-center gap-1"
