@@ -37,10 +37,8 @@ import { useDialogState } from "~/hooks/use-dialog-state";
 import { type ReimbursementApproval } from "~/types/reimbursement.types";
 import { classNames } from "~/utils/classNames";
 import { currencyFormat } from "~/utils/currencyFormat";
-import { debounce } from "~/utils/debounce";
 import CollapseWidthAnimation from "../animation/CollapseWidth";
 import Dialog from "../core/Dialog";
-import SkeletonLoading from "../core/SkeletonLoading";
 import { showToast } from "../core/Toast";
 import Input from "../core/form/fields/Input";
 import TableSkeleton from "../core/table/TableSkeleton";
@@ -107,7 +105,7 @@ const MyApprovals: React.FC = () => {
 
   const [textSearch, setTextSearch] = useState<string>();
 
-  const { isFetching: isLoading, currentData: data } = useGetAllApprovalQuery({
+  const { isFetching: isLoading, data } = useGetAllApprovalQuery({
     text_search: textSearch,
   });
 
@@ -540,8 +538,6 @@ const MyApprovals: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedItems, user]);
 
-  console.log(selectedItems);
-
   const handleBulkApprove = () => {
     openBulkApproveDialog();
   };
@@ -593,7 +589,9 @@ const MyApprovals: React.FC = () => {
   const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
     const searchValue = e.target.value;
 
-    debounce(() => setTextSearch(searchValue), 300);
+    setTimeout(() => {
+      setTextSearch(searchValue);
+    }, 300);
   };
 
   return (
@@ -632,35 +630,35 @@ const MyApprovals: React.FC = () => {
               "flex flex-col gap-2 md:flex-row md:items-center",
             )}
           >
-            {isLoading && (
+            {/* {isLoading && (
               <SkeletonLoading className="h-10 w-full rounded md:w-64" />
             )}
 
-            {!isLoading && (
-              <>
-                <Input
-                  name="searchFilter"
-                  placeholder="Find anything..."
-                  className="w-full md:w-64"
-                  icon={MdSearch}
-                  onChange={handleSearch}
-                />
+            {!isLoading && ( */}
+            {/* <> */}
+            <Input
+              name="searchFilter"
+              placeholder="Find anything..."
+              className="w-full md:w-64"
+              icon={MdSearch}
+              onChange={handleSearch}
+            />
 
-                <CollapseWidthAnimation
-                  isVisible={selectedItems && selectedItems.length > 0}
+            <CollapseWidthAnimation
+              isVisible={selectedItems && selectedItems.length > 0}
+            >
+              <Can I="access" a="CAN_BULK_APPROVE_REIMBURSEMENT">
+                <Button
+                  variant="primary"
+                  disabled={selectedItems.length === 0}
+                  onClick={handleBulkApprove}
                 >
-                  <Can I="access" a="CAN_BULK_APPROVE_REIMBURSEMENT">
-                    <Button
-                      variant="primary"
-                      disabled={selectedItems.length === 0}
-                      onClick={handleBulkApprove}
-                    >
-                      Approve
-                    </Button>
-                  </Can>
-                </CollapseWidthAnimation>
-              </>
-            )}
+                  Approve
+                </Button>
+              </Can>
+            </CollapseWidthAnimation>
+            {/* </>
+            )} */}
           </div>
         </div>
 
