@@ -159,8 +159,8 @@ const Payables: React.FC = () => {
         header: "R-ID",
       },
       {
-        id: "request_type",
-        accessorKey: "request_type",
+        id: "finance_request_status",
+        accessorKey: "finance_request_status",
         cell: (info) => info.getValue(),
         header: "Type",
         filterFn: (row, id, value: string) => {
