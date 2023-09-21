@@ -92,9 +92,9 @@ const CardSelection = React.forwardRef<HTMLDivElement, CardSelectionProps>(
 
           {!loading && formContext && (
             <div
-              {...formContext.register(name)}
-              className="mt-2 inline-flex flex-1 gap-4 overflow-hidden"
-              {...rest}
+            className="mt-2 inline-flex flex-1 gap-4 overflow-hidden"
+            {...rest}
+            {...formContext.register(name)}
               ref={ref}
             >
               {options.map((option) => {
@@ -177,7 +177,8 @@ const CardSelection = React.forwardRef<HTMLDivElement, CardSelectionProps>(
             </div>
           )}
         </div>
-        {formContext &&
+
+        {!selected && formContext &&
           formContext.formState.errors &&
           formContext.formState.errors[name] &&
           formContext.formState.errors[name]?.message && (

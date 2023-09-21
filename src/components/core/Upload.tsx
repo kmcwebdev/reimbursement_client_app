@@ -5,6 +5,7 @@ import {
   type FileWithPath,
 } from "react-dropzone";
 import { BiSpreadsheet } from "react-icons-all-files/bi/BiSpreadsheet";
+import { BsFiletypeDoc } from "react-icons-all-files/bs/BsFiletypeDoc";
 import { HiInformationCircle } from "react-icons-all-files/hi/HiInformationCircle";
 import { MdCloudUpload } from "react-icons-all-files/md/MdCloudUpload";
 import { MdOutlineDelete } from "react-icons-all-files/md/MdOutlineDelete";
@@ -29,12 +30,12 @@ export interface UploadProps extends DropzoneOptions {
 const Upload: React.FC<UploadProps> = ({
   onDrop,
   accept = {
-    "text/csv": [".csv"],
+    // "text/csv": [".csv"],
     "application/pdf": [".pdf"],
-    "application/vnd.ms-excel": [".xls"],
-    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [
-      ".xslx",
-    ],
+    // "application/vnd.ms-excel": [".xls"],
+    // "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [
+    //   ".xslx",
+    // ],
     "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [
       ".docx",
     ],
@@ -86,6 +87,10 @@ const Upload: React.FC<UploadProps> = ({
   const acceptedFileItem = useMemo(() => {
     if (file) {
       const isPDF = file.type === "application/pdf";
+      const isWord =
+        file.type === "application/msword" ||
+        file.type ===
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
       const isSpreadsheet =
         file.type === "text/csv" ||
         file.type === "application/vnd.ms-excel" ||
@@ -104,6 +109,7 @@ const Upload: React.FC<UploadProps> = ({
             <span className="relative flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border border-neutral-300">
               {isPDF && <MdPictureAsPdf className="h-5 w-5 text-navy" />}
               {isSpreadsheet && <BiSpreadsheet className="h-5 w-5 text-navy" />}
+              {isWord && <BsFiletypeDoc className="h-5 w-5 text-navy" />}
             </span>
 
             <span
@@ -123,7 +129,6 @@ const Upload: React.FC<UploadProps> = ({
               )}
             </span>
           </div>
-
           {!isUploading && !uploadedFileUrl && (
             <div className="flex items-center gap-2 pr-2">
               <div {...getRootProps({ className: "dropzone" })}>
@@ -184,7 +189,7 @@ const Upload: React.FC<UploadProps> = ({
 
           <p className="flex items-center gap-2">
             <HiInformationCircle className="h-4 w-4 text-blue-600" />
-            You can only upload 1 PDF, Excel or Word file.
+            You can only upload 1 PDF or Word file.
           </p>
         </div>
       </CollapseHeightAnimation>
@@ -199,10 +204,8 @@ const Upload: React.FC<UploadProps> = ({
       {fileRejections.length > 0 && (
         <p className="mt-1 text-sm text-red-600">
           Selected file type is invalid! Only{" "}
-          <span className="font-semibold">
-            .csv,.pdf,.doc,.docx,.xls or .xlsx
-          </span>{" "}
-          files are accepted.
+          <span className="font-semibold">.pdf,.doc,.docx</span> files are
+          accepted.
         </p>
       )}
     </section>

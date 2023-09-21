@@ -102,6 +102,19 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
         { type: "ExpenseTypes", id: query.request_type_id },
       ],
     }),
+     allExpenseTypes: builder.query<
+      ReimbursementExpenseType[],
+      unknown
+    >({
+      query: ( ) => {
+        return {
+          url: "/api/finance/reimbursements/expense-types/all",
+        };
+      },
+      providesTags: (_result, _fetchBaseQuery,_query) => [
+        { type: "AllExpenseTypes", id: '/all'},
+      ],
+    }),
     uploadFile: builder.mutation<UploadFileResponse, FormData>({
       query: (formData) => {
         return {
@@ -179,7 +192,7 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
         };
       },
       invalidatesTags: [
-        { type: "ReimbursementApprovalList" },
+        { type: "ReimbursementRequestList" },
         { type: "ReimbursementAnalytics" },
       ],
     }),
@@ -227,6 +240,7 @@ export const {
   useGetRequestQuery,
   useRequestTypesQuery,
   useExpenseTypesQuery,
+  useAllExpenseTypesQuery,
   useUploadFileMutation,
   useCreateReimbursementMutation,
   useApproveReimbursementMutation,
