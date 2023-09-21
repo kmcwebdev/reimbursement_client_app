@@ -217,19 +217,19 @@ const ReimbursementDetailsForm: React.FC<ReimbursementDetailsFormProps> = ({
 
       <div className="grid grid-cols-2 items-center gap-4">
         <div>
-          <CollapseHeightAnimation
+          {/* <CollapseHeightAnimation
             isVisible={!!formReturn.getValues("reimbursement_request_type_id")}
+          > */}
+          <Button
+            type="button"
+            buttonType="outlined"
+            variant="neutral"
+            className="w-full"
+            onClick={handleOpenCancelDialog}
           >
-            <Button
-              type="button"
-              buttonType="outlined"
-              variant="neutral"
-              className="w-full"
-              onClick={handleOpenCancelDialog}
-            >
-              Cancel
-            </Button>
-          </CollapseHeightAnimation>
+            Cancel
+          </Button>
+          {/* </CollapseHeightAnimation> */}
         </div>
 
         <Button type="submit" className="w-full">

@@ -88,7 +88,6 @@ const MyReimbursements: React.FC = () => {
   const {
     isFetching: reimbursementRequestDataIsLoading,
     isError: reimbursementRequestDataIsError,
-
     currentData: reimbursementRequestData,
   } = useGetRequestQuery(
     { reimbursement_request_id: focusedReimbursementId! },
@@ -228,14 +227,22 @@ const MyReimbursements: React.FC = () => {
 
   /***Closes the form and open cancel dialog */
   const handleOpenCancelDialog = () => {
+    const selectedReimbursementType =
+      useReimbursementDetailsFormReturn.getValues(
+        "reimbursement_request_type_id",
+      );
     dispatch(toggleFormDialog());
-    dispatch(toggleCancelDialog());
+
+    if (selectedReimbursementType) {
+      dispatch(toggleCancelDialog());
+    }
   };
 
   /**Continue reimbursement request cancellation */
   const handleConfirmCancellation = () => {
     dispatch(clearReimbursementForm());
     useReimbursementDetailsFormReturn.reset();
+    setFocusedReimbursementId(undefined);
     dispatch(toggleCancelDialog());
   };
 

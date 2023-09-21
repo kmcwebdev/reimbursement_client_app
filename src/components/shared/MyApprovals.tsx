@@ -6,7 +6,7 @@ import {
 } from "@tanstack/react-table";
 import dayjs from "dayjs";
 import dynamic from "next/dynamic";
-import React, { useState } from "react";
+import React, { ChangeEvent, useState } from "react";
 import { MdAccessTimeFilled } from "react-icons-all-files/md/MdAccessTimeFilled";
 import { MdGavel } from "react-icons-all-files/md/MdGavel";
 import { MdSearch } from "react-icons-all-files/md/MdSearch";
@@ -37,6 +37,7 @@ import { useDialogState } from "~/hooks/use-dialog-state";
 import { type ReimbursementApproval } from "~/types/reimbursement.types";
 import { classNames } from "~/utils/classNames";
 import { currencyFormat } from "~/utils/currencyFormat";
+import { debounce } from "~/utils/debounce";
 import CollapseWidthAnimation from "../animation/CollapseWidth";
 import Dialog from "../core/Dialog";
 import SkeletonLoading from "../core/SkeletonLoading";
@@ -104,7 +105,11 @@ const MyApprovals: React.FC = () => {
     pageSize: 10,
   });
 
-  const { isLoading, data } = useGetAllApprovalQuery({});
+  const [textSearch, setTextSearch] = useState<string>();
+
+  const { isFetching: isLoading, currentData: data } = useGetAllApprovalQuery({
+    text_search: textSearch,
+  });
 
   const columns = React.useMemo<ColumnDef<ReimbursementApproval>[]>(() => {
     if (user?.assignedRole === "HRBP") {
@@ -535,6 +540,8 @@ const MyApprovals: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedItems, user]);
 
+  console.log(selectedItems);
+
   const handleBulkApprove = () => {
     openBulkApproveDialog();
   };
@@ -583,6 +590,12 @@ const MyApprovals: React.FC = () => {
     }
   };
 
+  const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
+    const searchValue = e.target.value;
+
+    debounce(() => setTextSearch(searchValue), 300);
+  };
+
   return (
     <>
       <div className="grid gap-y-2 md:p-5">
@@ -625,14 +638,13 @@ const MyApprovals: React.FC = () => {
 
             {!isLoading && (
               <>
-                {data && data.length > 0 && (
-                  <Input
-                    name="searchFilter"
-                    placeholder="Find anything..."
-                    className="w-full md:w-64"
-                    icon={MdSearch}
-                  />
-                )}
+                <Input
+                  name="searchFilter"
+                  placeholder="Find anything..."
+                  className="w-full md:w-64"
+                  icon={MdSearch}
+                  onChange={handleSearch}
+                />
 
                 <CollapseWidthAnimation
                   isVisible={selectedItems && selectedItems.length > 0}

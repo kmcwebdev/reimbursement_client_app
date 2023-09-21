@@ -251,7 +251,7 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
                 </Button>
 
                 {data.requestor_request_status !== "Cancelled" &&
-                  data.requestor_request_status !== "Pending" && (
+                  data.requestor_request_status === "Pending" && (
                     <Button
                       className="w-full"
                       variant="danger"
