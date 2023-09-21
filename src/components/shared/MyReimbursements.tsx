@@ -213,8 +213,7 @@ const MyReimbursements: React.FC = () => {
         size: 5,
       },
     ];
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [data]);
 
   //Form return for Details
   const useReimbursementDetailsFormReturn = useForm<ReimbursementDetailsType>({

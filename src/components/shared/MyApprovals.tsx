@@ -282,7 +282,7 @@ const MyApprovals: React.FC = () => {
               );
             }
           },
-  
+
           cell: ({ row }) => (
             <div className="px-4">
               <TableCheckbox
@@ -295,7 +295,7 @@ const MyApprovals: React.FC = () => {
             </div>
           ),
         },
-  
+
         {
           id: "finance_request_status",
           accessorKey: "finance_request_status",
@@ -361,7 +361,8 @@ const MyApprovals: React.FC = () => {
         {
           id: "created_at",
           accessorKey: "created_at",
-          cell: (info) => dayjs(info.getValue() as string).format("MMM D, YYYY"),
+          cell: (info) =>
+            dayjs(info.getValue() as string).format("MMM D, YYYY"),
           header: "Filed",
           filterFn: (row, id, value: string) => {
             return value.includes(row.getValue(id));
@@ -686,6 +687,7 @@ const MyApprovals: React.FC = () => {
           closeDrawer={closeReimbursementView}
           isLoading={reimbursementRequestDataIsLoading}
           data={reimbursementRequestData}
+          isApproverView
         />
       </SideDrawer>
 

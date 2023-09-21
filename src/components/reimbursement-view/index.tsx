@@ -34,6 +34,7 @@ import ReimbursementViewSkeleton from "./ReimbursementViewSkeleton";
 
 export interface ReimbursementsCardViewProps extends PropsWithChildren {
   isLoading?: boolean;
+  isApproverView?: boolean;
   data?: ReimbursementRequest;
   closeDrawer: () => void;
   isError?: boolean;
@@ -43,6 +44,7 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
   closeDrawer,
   data,
   isLoading = false,
+  isApproverView = false,
   isError = false,
 }) => {
   const { user } = useAppSelector((state) => state.session);
@@ -237,7 +239,7 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
           </div>
 
           <div className="absolute bottom-0 grid h-[72px] w-full grid-cols-2 items-center justify-center gap-2 border-t border-neutral-300 px-5">
-            {user && user.assignedRole === "Member" && (
+            {!isApproverView && (
               <>
                 <Button
                   onClick={closeDrawer}
@@ -248,23 +250,24 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
                   Back
                 </Button>
 
-                {data.request_status !== "Cancelled" && (
-                  <Button
-                    className="w-full"
-                    variant="danger"
-                    onClick={openCancelDialog}
-                    disabled={data.request_status === "canceled"}
-                  >
-                    Cancel
-                  </Button>
-                )}
+                {data.requestor_request_status !== "Cancelled" &&
+                  data.requestor_request_status !== "Pending" && (
+                    <Button
+                      className="w-full"
+                      variant="danger"
+                      onClick={openCancelDialog}
+                    >
+                      Cancel
+                    </Button>
+                  )}
               </>
             )}
 
             {user &&
               (user.assignedRole === "HRBP" ||
                 user.assignedRole ===
-                  "External Reimbursement Approver Manager") && (
+                  "External Reimbursement Approver Manager") &&
+              isApproverView && (
                 <>
                   <Button
                     className="w-full"
