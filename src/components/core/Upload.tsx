@@ -183,7 +183,7 @@ const Upload: React.FC<UploadProps> = ({
             <p className="font-bold text-orange-600">Click/Drop to Upload</p>
 
             <p className="text-neutral-600">
-              PDF,Word or Excel (add the images of particulars)
+              PDF or Word (add the images of particulars)
             </p>
           </div>
 

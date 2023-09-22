@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import {
   type ColumnDef,
@@ -6,7 +7,7 @@ import {
 } from "@tanstack/react-table";
 import dayjs from "dayjs";
 import dynamic from "next/dynamic";
-import React, { type ChangeEvent, useState } from "react";
+import React, { useEffect, useState, type ChangeEvent } from "react";
 import { MdAccessTimeFilled } from "react-icons-all-files/md/MdAccessTimeFilled";
 import { MdGavel } from "react-icons-all-files/md/MdGavel";
 import { MdSearch } from "react-icons-all-files/md/MdSearch";
@@ -37,6 +38,8 @@ import { useDialogState } from "~/hooks/use-dialog-state";
 import { type ReimbursementApproval } from "~/types/reimbursement.types";
 import { classNames } from "~/utils/classNames";
 import { currencyFormat } from "~/utils/currencyFormat";
+import { removeNull } from "~/utils/removeNull";
+import { useDebounce } from "~/utils/useDebounce";
 import CollapseWidthAnimation from "../animation/CollapseWidth";
 import Dialog from "../core/Dialog";
 import { showToast } from "../core/Toast";
@@ -103,11 +106,37 @@ const MyApprovals: React.FC = () => {
     pageSize: 10,
   });
 
+  const [expenseTypeIdsValue] = useState<string>("");
   const [textSearch, setTextSearch] = useState<string>();
+  const debouncedSearchText = useDebounce(textSearch, 500);
 
-  const { isFetching: isLoading, data } = useGetAllApprovalQuery({
-    text_search: textSearch,
-  });
+  const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
+    const searchValue = e.target.value;
+    setTextSearch(searchValue);
+  };
+
+  useEffect(() => {
+    if (columnFilters && columnFilters.length > 0) {
+      const expense_type_ids = columnFilters.find(
+        (a) => a.id === "expense_type",
+      );
+
+      if (
+        expense_type_ids &&
+        Array.isArray(expense_type_ids.value) &&
+        expense_type_ids.value.length > 0
+      ) {
+        console.log(expense_type_ids.value);
+      }
+    }
+  }, [columnFilters]);
+
+  const { isFetching: isLoading, data } = useGetAllApprovalQuery(
+    removeNull({
+      text_search: debouncedSearchText,
+      expense_type_ids: expenseTypeIdsValue,
+    }),
+  );
 
   const columns = React.useMemo<ColumnDef<ReimbursementApproval>[]>(() => {
     if (user?.assignedRole === "HRBP") {
@@ -179,6 +208,13 @@ const MyApprovals: React.FC = () => {
               />
             ),
           },
+        },
+        {
+          id: "employee_id",
+          accessorKey: "employee_id",
+          header: "ID",
+          cell: (info) => info.getValue(),
+          size: 10,
         },
         {
           id: "full_name",
@@ -586,14 +622,6 @@ const MyApprovals: React.FC = () => {
     }
   };
 
-  const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
-    const searchValue = e.target.value;
-
-    setTimeout(() => {
-      setTextSearch(searchValue);
-    }, 300);
-  };
-
   return (
     <>
       <div className="grid gap-y-2 md:p-5">
@@ -630,12 +658,6 @@ const MyApprovals: React.FC = () => {
               "flex flex-col gap-2 md:flex-row md:items-center",
             )}
           >
-            {/* {isLoading && (
-              <SkeletonLoading className="h-10 w-full rounded md:w-64" />
-            )}
-
-            {!isLoading && ( */}
-            {/* <> */}
             <Input
               name="searchFilter"
               placeholder="Find anything..."
@@ -697,6 +719,7 @@ const MyApprovals: React.FC = () => {
           closeDrawer={closeReimbursementView}
           isLoading={reimbursementRequestDataIsLoading}
           data={reimbursementRequestData}
+          setFocusedReimbursementId={setFocusedReimbursementId}
           isApproverView
         />
       </SideDrawer>

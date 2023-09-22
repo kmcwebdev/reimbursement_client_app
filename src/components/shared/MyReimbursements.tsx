@@ -212,6 +212,7 @@ const MyReimbursements: React.FC = () => {
         size: 5,
       },
     ];
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
   //Form return for Details
@@ -242,7 +243,6 @@ const MyReimbursements: React.FC = () => {
   const handleConfirmCancellation = () => {
     dispatch(clearReimbursementForm());
     useReimbursementDetailsFormReturn.reset();
-    setFocusedReimbursementId(undefined);
     dispatch(toggleCancelDialog());
   };
 
@@ -397,6 +397,7 @@ const MyReimbursements: React.FC = () => {
           isLoading={reimbursementRequestDataIsLoading}
           isError={reimbursementRequestDataIsError}
           data={reimbursementRequestData}
+          setFocusedReimbursementId={setFocusedReimbursementId}
         />
       </SideDrawer>
     </>
