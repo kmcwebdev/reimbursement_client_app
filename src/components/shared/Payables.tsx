@@ -23,6 +23,7 @@ import {
 import {
   useGetAllApprovalQuery,
   useGetAnalyticsQuery,
+  useGetRequestQuery,
 } from "~/features/reimbursement-api-slice";
 import { type ReimbursementApproval } from "~/types/reimbursement.types";
 import { currencyFormat } from "~/utils/currencyFormat";
@@ -36,6 +37,9 @@ import DateFiledFilter from "../core/table/filters/DateFiledFilter";
 import ExpenseTypeFilter from "../core/table/filters/ExpenseTypeFilter";
 import { type FilterProps } from "../core/table/filters/StatusFilter";
 import TableCheckbox from "../core/table/TableCheckbox";
+import SideDrawer from "../core/SideDrawer";
+import { useDialogState } from "~/hooks/use-dialog-state";
+import ReimbursementsCardView from "../reimbursement-view";
 
 const ReimbursementTypeFilter = dynamic(
   () => import("../core/table/filters/ReimbursementTypeFilter"),
@@ -48,6 +52,23 @@ const Payables: React.FC = () => {
   const { selectedItems, columnFilters } = useAppSelector(
     (state) => state.financePageState,
   );
+
+  const [focusedReimbursementId, setFocusedReimbursementId] =
+  useState<string>();
+
+  const {
+    isFetching: reimbursementRequestDataIsLoading,
+    currentData: reimbursementRequestData,
+  } = useGetRequestQuery(
+    { reimbursement_request_id: focusedReimbursementId! },
+    { skip: !focusedReimbursementId },
+  );
+
+  const {
+    isVisible,
+    open: openReimbursementView,
+    close: closeReimbursementView,
+  } = useDialogState();
 
   const { accessToken } = useAppSelector((state) => state.session);
 
@@ -221,7 +242,25 @@ const Payables: React.FC = () => {
         cell: (info) => currencyFormat(info.getValue() as number),
         header: "Total",
       },
+      {
+        id: "actions",
+        accessorKey: "reimbursement_request_id",
+        cell: (info) => (
+          <Button
+            buttonType="text"
+            onClick={() => {
+              setFocusedReimbursementId(info.getValue() as string);
+              openReimbursementView();
+              console.log(info);
+            }}
+          >
+            View
+          </Button>
+        ),
+        header: "",
+      },
     ],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [data, selectedItems],
   );
   return (
@@ -261,6 +300,23 @@ const Payables: React.FC = () => {
             </>
           )}
         </div>
+
+        <SideDrawer
+          title={
+            !reimbursementRequestDataIsLoading && reimbursementRequestData
+              ? reimbursementRequestData.reference_no
+              : "..."
+          }
+          isVisible={isVisible}
+          closeDrawer={closeReimbursementView}
+        >
+          <ReimbursementsCardView
+            closeDrawer={closeReimbursementView}
+            isLoading={reimbursementRequestDataIsLoading}
+            data={reimbursementRequestData}
+            isApproverView
+          />
+        </SideDrawer>
 
         {/* table */}
         <div className="flex justify-between flex-col md:flex-row gap-2">
