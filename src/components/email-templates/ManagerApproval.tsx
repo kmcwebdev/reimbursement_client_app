@@ -2,6 +2,7 @@ import { Link, Text } from "@react-email/components";
 import EmailMain from "./email-components/EmailMain";
 
 interface ManagerApprovalTemplateProps {
+  approverFullName: string;
   fullName: string;
   employeeId: string;
   expenseType: string;
@@ -13,6 +14,7 @@ interface ManagerApprovalTemplateProps {
 export const ManagerApproval: React.FC<
   Readonly<ManagerApprovalTemplateProps>
 > = ({
+  approverFullName,
   fullName,
   employeeId,
   expenseType,
@@ -20,7 +22,8 @@ export const ManagerApproval: React.FC<
   amount,
   receiptsAttached,
 }) => (
-  <EmailMain receiver={fullName} subject="HRBP Approval">
+  // TODO: NEED TO REFACTOR ALL EMAIL SCHEMA!!!!!!!!!
+  <EmailMain receiver={approverFullName} subject="Manager Approval">
     <Text>
       I hope this email finds you well. {fullName} has submitted a reimbursement
       claim that requires your approval.
