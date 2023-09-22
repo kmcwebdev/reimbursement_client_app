@@ -15,6 +15,7 @@ import {
   type ReimbursementApproval,
   type ReimbursementRequest,
 } from "~/types/reimbursement.types";
+import { createSearchParams } from "~/utils/create-search-params";
 
 export const reimbursementApiSlice = appApiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -44,12 +45,13 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
     }),
     getAllApproval: builder.query<
       ReimbursementApproval[],
-      GetAllReimbursementRequestType
+      {text_search?:string,expense_type_ids?:string}
     >({
       query: (query) => {
+        const searchParams = createSearchParams(query)
         return {
           url: "/api/finance/reimbursements/requests/for-approvals",
-          params: query,
+          params: searchParams && searchParams.size ?searchParams.toString() : {},
         };
       },
       providesTags: (_result, _fetchBaseQuery, query) => [

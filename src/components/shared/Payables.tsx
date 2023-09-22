@@ -81,6 +81,7 @@ const Payables: React.FC = () => {
           accept: "*/*",
           Authorization: `Bearer ${accessToken}`,
         },
+        params: { reimbursement_request_ids: JSON.stringify(selectedItems) },
       },
     );
 
