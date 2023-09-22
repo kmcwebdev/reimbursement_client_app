@@ -123,8 +123,8 @@ const MyReimbursements: React.FC = () => {
         ),
       },
       {
-        id: "request_status",
-        accessorKey: "request_status",
+        id: "hrbp_request_status",
+        accessorKey: "hrbp_request_status",
         header: "Status",
         cell: (info) => (
           <StatusBadge

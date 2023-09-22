@@ -104,8 +104,8 @@ const MyReimbursements: React.FC = () => {
   const columns = React.useMemo<ColumnDef<ReimbursementRequest>[]>(() => {
     return [
       {
-        id: "request_status",
-        accessorKey: "request_status",
+        id: "hrbp_request_status",
+        accessorKey: "hrbp_request_status",
         header: "Status",
         cell: (info) => (
           <StatusBadge

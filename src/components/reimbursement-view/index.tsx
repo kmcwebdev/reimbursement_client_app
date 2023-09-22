@@ -225,10 +225,12 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
             <Details
               request_type={data.request_type}
               requestor_request_status={data.requestor_request_status}
+              hrbp_request_status={data.hrbp_request_status}
               expense_type={data.expense_type}
               created_at={data.created_at}
               amount={data.amount}
               remarks={data.remarks}
+              user={user?.assignedRole}
             />
 
             {data.requestor_request_status === "Rejected" && (
