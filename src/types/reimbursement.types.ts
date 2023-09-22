@@ -10,6 +10,14 @@ export type ReimbursementAttachmentsDTO = {
   files: string[];
 };
 
+export type AuditLog = {
+  audit_log_id: string;
+  full_name: string;
+  email: string;
+  description: string;
+  created_at: string;
+};
+
 export type Approvers = {
   approval_matrix_id: string;
   approver_id: string;

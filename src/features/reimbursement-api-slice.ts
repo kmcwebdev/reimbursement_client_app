@@ -12,6 +12,7 @@ import { type ReimbursementAnalyticsType } from "~/types/reimbursement-analytics
 import { type ReimbursementExpenseType } from "~/types/reimbursement.expese-type";
 import { type ReimbursementRequestType } from "~/types/reimbursement.request-type";
 import {
+  type AuditLog,
   type ReimbursementApproval,
   type ReimbursementRequest,
 } from "~/types/reimbursement.types";
@@ -104,17 +105,14 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
         { type: "ExpenseTypes", id: query.request_type_id },
       ],
     }),
-     allExpenseTypes: builder.query<
-      ReimbursementExpenseType[],
-      unknown
-    >({
-      query: ( ) => {
+    allExpenseTypes: builder.query<ReimbursementExpenseType[], unknown>({
+      query: () => {
         return {
           url: "/api/finance/reimbursements/expense-types/all",
         };
       },
-      providesTags: (_result, _fetchBaseQuery,_query) => [
-        { type: "AllExpenseTypes", id: '/all'},
+      providesTags: (_result, _fetchBaseQuery, _query) => [
+        { type: "AllExpenseTypes", id: "/all" },
       ],
     }),
     uploadFile: builder.mutation<UploadFileResponse, FormData>({
@@ -166,7 +164,7 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
     }),
     rejectReimbursement: builder.mutation<
       unknown,
-       RejectReimbursementType & {approval_matrix_id:string}
+      RejectReimbursementType & { approval_matrix_id: string }
     >({
       query: (data) => {
         return {
@@ -180,10 +178,10 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
         { type: "ReimbursementAnalytics" },
       ],
     }),
-     cancelReimbursement: builder.mutation<
+    cancelReimbursement: builder.mutation<
       unknown,
       {
-        reimbursement_request_id: string,
+        reimbursement_request_id: string;
       }
     >({
       query: (data) => {
@@ -198,11 +196,11 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
         { type: "ReimbursementAnalytics" },
       ],
     }),
-     
-      holdReimbursement: builder.mutation<
+
+    holdReimbursement: builder.mutation<
       unknown,
       OnholdReimbursementType & {
-        reimbursement_request_id: string,
+        reimbursement_request_id: string;
       }
     >({
       query: (data) => {
@@ -232,6 +230,17 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
         };
       },
     }),
+    auditLogs: builder.query<AuditLog[], { reimbursement_request_id: string }>({
+      query: (query) => {
+        return {
+          url: "/api/finance/reimbursements/requests/auditlogs",
+          params: query,
+        };
+      },
+      providesTags: (_result, _fetchBaseQuery, query) => [
+        { type: "AuditLogs", id: query.reimbursement_request_id },
+      ],
+    }),
   }),
 });
 
@@ -250,4 +259,5 @@ export const {
   useHoldReimbursementMutation,
   useCancelReimbursementMutation,
   useChangeRoleMutation,
+  useAuditLogsQuery,
 } = reimbursementApiSlice;
