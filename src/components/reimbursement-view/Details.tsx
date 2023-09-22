@@ -11,6 +11,8 @@ export interface DetailsProps {
   created_at: string;
   amount: number | string;
   remarks: string;
+  user?: string;
+  hrbp_request_status: string;
 }
 
 const Details: React.FC<DetailsProps> = ({
@@ -20,15 +22,46 @@ const Details: React.FC<DetailsProps> = ({
   remarks,
   created_at,
   amount,
+  // user,
+  hrbp_request_status
 }) => {
+
+  // const [ currentStatus, setCurrentStatus ] = useState<string>();
+
+  // useEffect(() => {
+
+  //   if (user === 'Member' && request_type === 'Scheduled' && requestor_request_status !== 'Cancelled') {
+  //     setCurrentStatus(hrbp_request_status)
+  //   } else if ( user === 'Member' && request_type === 'Scheduled' && requestor_request_status === 'Cancelled') {
+  //     setCurrentStatus(requestor_request_status)
+  //   } else if ( user === 'Member' && request_type === 'Scheduled' && requestor_request_status === 'Pending' && hrbp_request_status === 'Pending' ) {
+  //     setCurrentStatus(requestor_request_status)
+  //   } else if ( user === 'Member' && request_type === 'Unscheduled' && requestor_request_status === 'Cancelled' ) {
+  //     setCurrentStatus(requestor_request_status)
+  //   } else if ( user === 'Member' && request_type === 'Unscheduled' && requestor_request_status === 'Cancelled' ) {
+  //     setCurrentStatus(requestor_request_status)
+  //   }
+
+  // console.log(request_type);
+
+  // }, [currentStatus, hrbp_request_status, request_type, requestor_request_status, user])
+
+
+
   return (
     <List>
       <List.Item
         label="Status"
         value={
-          <StatusBadge status={requestor_request_status.toLowerCase() as StatusType} />
+          <StatusBadge status={hrbp_request_status.toLowerCase() as StatusType} />
         }
       />
+      {/* <List.Item
+        label="Status requestor"
+        value={
+          <StatusBadge status={requestor_request_status.toLowerCase() as StatusType} />
+        }
+      /> */}
       <List.Item label="Type" value={request_type} />
       <List.Item label="Expense" value={expense_type} />
 
