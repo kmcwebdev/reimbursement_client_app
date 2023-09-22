@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import dayjs from "dayjs";
-import { useEffect, useState, type ChangeEvent } from "react";
+import { useState, type ChangeEvent } from "react";
 import { MdCalendarToday } from "react-icons-all-files/md/MdCalendarToday";
 import CollapseHeightAnimation from "~/components/animation/CollapseHeight";
 import { classNames } from "~/utils/classNames";
@@ -13,95 +13,63 @@ const DateFiledFilter: React.FC<FilterProps> = ({
   column,
   isButtonHidden = false,
 }) => {
-  useEffect(() => {
-    column.setFilterValue(undefined);
-  }, [column]);
-
-  useEffect(() => {
-    const filterValue = column.getFilterValue();
-
-    if (filterValue === undefined) {
-      clearDates();
-      column.setFilterValue(undefined);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [column.getFilterValue()]);
-
-  const [selectedDates, setSelectedDates] = useState<string[]>([]);
+  const [dateFrom, setDateFrom] = useState<string>("");
+  const [dateTo, setDateTo] = useState<string>("");
   const [hasErrors, setHasErrors] = useState<boolean>(false);
   const [error, setError] = useState<string>();
 
   const clearDates = () => {
-    setSelectedDates([]);
+    setDateFrom("");
+    setDateTo("");
     column.setFilterValue(undefined);
   };
 
   const validate = () => {
-    if (selectedDates) {
-      if (selectedDates.length === 2) {
-        const isBefore = dayjs(selectedDates[1]).isBefore(
-          dayjs(selectedDates[0]),
-        );
-        const isSame = dayjs(selectedDates[1]).isSame(dayjs(selectedDates[0]));
+    if (dateFrom !== "" && dateTo !== "") {
+      const isBefore = dayjs(dateTo).isBefore(dayjs(dateFrom));
+      const isSame = dayjs(dateTo).isSame(dayjs(dateTo));
 
-        if (isBefore) {
-          setError("To must not be before From!");
-          setHasErrors(true);
-          return;
-        }
-
-        if (isSame) {
-          setError("Selected dates must not be same!");
-          setHasErrors(true);
-          return;
-        }
-
-        setHasErrors(false);
-        setError(undefined);
-
-        column.setFilterValue(
-          selectedDates.map((a) => dayjs(a).format("MM/DD/YYYY")),
-        );
-      } else {
-        column.setFilterValue(
-          selectedDates.map((a) => dayjs(a).format("MM/DD/YYYY")),
-        );
+      if (isBefore) {
+        setError("Selected date range invalid!");
+        setHasErrors(true);
+        return;
       }
+
+      if (isSame) {
+        setError("Selected dates must not be same!");
+        setHasErrors(true);
+        return;
+      }
+
+      setHasErrors(false);
+      setError(undefined);
+
+      const selectedDates = [dateFrom, dateTo];
+      column.setFilterValue([
+        selectedDates.map((a) => dayjs(a).format("MM/DD/YYYY")),
+      ]);
     } else {
-      column.setFilterValue(undefined);
+      const selectedDates = [dateFrom, dateTo];
+      column.setFilterValue([
+        selectedDates.map((a) => dayjs(a).format("MM/DD/YYYY")),
+      ]);
     }
   };
 
   const onDateFromChanged = (e: ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    const selectedDatesCopy = selectedDates;
+    setDateFrom(e.target.value);
 
-    if (selectedDatesCopy && value) {
-      if (selectedDatesCopy.length >= 1) {
-        selectedDatesCopy[0] = value;
-        setSelectedDates(selectedDatesCopy);
-      }
-      if (selectedDatesCopy.length === 0) {
-        selectedDatesCopy.push(value);
-        setSelectedDates(selectedDatesCopy);
-      }
-    }
-    validate();
+    // column.setFilterValue(
+    //   selectedDates.map((a) => dayjs(a).format("MM/DD/YYYY")),
+    // );
+    // validate();
   };
 
   const onDateToChanged = (e: ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    const selectedDatesCopy = selectedDates;
-
-    if (selectedDatesCopy && selectedDatesCopy.length === 2) {
-      selectedDatesCopy[1] = value;
-    } else if (selectedDatesCopy && selectedDatesCopy.length < 2) {
-      selectedDatesCopy.push(value);
-    }
-
-    setSelectedDates(selectedDatesCopy);
-
-    validate();
+    setDateTo(e.target.value);
+    // column.setFilterValue(
+    //   selectedDates.map((a) => dayjs(a).format("MM/DD/YYYY")),
+    // );
   };
 
   return (
@@ -121,26 +89,17 @@ const DateFiledFilter: React.FC<FilterProps> = ({
               type="date"
               name="from"
               label="From"
-              value={selectedDates[0] || ""}
-              onChange={onDateFromChanged}
+              defaultValue={dateFrom}
+              onBlur={onDateFromChanged}
               hasErrors={hasErrors}
             />
             <Input
               type="date"
               name="to"
               label="To"
-              value={
-                selectedDates && selectedDates.length > 1
-                  ? selectedDates[1]
-                  : ""
-              }
-              disabled={!selectedDates || selectedDates.length === 0}
-              min={
-                selectedDates && selectedDates.length > 0
-                  ? dayjs(selectedDates[0]).add(1, "day").format("YYYY-MM-DD")
-                  : ""
-              }
-              onChange={onDateToChanged}
+              defaultValue={dateTo}
+              min={dayjs(dateFrom).add(1, "day").format("YYYY-MM-DD")}
+              onBlur={onDateToChanged}
               hasErrors={hasErrors}
             />
 
@@ -148,12 +107,14 @@ const DateFiledFilter: React.FC<FilterProps> = ({
               <p className="text-danger-default mt-1 text-sm">{error}</p>
             )}
 
-            <CollapseHeightAnimation
-              isVisible={(selectedDates && selectedDates.length !== 0) ?? false}
-            >
-              <Button buttonType="text" onClick={clearDates}>
-                Clear
-              </Button>
+            <CollapseHeightAnimation isVisible={dateFrom !== ""}>
+              <div className="flex items-center justify-between">
+                <Button buttonType="text" onClick={clearDates}>
+                  Clear
+                </Button>
+
+                <Button onClick={validate}>Apply</Button>
+              </div>
             </CollapseHeightAnimation>
           </div>
         </div>
