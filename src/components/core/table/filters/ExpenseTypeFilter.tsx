@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type ChangeEvent } from "react";
+import { useState, type ChangeEvent } from "react";
 import { FaCaretDown } from "react-icons-all-files/fa/FaCaretDown";
 import CollapseHeightAnimation from "~/components/animation/CollapseHeight";
 import { useAllExpenseTypesQuery } from "~/features/reimbursement-api-slice";
@@ -15,24 +15,7 @@ const ExpenseTypeFilter: React.FC<FilterProps> = ({
   const { data: allExpenseTypes, isLoading: allExpenseTypesIsLoading } =
     useAllExpenseTypesQuery({});
 
-  const sortedUniqueValues = useMemo(
-    () => Array.from(column.getFacetedUniqueValues().keys()).sort() as string[],
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [column.getFacetedUniqueValues()],
-  );
-
-  useEffect(() => {
-    column.setFilterValue(sortedUniqueValues);
-  }, [column, sortedUniqueValues]);
-
-  useEffect(() => {
-    if (column.getFilterValue()) {
-      setChecked(column.getFilterValue() as string[]);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [column.getFilterValue()]);
-
-  const [checked, setChecked] = useState(sortedUniqueValues);
+  const [checked, setChecked] = useState<string[]>([]);
 
   const onChange = (e: ChangeEvent<HTMLInputElement>, value: string) => {
     if (checked.includes(value)) {
@@ -53,9 +36,11 @@ const ExpenseTypeFilter: React.FC<FilterProps> = ({
   };
 
   const showAll = () => {
-    setChecked(sortedUniqueValues);
-    column.setFilterValue(sortedUniqueValues);
+    setChecked([]);
+    column.setFilterValue(undefined);
   };
+
+  console.log(checked);
 
   return (
     <Popover
@@ -68,33 +53,28 @@ const ExpenseTypeFilter: React.FC<FilterProps> = ({
         />
       }
       content={
-        <div className="w-full p-4">
-          <div className="flex flex-col gap-2 capitalize">
-            {!allExpenseTypesIsLoading &&
-              allExpenseTypes &&
-              allExpenseTypes.length > 0 &&
-              allExpenseTypes.map((option) => (
-                <Checkbox
-                  key={option.expense_type_id}
-                  label={option.expense_type}
-                  name={option.expense_type_id}
-                  checked={checked.includes(option.expense_type_id)}
-                  disabled={
-                    checked.length === 1 &&
-                    checked.includes(option.expense_type_id)
-                  }
-                  onChange={(e) => onChange(e, option.expense_type_id)}
-                />
-              ))}
-
-            <CollapseHeightAnimation
-              isVisible={checked.length < sortedUniqueValues.length}
-            >
-              <Button buttonType="text" onClick={showAll}>
-                Show All
-              </Button>
-            </CollapseHeightAnimation>
+        <div className="w-full space-y-4 p-4">
+          <div className="flex h-48 gap-2 overflow-y-auto capitalize">
+            <div className="flex flex-col gap-4">
+              {!allExpenseTypesIsLoading &&
+                allExpenseTypes &&
+                allExpenseTypes.length > 0 &&
+                allExpenseTypes.map((option) => (
+                  <Checkbox
+                    key={option.expense_type_id}
+                    label={option.expense_type}
+                    name={option.expense_type_id}
+                    checked={checked.includes(option.expense_type_id)}
+                    onChange={(e) => onChange(e, option.expense_type_id)}
+                  />
+                ))}
+            </div>
           </div>
+          <CollapseHeightAnimation isVisible={checked.length > 0}>
+            <Button buttonType="text" onClick={showAll}>
+              Show All
+            </Button>
+          </CollapseHeightAnimation>
         </div>
       }
     />

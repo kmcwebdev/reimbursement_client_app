@@ -104,8 +104,8 @@ const MyReimbursements: React.FC = () => {
   const columns = React.useMemo<ColumnDef<ReimbursementRequest>[]>(() => {
     return [
       {
-        id: "hrbp_request_status",
-        accessorKey: "hrbp_request_status",
+        id: "finance_request_status",
+        accessorKey: "finance_request_status",
         header: "Status",
         cell: (info) => (
           <StatusBadge
@@ -212,6 +212,7 @@ const MyReimbursements: React.FC = () => {
         size: 5,
       },
     ];
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
   //Form return for Details
@@ -242,7 +243,6 @@ const MyReimbursements: React.FC = () => {
   const handleConfirmCancellation = () => {
     dispatch(clearReimbursementForm());
     useReimbursementDetailsFormReturn.reset();
-    setFocusedReimbursementId(undefined);
     dispatch(toggleCancelDialog());
   };
 
@@ -397,6 +397,7 @@ const MyReimbursements: React.FC = () => {
           isLoading={reimbursementRequestDataIsLoading}
           isError={reimbursementRequestDataIsError}
           data={reimbursementRequestData}
+          setFocusedReimbursementId={setFocusedReimbursementId}
         />
       </SideDrawer>
     </>
