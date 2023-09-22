@@ -1,8 +1,11 @@
+/* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
+  useState,
   type Dispatch,
   type PropsWithChildren,
   type SetStateAction,
+  useMemo,
 } from "react";
 import { useForm } from "react-hook-form";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
@@ -10,6 +13,7 @@ import { appApiSlice } from "~/app/rtkQuery";
 import { Button } from "~/components/core/Button";
 import {
   useApproveReimbursementMutation,
+  useAuditLogsQuery,
   useCancelReimbursementMutation,
   useHoldReimbursementMutation,
   useRejectReimbursementMutation,
@@ -54,7 +58,15 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
   setFocusedReimbursementId,
 }) => {
   const { user } = useAppSelector((state) => state.session);
+  const [reimbursementReqId,setReimbursementReqId] = useState<string>();
 
+  useMemo(()=>{
+ if(data){
+  setReimbursementReqId(data.reimbursement_request_id)
+ }
+  },[data])
+
+  const {data:auditLog,isFetching:auditLogIsFetching}=useAuditLogsQuery({reimbursement_request_id:reimbursementReqId!},{skip:!reimbursementReqId})
   const [approveReimbursement, { isLoading: isApproving }] =
     useApproveReimbursementMutation();
 
@@ -156,7 +168,9 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
   const handleConfirmReject = (values: RejectReimbursementType) => {
     if (data) {
       const payload = {
-        approval_matrix_id: data.next_approval_matrix_id,
+        approval_matrix_id: user && user.assignedRole === 'Finance'
+          ? data.reimbursement_request_id
+          : data.next_approval_matrix_id,
         rejection_reason: values.rejection_reason,
       };
 
@@ -217,6 +231,7 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
     closeHoldDialog();
   };
 
+
   return (
     <div className="relative flex h-full w-full flex-col">
       {!isLoading && !isError && data && (
@@ -226,6 +241,7 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
               request_type={data.request_type}
               requestor_request_status={data.requestor_request_status}
               hrbp_request_status={data.hrbp_request_status}
+              finance_request_status={data.finance_request_status}
               expense_type={data.expense_type}
               created_at={data.created_at}
               amount={data.amount}
@@ -233,8 +249,13 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
               user={user?.assignedRole}
             />
 
-            {data.requestor_request_status === "Rejected" && (
-              <Notes note="Missing details" />
+            {(data.finance_request_status === "On-hold" || data.finance_request_status === "Rejected") && (
+
+              <>
+              {!auditLogIsFetching && auditLog && auditLog.length > 0 &&
+              <Notes note={auditLog[0].description} />
+              }
+              </>
             )}
 
             {data.approvers && data.approvers.length > 0 && (

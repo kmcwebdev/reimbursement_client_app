@@ -13,6 +13,7 @@ export interface DetailsProps {
   remarks: string;
   user?: string;
   hrbp_request_status: string;
+  finance_request_status: string;
 }
 
 const Details: React.FC<DetailsProps> = ({
@@ -22,8 +23,9 @@ const Details: React.FC<DetailsProps> = ({
   remarks,
   created_at,
   amount,
-  // user,
-  hrbp_request_status
+  user,
+  // hrbp_request_status,
+  finance_request_status
 }) => {
 
   // const [ currentStatus, setCurrentStatus ] = useState<string>();
@@ -50,18 +52,22 @@ const Details: React.FC<DetailsProps> = ({
 
   return (
     <List>
-      <List.Item
-        label="Status"
-        value={
-          <StatusBadge status={hrbp_request_status.toLowerCase() as StatusType} />
-        }
-      />
-      {/* <List.Item
-        label="Status requestor"
-        value={
-          <StatusBadge status={requestor_request_status.toLowerCase() as StatusType} />
-        }
-      /> */}
+      {user && user !== 'Finance' && (
+        <List.Item
+          label="Status"
+          value={
+            <StatusBadge status={finance_request_status.toLowerCase() as StatusType} />
+          }
+        />
+      )}
+      {user && user === 'Finance' && (
+        <List.Item
+          label="Status"
+          value={
+            <StatusBadge status={finance_request_status.toLowerCase() as StatusType} />
+          }
+        />
+      )}
       <List.Item label="Type" value={request_type} />
       <List.Item label="Expense" value={expense_type} />
 

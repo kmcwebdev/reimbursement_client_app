@@ -38,14 +38,13 @@ import TableCheckbox from "../core/table/TableCheckbox";
 import TableSkeleton from "../core/table/TableSkeleton";
 import DateFiledFilter from "../core/table/filters/DateFiledFilter";
 import ExpenseTypeFilter from "../core/table/filters/ExpenseTypeFilter";
-import { type FilterProps } from "../core/table/filters/StatusFilter";
+import StatusFilter, { type FilterProps } from "../core/table/filters/StatusFilter";
 import ReimbursementsCardView from "../reimbursement-view";
+import StatusBadge, { type StatusType } from "../core/StatusBadge";
+import dayjs from "dayjs";
 
 const ReimbursementTypeFilter = dynamic(
   () => import("../core/table/filters/ReimbursementTypeFilter"),
-);
-const ClientFilter = dynamic(
-  () => import("../core/table/filters/ClientFilter"),
 );
 
 const Payables: React.FC = () => {
@@ -154,21 +153,33 @@ const Payables: React.FC = () => {
         ),
       },
       {
-        id: "client_name",
-        accessorKey: "client_name",
-        cell: (info) => info.getValue(),
-        header: "Client",
+        id: "finance_request_status",
+        accessorKey: "finance_request_status",
+        header: "Status",
+        cell: (info) => (
+          <StatusBadge
+            status={(info.getValue() as string).toLowerCase() as StatusType}
+          />
+        ),
         filterFn: (row, id, value: string) => {
           return value.includes(row.getValue(id));
         },
+        enableColumnFilter: true,
+        size: 10,
         meta: {
           filterComponent: (info: FilterProps) => (
-            <ClientFilter
+            <StatusFilter
               {...info}
               isButtonHidden={data && data.length === 0}
             />
           ),
         },
+      },
+      {
+        id: "client_name",
+        accessorKey: "client_name",
+        cell: (info) => info.getValue(),
+        header: "Client",
       },
       {
         id: "employee_id",
@@ -189,8 +200,8 @@ const Payables: React.FC = () => {
         header: "R-ID",
       },
       {
-        id: "finance_request_status",
-        accessorKey: "finance_request_status",
+        id: "request_type",
+        accessorKey: "request_type",
         cell: (info) => info.getValue(),
         header: "Type",
         filterFn: (row, id, value: string) => {
@@ -225,7 +236,7 @@ const Payables: React.FC = () => {
       {
         id: "created_at",
         accessorKey: "created_at",
-        cell: (info) => info.getValue(),
+        cell: (info) => dayjs(info.getValue() as string).format("MMM D, YYYY"),
         header: "Approved",
         filterFn: (row, id, value: string) => {
           return value.includes(row.getValue(id));
@@ -238,12 +249,6 @@ const Payables: React.FC = () => {
             />
           ),
         },
-      },
-      {
-        id: "payroll_account",
-        accessorKey: "payroll_account",
-        cell: (info) => info.getValue(),
-        header: "Payroll Account",
       },
       {
         id: "amount",
