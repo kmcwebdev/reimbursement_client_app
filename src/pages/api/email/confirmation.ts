@@ -20,8 +20,9 @@ export default async function handler(
 
     const {
       to,
+      requestType,
       referenceNo,
-      hrbpManagerName,
+      approverName,
       fullName,
       employeeId,
       expenseType,
@@ -35,8 +36,9 @@ export default async function handler(
       to,
       subject: `New Reimbursement Request ${referenceNo}`,
       react: Confirmation({
+        requestType,
         referenceNo,
-        hrbpManagerName,
+        approverName,
         fullName,
         employeeId,
         expenseType,

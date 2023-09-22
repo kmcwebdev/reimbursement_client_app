@@ -122,6 +122,11 @@ export const ConfirmationEmailSchema = z.object({
         message: "Email address is invalid",
       }),
   ),
+  requestType: z.enum(["scheduled", "unscheduled"], {
+    description: "Reimbursement request type",
+    required_error: "Reimbursement request type is required",
+    invalid_type_error: "Reimbursement required type is invalid",
+  }),
   referenceNo: z
     .string({
       description: "Reference no",
@@ -131,14 +136,14 @@ export const ConfirmationEmailSchema = z.object({
     .nonempty({
       message: "Reference no is required",
     }),
-  hrbpManagerName: z
+  approverName: z
     .string({
-      description: "HRBP Manager Name",
-      required_error: "HRBP Manager Name is required",
-      invalid_type_error: "HRBP Manager Name is invalid",
+      description: "Approver Name",
+      required_error: "Approver Name is required",
+      invalid_type_error: "Approver Name is invalid",
     })
     .nonempty({
-      message: "HRBP Manager Name is required",
+      message: "Approver Name is required",
     }),
   fullName: z
     .string({
