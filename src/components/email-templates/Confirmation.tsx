@@ -48,7 +48,7 @@ export const Confirmation: React.FC<Readonly<ConfirmationTemplateProps>> = ({
       manager&rsquo;s review is complete. If you have any questions or concerns
       regarding this reimbursement claim, please reach out to the employee
       directly or contact your respective{" "}
-      {requestType === "scheduled" ? "HRBP&apos;s" : "Manager&apos;s"}
+      {requestType === "scheduled" ? "HRBP" : "Manager"}&apos;s
     </Text>
     <Text>Thank you for your attention to this matter.</Text>
   </EmailMain>
