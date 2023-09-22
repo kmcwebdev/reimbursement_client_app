@@ -76,7 +76,7 @@ interface CustomFilterMeta extends FilterMeta {
 const Table: React.FC<TableProps> = (props) => {
   const { data, columns } = props;
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
-  const [filterState, setFilterState] = useState<ColumnFiltersState>([]);
+  const [filterState] = useState<ColumnFiltersState>([]);
 
   useEffect(() => {
     if (
@@ -108,7 +108,8 @@ const Table: React.FC<TableProps> = (props) => {
       props.tableState.columnFilters &&
       props.tableStateActions.setColumnFilters
     ) {
-      props.tableStateActions.setColumnFilters(filterState);
+      console.log(filterState);
+      // props.tableStateActions.setColumnFilters(filterState);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filterState]);
@@ -120,7 +121,7 @@ const Table: React.FC<TableProps> = (props) => {
       ...props.tableState,
       rowSelection: props.tableState?.selectedItems ? rowSelection : undefined,
     },
-    onColumnFiltersChange: setFilterState,
+    // onColumnFiltersChange: setFilterState,
     onRowSelectionChange: setRowSelection,
     onPaginationChange: props.tableStateActions?.setPagination,
     getFacetedUniqueValues: getFacetedUniqueValues(),

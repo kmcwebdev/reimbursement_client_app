@@ -31,11 +31,11 @@ import { Button } from "../core/Button";
 import ButtonGroup from "../core/form/fields/ButtonGroup";
 import Input from "../core/form/fields/Input";
 import Table from "../core/table";
+import TableCheckbox from "../core/table/TableCheckbox";
 import TableSkeleton from "../core/table/TableSkeleton";
 import DateFiledFilter from "../core/table/filters/DateFiledFilter";
 import ExpenseTypeFilter from "../core/table/filters/ExpenseTypeFilter";
 import { type FilterProps } from "../core/table/filters/StatusFilter";
-import TableCheckbox from "../core/table/TableCheckbox";
 
 const ReimbursementTypeFilter = dynamic(
   () => import("../core/table/filters/ReimbursementTypeFilter"),
@@ -78,6 +78,15 @@ const Payables: React.FC = () => {
   const setSelectedItemsState = (value: string[]) => {
     dispatch(setSelectedItems(value));
   };
+
+  /**Uncomment if filter is already available on endpoint */
+  // const [textSearch, setTextSearch] = useState<string>();
+  // const debouncedSearchText = useDebounce(textSearch, 500);
+
+  // const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
+  //   const searchValue = e.target.value;
+  //   setTextSearch(searchValue);
+  // };
 
   const { isFetching, data } = useGetAllApprovalQuery({});
 
@@ -229,7 +238,7 @@ const Payables: React.FC = () => {
       <div className="grid gap-y-2 p-5">
         <div className="mb-5 place-items-start gap-4 md:overflow-x-auto">
           {analyticsIsLoading && (
-            <div className="grid grid-cols-2 sm:flex gap-3">
+            <div className="grid grid-cols-2 gap-3 sm:flex">
               <DashboardCardSkeleton />
               <DashboardCardSkeleton />
               <DashboardCardSkeleton />
@@ -238,14 +247,18 @@ const Payables: React.FC = () => {
 
           {!analyticsIsLoading && analytics && (
             <>
-            <div className="grid grid-cols-2 sm:flex gap-3">
-              <DashboardCard
-                  icon={<MdGavel className="h-4 w-4 sm:h-5 sm:w-5 text-orange-600" />}
+              <div className="grid grid-cols-2 gap-3 sm:flex">
+                <DashboardCard
+                  icon={
+                    <MdGavel className="h-4 w-4 text-orange-600 sm:h-5 sm:w-5" />
+                  }
                   label="Pending Approval"
                   count={analytics.myPendingRequest.count}
                 />
                 <DashboardCard
-                  icon={<MdAccessTimeFilled className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" />}
+                  icon={
+                    <MdAccessTimeFilled className="h-4 w-4 text-blue-600 sm:h-5 sm:w-5" />
+                  }
                   label="Scheduled/Unscheduled"
                   count={analytics.others?.totalScheduledRequest.count || 0}
                   totalCount={
@@ -253,7 +266,9 @@ const Payables: React.FC = () => {
                   }
                 />
                 <DashboardCard
-                  icon={<AiOutlinePause className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-600" />}
+                  icon={
+                    <AiOutlinePause className="h-4 w-4 text-yellow-600 sm:h-5 sm:w-5" />
+                  }
                   label="On-Hold"
                   count={analytics.others?.totalOnholdRequest.count || 0}
                 />
@@ -263,14 +278,15 @@ const Payables: React.FC = () => {
         </div>
 
         {/* table */}
-        <div className="flex justify-between flex-col md:flex-row gap-2">
-          <h4>For Appproval</h4>
+        <div className="flex flex-col justify-between gap-2 md:flex-row">
+          <h4>For Approval</h4>
 
-          <div className="flex flex-col md:flex-row gap-2 md:gap-4">
+          <div className="flex flex-col gap-2 md:flex-row md:gap-4">
             <Input
               name="inputText"
               placeholder="Find anything..."
               icon={AiOutlineSearch as IconType}
+              // onChange={handleSearch}
             />
 
             <CollapseWidthAnimation
@@ -302,8 +318,7 @@ const Payables: React.FC = () => {
             />
           </div>
         </CollapseWidthAnimation>
-        
-        
+
         {!isFetching && data && (
           <Table
             type="approvals"

@@ -5,19 +5,21 @@ import {
   type ColumnFiltersState,
   type PaginationState,
 } from "@tanstack/react-table";
+import axios, { type AxiosResponse } from "axios";
 import dayjs from "dayjs";
 import dynamic from "next/dynamic";
 import React, { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
+import { type IconType } from "react-icons-all-files";
+import { AiOutlineSearch } from "react-icons-all-files/ai/AiOutlineSearch";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { appApiSlice } from "~/app/rtkQuery";
 import { Button } from "~/components/core/Button";
 import StatusBadge, { type StatusType } from "~/components/core/StatusBadge";
 import Table from "~/components/core/table";
 import { type FilterProps } from "~/components/core/table/filters/StatusFilter";
+import { env } from "~/env.mjs";
 import { useGetAllRequestsQuery } from "~/features/reimbursement-api-slice";
-import { AiOutlineSearch } from "react-icons-all-files/ai/AiOutlineSearch";
-import { type IconType } from "react-icons-all-files";
 import {
   clearReimbursementForm,
   toggleCancelDialog,
@@ -33,15 +35,13 @@ import {
 } from "~/schema/reimbursement-details.schema";
 import { type ReimbursementRequest } from "~/types/reimbursement.types";
 import { currencyFormat } from "~/utils/currencyFormat";
-import SkeletonLoading from "../core/SkeletonLoading";
-import TableSkeleton from "../core/table/TableSkeleton";
-import DateFiledFilter from "../core/table/filters/DateFiledFilter";
-import ClientFilter from "../core/table/filters/ClientFilter";
 import CollapseWidthAnimation from "../animation/CollapseWidth";
-import { env } from "~/env.mjs";
-import axios, { type AxiosResponse } from "axios";
+import SkeletonLoading from "../core/SkeletonLoading";
 import Input from "../core/form/fields/Input";
 import TableCheckbox from "../core/table/TableCheckbox";
+import TableSkeleton from "../core/table/TableSkeleton";
+import ClientFilter from "../core/table/filters/ClientFilter";
+import DateFiledFilter from "../core/table/filters/DateFiledFilter";
 
 const Dialog = dynamic(() => import("~/components/core/Dialog"));
 const ReimburseForm = dynamic(() => import("./reimburse-form"));
@@ -57,7 +57,6 @@ const ReimbursementTypeFilter = dynamic(
 );
 
 const MyReimbursements: React.FC = () => {
-  
   const { user, accessToken } = useAppSelector((state) => state.session);
 
   const { formDialogIsOpen, cancelDialogIsOpen, reimbursementDetails } =
@@ -75,6 +74,16 @@ const MyReimbursements: React.FC = () => {
   const setColumnFiltersState = (value: ColumnFiltersState) => {
     dispatch(setColumnFilters(value));
   };
+
+  /**Uncomment if filter is already available on endpoint */
+  // const [textSearch, setTextSearch] = useState<string>();
+  // const debouncedSearchText = useDebounce(textSearch, 500);
+  // const { isFetching, data } = useGetAllRequestsQuery(removeNull({text_search: debouncedSearchText}));
+
+  // const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
+  //   const searchValue = e.target.value;
+  //   setTextSearch(searchValue);
+  // };
 
   const { isFetching, data } = useGetAllRequestsQuery({});
 
@@ -213,7 +222,7 @@ const MyReimbursements: React.FC = () => {
         id: "created_at",
         accessorKey: "created_at",
         cell: (info) => dayjs(info.getValue() as string).format("MMM D, YYYY"),
-        header: `${user?.assignedRole === "Finance" ? "Approved" : "Filed" }`,
+        header: `${user?.assignedRole === "Finance" ? "Approved" : "Filed"}`,
         filterFn: (row, id, value: string) => {
           return value.includes(row.getValue(id));
         },
@@ -303,17 +312,17 @@ const MyReimbursements: React.FC = () => {
   return (
     <>
       <div className="grid gap-y-2 p-5">
-
-        <div className="flex justify-between flex-col md:flex-row gap-2">
+        <div className="flex flex-col justify-between gap-2 md:flex-row">
           <h4>Reimbursements History</h4>
 
           {isFetching && <SkeletonLoading className="h-10 w-[5rem] rounded" />}
 
-          <div className="flex flex-col md:flex-row gap-2 md:gap-4">
+          <div className="flex flex-col gap-2 md:flex-row md:gap-4">
             <Input
               name="inputText"
               placeholder="Find anything..."
               icon={AiOutlineSearch as IconType}
+              // onChange={handleSearch}
             />
 
             {user && user.assignedRole === "Finance" && (
@@ -330,7 +339,6 @@ const MyReimbursements: React.FC = () => {
               </CollapseWidthAnimation>
             )}
           </div>
-
         </div>
 
         {!isFetching && data && (
