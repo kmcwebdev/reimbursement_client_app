@@ -168,9 +168,10 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
   const handleConfirmReject = (values: RejectReimbursementType) => {
     if (data) {
       const payload = {
-        approval_matrix_id: user && user.assignedRole === 'Finance'
-          ? data.reimbursement_request_id
-          : data.next_approval_matrix_id,
+        approval_matrix_id:
+          user && user.assignedRole === "Finance"
+            ? data.reimbursement_request_id
+            : data.next_approval_matrix_id,
         rejection_reason: values.rejection_reason,
       };
 

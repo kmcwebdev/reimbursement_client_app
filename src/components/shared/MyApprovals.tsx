@@ -38,7 +38,6 @@ import { useDialogState } from "~/hooks/use-dialog-state";
 import { type ReimbursementApproval } from "~/types/reimbursement.types";
 import { classNames } from "~/utils/classNames";
 import { currencyFormat } from "~/utils/currencyFormat";
-import { removeNull } from "~/utils/removeNull";
 import { useDebounce } from "~/utils/useDebounce";
 import CollapseWidthAnimation from "../animation/CollapseWidth";
 import Dialog from "../core/Dialog";
@@ -64,6 +63,8 @@ const MyApprovals: React.FC = () => {
     (state) => state.approvalPageState,
   );
   const dispatch = useAppDispatch();
+
+  console.log(selectedItems);
 
   const setSelectedItemsState = (value: string[]) => {
     dispatch(setSelectedItems(value));
@@ -131,12 +132,10 @@ const MyApprovals: React.FC = () => {
     }
   }, [columnFilters]);
 
-  const { isFetching: isLoading, data } = useGetAllApprovalQuery(
-    removeNull({
-      text_search: debouncedSearchText,
-      expense_type_ids: expenseTypeIdsValue,
-    }),
-  );
+  const { isFetching: isLoading, data } = useGetAllApprovalQuery({
+    text_search: debouncedSearchText,
+    expense_type_ids: expenseTypeIdsValue,
+  });
 
   const columns = React.useMemo<ColumnDef<ReimbursementApproval>[]>(() => {
     if (user?.assignedRole === "HRBP") {
