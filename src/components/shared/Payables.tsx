@@ -329,6 +329,7 @@ const Payables: React.FC = () => {
             closeDrawer={closeReimbursementView}
             isLoading={reimbursementRequestDataIsLoading}
             data={reimbursementRequestData}
+            setFocusedReimbursementId={setFocusedReimbursementId}
             isApproverView
           />
         </SideDrawer>
