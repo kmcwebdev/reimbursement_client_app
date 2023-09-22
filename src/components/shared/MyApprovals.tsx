@@ -6,7 +6,7 @@ import {
 } from "@tanstack/react-table";
 import dayjs from "dayjs";
 import dynamic from "next/dynamic";
-import React, { ChangeEvent, useState } from "react";
+import React, { type ChangeEvent, useState } from "react";
 import { MdAccessTimeFilled } from "react-icons-all-files/md/MdAccessTimeFilled";
 import { MdGavel } from "react-icons-all-files/md/MdGavel";
 import { MdSearch } from "react-icons-all-files/md/MdSearch";
