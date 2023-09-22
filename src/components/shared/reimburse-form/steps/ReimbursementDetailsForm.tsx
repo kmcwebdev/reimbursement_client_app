@@ -126,6 +126,7 @@ const ReimbursementDetailsForm: React.FC<ReimbursementDetailsFormProps> = ({
           label="Expense"
           name="expense_type_id"
           placeholder="Type of expense"
+          className="pb-4"
           required
           onChangeEvent={handleExpenseTypeChange}
           isLoading={expenseTypesIsLoading}
@@ -139,6 +140,7 @@ const ReimbursementDetailsForm: React.FC<ReimbursementDetailsFormProps> = ({
 
         <CollapseHeightAnimation
           isVisible={selectedExpense === OTHER_EXPENSE ? true : false}
+          className="pb-4"
         >
           <Input
             name="remarks"
