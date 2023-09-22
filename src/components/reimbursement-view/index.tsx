@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { type PropsWithChildren } from "react";
+import { Dispatch, SetStateAction, type PropsWithChildren } from "react";
 import { useForm } from "react-hook-form";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { appApiSlice } from "~/app/rtkQuery";
@@ -38,6 +38,7 @@ export interface ReimbursementsCardViewProps extends PropsWithChildren {
   data?: ReimbursementRequest;
   closeDrawer: () => void;
   isError?: boolean;
+  setFocusedReimbursementId: Dispatch<SetStateAction<string | undefined>>;
 }
 
 const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
@@ -46,6 +47,7 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
   isLoading = false,
   isApproverView = false,
   isError = false,
+  setFocusedReimbursementId,
 }) => {
   const { user } = useAppSelector((state) => state.session);
 
@@ -109,6 +111,7 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
             description: "Reimbursement Request successfully cancelled!",
           });
           closeDrawer();
+          setFocusedReimbursementId(undefined);
           useRejectFormReturn.reset();
         })
         .catch(() => {

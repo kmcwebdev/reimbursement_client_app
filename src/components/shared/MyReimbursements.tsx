@@ -242,7 +242,6 @@ const MyReimbursements: React.FC = () => {
   const handleConfirmCancellation = () => {
     dispatch(clearReimbursementForm());
     useReimbursementDetailsFormReturn.reset();
-    setFocusedReimbursementId(undefined);
     dispatch(toggleCancelDialog());
   };
 
@@ -397,6 +396,7 @@ const MyReimbursements: React.FC = () => {
           isLoading={reimbursementRequestDataIsLoading}
           isError={reimbursementRequestDataIsError}
           data={reimbursementRequestData}
+          setFocusedReimbursementId={setFocusedReimbursementId}
         />
       </SideDrawer>
     </>
