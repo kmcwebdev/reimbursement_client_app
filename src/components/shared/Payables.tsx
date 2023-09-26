@@ -1,28 +1,17 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import React, { useState } from "react";
-import { AiOutlinePause } from "react-icons-all-files/ai/AiOutlinePause";
-import { MdAccessTimeFilled } from "react-icons-all-files/md/MdAccessTimeFilled";
-import { MdGavel } from "react-icons-all-files/md/MdGavel";
-import DashboardCard, { DashboardCardSkeleton } from "../core/DashboardCard";
 
-import {
-  type ColumnDef,
-  type ColumnFiltersState,
-  type PaginationState,
-} from "@tanstack/react-table";
+import { type ColumnDef, type PaginationState } from "@tanstack/react-table";
 import axios, { type AxiosResponse } from "axios";
+import dayjs from "dayjs";
 import dynamic from "next/dynamic";
 import { type IconType } from "react-icons-all-files";
 import { AiOutlineSearch } from "react-icons-all-files/ai/AiOutlineSearch";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { env } from "~/env.mjs";
-import {
-  setColumnFilters,
-  setSelectedItems,
-} from "~/features/finance-page-slice";
+import { setSelectedItems } from "~/features/finance-page-slice";
 import {
   useGetAllApprovalQuery,
-  useGetAnalyticsQuery,
   useGetRequestQuery,
 } from "~/features/reimbursement-api-slice";
 import { useDialogState } from "~/hooks/use-dialog-state";
@@ -31,6 +20,7 @@ import { currencyFormat } from "~/utils/currencyFormat";
 import CollapseWidthAnimation from "../animation/CollapseWidth";
 import { Button } from "../core/Button";
 import SideDrawer from "../core/SideDrawer";
+import StatusBadge, { type StatusType } from "../core/StatusBadge";
 import ButtonGroup from "../core/form/fields/ButtonGroup";
 import Input from "../core/form/fields/Input";
 import Table from "../core/table";
@@ -38,17 +28,18 @@ import TableCheckbox from "../core/table/TableCheckbox";
 import TableSkeleton from "../core/table/TableSkeleton";
 import DateFiledFilter from "../core/table/filters/DateFiledFilter";
 import ExpenseTypeFilter from "../core/table/filters/ExpenseTypeFilter";
-import StatusFilter, { type FilterProps } from "../core/table/filters/StatusFilter";
+import StatusFilter, {
+  type FilterProps,
+} from "../core/table/filters/StatusFilter";
 import ReimbursementsCardView from "../reimbursement-view";
-import StatusBadge, { type StatusType } from "../core/StatusBadge";
-import dayjs from "dayjs";
+import FinanceAnalytics from "./analytics/FinanceAnalytics";
 
 const ReimbursementTypeFilter = dynamic(
   () => import("../core/table/filters/ReimbursementTypeFilter"),
 );
 
 const Payables: React.FC = () => {
-  const { selectedItems, columnFilters } = useAppSelector(
+  const { selectedItems, filters } = useAppSelector(
     (state) => state.financePageState,
   );
 
@@ -111,17 +102,10 @@ const Payables: React.FC = () => {
 
   const { isFetching, data } = useGetAllApprovalQuery({});
 
-  const setColumnFiltersState = (value: ColumnFiltersState) => {
-    dispatch(setColumnFilters(value));
-  };
-
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10,
   });
-
-  const { isLoading: analyticsIsLoading, data: analytics } =
-    useGetAnalyticsQuery();
 
   const columns = React.useMemo<ColumnDef<ReimbursementApproval>[]>(
     () => [
@@ -166,14 +150,8 @@ const Payables: React.FC = () => {
           return value.includes(row.getValue(id));
         },
         enableColumnFilter: true,
-        size: 10,
         meta: {
-          filterComponent: (info: FilterProps) => (
-            <StatusFilter
-              {...info}
-              isButtonHidden={data && data.length === 0}
-            />
-          ),
+          filterComponent: (info: FilterProps) => <StatusFilter {...info} />,
         },
       },
       {
@@ -210,10 +188,7 @@ const Payables: React.FC = () => {
         },
         meta: {
           filterComponent: (info: FilterProps) => (
-            <ReimbursementTypeFilter
-              {...info}
-              isButtonHidden={data && data.length === 0}
-            />
+            <ReimbursementTypeFilter {...info} />
           ),
         },
       },
@@ -227,10 +202,7 @@ const Payables: React.FC = () => {
         },
         meta: {
           filterComponent: (info: FilterProps) => (
-            <ExpenseTypeFilter
-              {...info}
-              isButtonHidden={data && data.length === 0}
-            />
+            <ExpenseTypeFilter {...info} />
           ),
         },
       },
@@ -243,12 +215,7 @@ const Payables: React.FC = () => {
           return value.includes(row.getValue(id));
         },
         meta: {
-          filterComponent: (info: FilterProps) => (
-            <DateFiledFilter
-              {...info}
-              isButtonHidden={data && data.length === 0}
-            />
-          ),
+          filterComponent: (info: FilterProps) => <DateFiledFilter {...info} />,
         },
       },
       {
@@ -281,46 +248,7 @@ const Payables: React.FC = () => {
   return (
     <>
       <div className="grid gap-y-2 p-5">
-        <div className="mb-5 place-items-start gap-4 md:overflow-x-auto">
-          {analyticsIsLoading && (
-            <div className="grid grid-cols-2 gap-3 sm:flex">
-              <DashboardCardSkeleton />
-              <DashboardCardSkeleton />
-              <DashboardCardSkeleton />
-            </div>
-          )}
-
-          {!analyticsIsLoading && analytics && (
-            <>
-              <div className="grid grid-cols-2 gap-3 sm:flex">
-                <DashboardCard
-                  icon={
-                    <MdGavel className="h-4 w-4 text-orange-600 sm:h-5 sm:w-5" />
-                  }
-                  label="Pending Approval"
-                  count={analytics.myPendingRequest.count}
-                />
-                <DashboardCard
-                  icon={
-                    <MdAccessTimeFilled className="h-4 w-4 text-blue-600 sm:h-5 sm:w-5" />
-                  }
-                  label="Scheduled/Unscheduled"
-                  count={analytics.others?.totalScheduledRequest.count || 0}
-                  totalCount={
-                    analytics.others?.totalUnScheduledRequest.count || 0
-                  }
-                />
-                <DashboardCard
-                  icon={
-                    <AiOutlinePause className="h-4 w-4 text-yellow-600 sm:h-5 sm:w-5" />
-                  }
-                  label="On-Hold"
-                  count={analytics.others?.totalOnholdRequest.count || 0}
-                />
-              </div>
-            </>
-          )}
-        </div>
+        <FinanceAnalytics />
 
         <SideDrawer
           title={
@@ -391,10 +319,9 @@ const Payables: React.FC = () => {
             tableState={{
               pagination,
               selectedItems,
-              columnFilters,
+              filters,
             }}
             tableStateActions={{
-              setColumnFilters: setColumnFiltersState,
               setSelectedItems: setSelectedItemsState,
               setPagination,
             }}

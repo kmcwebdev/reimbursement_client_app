@@ -3,6 +3,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import { env } from "~/env.mjs";
 import approvalPageStateSlice from "~/features/approval-page-state-slice";
 import financePageStateSlice from "~/features/finance-page-slice";
+import historyPageStateSlice from "~/features/history-page-state-slice";
 import layoutStateSlice from "~/features/layout-state-slice";
 import reimbursementFormSlice from "~/features/reimbursement-form-slice";
 import reimbursementRequestPageSlice from "~/features/reimbursement-request-page-slice";
@@ -17,6 +18,7 @@ const store = configureStore({
     layoutState: layoutStateSlice,
     approvalPageState: approvalPageStateSlice,
     reimbursementRequestPageState: reimbursementRequestPageSlice,
+    historyPageState: historyPageStateSlice,
     financePageState: financePageStateSlice
   },
   middleware: (getDefaultMiddleware) =>

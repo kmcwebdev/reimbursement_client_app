@@ -1,22 +1,13 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import {
-  type ColumnDef,
-  type ColumnFiltersState,
-  type PaginationState,
-} from "@tanstack/react-table";
+import { type ColumnDef, type PaginationState } from "@tanstack/react-table";
 import dayjs from "dayjs";
 import dynamic from "next/dynamic";
-import React, { useEffect, useState, type ChangeEvent } from "react";
-import { MdAccessTimeFilled } from "react-icons-all-files/md/MdAccessTimeFilled";
-import { MdGavel } from "react-icons-all-files/md/MdGavel";
+import React, { useState, type ChangeEvent } from "react";
 import { MdSearch } from "react-icons-all-files/md/MdSearch";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { appApiSlice } from "~/app/rtkQuery";
 import { Button } from "~/components/core/Button";
-import DashboardCard, {
-  DashboardCardSkeleton,
-} from "~/components/core/DashboardCard";
 import SideDrawer from "~/components/core/SideDrawer";
 import StatusBadge, { type StatusType } from "~/components/core/StatusBadge";
 import Table from "~/components/core/table";
@@ -24,18 +15,17 @@ import TableCheckbox from "~/components/core/table/TableCheckbox";
 import { type FilterProps } from "~/components/core/table/filters/StatusFilter";
 import ReimbursementsCardView from "~/components/reimbursement-view";
 import { Can } from "~/context/AbilityContext";
-import {
-  setColumnFilters,
-  setSelectedItems,
-} from "~/features/approval-page-state-slice";
+import { setSelectedItems } from "~/features/approval-page-state-slice";
 import {
   useApproveReimbursementMutation,
   useGetAllApprovalQuery,
-  useGetAnalyticsQuery,
   useGetRequestQuery,
 } from "~/features/reimbursement-api-slice";
 import { useDialogState } from "~/hooks/use-dialog-state";
-import { type ReimbursementApproval } from "~/types/reimbursement.types";
+import {
+  type IReimbursementsFilterQuery,
+  type ReimbursementApproval,
+} from "~/types/reimbursement.types";
 import { classNames } from "~/utils/classNames";
 import { currencyFormat } from "~/utils/currencyFormat";
 import { useDebounce } from "~/utils/useDebounce";
@@ -43,9 +33,9 @@ import CollapseWidthAnimation from "../animation/CollapseWidth";
 import Dialog from "../core/Dialog";
 import { showToast } from "../core/Toast";
 import Input from "../core/form/fields/Input";
-import TableSkeleton from "../core/table/TableSkeleton";
-import ClientFilter from "../core/table/filters/ClientFilter";
 import DateFiledFilter from "../core/table/filters/DateFiledFilter";
+import HRBPAnalytics from "./analytics/HRBPAnalytics";
+import ManagerAnalytics from "./analytics/ManagerAnalytics";
 
 const StatusFilter = dynamic(
   () => import("~/components/core/table/filters/StatusFilter"),
@@ -59,19 +49,13 @@ const ReimbursementTypeFilter = dynamic(
 
 const MyApprovals: React.FC = () => {
   const { user } = useAppSelector((state) => state.session);
-  const { selectedItems, columnFilters } = useAppSelector(
+  const { selectedItems, filters } = useAppSelector(
     (state) => state.approvalPageState,
   );
   const dispatch = useAppDispatch();
 
-  console.log(selectedItems);
-
   const setSelectedItemsState = (value: string[]) => {
     dispatch(setSelectedItems(value));
-  };
-
-  const setColumnFiltersState = (value: ColumnFiltersState) => {
-    dispatch(setColumnFilters(value));
   };
 
   const [focusedReimbursementId, setFocusedReimbursementId] =
@@ -80,8 +64,6 @@ const MyApprovals: React.FC = () => {
   const [approveReimbursement, { isLoading: isSubmitting }] =
     useApproveReimbursementMutation();
 
-  const { isLoading: analyticsIsLoading, data: analytics } =
-    useGetAnalyticsQuery();
   const {
     isFetching: reimbursementRequestDataIsLoading,
     currentData: reimbursementRequestData,
@@ -107,34 +89,23 @@ const MyApprovals: React.FC = () => {
     pageSize: 10,
   });
 
-  const [expenseTypeIdsValue] = useState<string>("");
-  const [textSearch, setTextSearch] = useState<string>();
-  const debouncedSearchText = useDebounce(textSearch, 500);
+  const [searchParams, setSearchParams] = useState<IReimbursementsFilterQuery>({
+    text_search: undefined,
+    expense_type_ids: undefined,
+    from: undefined,
+    to: undefined,
+  });
+
+  const debouncedSearchText = useDebounce(searchParams.text_search, 500);
 
   const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
     const searchValue = e.target.value;
-    setTextSearch(searchValue);
+    setSearchParams({ ...searchParams, text_search: searchValue });
   };
 
-  useEffect(() => {
-    if (columnFilters && columnFilters.length > 0) {
-      const expense_type_ids = columnFilters.find(
-        (a) => a.id === "expense_type",
-      );
-
-      if (
-        expense_type_ids &&
-        Array.isArray(expense_type_ids.value) &&
-        expense_type_ids.value.length > 0
-      ) {
-        console.log(expense_type_ids.value);
-      }
-    }
-  }, [columnFilters]);
-
   const { isFetching: isLoading, data } = useGetAllApprovalQuery({
+    ...filters,
     text_search: debouncedSearchText,
-    expense_type_ids: expenseTypeIdsValue,
   });
 
   const columns = React.useMemo<ColumnDef<ReimbursementApproval>[]>(() => {
@@ -182,12 +153,7 @@ const MyApprovals: React.FC = () => {
           },
           enableColumnFilter: true,
           meta: {
-            filterComponent: (info: FilterProps) => (
-              <StatusFilter
-                {...info}
-                isButtonHidden={data && data.length === 0}
-              />
-            ),
+            filterComponent: (info: FilterProps) => <StatusFilter {...info} />,
           },
         },
         {
@@ -195,18 +161,6 @@ const MyApprovals: React.FC = () => {
           accessorKey: "client_name",
           header: "Client",
           cell: (info) => info.getValue(),
-          filterFn: (row, id, value: string) => {
-            return value.includes(row.getValue(id));
-          },
-          enableColumnFilter: true,
-          meta: {
-            filterComponent: (info: FilterProps) => (
-              <ClientFilter
-                {...info}
-                isButtonHidden={data && data.length === 0}
-              />
-            ),
-          },
         },
         {
           id: "employee_id",
@@ -237,10 +191,7 @@ const MyApprovals: React.FC = () => {
           },
           meta: {
             filterComponent: (info: FilterProps) => (
-              <ReimbursementTypeFilter
-                {...info}
-                isButtonHidden={data && data.length === 0}
-              />
+              <ReimbursementTypeFilter {...info} />
             ),
           },
         },
@@ -254,10 +205,7 @@ const MyApprovals: React.FC = () => {
           },
           meta: {
             filterComponent: (info: FilterProps) => (
-              <ExpenseTypeFilter
-                {...info}
-                isButtonHidden={data && data.length === 0}
-              />
+              <ExpenseTypeFilter {...info} />
             ),
           },
         },
@@ -272,10 +220,7 @@ const MyApprovals: React.FC = () => {
           },
           meta: {
             filterComponent: (info: FilterProps) => (
-              <DateFiledFilter
-                {...info}
-                isButtonHidden={data && data.length === 0}
-              />
+              <DateFiledFilter {...info} />
             ),
           },
         },
@@ -303,7 +248,7 @@ const MyApprovals: React.FC = () => {
         },
       ];
     }
-    if (user?.assignedRole === "Finance") {
+    if (user?.assignedRole === "External Reimbursement Approver Manager") {
       return [
         {
           id: "select",
@@ -335,26 +280,39 @@ const MyApprovals: React.FC = () => {
         },
 
         {
-          id: "finance_request_status",
-          accessorKey: "finance_request_status",
+          id: "hrbp_request_status",
+          accessorKey: "hrbp_request_status",
           header: "Status",
           cell: (info) => (
             <StatusBadge
               status={(info.getValue() as string).toLowerCase() as StatusType}
             />
           ),
-          filterFn: (row, id, value: string) => {
-            return value.includes(row.getValue(id));
-          },
-          enableColumnFilter: true,
-          meta: {
-            filterComponent: (info: FilterProps) => (
-              <StatusFilter
-                {...info}
-                isButtonHidden={data && data.length === 0}
-              />
-            ),
-          },
+          // filterFn: (row, id, value: string) => {
+          //   return value.includes(row.getValue(id));
+          // },
+          // enableColumnFilter: true,
+          // meta: {
+          //   filterComponent: (info: FilterProps) => (
+          //     <StatusFilter
+          //       {...info}
+          //
+          //     />
+          //   ),
+          // },
+        },
+        {
+          id: "employee_id",
+          accessorKey: "employee_id",
+          header: "ID",
+          cell: (info) => info.getValue(),
+          size: 10,
+        },
+        {
+          id: "full_name",
+          accessorKey: "full_name",
+          cell: (info) => info.getValue(),
+          header: "Name",
         },
         {
           id: "reference_no",
@@ -372,10 +330,7 @@ const MyApprovals: React.FC = () => {
           },
           meta: {
             filterComponent: (info: FilterProps) => (
-              <ReimbursementTypeFilter
-                {...info}
-                isButtonHidden={data && data.length === 0}
-              />
+              <ReimbursementTypeFilter {...info} />
             ),
           },
         },
@@ -389,10 +344,7 @@ const MyApprovals: React.FC = () => {
           },
           meta: {
             filterComponent: (info: FilterProps) => (
-              <ExpenseTypeFilter
-                {...info}
-                isButtonHidden={data && data.length === 0}
-              />
+              <ExpenseTypeFilter {...info} />
             ),
           },
         },
@@ -407,10 +359,7 @@ const MyApprovals: React.FC = () => {
           },
           meta: {
             filterComponent: (info: FilterProps) => (
-              <DateFiledFilter
-                {...info}
-                isButtonHidden={data && data.length === 0}
-              />
+              <DateFiledFilter {...info} />
             ),
           },
         },
@@ -438,6 +387,7 @@ const MyApprovals: React.FC = () => {
         },
       ];
     }
+
     return [
       {
         id: "select",
@@ -477,18 +427,18 @@ const MyApprovals: React.FC = () => {
             status={(info.getValue() as string).toLowerCase() as StatusType}
           />
         ),
-        filterFn: (row, id, value: string) => {
-          return value.includes(row.getValue(id));
-        },
-        enableColumnFilter: true,
-        meta: {
-          filterComponent: (info: FilterProps) => (
-            <StatusFilter
-              {...info}
-              isButtonHidden={data && data.length === 0}
-            />
-          ),
-        },
+        // filterFn: (row, id, value: string) => {
+        //   return value.includes(row.getValue(id));
+        // },
+        // enableColumnFilter: true,
+        // meta: {
+        //   filterComponent: (info: FilterProps) => (
+        //     <StatusFilter
+        //       {...info}
+        //
+        //     />
+        //   ),
+        // },
       },
       {
         id: "reference_no",
@@ -506,10 +456,7 @@ const MyApprovals: React.FC = () => {
         },
         meta: {
           filterComponent: (info: FilterProps) => (
-            <ReimbursementTypeFilter
-              {...info}
-              isButtonHidden={data && data.length === 0}
-            />
+            <ReimbursementTypeFilter {...info} />
           ),
         },
       },
@@ -523,10 +470,7 @@ const MyApprovals: React.FC = () => {
         },
         meta: {
           filterComponent: (info: FilterProps) => (
-            <ExpenseTypeFilter
-              {...info}
-              isButtonHidden={data && data.length === 0}
-            />
+            <ExpenseTypeFilter {...info} />
           ),
         },
       },
@@ -539,12 +483,7 @@ const MyApprovals: React.FC = () => {
           return value.includes(row.getValue(id));
         },
         meta: {
-          filterComponent: (info: FilterProps) => (
-            <DateFiledFilter
-              {...info}
-              isButtonHidden={data && data.length === 0}
-            />
-          ),
+          filterComponent: (info: FilterProps) => <DateFiledFilter {...info} />,
         },
       },
       {
@@ -571,7 +510,7 @@ const MyApprovals: React.FC = () => {
       },
     ];
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedItems, user]);
+  }, [selectedItems]);
 
   const handleBulkApprove = () => {
     openBulkApproveDialog();
@@ -624,30 +563,11 @@ const MyApprovals: React.FC = () => {
   return (
     <>
       <div className="grid gap-y-2 md:p-5">
-        <div className="mb-5 flex gap-4">
-          {analyticsIsLoading && (
-            <>
-              <DashboardCardSkeleton />
-              <DashboardCardSkeleton />
-            </>
-          )}
-
-          {!analyticsIsLoading && analytics && (
-            <>
-              <DashboardCard
-                icon={<MdGavel className="h-5 w-5 text-yellow-600" />}
-                label="Pending Approval"
-                count={analytics.myPendingRequest.count}
-              />
-              <DashboardCard
-                icon={<MdAccessTimeFilled className="h-5 w-5 text-blue-600" />}
-                label="Scheduled/Unscheduled"
-                count={analytics.others?.totalScheduledRequest.count}
-                totalCount={analytics.others?.totalUnScheduledRequest.count}
-              />
-            </>
-          )}
-        </div>
+        {user && user.assignedRole === "HRBP" ? (
+          <HRBPAnalytics />
+        ) : (
+          <ManagerAnalytics />
+        )}
 
         <div className="flex flex-col md:flex-row md:justify-between">
           <h4>For Approval</h4>
@@ -678,31 +598,24 @@ const MyApprovals: React.FC = () => {
                 </Button>
               </Can>
             </CollapseWidthAnimation>
-            {/* </>
-            )} */}
           </div>
         </div>
 
-        {!isLoading && data && (
-          <Table
-            type="approvals"
-            loading={isLoading}
-            data={data}
-            columns={columns}
-            tableState={{
-              pagination,
-              selectedItems,
-              columnFilters,
-            }}
-            tableStateActions={{
-              setColumnFilters: setColumnFiltersState,
-              setSelectedItems: setSelectedItemsState,
-              setPagination,
-            }}
-          />
-        )}
-
-        {isLoading && <TableSkeleton />}
+        <Table
+          type="approvals"
+          loading={isLoading}
+          data={data}
+          columns={columns}
+          tableState={{
+            filters,
+            pagination,
+            selectedItems,
+          }}
+          tableStateActions={{
+            setSelectedItems: setSelectedItemsState,
+            setPagination,
+          }}
+        />
       </div>
 
       <SideDrawer

@@ -1,19 +1,27 @@
-import { useState, type ChangeEvent } from "react";
+import { useEffect, useState, type ChangeEvent } from "react";
 import { FaCaretDown } from "react-icons-all-files/fa/FaCaretDown";
-import CollapseHeightAnimation from "~/components/animation/CollapseHeight";
+import { useAppDispatch, useAppSelector } from "~/app/hook";
+import { setApprovalTableFilters } from "~/features/approval-page-state-slice";
 import { useAllExpenseTypesQuery } from "~/features/reimbursement-api-slice";
+import { setReimbursementsTableFilters } from "~/features/reimbursement-request-page-slice";
 import { classNames } from "~/utils/classNames";
-import { Button } from "../../Button";
 import Popover from "../../Popover";
 import Checkbox from "../../form/fields/Checkbox";
 import { type FilterProps } from "./StatusFilter";
 
-const ExpenseTypeFilter: React.FC<FilterProps> = ({
-  column,
-  isButtonHidden = false,
-}) => {
+const ExpenseTypeFilter: React.FC<FilterProps> = ({ tableType }) => {
+  const { filters: approvalPageFilters } = useAppSelector(
+    (state) => state.approvalPageState,
+  );
+
+  const { filters: reimbursementsPageFilters } = useAppSelector(
+    (state) => state.reimbursementRequestPageState,
+  );
+
   const { data: allExpenseTypes, isLoading: allExpenseTypesIsLoading } =
     useAllExpenseTypesQuery({});
+
+  const dispatch = useAppDispatch();
 
   const [checked, setChecked] = useState<string[]>([]);
 
@@ -24,30 +32,35 @@ const ExpenseTypeFilter: React.FC<FilterProps> = ({
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       setChecked([...checked, value]);
     }
-    if (e.target.checked) {
-      column.setFilterValue((old: string[]) =>
-        old ? [...old, value] : [value],
-      );
-    } else {
-      column.setFilterValue((old: string[]) =>
-        old ? old.filter((a) => a !== value) : undefined,
+  };
+
+  useEffect(() => {
+    if (tableType === "approvals") {
+      dispatch(
+        setApprovalTableFilters({
+          ...approvalPageFilters,
+          expense_type_ids: checked.join(","),
+        }),
       );
     }
-  };
 
-  const showAll = () => {
-    setChecked([]);
-    column.setFilterValue(undefined);
-  };
-
-  console.log(checked);
+    if (tableType === "reimbursements") {
+      dispatch(
+        setReimbursementsTableFilters({
+          ...reimbursementsPageFilters,
+          expense_type_ids: checked.join(","),
+        }),
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [checked]);
 
   return (
     <Popover
       btn={
         <FaCaretDown
           className={classNames(
-            isButtonHidden && "hidden",
+            // isButtonHidden && "hidden",
             "text-neutral-900 hover:text-neutral-800",
           )}
         />
@@ -70,11 +83,11 @@ const ExpenseTypeFilter: React.FC<FilterProps> = ({
                 ))}
             </div>
           </div>
-          <CollapseHeightAnimation isVisible={checked.length > 0}>
+          {/* <CollapseHeightAnimation isVisible={checked.length > 0}>
             <Button buttonType="text" onClick={showAll}>
               Show All
             </Button>
-          </CollapseHeightAnimation>
+          </CollapseHeightAnimation> */}
         </div>
       }
     />

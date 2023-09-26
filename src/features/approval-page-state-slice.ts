@@ -1,14 +1,14 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import { type ColumnFiltersState } from "@tanstack/react-table";
+import { type IReimbursementsFilterQuery } from "~/types/reimbursement.types";
 
 interface ApprovalPageState {
   selectedItems: string[];
-  columnFilters: ColumnFiltersState;
+  filters: IReimbursementsFilterQuery;
 }
 
 const initialState: ApprovalPageState = {
   selectedItems: [],
-  columnFilters: [],
+  filters: {},
 };
 
 const approvalPageStateSlice = createSlice({
@@ -18,15 +18,15 @@ const approvalPageStateSlice = createSlice({
     setSelectedItems(state,action: PayloadAction<string[]>) {
       state.selectedItems = action.payload;
     },
-    setColumnFilters(state,action: PayloadAction<ColumnFiltersState>) {
-      state.columnFilters = action.payload;
+    setApprovalTableFilters(state,action: PayloadAction<IReimbursementsFilterQuery>) {
+      state.filters = action.payload;
     },
   },
 });
 
 export const {
   setSelectedItems,
-  setColumnFilters
+  setApprovalTableFilters
 } = approvalPageStateSlice.actions;
 
 export default approvalPageStateSlice.reducer;

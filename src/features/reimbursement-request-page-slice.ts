@@ -1,14 +1,14 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import { type ColumnFiltersState } from "@tanstack/react-table";
+import { type IReimbursementsFilterQuery } from "~/types/reimbursement.types";
 
 interface ReimbursementRequestPageState {
   selectedItems: string[];
-  columnFilters: ColumnFiltersState;
+  filters: IReimbursementsFilterQuery;
 }
 
 const initialState: ReimbursementRequestPageState = {
   selectedItems: [],
-  columnFilters: [],
+  filters: {},
 };
 
 const reimbursementPageStateSlice = createSlice({
@@ -18,15 +18,15 @@ const reimbursementPageStateSlice = createSlice({
     setSelectedItems(state,action: PayloadAction<string[]>) {
       state.selectedItems = action.payload;
     },
-    setColumnFilters(state,action: PayloadAction<ColumnFiltersState>) {
-      state.columnFilters = action.payload;
+    setReimbursementsTableFilters(state,action: PayloadAction<IReimbursementsFilterQuery>) {
+      state.filters = action.payload;
     },
   },
 });
 
 export const {
   setSelectedItems,
-  setColumnFilters
+  setReimbursementsTableFilters
 } = reimbursementPageStateSlice.actions;
 
 export default reimbursementPageStateSlice.reducer;
