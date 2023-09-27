@@ -1,12 +1,9 @@
 import { configureStore } from "@reduxjs/toolkit";
 // import testReducer from "../features/test-slice";
 import { env } from "~/env.mjs";
-import approvalPageStateSlice from "~/features/approval-page-state-slice";
-import financePageStateSlice from "~/features/finance-page-slice";
-import historyPageStateSlice from "~/features/history-page-state-slice";
 import layoutStateSlice from "~/features/layout-state-slice";
+import pageTableStateSlice from "~/features/page-state.slice";
 import reimbursementFormSlice from "~/features/reimbursement-form-slice";
-import reimbursementRequestPageSlice from "~/features/reimbursement-request-page-slice";
 import userReducer from "../features/user-slice";
 import { appApiSlice } from "./rtkQuery";
 
@@ -16,10 +13,7 @@ const store = configureStore({
     session: userReducer,
     reimbursementForm: reimbursementFormSlice,
     layoutState: layoutStateSlice,
-    approvalPageState: approvalPageStateSlice,
-    reimbursementRequestPageState: reimbursementRequestPageSlice,
-    historyPageState: historyPageStateSlice,
-    financePageState: financePageStateSlice
+    pageTableState: pageTableStateSlice,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

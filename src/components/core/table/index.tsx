@@ -65,9 +65,7 @@ type TableProps = {
 } & (ReimbursementTable | ApprovalTable | FinanceTable);
 
 interface CustomFilterMeta extends FilterMeta {
-  filterComponent: (info: {
-    tableType: "approvals" | "reimbursements" | "finance";
-  }) => JSX.Element;
+  filterComponent: () => JSX.Element;
 }
 
 const Table: React.FC<TableProps> = (props) => {
@@ -150,7 +148,7 @@ const Table: React.FC<TableProps> = (props) => {
                               .filterComponent &&
                             (
                               header.column.columnDef?.meta as CustomFilterMeta
-                            ).filterComponent({ tableType: props.type })}
+                            ).filterComponent()}
                         </div>
                       </th>
                     );
@@ -159,6 +157,8 @@ const Table: React.FC<TableProps> = (props) => {
               ))}
           </thead>
           <tbody className="min-h-[calc(300px-3rem)]">
+            <FilterView colSpan={table.getAllColumns().length} />
+
             {props.loading && (
               <tr className="bg-neutral-100">
                 <td colSpan={table.getAllFlatColumns().length}>
@@ -181,17 +181,6 @@ const Table: React.FC<TableProps> = (props) => {
                 </td>
               </tr>
             )}
-            {!props.loading &&
-              props.data &&
-              props.data.length > 0 &&
-              props.tableState &&
-              props.tableState.filters && (
-                <FilterView
-                  colSpan={table.getAllColumns().length}
-                  filters={props.tableState.filters}
-                  type={props.type}
-                />
-              )}
 
             {/* Data is empty */}
 

@@ -53,7 +53,7 @@ const MyReimbursements: React.FC = () => {
     useAppSelector((state) => state.reimbursementForm);
 
   const { selectedItems, filters } = useAppSelector(
-    (state) => state.reimbursementRequestPageState,
+    (state) => state.pageTableState,
   );
   const dispatch = useAppDispatch();
 
