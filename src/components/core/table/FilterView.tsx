@@ -149,6 +149,15 @@ const FilterView: React.FC<FilterViewProps> = ({ colSpan }) => {
                                 {value}
                               </p>
                             )}
+
+                            {key === "date" && (
+                              <p
+                                key={value}
+                                className="pl-2 text-sm text-neutral-800"
+                              >
+                                {value}
+                              </p>
+                            )}
                           </span>
                         ))}
                       </div>

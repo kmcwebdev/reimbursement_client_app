@@ -13,8 +13,6 @@ import Header from "./Header";
 import Sidebar from "./Sidebar";
 
 const Layout: React.FC<PropsWithChildren> = ({ children }) => {
-  const { sideBarCollapsed } = useAppSelector((state) => state.layoutState);
-
   const { user } = useAppSelector((state) => state.session);
   const router = useRouter();
   const dispatch = useAppDispatch();
@@ -42,21 +40,18 @@ const Layout: React.FC<PropsWithChildren> = ({ children }) => {
 
   return (
     <div className="flex min-h-screen">
-      <Sidebar />
+      {!router.pathname.includes("email-action") && <Sidebar />}
 
       <main
         className={classNames(
-          sideBarCollapsed
-            ? "md:max-w-[calc(100vw_-_24px)]"
-            : "md:max-w-[calc(100vw_-_101px)]",
-          `${karla.variable} ${barlow_Condensed.variable} w-full flex-1 overflow-y-auto bg-white font-karla`,
+          `${karla.variable} ${barlow_Condensed.variable} w-full flex-1 overflow-y-auto bg-neutral-100 font-karla`,
         )}
       >
         <Header />
         <div className="relative flex h-[calc(100vh_-_4rem)] w-full flex-col">
           <div
             className={classNames(
-              "relative h-full w-full overflow-hidden overflow-y-auto bg-white p-4",
+              "relative h-full w-full overflow-hidden overflow-y-auto bg-neutral-100 p-4",
             )}
           >
             {children}
