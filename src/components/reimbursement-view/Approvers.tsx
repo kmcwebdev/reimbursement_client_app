@@ -8,9 +8,11 @@ import { Approvers } from "~/types/reimbursement.types";
 
 interface ApproversProps {
   approvers: Approvers[];
+  finance_request_status: string;
+  hrbp_request_status: string;
 }
 
-const Approvers: React.FC<ApproversProps> = ({ approvers }) => {
+const Approvers: React.FC<ApproversProps> = ({ approvers, finance_request_status, hrbp_request_status }) => {
   const [lastApproverRejected, setLastApproverRejected] = useState<Approvers>();
 
   useMemo(() => {
@@ -75,6 +77,12 @@ const Approvers: React.FC<ApproversProps> = ({ approvers }) => {
             </div>
           </div>
         ))}
+              
+        { finance_request_status === "Pending" && hrbp_request_status === "Approved" && (
+          <div>
+            <p className="text-neutral-800 text-sm">Waiting for Payment Processing...</p>
+          </div>
+        )}
       </div>
     </>
   );

@@ -209,26 +209,51 @@ const MyReimbursements: React.FC = () => {
   }, []);
 
   const downloadReport = async () => {
-    const response = await axios.get<unknown, AxiosResponse<Blob>>(
-      `${env.NEXT_PUBLIC_BASEAPI_URL}/api/finance/reimbursements/requests/reports/finance`,
-      {
-        responseType: "blob", // Important to set this
-        headers: {
-          accept: "*/*",
-          Authorization: `Bearer ${accessToken}`,
+    if (user?.assignedRole === 'Finance') {
+      const response = await axios.get<unknown, AxiosResponse<Blob>>(
+        `${env.NEXT_PUBLIC_BASEAPI_URL}/api/finance/reimbursements/requests/reports/finance`,
+        {
+          responseType: "blob", // Important to set this
+          headers: {
+            accept: "*/*",
+            Authorization: `Bearer ${accessToken}`,
+          },
+          params: { reimbursement_request_ids: JSON.stringify(selectedItems) },
         },
-      },
-    );
-
-    const url = window.URL.createObjectURL(new Blob([response.data]));
-
-    const link = document.createElement("a");
-    link.href = url;
-    link.setAttribute("download", "filename.csv");
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
+      );
+  
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+  
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "filename.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    };
+    if (user?.assignedRole === 'HRBP') {
+        const response = await axios.get<unknown, AxiosResponse<Blob>>(
+          `${env.NEXT_PUBLIC_BASEAPI_URL}/api/finance/reimbursements/requests/reports/hrbp`,
+          {
+            responseType: "blob", // Important to set this
+            headers: {
+              accept: "*/*",
+              Authorization: `Bearer ${accessToken}`,
+            },
+            params: { reimbursement_request_ids: JSON.stringify(selectedItems) },
+          },
+        );
+    
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+    
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", "filename.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+  }
 
   //Form return for Details
   const useReimbursementDetailsFormReturn = useForm<ReimbursementDetailsType>({
@@ -286,7 +311,7 @@ const MyReimbursements: React.FC = () => {
               // onChange={handleSearch}
             />
 
-            {user && user.assignedRole === "Finance" && (
+            {user && (user.assignedRole === "Finance" || user && user.assignedRole === "HRBP") && (
               <CollapseWidthAnimation
                 isVisible={data && data.length > 0 ? true : false}
               >
