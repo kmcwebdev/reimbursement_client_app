@@ -1,11 +1,8 @@
 import Image from "next/image";
-import { useRouter } from "next/router";
 import React from "react";
 
 const PageTitle: React.FC = () => {
-  const { pathname } = useRouter();
-
-  if (pathname.includes("email-action")) {
+  if (window.location.pathname.includes("email-action")) {
     return (
       <div className="relative h-6 w-[101px]">
         <Image
@@ -20,7 +17,7 @@ const PageTitle: React.FC = () => {
 
   return (
     <h3 className="font-bold uppercase text-navy">
-      {pathname.replaceAll("/", "").replaceAll("-", " ")}
+      {window.location.pathname.replaceAll("/", "").replaceAll("-", " ")}
     </h3>
   );
 };

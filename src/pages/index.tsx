@@ -1,6 +1,6 @@
 import { getUserFromServerSideProps } from "@propelauth/nextjs/server/pages";
 import { type GetServerSideProps, type NextPage } from "next";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { Button } from "~/components/core/Button";
 
 interface SSRProps {
