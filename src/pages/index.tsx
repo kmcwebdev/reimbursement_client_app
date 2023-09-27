@@ -1,14 +1,13 @@
 import { getUserFromServerSideProps } from "@propelauth/nextjs/server/pages";
-import { type NextPage, type GetServerSideProps } from "next";
-import { Button } from "~/components/core/Button";
+import { type GetServerSideProps, type NextPage } from "next";
 import { useRouter } from "next/router";
+import { Button } from "~/components/core/Button";
 
 interface SSRProps {
   userJson: string;
 }
 
 const Home: NextPage<SSRProps> = () => {
-
   const router = useRouter();
 
   return (
@@ -16,7 +15,9 @@ const Home: NextPage<SSRProps> = () => {
       <div className="flex flex-col items-center gap-4">
         <h1>Welcome!</h1>
         <p>File your reimbursements in one place!</p>
-        <Button onClick={() => void router.push("/reimbursements")}>File a Reimbursement</Button>
+        <Button onClick={() => void router.push("/dashboard")}>
+          File a Reimbursement
+        </Button>
       </div>
     </section>
   );

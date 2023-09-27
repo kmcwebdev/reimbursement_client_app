@@ -1,10 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  type ColumnDef,
-  type ColumnFiltersState,
-  type PaginationState,
-} from "@tanstack/react-table";
+import { type ColumnDef, type PaginationState } from "@tanstack/react-table";
 import axios, { type AxiosResponse } from "axios";
 import dayjs from "dayjs";
 import dynamic from "next/dynamic";
@@ -25,10 +21,7 @@ import {
   toggleCancelDialog,
   toggleFormDialog,
 } from "~/features/reimbursement-form-slice";
-import {
-  setColumnFilters,
-  setSelectedItems,
-} from "~/features/reimbursement-request-page-slice";
+import { setSelectedItems } from "~/features/reimbursement-request-page-slice";
 import {
   ReimbursementDetailsSchema,
   type ReimbursementDetailsType,
@@ -40,7 +33,6 @@ import SkeletonLoading from "../core/SkeletonLoading";
 import Input from "../core/form/fields/Input";
 import TableCheckbox from "../core/table/TableCheckbox";
 import TableSkeleton from "../core/table/TableSkeleton";
-import ClientFilter from "../core/table/filters/ClientFilter";
 import DateFiledFilter from "../core/table/filters/DateFiledFilter";
 
 const Dialog = dynamic(() => import("~/components/core/Dialog"));
@@ -62,17 +54,13 @@ const MyReimbursements: React.FC = () => {
   const { formDialogIsOpen, cancelDialogIsOpen, reimbursementDetails } =
     useAppSelector((state) => state.reimbursementForm);
 
-  const { selectedItems, columnFilters } = useAppSelector(
-    (state) => state.reimbursementRequestPageState,
+  const { selectedItems, filters } = useAppSelector(
+    (state) => state.historyPageState,
   );
   const dispatch = useAppDispatch();
 
   const setSelectedItemsState = (value: string[]) => {
     dispatch(setSelectedItems(value));
-  };
-
-  const setColumnFiltersState = (value: ColumnFiltersState) => {
-    dispatch(setColumnFilters(value));
   };
 
   /**Uncomment if filter is already available on endpoint */
@@ -137,12 +125,7 @@ const MyReimbursements: React.FC = () => {
         enableColumnFilter: true,
         size: 10,
         meta: {
-          filterComponent: (info: FilterProps) => (
-            <StatusFilter
-              {...info}
-              isButtonHidden={data && data.length === 0}
-            />
-          ),
+          filterComponent: (info: FilterProps) => <StatusFilter {...info} />,
         },
       },
       {
@@ -150,17 +133,6 @@ const MyReimbursements: React.FC = () => {
         accessorKey: "client_name",
         cell: (info) => info.getValue(),
         header: "Client",
-        filterFn: (row, id, value: string) => {
-          return value.includes(row.getValue(id));
-        },
-        meta: {
-          filterComponent: (info: FilterProps) => (
-            <ClientFilter
-              {...info}
-              isButtonHidden={data && data.length === 0}
-            />
-          ),
-        },
       },
       {
         id: "ID",
@@ -192,10 +164,7 @@ const MyReimbursements: React.FC = () => {
         },
         meta: {
           filterComponent: (info: FilterProps) => (
-            <ReimbursementTypeFilter
-              {...info}
-              isButtonHidden={data && data.length === 0}
-            />
+            <ReimbursementTypeFilter {...info} />
           ),
         },
         size: 10,
@@ -211,10 +180,7 @@ const MyReimbursements: React.FC = () => {
         size: 10,
         meta: {
           filterComponent: (info: FilterProps) => (
-            <ExpenseTypeFilter
-              {...info}
-              isButtonHidden={data && data.length === 0}
-            />
+            <ExpenseTypeFilter {...info} />
           ),
         },
       },
@@ -227,12 +193,7 @@ const MyReimbursements: React.FC = () => {
           return value.includes(row.getValue(id));
         },
         meta: {
-          filterComponent: (info: FilterProps) => (
-            <DateFiledFilter
-              {...info}
-              isButtonHidden={data && data.length === 0}
-            />
-          ),
+          filterComponent: (info: FilterProps) => <DateFiledFilter {...info} />,
         },
         size: 10,
       },
@@ -373,12 +334,11 @@ const MyReimbursements: React.FC = () => {
             data={data}
             columns={columns}
             tableState={{
+              filters,
               pagination,
               selectedItems,
-              columnFilters,
             }}
             tableStateActions={{
-              setColumnFilters: setColumnFiltersState,
               setSelectedItems: setSelectedItemsState,
               setPagination,
             }}
