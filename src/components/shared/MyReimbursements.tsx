@@ -53,7 +53,7 @@ const MyReimbursements: React.FC = () => {
     useAppSelector((state) => state.reimbursementForm);
 
   const { selectedItems, filters } = useAppSelector(
-    (state) => state.reimbursementRequestPageState,
+    (state) => state.pageTableState,
   );
   const dispatch = useAppDispatch();
 
@@ -64,7 +64,7 @@ const MyReimbursements: React.FC = () => {
   const [focusedReimbursementId, setFocusedReimbursementId] =
     useState<string>();
 
-  const { isFetching, data } = useGetAllRequestsQuery({});
+  const { isFetching, data } = useGetAllRequestsQuery(filters);
 
   const {
     isFetching: reimbursementRequestDataIsLoading,

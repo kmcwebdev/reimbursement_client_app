@@ -1,7 +1,6 @@
 import React, { useState, type ChangeEvent } from "react";
 import { FaCaretDown } from "react-icons-all-files/fa/FaCaretDown";
 import { useRequestTypesQuery } from "~/features/reimbursement-api-slice";
-import { classNames } from "~/utils/classNames";
 import Popover from "../../Popover";
 import Checkbox from "../../form/fields/Checkbox";
 import { type FilterProps } from "./StatusFilter";
@@ -51,14 +50,7 @@ const ReimbursementTypeFilter: React.FC<FilterProps> = () => {
 
   return (
     <Popover
-      btn={
-        <FaCaretDown
-          className={classNames(
-            // isButtonHidden && "hidden",
-            "text-neutral-900 hover:text-neutral-800",
-          )}
-        />
-      }
+      btn={<FaCaretDown className="text-neutral-900 hover:text-neutral-800" />}
       content={
         <div className="w-32 p-4">
           <div className="flex flex-col gap-2 capitalize">

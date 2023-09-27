@@ -50,7 +50,7 @@ const ReimbursementTypeFilter = dynamic(
 const MyApprovals: React.FC = () => {
   const { user } = useAppSelector((state) => state.session);
   const { selectedItems, filters } = useAppSelector(
-    (state) => state.approvalPageState,
+    (state) => state.pageTableState,
   );
   const dispatch = useAppDispatch();
 

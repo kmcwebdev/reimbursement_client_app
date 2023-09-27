@@ -1,10 +1,11 @@
 import { useRouter } from "next/router";
-import React, { type PropsWithChildren } from "react";
+import React, { useEffect, type PropsWithChildren } from "react";
 import { MdDashboard } from "react-icons-all-files/md/MdDashboard";
 import { MdGavel } from "react-icons-all-files/md/MdGavel";
 import { MdPerson } from "react-icons-all-files/md/MdPerson";
 import { MdReceipt } from "react-icons-all-files/md/MdReceipt";
-import { useAppSelector } from "~/app/hook";
+import { useAppDispatch, useAppSelector } from "~/app/hook";
+import { resetPageTableState } from "~/features/page-state.slice";
 import { barlow_Condensed } from "~/styles/fonts/barlowCondensed";
 import { karla } from "~/styles/fonts/karla";
 import { classNames } from "~/utils/classNames";
@@ -12,10 +13,18 @@ import Header from "./Header";
 import Sidebar from "./Sidebar";
 
 const Layout: React.FC<PropsWithChildren> = ({ children }) => {
-  const { sideBarCollapsed } = useAppSelector((state) => state.layoutState);
-
   const { user } = useAppSelector((state) => state.session);
   const router = useRouter();
+  const dispatch = useAppDispatch();
+
+  /**
+   * This resets the page table filter to its initial state on every
+   * router pathname change
+   */
+  useEffect(() => {
+    dispatch(resetPageTableState());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [router.pathname]);
 
   if (router.pathname === "/") {
     return (
@@ -31,21 +40,18 @@ const Layout: React.FC<PropsWithChildren> = ({ children }) => {
 
   return (
     <div className="flex min-h-screen">
-      <Sidebar />
+      {!router.pathname.includes("email-action") && <Sidebar />}
 
       <main
         className={classNames(
-          sideBarCollapsed
-            ? "md:max-w-[calc(100vw_-_24px)]"
-            : "md:max-w-[calc(100vw_-_101px)]",
-          `${karla.variable} ${barlow_Condensed.variable} w-full flex-1 overflow-y-auto bg-white font-karla`,
+          `${karla.variable} ${barlow_Condensed.variable} w-full flex-1 overflow-y-auto bg-neutral-100 font-karla`,
         )}
       >
         <Header />
         <div className="relative flex h-[calc(100vh_-_4rem)] w-full flex-col">
           <div
             className={classNames(
-              "relative h-full w-full overflow-hidden overflow-y-auto bg-white p-4",
+              "relative h-full w-full overflow-hidden overflow-y-auto bg-neutral-100 p-4",
             )}
           >
             {children}

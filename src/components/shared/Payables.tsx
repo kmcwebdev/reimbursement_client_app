@@ -40,7 +40,7 @@ const ReimbursementTypeFilter = dynamic(
 
 const Payables: React.FC = () => {
   const { selectedItems, filters } = useAppSelector(
-    (state) => state.financePageState,
+    (state) => state.pageTableState,
   );
 
   const [focusedReimbursementId, setFocusedReimbursementId] =

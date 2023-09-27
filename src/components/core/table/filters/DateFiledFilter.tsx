@@ -4,8 +4,7 @@ import { useState, type ChangeEvent } from "react";
 import { MdCalendarToday } from "react-icons-all-files/md/MdCalendarToday";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import CollapseHeightAnimation from "~/components/animation/CollapseHeight";
-import { setApprovalTableFilters } from "~/features/approval-page-state-slice";
-import { classNames } from "~/utils/classNames";
+import { setPageTableFilters } from "~/features/page-state.slice";
 import parseZone from "~/utils/parseZone";
 import { Button } from "../../Button";
 import Popover from "../../Popover";
@@ -14,37 +13,25 @@ import { type FilterProps } from "./StatusFilter";
 
 dayjs.extend(parseZone);
 
-const DateFiledFilter: React.FC<FilterProps> = ({ tableType }) => {
-  const { filters: approvalPageFilters } = useAppSelector(
-    (state) => state.approvalPageState,
-  );
-
-  const { filters: reimbursementsPageFilters } = useAppSelector(
-    (state) => state.reimbursementRequestPageState,
-  );
+const DateFiledFilter: React.FC<FilterProps> = () => {
+  const { filters } = useAppSelector((state) => state.pageTableState);
 
   const dispatch = useAppDispatch();
-  const [dateFrom, setDateFrom] = useState<string | undefined>(
-    approvalPageFilters.from,
-  );
-  const [dateTo, setDateTo] = useState<string | undefined>(
-    approvalPageFilters.to,
-  );
+  const [dateFrom, setDateFrom] = useState<string | undefined>(filters.from);
+  const [dateTo, setDateTo] = useState<string | undefined>(filters.to);
   const [hasErrors, setHasErrors] = useState<boolean>(false);
   const [error, setError] = useState<string>();
 
   const clearDates = () => {
     setDateFrom(undefined);
     setDateTo(undefined);
-    if (tableType === "approvals") {
-      dispatch(
-        setApprovalTableFilters({
-          ...approvalPageFilters,
-          from: undefined,
-          to: undefined,
-        }),
-      );
-    }
+    dispatch(
+      setPageTableFilters({
+        ...filters,
+        from: undefined,
+        to: undefined,
+      }),
+    );
   };
 
   const validate = () => {
@@ -67,45 +54,21 @@ const DateFiledFilter: React.FC<FilterProps> = ({ tableType }) => {
       setHasErrors(false);
       setError(undefined);
 
-      if (tableType === "approvals") {
-        dispatch(
-          setApprovalTableFilters({
-            ...approvalPageFilters,
-            from: dateFrom && dayjs(dateFrom).toISOString(),
-            to: dateTo && dayjs(dateTo).toISOString(),
-          }),
-        );
-      }
-
-      if (tableType === "reimbursements") {
-        dispatch(
-          setApprovalTableFilters({
-            ...reimbursementsPageFilters,
-            from: dateFrom && dayjs(dateFrom).toISOString(),
-            to: dateTo && dayjs(dateTo).toISOString(),
-          }),
-        );
-      }
+      dispatch(
+        setPageTableFilters({
+          ...filters,
+          from: dateFrom && dayjs(dateFrom).toISOString(),
+          to: dateTo && dayjs(dateTo).toISOString(),
+        }),
+      );
     } else {
-      if (tableType === "approvals") {
-        dispatch(
-          setApprovalTableFilters({
-            ...approvalPageFilters,
-            from: dateFrom && dayjs(dateFrom).toISOString(),
-            to: dateTo && dayjs(dateTo).toISOString(),
-          }),
-        );
-      }
-
-      if (tableType === "reimbursements") {
-        dispatch(
-          setApprovalTableFilters({
-            ...reimbursementsPageFilters,
-            from: dayjs(dateFrom).toISOString(),
-            to: dayjs(dateTo).toISOString(),
-          }),
-        );
-      }
+      dispatch(
+        setPageTableFilters({
+          ...filters,
+          from: dayjs(dateFrom).toISOString(),
+          to: dayjs(dateTo).toISOString(),
+        }),
+      );
     }
   };
 
@@ -128,12 +91,7 @@ const DateFiledFilter: React.FC<FilterProps> = ({ tableType }) => {
   return (
     <Popover
       btn={
-        <MdCalendarToday
-          className={classNames(
-            // isButtonHidden && "hidden",
-            "text-neutral-900 hover:text-neutral-800",
-          )}
-        />
+        <MdCalendarToday className="text-neutral-900 hover:text-neutral-800" />
       }
       content={
         <div className="w-64 p-4">
