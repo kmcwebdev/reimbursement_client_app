@@ -25,6 +25,7 @@ const Layout: React.FC<PropsWithChildren> = ({ children }) => {
    */
   useEffect(() => {
     dispatch(resetPageTableState());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router.pathname]);
 
   if (router.pathname === "/") {

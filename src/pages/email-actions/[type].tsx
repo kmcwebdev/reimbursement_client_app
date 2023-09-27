@@ -1,4 +1,8 @@
-import { GetStaticPaths, GetStaticProps, GetStaticPropsContext } from "next";
+import {
+  type GetStaticPaths,
+  type GetStaticProps,
+  type GetStaticPropsContext,
+} from "next";
 import React from "react";
 
 interface EmailActionProps {
