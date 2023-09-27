@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import React from "react";
 import { type IconType } from "react-icons-all-files";
 import { classNames } from "~/utils/classNames";
