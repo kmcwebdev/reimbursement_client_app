@@ -1,131 +1,82 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
-import React, { useState } from "react";
+import dayjs from "dayjs";
+import React, { useMemo, useState } from "react";
 import { HiCurrencyDollar } from "react-icons-all-files/hi/HiCurrencyDollar";
 import { IoMdClose } from "react-icons-all-files/io/IoMdClose";
 import { MdAccessTimeFilled } from "react-icons-all-files/md/MdAccessTimeFilled";
 import { MdCalendarToday } from "react-icons-all-files/md/MdCalendarToday";
 import { MdLabel } from "react-icons-all-files/md/MdLabel";
-import { type IReimbursementsFilterQuery } from "~/types/reimbursement.types";
+import { useAppDispatch, useAppSelector } from "~/app/hook";
+import { resetPageTableState } from "~/features/page-state.slice";
+import { useAllExpenseTypesQuery } from "~/features/reimbursement-api-slice";
 import { classNames } from "~/utils/classNames";
 import { Button } from "../Button";
 import StatusBadge, { type StatusType } from "../StatusBadge";
 
 interface FilterViewProps {
   colSpan: number;
-  filters: IReimbursementsFilterQuery;
-  type: "reimbursements" | "approvals" | "finance";
 }
 
-interface FilterState {
-  key: string;
-  value: string[];
+interface IFilters {
+  request_status_ids: string[];
+  request_types_ids: string[];
+  expense_type_ids: string[];
+  date: string[];
 }
 
-const FilterView: React.FC<FilterViewProps> = ({ filters, type, colSpan }) => {
-  // const [dateFilterValue, setDateFilterValue] = useState<string[]>([]);
-  // const [dateFilterIsVisible, setDateFilterIsVisible] = useState<boolean>();
-  // const [filterViewState, setFilterViewState] = useState<FilterState[]>([]);
-  // const [isMounted, setisMounted] = useState<boolean>(false);
+const FilterView: React.FC<FilterViewProps> = ({ colSpan }) => {
+  const { filters } = useAppSelector((state) => state.pageTableState);
+  const dispatch = useAppDispatch();
+  const [filterViewState, setFilterViewState] = useState<IFilters>();
 
-  const [dateFilterValue] = useState<string[]>([]);
-  const [dateFilterIsVisible] = useState<boolean>();
-  const [filterViewState] = useState<FilterState[]>([]);
-  const [isMounted] = useState<boolean>(false);
+  const { data: allExpenseTypes, isLoading: allExpenseTypesIsLoading } =
+    useAllExpenseTypesQuery({});
 
-  // useMemo(() => {
-  //   const filterOrder = ["request_status", "request_type", "expense_type"];
-  //   const columnsThatHasFilters = columns.filter((a) => a?.getIsFiltered());
-  //   const headers = columnsThatHasFilters.map((a) => a?.id);
-  //   const filterViewStateCopy: FilterState[] = [];
+  useMemo(() => {
+    const transformedFilters: IFilters = {
+      request_status_ids: [],
+      request_types_ids: [],
+      expense_type_ids: [],
+      date: [],
+    };
 
-  //   if (headers && headers.length > 0) {
-  //     headers
-  //       .sort((a, b) => {
-  //         const index1 = filterOrder.indexOf(a as string);
-  //         const index2 = filterOrder.indexOf(b as string);
-  //         return index1 == -1 ? 1 : index2 == -1 ? -1 : index1 - index2;
-  //       })
-  //       .map((header) => {
-  //         const filteredColumn = columnsThatHasFilters.find(
-  //           (a) => a?.id === header,
-  //         );
+    if (Object.keys(filters).length > 0) {
+      Object.keys(filters).map((key) => {
+        if (key === "from") {
+          transformedFilters.date[0] = dayjs(filters.from).format("MM/DD/YYYY");
+        }
 
-  //         if (filteredColumn && header) {
-  //           if (header.includes("request_status")) {
-  //             const filterValue = filteredColumn.getFilterValue() as string[];
-  //             if (filterValue !== statusOptions) {
-  //               if (filterViewStateCopy.find((a) => a.key === header)) {
-  //                 const filtered = filterViewStateCopy.filter(
-  //                   (a) => a.key !== header,
-  //                 );
-  //                 filtered.push({ key: header, value: filterValue });
-  //                 setFilterViewState(filtered);
-  //               } else {
-  //                 filterViewStateCopy.push({ key: header, value: filterValue });
-  //                 setFilterViewState(filterViewStateCopy);
-  //               }
-  //             } else {
-  //               const copy = filterViewStateCopy.filter(
-  //                 (a) => a.key !== header,
-  //               );
-  //               setFilterViewState(copy);
-  //             }
-  //           } else {
-  //             const filterValue = filteredColumn.getFilterValue() as string[];
-  //             const sortedUniqueValues = Array.from(
-  //               filteredColumn.getFacetedUniqueValues().keys(),
-  //             ).sort() as string[];
-  //             if (filterValue.length < sortedUniqueValues.length) {
-  //               if (filterViewStateCopy.find((a) => a.key === header)) {
-  //                 const filtered = filterViewStateCopy.filter(
-  //                   (a) => a.key !== header,
-  //                 );
-  //                 filtered.push({ key: header, value: filterValue });
-  //                 setFilterViewState(filtered);
-  //               } else {
-  //                 filterViewStateCopy.push({ key: header, value: filterValue });
-  //                 setFilterViewState(filterViewStateCopy);
-  //               }
-  //             } else {
-  //               const copy = filterViewStateCopy.filter(
-  //                 (a) => a.key !== header,
-  //               );
-  //               setFilterViewState(copy);
-  //             }
-  //           }
-  //         }
-  //       });
-  //   }
+        if (key === "to") {
+          transformedFilters.date[1] = dayjs(filters.to).format("MM/DD/YYYY");
+        }
+        if (key === "expense_type_ids") {
+          if (filters.expense_type_ids) {
+            transformedFilters[key as keyof IFilters] =
+              filters.expense_type_ids.split(",");
+          }
+        }
 
-  //   /**Check date filed filter value if has value */
-  //   const dateFiledColumn = columns.find(
-  //     (column) => column && column.id === "created_at",
-  //   );
+        if (key === "request_status_ids") {
+          if (filters.request_status_ids) {
+            transformedFilters[key as keyof IFilters] =
+              filters.request_status_ids.split(",");
+          }
+        }
 
-  //   if (dateFiledColumn) {
-  //     const filterValue: string[] =
-  //       dateFiledColumn.getFilterValue() as string[];
-  //     setDateFilterValue(filterValue);
-  //     setDateFilterIsVisible(filterValue && filterValue.length > 0);
-  //   } else {
-  //     setDateFilterIsVisible(false);
-  //   }
+        // if (key === "request_type_ids") {
+        //   if (filters.request_type_ids) {
+        //     transformedFilters[key as keyof IFilters] =
+        //       filters.request_type_ids.split(",");
+        //   }
+        // }
+      });
+    }
 
-  //   setisMounted(true);
-  // }, [columns]);
+    setFilterViewState(transformedFilters);
+  }, [filters]);
 
   const handleClear = () => {
-    if (type === "approvals") {
-      //Clear approvals page filter state
-    }
-
-    if (type === "reimbursements") {
-      //Clear reimbursements page filter state
-    }
-
-    if (type === "finance") {
-      //Clear finance page filter state
-    }
+    dispatch(resetPageTableState());
   };
 
   return (
@@ -133,10 +84,8 @@ const FilterView: React.FC<FilterViewProps> = ({ filters, type, colSpan }) => {
       <td colSpan={colSpan}>
         <div
           className={classNames(
-            filterViewState.length > 0
-              ? !isMounted
-                ? "h-0 p-0 opacity-0"
-                : "h-16 border-b  border-b-[#F1F2F4] px-4 opacity-100 first:px-0"
+            Object.keys(filters).length > 0
+              ? "h-16 border-b  border-b-[#F1F2F4] px-4 opacity-100 first:px-0"
               : "h-0 p-0 opacity-0",
             "flex items-center justify-between gap-4 overflow-hidden transition-all ease-in-out",
           )}
@@ -144,58 +93,68 @@ const FilterView: React.FC<FilterViewProps> = ({ filters, type, colSpan }) => {
           <div className="flex items-center gap-2">
             <span className="font-bold text-neutral-900">Filters: </span>
 
-            {JSON.stringify(filters)}
             <div className="flex items-center gap-8">
-              {filterViewState.length > 0 &&
-                filterViewState.map((state) => (
-                  <div key={state.key} className="flex items-center gap-2">
-                    {state.key === "request_status" && (
-                      <MdLabel className="h-4 w-4 text-neutral-900" />
+              {Object.keys(filters).length > 0 &&
+                filterViewState &&
+                Object.keys(filterViewState).map((key) => (
+                  <div key={key} className="flex items-center gap-2">
+                    {key === "request_status_ids" &&
+                      filterViewState.request_status_ids.length > 0 && (
+                        <MdLabel className="h-4 w-4 text-neutral-900" />
+                      )}
+
+                    {key === "request_type_ids" &&
+                      filterViewState.request_types_ids.length > 0 && (
+                        <MdAccessTimeFilled className="h-4 w-4 text-neutral-900" />
+                      )}
+
+                    {key === "expense_type_ids" &&
+                      filterViewState.expense_type_ids.length > 0 && (
+                        <HiCurrencyDollar className="h-4 w-4 text-neutral-900" />
+                      )}
+
+                    {key === "date" && filterViewState.date.length > 0 && (
+                      <MdCalendarToday className="h-4 w-4 text-neutral-900" />
                     )}
 
-                    {state.key === "request_type" && (
-                      <MdAccessTimeFilled className="h-4 w-4 text-neutral-900" />
-                    )}
+                    {filterViewState[key as keyof IFilters].length > 0 && (
+                      <div className="flex gap-2 divide-x">
+                        {filterViewState[key as keyof IFilters].map((value) => (
+                          <span key={key + "-" + value}>
+                            {key === "request_status_ids" && (
+                              <StatusBadge
+                                key={value}
+                                status={value.toLowerCase() as StatusType}
+                              />
+                            )}
 
-                    {state.key === "expense_type" && (
-                      <HiCurrencyDollar className="h-4 w-4 text-neutral-900" />
-                    )}
+                            {key === "expense_type_ids" && (
+                              <p
+                                key={value}
+                                className="pl-2 text-sm text-neutral-800"
+                              >
+                                {allExpenseTypesIsLoading
+                                  ? "..."
+                                  : allExpenseTypes?.find(
+                                      (a) => a.expense_type_id === value,
+                                    )?.expense_type}
+                              </p>
+                            )}
 
-                    <div className="flex gap-2 divide-x">
-                      {state.value.map((value) => (
-                        <span key={state.key + "-" + value}>
-                          {state.key === "request_status" ? (
-                            <StatusBadge
-                              key={value}
-                              status={value.toLowerCase() as StatusType}
-                            />
-                          ) : (
-                            <p
-                              key={value}
-                              className="pl-2 text-sm text-neutral-800"
-                            >
-                              {value}
-                            </p>
-                          )}
-                        </span>
-                      ))}
-                    </div>
+                            {key === "request_type_ids" && (
+                              <p
+                                key={value}
+                                className="pl-2 text-sm text-neutral-800"
+                              >
+                                {value}
+                              </p>
+                            )}
+                          </span>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 ))}
-
-              {dateFilterIsVisible && (
-                <div className="flex items-center gap-2">
-                  <MdCalendarToday className="h-4 w-4 text-neutral-900" />
-                  <div className="flex items-center gap-1">
-                    {dateFilterValue.map((value, i) => (
-                      <p key={value} className="text-sm text-neutral-800">
-                        {value}
-                        {dateFilterValue.length === 2 && i === 0 && " -"}
-                      </p>
-                    ))}
-                  </div>
-                </div>
-              )}
             </div>
           </div>
 
