@@ -1,26 +1,19 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
-import { type Column } from "@tanstack/react-table";
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import { HiCurrencyDollar } from "react-icons-all-files/hi/HiCurrencyDollar";
 import { IoMdClose } from "react-icons-all-files/io/IoMdClose";
 import { MdAccessTimeFilled } from "react-icons-all-files/md/MdAccessTimeFilled";
 import { MdCalendarToday } from "react-icons-all-files/md/MdCalendarToday";
 import { MdLabel } from "react-icons-all-files/md/MdLabel";
-import { statusOptions } from "~/constants/status-options";
-import {
-  type ReimbursementApproval,
-  type ReimbursementRequest,
-} from "~/types/reimbursement.types";
+import { type IReimbursementsFilterQuery } from "~/types/reimbursement.types";
 import { classNames } from "~/utils/classNames";
 import { Button } from "../Button";
 import StatusBadge, { type StatusType } from "../StatusBadge";
 
 interface FilterViewProps {
   colSpan: number;
-  columns: (
-    | Column<ReimbursementRequest | ReimbursementApproval, unknown>
-    | undefined
-  )[];
+  filters: IReimbursementsFilterQuery;
+  type: "reimbursements" | "approvals" | "finance";
 }
 
 interface FilterState {
@@ -28,126 +21,110 @@ interface FilterState {
   value: string[];
 }
 
-const FilterView: React.FC<FilterViewProps> = ({ columns, colSpan }) => {
-  const [dateFilterValue, setDateFilterValue] = useState<string[]>([]);
-  const [dateFilterIsVisible, setDateFilterIsVisible] = useState<boolean>();
-  const [filterViewState, setFilterViewState] = useState<FilterState[]>([]);
-  const [isMounted, setisMounted] = useState<boolean>(false);
+const FilterView: React.FC<FilterViewProps> = ({ filters, type, colSpan }) => {
+  // const [dateFilterValue, setDateFilterValue] = useState<string[]>([]);
+  // const [dateFilterIsVisible, setDateFilterIsVisible] = useState<boolean>();
+  // const [filterViewState, setFilterViewState] = useState<FilterState[]>([]);
+  // const [isMounted, setisMounted] = useState<boolean>(false);
 
-  useMemo(() => {
-    const filterOrder = ["request_status", "request_type", "expense_type"];
-    const columnsThatHasFilters = columns.filter((a) => a?.getIsFiltered());
-    const headers = columnsThatHasFilters.map((a) => a?.id);
-    const filterViewStateCopy: FilterState[] = [];
+  const [dateFilterValue] = useState<string[]>([]);
+  const [dateFilterIsVisible] = useState<boolean>();
+  const [filterViewState] = useState<FilterState[]>([]);
+  const [isMounted] = useState<boolean>(false);
 
-    if (headers && headers.length > 0) {
-      headers
-        .sort((a, b) => {
-          const index1 = filterOrder.indexOf(a as string);
-          const index2 = filterOrder.indexOf(b as string);
-          return index1 == -1 ? 1 : index2 == -1 ? -1 : index1 - index2;
-        })
-        .map((header) => {
-          const filteredColumn = columnsThatHasFilters.find(
-            (a) => a?.id === header,
-          );
+  // useMemo(() => {
+  //   const filterOrder = ["request_status", "request_type", "expense_type"];
+  //   const columnsThatHasFilters = columns.filter((a) => a?.getIsFiltered());
+  //   const headers = columnsThatHasFilters.map((a) => a?.id);
+  //   const filterViewStateCopy: FilterState[] = [];
 
-          if (filteredColumn && header) {
-            if (header === "request_status") {
-              const filterValue = filteredColumn.getFilterValue() as string[];
-              if (filterValue !== statusOptions) {
-                if (filterViewStateCopy.find((a) => a.key === header)) {
-                  const filtered = filterViewStateCopy.filter(
-                    (a) => a.key !== header,
-                  );
-                  filtered.push({ key: header, value: filterValue });
-                  setFilterViewState(filtered);
-                } else {
-                  filterViewStateCopy.push({ key: header, value: filterValue });
-                  setFilterViewState(filterViewStateCopy);
-                }
-              } else {
-                const copy = filterViewStateCopy.filter(
-                  (a) => a.key !== header,
-                );
-                setFilterViewState(copy);
-              }
-            } else {
-              const filterValue = filteredColumn.getFilterValue() as string[];
-              const sortedUniqueValues = Array.from(
-                filteredColumn.getFacetedUniqueValues().keys(),
-              ).sort() as string[];
-              if (filterValue.length < sortedUniqueValues.length) {
-                if (filterViewStateCopy.find((a) => a.key === header)) {
-                  const filtered = filterViewStateCopy.filter(
-                    (a) => a.key !== header,
-                  );
-                  filtered.push({ key: header, value: filterValue });
-                  setFilterViewState(filtered);
-                } else {
-                  filterViewStateCopy.push({ key: header, value: filterValue });
-                  setFilterViewState(filterViewStateCopy);
-                }
-              } else {
-                const copy = filterViewStateCopy.filter(
-                  (a) => a.key !== header,
-                );
-                setFilterViewState(copy);
-              }
-            }
-          }
-        });
-    }
+  //   if (headers && headers.length > 0) {
+  //     headers
+  //       .sort((a, b) => {
+  //         const index1 = filterOrder.indexOf(a as string);
+  //         const index2 = filterOrder.indexOf(b as string);
+  //         return index1 == -1 ? 1 : index2 == -1 ? -1 : index1 - index2;
+  //       })
+  //       .map((header) => {
+  //         const filteredColumn = columnsThatHasFilters.find(
+  //           (a) => a?.id === header,
+  //         );
 
-    /**Check date filed filter value if has value */
-    const dateFiledColumn = columns.find(
-      (column) => column && column.id === "created_at",
-    );
+  //         if (filteredColumn && header) {
+  //           if (header.includes("request_status")) {
+  //             const filterValue = filteredColumn.getFilterValue() as string[];
+  //             if (filterValue !== statusOptions) {
+  //               if (filterViewStateCopy.find((a) => a.key === header)) {
+  //                 const filtered = filterViewStateCopy.filter(
+  //                   (a) => a.key !== header,
+  //                 );
+  //                 filtered.push({ key: header, value: filterValue });
+  //                 setFilterViewState(filtered);
+  //               } else {
+  //                 filterViewStateCopy.push({ key: header, value: filterValue });
+  //                 setFilterViewState(filterViewStateCopy);
+  //               }
+  //             } else {
+  //               const copy = filterViewStateCopy.filter(
+  //                 (a) => a.key !== header,
+  //               );
+  //               setFilterViewState(copy);
+  //             }
+  //           } else {
+  //             const filterValue = filteredColumn.getFilterValue() as string[];
+  //             const sortedUniqueValues = Array.from(
+  //               filteredColumn.getFacetedUniqueValues().keys(),
+  //             ).sort() as string[];
+  //             if (filterValue.length < sortedUniqueValues.length) {
+  //               if (filterViewStateCopy.find((a) => a.key === header)) {
+  //                 const filtered = filterViewStateCopy.filter(
+  //                   (a) => a.key !== header,
+  //                 );
+  //                 filtered.push({ key: header, value: filterValue });
+  //                 setFilterViewState(filtered);
+  //               } else {
+  //                 filterViewStateCopy.push({ key: header, value: filterValue });
+  //                 setFilterViewState(filterViewStateCopy);
+  //               }
+  //             } else {
+  //               const copy = filterViewStateCopy.filter(
+  //                 (a) => a.key !== header,
+  //               );
+  //               setFilterViewState(copy);
+  //             }
+  //           }
+  //         }
+  //       });
+  //   }
 
-    if (dateFiledColumn) {
-      const filterValue: string[] =
-        dateFiledColumn.getFilterValue() as string[];
-      setDateFilterValue(filterValue);
-      setDateFilterIsVisible(filterValue && filterValue.length > 0);
-    } else {
-      setDateFilterIsVisible(false);
-    }
+  //   /**Check date filed filter value if has value */
+  //   const dateFiledColumn = columns.find(
+  //     (column) => column && column.id === "created_at",
+  //   );
 
-    setisMounted(true);
-  }, [columns]);
+  //   if (dateFiledColumn) {
+  //     const filterValue: string[] =
+  //       dateFiledColumn.getFilterValue() as string[];
+  //     setDateFilterValue(filterValue);
+  //     setDateFilterIsVisible(filterValue && filterValue.length > 0);
+  //   } else {
+  //     setDateFilterIsVisible(false);
+  //   }
+
+  //   setisMounted(true);
+  // }, [columns]);
 
   const handleClear = () => {
-    const statusColumn = columns.find(
-      (column) => column && column.id === "request_status",
-    );
-    const typeColumn = columns.find(
-      (column) => column && column.id === "request_type",
-    );
-    const expenseColumn = columns.find(
-      (column) => column && column.id === "expense_type",
-    );
-    const dateFiledColumn = columns.find(
-      (column) => column && column.id === "created_at",
-    );
-
-    if (statusColumn) {
-      statusColumn.setFilterValue(statusOptions);
+    if (type === "approvals") {
+      //Clear approvals page filter state
     }
 
-    if (typeColumn) {
-      typeColumn.setFilterValue(
-        Array.from(typeColumn.getFacetedUniqueValues().keys()),
-      );
+    if (type === "reimbursements") {
+      //Clear reimbursements page filter state
     }
 
-    if (expenseColumn) {
-      expenseColumn.setFilterValue(
-        Array.from(expenseColumn.getFacetedUniqueValues().keys()),
-      );
-    }
-
-    if (dateFiledColumn) {
-      dateFiledColumn.setFilterValue(undefined);
+    if (type === "finance") {
+      //Clear finance page filter state
     }
   };
 
@@ -167,6 +144,7 @@ const FilterView: React.FC<FilterViewProps> = ({ columns, colSpan }) => {
           <div className="flex items-center gap-2">
             <span className="font-bold text-neutral-900">Filters: </span>
 
+            {JSON.stringify(filters)}
             <div className="flex items-center gap-8">
               {filterViewState.length > 0 &&
                 filterViewState.map((state) => (

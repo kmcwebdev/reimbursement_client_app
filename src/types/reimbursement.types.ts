@@ -87,3 +87,11 @@ export type ReimbursementApproval = {
   payroll_account?: string;
   employee_id: string;
 };
+
+export type IReimbursementsFilterQuery = {
+  text_search?: string;
+  expense_type_ids?: string;
+  request_status_ids?: string;
+  from?: string;
+  to?: string;
+}

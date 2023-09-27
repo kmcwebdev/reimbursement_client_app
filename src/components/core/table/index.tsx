@@ -11,11 +11,8 @@ import {
   flexRender,
   getCoreRowModel,
   getFacetedUniqueValues,
-  getFilteredRowModel,
   getPaginationRowModel,
   useReactTable,
-  type Column,
-  type ColumnFiltersState,
   type FilterMeta,
   type PaginationState,
   type RowSelectionState,
@@ -24,39 +21,40 @@ import {
 
 import { MdBrowserNotSupported } from "react-icons-all-files/md/MdBrowserNotSupported";
 import {
+  type IReimbursementsFilterQuery,
   type ReimbursementApproval,
   type ReimbursementRequest,
 } from "~/types/reimbursement.types";
 import EmptyState from "../EmptyState";
+import SkeletonLoading from "../SkeletonLoading";
 import FilterView from "./FilterView";
 // import Pagination from "./Pagination";
 
 export type ITableState = {
-  columnFilters?: ColumnFiltersState;
+  filters: IReimbursementsFilterQuery;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   selectedItems?: any;
   pagination?: PaginationState;
 };
 
 export type ITableStateActions = {
-  setColumnFilters?: (value: ColumnFiltersState) => void;
   setSelectedItems?: (value: string[]) => void;
   setPagination?: Dispatch<SetStateAction<PaginationState>>;
 };
 
 type ReimbursementTable = {
   type: "reimbursements";
-  data: ReimbursementRequest[];
+  data?: ReimbursementRequest[];
 };
 
 type ApprovalTable = {
   type: "approvals";
-  data: ReimbursementApproval[];
+  data?: ReimbursementApproval[];
 };
 
 type FinanceTable = {
   type: "finance";
-  data: ReimbursementApproval[];
+  data?: ReimbursementApproval[];
 };
 
 type TableProps = {
@@ -68,15 +66,13 @@ type TableProps = {
 
 interface CustomFilterMeta extends FilterMeta {
   filterComponent: (info: {
-    column: Column<any, unknown>;
-    table: Table<any>;
+    tableType: "approvals" | "reimbursements" | "finance";
   }) => JSX.Element;
 }
 
 const Table: React.FC<TableProps> = (props) => {
-  const { data, columns } = props;
+  const { columns } = props;
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
-  const [filterState] = useState<ColumnFiltersState>([]);
 
   useEffect(() => {
     if (
@@ -90,45 +86,28 @@ const Table: React.FC<TableProps> = (props) => {
       const selectedItems: string[] = [];
 
       Object.keys(rowSelection).forEach((key) => {
-        selectedItems.push(
-          props.data[key as unknown as number].reimbursement_request_id,
-        );
+        if (props.data) {
+          selectedItems.push(
+            props.data[key as unknown as number].reimbursement_request_id,
+          );
+        }
       });
       props.tableStateActions?.setSelectedItems(selectedItems);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rowSelection]);
 
-  useEffect(() => {
-    if (
-      !props.loading &&
-      filterState &&
-      props.tableState &&
-      props.tableStateActions &&
-      props.tableState.columnFilters &&
-      props.tableStateActions.setColumnFilters
-    ) {
-      console.log(filterState);
-      // props.tableStateActions.setColumnFilters(filterState);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filterState]);
-
   const table = useReactTable<ReimbursementRequest | ReimbursementApproval>({
-    data,
+    data: props.data!,
     columns,
     state: {
       ...props.tableState,
       rowSelection: props.tableState?.selectedItems ? rowSelection : undefined,
     },
-    // onColumnFiltersChange: setFilterState,
     onRowSelectionChange: setRowSelection,
     onPaginationChange: props.tableStateActions?.setPagination,
     getFacetedUniqueValues: getFacetedUniqueValues(),
     getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: props.tableStateActions?.setColumnFilters
-      ? getFilteredRowModel()
-      : undefined,
     getPaginationRowModel: props.tableState?.pagination
       ? getPaginationRowModel()
       : undefined,
@@ -143,61 +122,80 @@ const Table: React.FC<TableProps> = (props) => {
       <div className="min-h-[300px] overflow-x-auto bg-white">
         <table className=" w-full overflow-x-scroll whitespace-nowrap bg-white">
           <thead className="h-12 border-b border-neutral-300 text-xs">
-            {table.getHeaderGroups().map((headerGroup, i) => (
-              <tr key={i}>
-                {headerGroup.headers.map((header, i) => {
-                  return (
-                    <th
-                      {...{
-                        style: {
-                          width: header.getSize(),
-                          minWidth: header.getSize(),
-                          maxWidth: header.getSize(),
-                        },
-                      }}
-                      key={i}
-                      colSpan={header.colSpan}
-                      className=" px-4"
-                    >
-                      <div className="flex items-center justify-between">
-                        {flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
+            {props.data &&
+              table.getHeaderGroups().map((headerGroup, i) => (
+                <tr key={i}>
+                  {headerGroup.headers.map((header, i) => {
+                    return (
+                      <th
+                        {...{
+                          style: {
+                            width: header.getSize(),
+                            minWidth: header.getSize(),
+                            maxWidth: header.getSize(),
+                          },
+                        }}
+                        key={i}
+                        colSpan={header.colSpan}
+                        className=" px-4"
+                      >
+                        <div className="flex items-center justify-between">
+                          {flexRender(
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
 
-                        {header.column.columnDef?.meta &&
-                          (header.column.columnDef?.meta as CustomFilterMeta)
-                            .filterComponent &&
-                          (
-                            header.column.columnDef?.meta as CustomFilterMeta
-                          ).filterComponent({
-                            column: header.column,
-                            table,
-                          })}
-                      </div>
-                    </th>
-                  );
-                })}
-              </tr>
-            ))}
+                          {header.column.columnDef?.meta &&
+                            (header.column.columnDef?.meta as CustomFilterMeta)
+                              .filterComponent &&
+                            (
+                              header.column.columnDef?.meta as CustomFilterMeta
+                            ).filterComponent({ tableType: props.type })}
+                        </div>
+                      </th>
+                    );
+                  })}
+                </tr>
+              ))}
           </thead>
           <tbody className="min-h-[calc(300px-3rem)]">
+            {props.loading && (
+              <tr className="bg-neutral-100">
+                <td colSpan={table.getAllFlatColumns().length}>
+                  <div className="min-h-[calc(300px-3rem)]">
+                    {Array.from({ length: 10 }).map((_a, i) => (
+                      <div
+                        key={i}
+                        className="flex h-12 items-center justify-evenly border-b"
+                      >
+                        <SkeletonLoading className="h-5 w-14 rounded-md" />
+                        <SkeletonLoading className="h-5 w-14 rounded-md" />
+                        <SkeletonLoading className="h-5 w-14 rounded-md" />
+                        <SkeletonLoading className="h-5 w-14 rounded-md" />
+                        <SkeletonLoading className="h-5 w-14 rounded-md" />
+                        <SkeletonLoading className="h-5 w-14 rounded-md" />
+                        <SkeletonLoading className="h-5 w-14 rounded-md" />
+                      </div>
+                    ))}
+                  </div>
+                </td>
+              </tr>
+            )}
             {!props.loading &&
-              data &&
-              data.length > 0 &&
+              props.data &&
+              props.data.length > 0 &&
               props.tableState &&
-              props.tableState.columnFilters && (
+              props.tableState.filters && (
                 <FilterView
                   colSpan={table.getAllColumns().length}
-                  columns={props.tableState.columnFilters.map((a) =>
-                    table.getColumn(a.id),
-                  )}
+                  filters={props.tableState.filters}
+                  type={props.type}
                 />
               )}
 
             {/* Data is empty */}
 
-            {data && data.length === 0 && (
+            {props.data && props.data.length === 0 && (
               <tr>
                 <td colSpan={table.getAllFlatColumns().length}>
                   <div className="py-4">
@@ -232,8 +230,9 @@ const Table: React.FC<TableProps> = (props) => {
             )}
 
             {/* Filter returns 0 record */}
-            {data &&
-              data.length > 0 &&
+            {!props.loading &&
+              props.data &&
+              props.data.length > 0 &&
               table.getRowModel().rows.length === 0 && (
                 <tr className="h-72 bg-neutral-100">
                   <td colSpan={table.getAllFlatColumns().length}>
@@ -250,25 +249,27 @@ const Table: React.FC<TableProps> = (props) => {
                 </tr>
               )}
 
-            {table.getRowModel().rows.map((row, i) => {
-              return (
-                <tr key={i} className="group h-16">
-                  {row.getVisibleCells().map((cell, i) => {
-                    return (
-                      <td
-                        key={i}
-                        className=" border-b border-b-neutral-200 px-4 first:px-0"
-                      >
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext(),
-                        )}
-                      </td>
-                    );
-                  })}
-                </tr>
-              );
-            })}
+            {!props.loading &&
+              props.data &&
+              table.getRowModel().rows.map((row, i) => {
+                return (
+                  <tr key={i} className="group h-16">
+                    {row.getVisibleCells().map((cell, i) => {
+                      return (
+                        <td
+                          key={i}
+                          className=" border-b border-b-neutral-200 px-4 first:px-0"
+                        >
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext(),
+                          )}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                );
+              })}
           </tbody>
         </table>
       </div>

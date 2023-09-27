@@ -2,34 +2,57 @@
 import dayjs from "dayjs";
 import { useState, type ChangeEvent } from "react";
 import { MdCalendarToday } from "react-icons-all-files/md/MdCalendarToday";
+import { useAppDispatch, useAppSelector } from "~/app/hook";
 import CollapseHeightAnimation from "~/components/animation/CollapseHeight";
+import { setApprovalTableFilters } from "~/features/approval-page-state-slice";
 import { classNames } from "~/utils/classNames";
+import parseZone from "~/utils/parseZone";
 import { Button } from "../../Button";
 import Popover from "../../Popover";
 import Input from "../../form/fields/Input";
 import { type FilterProps } from "./StatusFilter";
 
-const DateFiledFilter: React.FC<FilterProps> = ({
-  column,
-  isButtonHidden = false,
-}) => {
-  const [dateFrom, setDateFrom] = useState<string>("");
-  const [dateTo, setDateTo] = useState<string>("");
+dayjs.extend(parseZone);
+
+const DateFiledFilter: React.FC<FilterProps> = ({ tableType }) => {
+  const { filters: approvalPageFilters } = useAppSelector(
+    (state) => state.approvalPageState,
+  );
+
+  const { filters: reimbursementsPageFilters } = useAppSelector(
+    (state) => state.reimbursementRequestPageState,
+  );
+
+  const dispatch = useAppDispatch();
+  const [dateFrom, setDateFrom] = useState<string | undefined>(
+    approvalPageFilters.from,
+  );
+  const [dateTo, setDateTo] = useState<string | undefined>(
+    approvalPageFilters.to,
+  );
   const [hasErrors, setHasErrors] = useState<boolean>(false);
   const [error, setError] = useState<string>();
 
   const clearDates = () => {
-    setDateFrom("");
-    setDateTo("");
-    column.setFilterValue(undefined);
+    setDateFrom(undefined);
+    setDateTo(undefined);
+    if (tableType === "approvals") {
+      dispatch(
+        setApprovalTableFilters({
+          ...approvalPageFilters,
+          from: undefined,
+          to: undefined,
+        }),
+      );
+    }
   };
 
   const validate = () => {
     if (dateFrom !== "" && dateTo !== "") {
       const isBefore = dayjs(dateTo).isBefore(dayjs(dateFrom));
-      const isSame = dayjs(dateTo).isSame(dayjs(dateTo));
+      const isSame = dayjs(dateFrom).isSame(dayjs(dateTo));
 
-      if (isBefore) {
+      if (dateTo && isBefore) {
         setError("Selected date range invalid!");
         setHasErrors(true);
         return;
@@ -44,15 +67,45 @@ const DateFiledFilter: React.FC<FilterProps> = ({
       setHasErrors(false);
       setError(undefined);
 
-      const selectedDates = [dateFrom, dateTo];
-      column.setFilterValue([
-        selectedDates.map((a) => dayjs(a).format("MM/DD/YYYY")),
-      ]);
+      if (tableType === "approvals") {
+        dispatch(
+          setApprovalTableFilters({
+            ...approvalPageFilters,
+            from: dateFrom && dayjs(dateFrom).toISOString(),
+            to: dateTo && dayjs(dateTo).toISOString(),
+          }),
+        );
+      }
+
+      if (tableType === "reimbursements") {
+        dispatch(
+          setApprovalTableFilters({
+            ...reimbursementsPageFilters,
+            from: dateFrom && dayjs(dateFrom).toISOString(),
+            to: dateTo && dayjs(dateTo).toISOString(),
+          }),
+        );
+      }
     } else {
-      const selectedDates = [dateFrom, dateTo];
-      column.setFilterValue([
-        selectedDates.map((a) => dayjs(a).format("MM/DD/YYYY")),
-      ]);
+      if (tableType === "approvals") {
+        dispatch(
+          setApprovalTableFilters({
+            ...approvalPageFilters,
+            from: dateFrom && dayjs(dateFrom).toISOString(),
+            to: dateTo && dayjs(dateTo).toISOString(),
+          }),
+        );
+      }
+
+      if (tableType === "reimbursements") {
+        dispatch(
+          setApprovalTableFilters({
+            ...reimbursementsPageFilters,
+            from: dayjs(dateFrom).toISOString(),
+            to: dayjs(dateTo).toISOString(),
+          }),
+        );
+      }
     }
   };
 
@@ -77,7 +130,7 @@ const DateFiledFilter: React.FC<FilterProps> = ({
       btn={
         <MdCalendarToday
           className={classNames(
-            isButtonHidden && "hidden",
+            // isButtonHidden && "hidden",
             "text-neutral-900 hover:text-neutral-800",
           )}
         />
@@ -89,7 +142,6 @@ const DateFiledFilter: React.FC<FilterProps> = ({
               type="date"
               name="from"
               label="From"
-              defaultValue={dateFrom}
               onBlur={onDateFromChanged}
               hasErrors={hasErrors}
             />
@@ -97,7 +149,6 @@ const DateFiledFilter: React.FC<FilterProps> = ({
               type="date"
               name="to"
               label="To"
-              defaultValue={dateTo}
               min={dayjs(dateFrom).add(1, "day").format("YYYY-MM-DD")}
               onBlur={onDateToChanged}
               hasErrors={hasErrors}

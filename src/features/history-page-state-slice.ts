@@ -1,24 +1,24 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { type IReimbursementsFilterQuery } from "~/types/reimbursement.types";
 
-interface FinancePageState {
+interface HistoryRequestPageState {
   selectedItems: string[];
   filters: IReimbursementsFilterQuery;
 }
 
-const initialState: FinancePageState = {
+const initialState: HistoryRequestPageState = {
   selectedItems: [],
   filters: {},
 };
 
-const financePageStateSlice = createSlice({
+const historyPageStateSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
     setSelectedItems(state,action: PayloadAction<string[]>) {
       state.selectedItems = action.payload;
     },
-    setFinanceTableFilters(state,action: PayloadAction<IReimbursementsFilterQuery>) {
+    setHistoryTableFilters(state,action: PayloadAction<IReimbursementsFilterQuery>) {
       state.filters = action.payload;
     },
   },
@@ -26,7 +26,7 @@ const financePageStateSlice = createSlice({
 
 export const {
   setSelectedItems,
-  setFinanceTableFilters,
-} = financePageStateSlice.actions;
+  setHistoryTableFilters
+} = historyPageStateSlice.actions;
 
-export default financePageStateSlice.reducer;
+export default historyPageStateSlice.reducer;
