@@ -122,40 +122,41 @@ const Table: React.FC<TableProps> = (props) => {
       <div className="min-h-[300px] overflow-x-auto bg-white">
         <table className=" w-full overflow-x-scroll whitespace-nowrap bg-white">
           <thead className="h-12 border-b border-neutral-300 text-xs">
-            {table.getHeaderGroups().map((headerGroup, i) => (
-              <tr key={i}>
-                {headerGroup.headers.map((header, i) => {
-                  return (
-                    <th
-                      {...{
-                        style: {
-                          width: header.getSize(),
-                          minWidth: header.getSize(),
-                          maxWidth: header.getSize(),
-                        },
-                      }}
-                      key={i}
-                      colSpan={header.colSpan}
-                      className=" px-4"
-                    >
-                      <div className="flex items-center justify-between">
-                        {flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
+            {props.data &&
+              table.getHeaderGroups().map((headerGroup, i) => (
+                <tr key={i}>
+                  {headerGroup.headers.map((header, i) => {
+                    return (
+                      <th
+                        {...{
+                          style: {
+                            width: header.getSize(),
+                            minWidth: header.getSize(),
+                            maxWidth: header.getSize(),
+                          },
+                        }}
+                        key={i}
+                        colSpan={header.colSpan}
+                        className=" px-4"
+                      >
+                        <div className="flex items-center justify-between">
+                          {flexRender(
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
 
-                        {header.column.columnDef?.meta &&
-                          (header.column.columnDef?.meta as CustomFilterMeta)
-                            .filterComponent &&
-                          (
-                            header.column.columnDef?.meta as CustomFilterMeta
-                          ).filterComponent({ tableType: props.type })}
-                      </div>
-                    </th>
-                  );
-                })}
-              </tr>
-            ))}
+                          {header.column.columnDef?.meta &&
+                            (header.column.columnDef?.meta as CustomFilterMeta)
+                              .filterComponent &&
+                            (
+                              header.column.columnDef?.meta as CustomFilterMeta
+                            ).filterComponent({ tableType: props.type })}
+                        </div>
+                      </th>
+                    );
+                  })}
+                </tr>
+              ))}
           </thead>
           <tbody className="min-h-[calc(300px-3rem)]">
             {props.loading && (

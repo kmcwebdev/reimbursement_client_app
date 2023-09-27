@@ -510,7 +510,7 @@ const MyApprovals: React.FC = () => {
       },
     ];
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedItems]);
+  }, [selectedItems, data]);
 
   const handleBulkApprove = () => {
     openBulkApproveDialog();
