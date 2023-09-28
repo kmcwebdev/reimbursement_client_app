@@ -9,7 +9,7 @@ import { type IconType } from "react-icons-all-files";
 import { AiOutlineSearch } from "react-icons-all-files/ai/AiOutlineSearch";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { env } from "~/env.mjs";
-import { setSelectedItems } from "~/features/finance-page-slice";
+import { setSelectedItems } from "~/features/page-state.slice";
 import {
   useGetAllApprovalQuery,
   useGetRequestQuery,

@@ -8,7 +8,11 @@ import { MdCalendarToday } from "react-icons-all-files/md/MdCalendarToday";
 import { MdLabel } from "react-icons-all-files/md/MdLabel";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { resetPageTableState } from "~/features/page-state.slice";
-import { useAllExpenseTypesQuery } from "~/features/reimbursement-api-slice";
+import {
+  useAllExpenseTypesQuery,
+  useAllStatusesQuery,
+  useRequestTypesQuery,
+} from "~/features/reimbursement-api-slice";
 import { classNames } from "~/utils/classNames";
 import { Button } from "../Button";
 import StatusBadge, { type StatusType } from "../StatusBadge";
@@ -21,6 +25,7 @@ interface IFilters {
   request_status_ids: string[];
   request_types_ids: string[];
   expense_type_ids: string[];
+  reimbursement_type_id: string[];
   date: string[];
 }
 
@@ -32,11 +37,18 @@ const FilterView: React.FC<FilterViewProps> = ({ colSpan }) => {
   const { data: allExpenseTypes, isLoading: allExpenseTypesIsLoading } =
     useAllExpenseTypesQuery({});
 
+  const { isLoading: requestTypesIsLoading, data: requestTypes } =
+    useRequestTypesQuery();
+
+  const { data: allStatuses, isLoading: allStatusesIsLoading } =
+    useAllStatusesQuery({});
+
   useMemo(() => {
     const transformedFilters: IFilters = {
       request_status_ids: [],
       request_types_ids: [],
       expense_type_ids: [],
+      reimbursement_type_id: [],
       date: [],
     };
 
@@ -51,24 +63,24 @@ const FilterView: React.FC<FilterViewProps> = ({ colSpan }) => {
         }
         if (key === "expense_type_ids") {
           if (filters.expense_type_ids) {
-            transformedFilters[key as keyof IFilters] =
+            transformedFilters.expense_type_ids =
               filters.expense_type_ids.split(",");
           }
         }
 
         if (key === "request_status_ids") {
           if (filters.request_status_ids) {
-            transformedFilters[key as keyof IFilters] =
+            transformedFilters.request_status_ids =
               filters.request_status_ids.split(",");
           }
         }
 
-        // if (key === "request_type_ids") {
-        //   if (filters.request_type_ids) {
-        //     transformedFilters[key as keyof IFilters] =
-        //       filters.request_type_ids.split(",");
-        //   }
-        // }
+        if (key === "reimbursement_type_id") {
+          if (filters.reimbursement_type_id) {
+            transformedFilters.reimbursement_type_id =
+              filters.reimbursement_type_id.split(",");
+          }
+        }
       });
     }
 
@@ -104,8 +116,8 @@ const FilterView: React.FC<FilterViewProps> = ({ colSpan }) => {
                             <MdLabel className="h-4 w-4 text-neutral-900" />
                           )}
 
-                        {key === "request_type_ids" &&
-                          filterViewState.request_types_ids.length > 0 && (
+                        {key === "reimbursement_type_id" &&
+                          filterViewState.reimbursement_type_id.length > 0 && (
                             <MdAccessTimeFilled className="h-4 w-4 text-neutral-900" />
                           )}
 
@@ -119,21 +131,37 @@ const FilterView: React.FC<FilterViewProps> = ({ colSpan }) => {
                         )}
 
                         {filterViewState[key as keyof IFilters].length > 0 && (
-                          <div className="flex gap-2 divide-x">
+                          <div className="flex gap-2">
                             {filterViewState[key as keyof IFilters].map(
-                              (value) => (
+                              (value, i) => (
                                 <span key={key + "-" + value}>
                                   {key === "request_status_ids" && (
-                                    <StatusBadge
-                                      key={value}
-                                      status={value.toLowerCase() as StatusType}
-                                    />
+                                    <span className="ml-4 first:ml-0">
+                                      {allStatusesIsLoading ? (
+                                        "..."
+                                      ) : (
+                                        <StatusBadge
+                                          key={value}
+                                          status={
+                                            allStatuses
+                                              ?.find(
+                                                (a) =>
+                                                  a.request_status_id === value,
+                                              )
+                                              ?.request_status.toLowerCase() as StatusType
+                                          }
+                                        />
+                                      )}
+                                    </span>
                                   )}
 
                                   {key === "expense_type_ids" && (
                                     <p
                                       key={value}
-                                      className="pl-2 text-sm text-neutral-800"
+                                      className={classNames(
+                                        i > 0 && "border-l",
+                                        "pl-2 text-sm text-neutral-800",
+                                      )}
                                     >
                                       {allExpenseTypesIsLoading
                                         ? "..."
@@ -143,12 +171,18 @@ const FilterView: React.FC<FilterViewProps> = ({ colSpan }) => {
                                     </p>
                                   )}
 
-                                  {key === "request_type_ids" && (
+                                  {key === "reimbursement_type_id" && (
                                     <p
                                       key={value}
                                       className="pl-2 text-sm text-neutral-800"
                                     >
-                                      {value}
+                                      {requestTypesIsLoading
+                                        ? "..."
+                                        : requestTypes?.find(
+                                            (a) =>
+                                              a.reimbursement_request_type_id ===
+                                              value,
+                                          )?.request_type}
                                     </p>
                                   )}
 

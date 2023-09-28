@@ -1,52 +1,40 @@
-import React, { useState, type ChangeEvent } from "react";
+import React, { useEffect, useState, type ChangeEvent } from "react";
 import { FaCaretDown } from "react-icons-all-files/fa/FaCaretDown";
+import { useAppDispatch, useAppSelector } from "~/app/hook";
+import { setPageTableFilters } from "~/features/page-state.slice";
 import { useRequestTypesQuery } from "~/features/reimbursement-api-slice";
 import Popover from "../../Popover";
 import Checkbox from "../../form/fields/Checkbox";
 import { type FilterProps } from "./StatusFilter";
 
 const ReimbursementTypeFilter: React.FC<FilterProps> = () => {
-  // const { filters: approvalPageFilters } = useAppSelector(
-  //   (state) => state.approvalPageState,
-  // );
+  const { filters } = useAppSelector((state) => state.pageTableState);
+  const dispatch = useAppDispatch();
 
-  // const { filters: reimbursementsPageFilters } = useAppSelector(
-  //   (state) => state.reimbursementRequestPageState,
-  // );
   const [checked, setChecked] = useState<string[]>([]);
   const { isLoading: requestTypesIsLoading, data: requestTypes } =
     useRequestTypesQuery();
-
-  // const dispatch = useAppDispatch();
 
   const onChange = (e: ChangeEvent<HTMLInputElement>, value: string) => {
     if (checked.includes(value)) {
       setChecked(checked.filter((a) => a !== value));
     } else {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      setChecked([...checked, value]);
+      setChecked([value]);
     }
   };
 
-  // useEffect(() => {
-  //   if (tableType === "approvals") {
-  //     dispatch(
-  //       setApprovalTableFilters({
-  //         ...approvalPageFilters,
-  //         : checked.join(","),
-  //       }),
-  //     );
-  //   }
-
-  //   if (tableType === "reimbursements") {
-  //     dispatch(
-  //       setReimbursementsTableFilters({
-  //         ...reimbursementsPageFilters,
-  //         expense_type_ids: checked.join(","),
-  //       }),
-  //     );
-  //   }
-  // }, [checked]);
+  useEffect(() => {
+    const reimbursement_type_id =
+      checked.length > 0 ? checked.join(",") : undefined;
+    dispatch(
+      setPageTableFilters({
+        ...filters,
+        reimbursement_type_id,
+      }),
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [checked]);
 
   return (
     <Popover
@@ -69,9 +57,9 @@ const ReimbursementTypeFilter: React.FC<FilterProps> = () => {
                         {type.request_type}
                       </div>
                     }
-                    value="Scheduled"
-                    name="Scheduled"
-                    checked={checked.includes(type.request_type)}
+                    checked={checked[0] === type.reimbursement_request_type_id}
+                    value={type.reimbursement_request_type_id}
+                    name={type.reimbursement_request_type_id}
                     onChange={(e) =>
                       onChange(e, type.reimbursement_request_type_id)
                     }
