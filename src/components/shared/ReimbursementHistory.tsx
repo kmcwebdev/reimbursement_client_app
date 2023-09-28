@@ -284,7 +284,7 @@ const MyReimbursements: React.FC = () => {
 
               {user &&
                 (user.assignedRole === "Finance" ||
-                  (user && user.assignedRole === "HRBP")) && (
+                  user.assignedRole === "HRBP") && (
                   <CollapseWidthAnimation
                     isVisible={data && data.length > 0 ? true : false}
                   >
@@ -345,10 +345,17 @@ const MyReimbursements: React.FC = () => {
                   )?.reference_no
                 }
               </strong>{" "}
+              reimbursement?
+            </p>
+          )}
+          {selectedItems.length === 0 && (
+            <p className="text-neutral-800">
+              Are you sure yo want to download <strong>all</strong>{" "}
               reimbursements?
             </p>
           )}
-          {selectedItems && selectedItems.length > 1 && (
+
+          {selectedItems.length > 1 && (
             <p className="text-neutral-800">
               Are you sure yo want to download all{" "}
               <strong>{selectedItems.length}</strong> reimbursements?

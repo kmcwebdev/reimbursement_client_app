@@ -3,6 +3,8 @@ import React from "react";
 import StatusBadge, { type StatusType } from "~/components/core/StatusBadge";
 import { currencyFormat } from "~/utils/currencyFormat";
 import List from "../core/List";
+import utc from "dayjs/plugin/utc";
+dayjs.extend(utc);
 
 export interface DetailsProps {
   requestor_request_status: string;
@@ -25,9 +27,8 @@ const Details: React.FC<DetailsProps> = ({
   amount,
   user,
   // hrbp_request_status,
-  finance_request_status
+  finance_request_status,
 }) => {
-
   // const [ currentStatus, setCurrentStatus ] = useState<string>();
 
   // useEffect(() => {
@@ -48,23 +49,25 @@ const Details: React.FC<DetailsProps> = ({
 
   // }, [currentStatus, hrbp_request_status, request_type, requestor_request_status, user])
 
-
-
   return (
     <List>
-      {user && user !== 'Finance' && (
+      {user && user !== "Finance" && (
         <List.Item
           label="Status"
           value={
-            <StatusBadge status={finance_request_status.toLowerCase() as StatusType} />
+            <StatusBadge
+              status={finance_request_status.toLowerCase() as StatusType}
+            />
           }
         />
       )}
-      {user && user === 'Finance' && (
+      {user && user === "Finance" && (
         <List.Item
           label="Status"
           value={
-            <StatusBadge status={finance_request_status.toLowerCase() as StatusType} />
+            <StatusBadge
+              status={finance_request_status.toLowerCase() as StatusType}
+            />
           }
         />
       )}
@@ -74,11 +77,15 @@ const Details: React.FC<DetailsProps> = ({
       {expense_type === "Others" && (
         <List.Item label="Remarks" value={remarks} />
       )}
-      <List.Item label="Filed" value={dayjs(created_at).format("MMM D,YYYY")} />
+      <List.Item
+        label="Filed"
+        value={dayjs.utc(created_at).format("MMM D,YYYY")}
+      />
       <List.Item label="Amount" value={currencyFormat(+amount)} />
 
       <div className="flex flex-col">
-        {(requestor_request_status === "Processing" || requestor_request_status === "Credited") && (
+        {(requestor_request_status === "Processing" ||
+          requestor_request_status === "Credited") && (
           <List.Item label="Payout" value={created_at} />
         )}
       </div>
