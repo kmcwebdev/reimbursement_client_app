@@ -14,6 +14,7 @@ import { type FilterProps } from "~/components/core/table/filters/StatusFilter";
 import { env } from "~/env.mjs";
 import { setSelectedItems } from "~/features/page-state.slice";
 import { useGetAllRequestsQuery } from "~/features/reimbursement-api-slice";
+import { useDialogState } from "~/hooks/use-dialog-state";
 import {
   type IReimbursementsFilterQuery,
   type ReimbursementRequest,
@@ -43,8 +44,7 @@ const MyReimbursements: React.FC = () => {
   const dispatch = useAppDispatch();
   const { user, accessToken } = useAppSelector((state) => state.session);
 
-  const [ open, setOpen ] = useState(false);
-  const [ downloadReportLoading, setDownloadReportLoading ] = useState(false);
+  const [downloadReportLoading, setDownloadReportLoading] = useState(false);
 
   const { selectedItems, filters } = useAppSelector(
     (state) => state.pageTableState,
@@ -56,6 +56,13 @@ const MyReimbursements: React.FC = () => {
     from: undefined,
     to: undefined,
   });
+
+  const {
+    isVisible: downloadConfirmationIsOpen,
+    open: openDownloadConfirmation,
+    close: closeDownloadConfirmation,
+  } = useDialogState();
+
   const debouncedSearchText = useDebounce(searchParams.text_search, 500);
   const [isSearching, setIsSearching] = useState<boolean>(false);
 
@@ -195,6 +202,17 @@ const MyReimbursements: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const handleProceedDownload = (url: string) => {
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "filename.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    setDownloadReportLoading(false);
+    closeDownloadConfirmation();
+  };
+
   const downloadReport = async () => {
     if (user?.assignedRole === "Finance") {
       setDownloadReportLoading(true);
@@ -211,15 +229,7 @@ const MyReimbursements: React.FC = () => {
       );
 
       const url = window.URL.createObjectURL(new Blob([response.data]));
-
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", "filename.csv");
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      setDownloadReportLoading(false);
-      setOpen(false)
+      handleProceedDownload(url);
     }
     if (user?.assignedRole === "HRBP") {
       setDownloadReportLoading(true);
@@ -234,27 +244,10 @@ const MyReimbursements: React.FC = () => {
           params: { reimbursement_request_ids: JSON.stringify(selectedItems) },
         },
       );
-
       const url = window.URL.createObjectURL(new Blob([response.data]));
-
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", "filename.csv");
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      setDownloadReportLoading(false);
-      setOpen(false)
+      handleProceedDownload(url);
     }
   };
-
-  const openDownloadConfirmation = () => {
-    setOpen(true)
-  }
-
-  const closeDiologReport = () => {
-    setOpen(false);
-  }
 
   const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
     setIsSearching(true);
@@ -330,19 +323,34 @@ const MyReimbursements: React.FC = () => {
 
       <Dialog
         title="Download Report"
-        isVisible={open}
-        close={closeDiologReport}
+        isVisible={downloadConfirmationIsOpen}
+        close={closeDownloadConfirmation}
         hideCloseIcon
       >
         <div className="flex flex-col gap-8 pt-8">
           {selectedItems && selectedItems.length === 1 && (
             <p className="text-neutral-800">
-              Are you sure yo want to download `Name`, `R-ID` reimbursements?
+              Are you sure yo want to download{" "}
+              <strong>
+                {
+                  data?.find(
+                    (a) => a.reimbursement_request_id === selectedItems[0],
+                  )?.full_name
+                }
+                ,{" "}
+                {
+                  data?.find(
+                    (a) => a.reimbursement_request_id === selectedItems[0],
+                  )?.reference_no
+                }
+              </strong>{" "}
+              reimbursements?
             </p>
           )}
           {selectedItems && selectedItems.length > 1 && (
             <p className="text-neutral-800">
-              Are you sure yo want to download all <strong>{selectedItems.length}</strong> reimbursements?
+              Are you sure yo want to download all{" "}
+              <strong>{selectedItems.length}</strong> reimbursements?
             </p>
           )}
 
@@ -351,7 +359,7 @@ const MyReimbursements: React.FC = () => {
               variant="neutral"
               buttonType="outlined"
               className="w-1/2"
-              onClick={closeDiologReport}
+              onClick={closeDownloadConfirmation}
             >
               No
             </Button>

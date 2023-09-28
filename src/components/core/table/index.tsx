@@ -119,7 +119,7 @@ const Table: React.FC<TableProps> = (props) => {
   return (
     <div className="relative flex flex-col gap-4 overflow-hidden">
       <div className="overflow-x-auto">
-        <table className=" w-full whitespace-nowrap">
+        <table className="whitespace-nowrap">
           <thead className="h-12 rounded-t-sm border-b border-neutral-300 bg-white text-xs shadow-sm">
             {props.data &&
               table.getHeaderGroups().map((headerGroup, i) => (

@@ -58,6 +58,7 @@ const MyApprovals: React.FC = () => {
   const [searchParams, setSearchParams] = useState<IReimbursementsFilterQuery>({
     text_search: undefined,
     expense_type_ids: undefined,
+    reimbursement_type_id: undefined,
     from: undefined,
     to: undefined,
   });

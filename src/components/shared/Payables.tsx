@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import React, { useState } from "react";
+import React, { useEffect, useState, type ChangeEvent } from "react";
 
 import { type ColumnDef, type PaginationState } from "@tanstack/react-table";
 import axios, { type AxiosResponse } from "axios";
@@ -15,11 +15,17 @@ import {
   useGetRequestQuery,
 } from "~/features/reimbursement-api-slice";
 import { useDialogState } from "~/hooks/use-dialog-state";
-import { type ReimbursementApproval } from "~/types/reimbursement.types";
+import {
+  type IReimbursementsFilterQuery,
+  type ReimbursementApproval,
+} from "~/types/reimbursement.types";
 import { currencyFormat } from "~/utils/currencyFormat";
+import { useDebounce } from "~/utils/useDebounce";
 import CollapseWidthAnimation from "../animation/CollapseWidth";
 import { Button } from "../core/Button";
+import Dialog from "../core/Dialog";
 import SideDrawer from "../core/SideDrawer";
+import SkeletonLoading from "../core/SkeletonLoading";
 import StatusBadge, { type StatusType } from "../core/StatusBadge";
 import ButtonGroup from "../core/form/fields/ButtonGroup";
 import Input from "../core/form/fields/Input";
@@ -33,7 +39,6 @@ import StatusFilter, {
 } from "../core/table/filters/StatusFilter";
 import ReimbursementsCardView from "../reimbursement-view";
 import FinanceAnalytics from "./analytics/FinanceAnalytics";
-import Dialog from "../core/Dialog";
 
 const ReimbursementTypeFilter = dynamic(
   () => import("../core/table/filters/ReimbursementTypeFilter"),
@@ -43,6 +48,16 @@ const Payables: React.FC = () => {
   const { selectedItems, filters } = useAppSelector(
     (state) => state.pageTableState,
   );
+
+  const [searchParams, setSearchParams] = useState<IReimbursementsFilterQuery>({
+    text_search: undefined,
+    expense_type_ids: undefined,
+    reimbursement_type_id: undefined,
+    from: undefined,
+    to: undefined,
+  });
+  const debouncedSearchText = useDebounce(searchParams.text_search, 500);
+  const [isSearching, setIsSearching] = useState<boolean>(false);
 
   const [focusedReimbursementId, setFocusedReimbursementId] =
     useState<string>();
@@ -61,16 +76,11 @@ const Payables: React.FC = () => {
     close: closeReimbursementView,
   } = useDialogState();
 
-  
-  const [ openReportconFirm, setOpenReportconFirm ] = useState(false)
-
-  const openDownloadConfirmation = () => {
-    setOpenReportconFirm(true)
-  }
-
-  const closeDiologReport = () => {
-    setOpenReportconFirm(false);
-  }
+  const {
+    isVisible: confirmReportDownloadIsOpen,
+    open: openReportConfirmDialog,
+    close: closeReportConfirmDialog,
+  } = useDialogState();
 
   const { accessToken } = useAppSelector((state) => state.session);
 
@@ -88,7 +98,6 @@ const Payables: React.FC = () => {
     );
 
     const url = window.URL.createObjectURL(new Blob([response.data]));
-
     const link = document.createElement("a");
     link.href = url;
     link.setAttribute("download", "filename.csv");
@@ -103,16 +112,10 @@ const Payables: React.FC = () => {
     dispatch(setSelectedItems(value));
   };
 
-  /**Uncomment if filter is already available on endpoint */
-  // const [textSearch, setTextSearch] = useState<string>();
-  // const debouncedSearchText = useDebounce(textSearch, 500);
-
-  // const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
-  //   const searchValue = e.target.value;
-  //   setTextSearch(searchValue);
-  // };
-
-  const { isFetching, data } = useGetAllApprovalQuery({});
+  const { isFetching, data } = useGetAllApprovalQuery({
+    ...filters,
+    text_search: debouncedSearchText,
+  });
 
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
@@ -257,6 +260,20 @@ const Payables: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [data, selectedItems],
   );
+
+  const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
+    setIsSearching(true);
+    const searchValue = e.target.value;
+    setSearchParams({ ...searchParams, text_search: searchValue });
+  };
+
+  useEffect(() => {
+    if (isSearching && !isFetching) {
+      setIsSearching(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isFetching]);
+
   return (
     <>
       <div className="grid gap-y-4 bg-neutral-50 p-5">
@@ -282,29 +299,33 @@ const Payables: React.FC = () => {
 
         {/* table */}
         <div className="flex flex-col justify-between gap-2 md:flex-row">
-          <h4>For Approval</h4>
+          <h4>For Approvals</h4>
 
-          <div className="flex flex-col gap-2 md:flex-row md:gap-4">
-            <Input
-              name="inputText"
-              placeholder="Find anything..."
-              icon={AiOutlineSearch as IconType}
-              // onChange={handleSearch}
-            />
+          {!isSearching && isFetching ? (
+            <SkeletonLoading className="h-10 w-full rounded-sm md:w-64" />
+          ) : (
+            <div className="flex flex-col gap-2 md:flex-row md:gap-4">
+              <Input
+                name="inputText"
+                placeholder="Find anything..."
+                loading={isFetching && isSearching}
+                icon={AiOutlineSearch as IconType}
+                onChange={handleSearch}
+              />
 
-            <CollapseWidthAnimation
-              isVisible={data && data.length > 0 ? true : false}
-            >
-              <Button
-                variant="success"
-                className="whitespace-nowrap"
-                onClick={openDownloadConfirmation}
-                disabled={selectedItems.length === 0}
+              <CollapseWidthAnimation
+                isVisible={data && data.length > 0 ? true : false}
               >
-                Download Reportss
-              </Button>
-            </CollapseWidthAnimation>
-          </div>
+                <Button
+                  variant="success"
+                  className="whitespace-nowrap"
+                  onClick={openReportConfirmDialog}
+                >
+                  Download Reports
+                </Button>
+              </CollapseWidthAnimation>
+            </div>
+          )}
         </div>
 
         <CollapseWidthAnimation
@@ -341,36 +362,71 @@ const Payables: React.FC = () => {
           />
         )}
 
-      <Dialog
-        title="Download Report"
-        isVisible={openReportconFirm}
-        close={closeDiologReport}
-        hideCloseIcon
-      >
-        <div className="flex flex-col gap-8 pt-8">
-          <p className="text-neutral-800">
-            Downloading the report will change the reimbursement status to processing. Are you sure you want to download {selectedItems.length} reimbursements from `Date Range`?
-          </p>
+        <Dialog
+          title="Download Report"
+          isVisible={confirmReportDownloadIsOpen}
+          close={closeReportConfirmDialog}
+          hideCloseIcon
+        >
+          <div className="flex flex-col gap-8 pt-8">
+            {selectedItems.length === 0 && (
+              <p className="text-neutral-800">
+                Downloading the report will change the reimbursements status to
+                processing. Are you sure you want to download{" "}
+                <strong>all</strong>
+                reimbursements?
+              </p>
+            )}
 
-          <div className="flex items-center gap-4">
-            <Button
-              variant="neutral"
-              buttonType="outlined"
-              className="w-1/2"
-              onClick={closeDiologReport}
-            >
-              No
-            </Button>
-            <Button
-              variant="success"
-              className="w-1/2"
-              onClick={() => void downloadReport()}
-            >
-              Yes, Download
-            </Button>
+            {selectedItems.length === 1 && (
+              <p className="text-neutral-800">
+                Downloading the report will change the reimbursements status to
+                processing. Are you sure you want to download{" "}
+                <strong>
+                  {
+                    data?.find(
+                      (a) => a.reimbursement_request_id === selectedItems[0],
+                    )?.full_name
+                  }
+                  ,{" "}
+                  {
+                    data?.find(
+                      (a) => a.reimbursement_request_id === selectedItems[0],
+                    )?.reference_no
+                  }
+                </strong>
+                reimbursements?
+              </p>
+            )}
+
+            {selectedItems.length > 1 && (
+              <p className="text-neutral-800">
+                Downloading the report will change the reimbursements status to
+                processing. Are you sure you want to download{" "}
+                <strong>{selectedItems.length}</strong>
+                reimbursements?
+              </p>
+            )}
+
+            <div className="flex items-center gap-4">
+              <Button
+                variant="neutral"
+                buttonType="outlined"
+                className="w-1/2"
+                onClick={closeReportConfirmDialog}
+              >
+                No
+              </Button>
+              <Button
+                variant="success"
+                className="w-1/2"
+                onClick={() => void downloadReport()}
+              >
+                Yes, Download
+              </Button>
+            </div>
           </div>
-        </div>
-      </Dialog>
+        </Dialog>
 
         {isFetching && <TableSkeleton />}
       </div>
