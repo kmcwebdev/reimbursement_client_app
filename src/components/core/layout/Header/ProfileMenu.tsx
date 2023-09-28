@@ -1,5 +1,5 @@
 import { useLogoutFunction } from "@propelauth/nextjs/client";
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { AiOutlineLogout } from "react-icons-all-files/ai/AiOutlineLogout";
 import { MdChangeCircle } from "react-icons-all-files/md/MdChangeCircle";
 import { RiLoader4Fill } from "react-icons-all-files/ri/RiLoader4Fill";
@@ -37,6 +37,8 @@ const ProfileMenu: React.FC = () => {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const buttonChildRef = useRef<HTMLButtonElement>(null);
   const user = useAppSelector((state) => state.session.user);
+  const [signoutButtonIsLoading, setSignoutButtonIsLoading] =
+    useState<boolean>(false);
 
   const {
     isVisible: signoutDialogIsOpen,
@@ -64,6 +66,13 @@ const ProfileMenu: React.FC = () => {
           buttonRef.current?.click();
         });
     }
+  };
+  const handleSignout = () => {
+    setSignoutButtonIsLoading(true);
+    void logoutFn().then(() => {
+      setSignoutButtonIsLoading(false);
+      closeSignoutDialog();
+    });
   };
 
   return (
@@ -161,7 +170,8 @@ const ProfileMenu: React.FC = () => {
                 <Button
                   variant="danger"
                   className="w-1/2"
-                  onClick={() => void logoutFn()}
+                  loading={signoutButtonIsLoading}
+                  onClick={handleSignout}
                 >
                   Yes
                 </Button>
