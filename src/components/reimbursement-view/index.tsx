@@ -175,7 +175,7 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
           user && user.assignedRole === "Finance"
             ? data.reimbursement_request_id
             : data.next_approval_matrix_id,
-        rejection_reason: values.remarks,
+        rejection_reason: values.rejection_reason,
       };
 
       void rejectReimbursement(payload)
