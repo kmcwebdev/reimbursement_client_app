@@ -1,4 +1,4 @@
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import React, { useEffect, type PropsWithChildren } from "react";
 import { MdDashboard } from "react-icons-all-files/md/MdDashboard";
 import { MdGavel } from "react-icons-all-files/md/MdGavel";
@@ -24,9 +24,9 @@ const Layout: React.FC<PropsWithChildren> = ({ children }) => {
   useEffect(() => {
     dispatch(resetPageTableState());
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [router.pathname]);
+  }, [window.location.pathname]);
 
-  if (router.pathname === "/") {
+  if (window.location.pathname === "/") {
     return (
       <main
         className={classNames(
@@ -40,7 +40,7 @@ const Layout: React.FC<PropsWithChildren> = ({ children }) => {
 
   return (
     <div className="flex min-h-screen">
-      {!router.pathname.includes("email-action") && <Sidebar />}
+      {!window.location.pathname.includes("email-action") && <Sidebar />}
 
       <main
         className={classNames(
@@ -65,7 +65,7 @@ const Layout: React.FC<PropsWithChildren> = ({ children }) => {
             >
               <MdDashboard
                 className={classNames(
-                  router.pathname.includes("dashboard")
+                  window.location.pathname.includes("dashboard")
                     ? "h-5 w-5 text-orange-600"
                     : "h-3 w-3 text-neutral-600",
                   "transition-all ease-in-out",
@@ -83,7 +83,7 @@ const Layout: React.FC<PropsWithChildren> = ({ children }) => {
                 >
                   <MdGavel
                     className={classNames(
-                      router.pathname.includes("approval")
+                      window.location.pathname.includes("approval")
                         ? "h-5 w-5 text-orange-600"
                         : "h-3 w-3 text-neutral-600",
                       "transition-all ease-in-out",
@@ -103,7 +103,7 @@ const Layout: React.FC<PropsWithChildren> = ({ children }) => {
                 >
                   <MdReceipt
                     className={classNames(
-                      router.pathname.includes("history")
+                      window.location.pathname.includes("history")
                         ? "h-5 w-5 text-orange-600"
                         : "h-3 w-3 text-neutral-600",
                       "transition-all ease-in-out",
@@ -119,7 +119,7 @@ const Layout: React.FC<PropsWithChildren> = ({ children }) => {
             >
               <MdPerson
                 className={classNames(
-                  router.pathname.includes("profile")
+                  window.location.pathname.includes("profile")
                     ? "h-5 w-5 text-orange-600"
                     : "h-3 w-3 text-neutral-600",
                   "transition-all ease-in-out",

@@ -203,6 +203,15 @@ export const ConfirmationEmailSchema = z.object({
 
 export const HrbpApprovalSchema = z
   .object({
+    referenceNo: z
+      .string({
+        description: "Reference no",
+        required_error: "Reference no is required",
+        invalid_type_error: "Reference no is invalid",
+      })
+      .nonempty({
+        message: "Reference no is required",
+      }),
     approverFullName: z
       .string({
         description: "Approver Full Name",

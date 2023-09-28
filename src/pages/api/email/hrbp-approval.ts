@@ -20,6 +20,7 @@ export default async function handler(
 
     const {
       to,
+      referenceNo,
       approverFullName,
       fullName,
       employeeId,
@@ -32,8 +33,9 @@ export default async function handler(
     const sendEmail = await resend.emails.send({
       from: "KMC Reimbursement <no-reply@reimbursement.kmc.solutions>",
       to,
-      subject: `HRBP Approval`,
+      subject: `HRBP Approval - ${referenceNo}`,
       react: HRBPApproval({
+        referenceNo,
         approverFullName,
         fullName,
         employeeId,

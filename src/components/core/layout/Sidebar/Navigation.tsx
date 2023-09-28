@@ -1,5 +1,3 @@
-import { useRouter } from "next/router";
-
 import React from "react";
 import { type IconType } from "react-icons-all-files";
 import { MdDashboard } from "react-icons-all-files/md/MdDashboard";
@@ -15,14 +13,13 @@ interface NavigationProps {
 }
 const Navigation: React.FC<NavigationProps> = ({ collapsed }) => {
   const { user } = useAppSelector((state) => state.session);
-  const { pathname } = useRouter();
 
   return (
     <div className="flex flex-col gap-2">
       <NavigationItem
         label="Dashboard"
         icon={MdDashboard as IconType}
-        active={pathname.includes("dashboard")}
+        active={window.location.pathname.includes("dashboard")}
         href="/dashboard"
         collapsed={collapsed}
       />
@@ -33,7 +30,7 @@ const Navigation: React.FC<NavigationProps> = ({ collapsed }) => {
             <NavigationItem
               label="Approval"
               icon={MdGavel as IconType}
-              active={pathname.includes("approval")}
+              active={window.location.pathname.includes("approval")}
               href="/approval"
               collapsed={collapsed}
             />
@@ -47,7 +44,7 @@ const Navigation: React.FC<NavigationProps> = ({ collapsed }) => {
           <NavigationItem
             label="History"
             icon={MdReceipt as IconType}
-            active={pathname.includes("history")}
+            active={window.location.pathname.includes("history")}
             href="/history"
             collapsed={collapsed}
           />
@@ -56,7 +53,7 @@ const Navigation: React.FC<NavigationProps> = ({ collapsed }) => {
       <NavigationItem
         label="Profile"
         icon={MdPerson as IconType}
-        active={pathname.includes("profile")}
+        active={window.location.pathname.includes("profile")}
         href="/profile"
         collapsed={collapsed}
       />
