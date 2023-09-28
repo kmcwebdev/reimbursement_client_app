@@ -1,31 +1,19 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import { zodResolver } from "@hookform/resolvers/zod";
 import { type ColumnDef, type PaginationState } from "@tanstack/react-table";
 import axios, { type AxiosResponse } from "axios";
 import dayjs from "dayjs";
 import dynamic from "next/dynamic";
-import React, { useEffect, useMemo, useState, type ChangeEvent } from "react";
-import { useForm } from "react-hook-form";
+import React, { useEffect, useState, type ChangeEvent } from "react";
 import { type IconType } from "react-icons-all-files";
 import { AiOutlineSearch } from "react-icons-all-files/ai/AiOutlineSearch";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
-import { appApiSlice } from "~/app/rtkQuery";
 import { Button } from "~/components/core/Button";
 import StatusBadge, { type StatusType } from "~/components/core/StatusBadge";
 import Table from "~/components/core/table";
 import { type FilterProps } from "~/components/core/table/filters/StatusFilter";
 import { env } from "~/env.mjs";
+import { setSelectedItems } from "~/features/page-state.slice";
 import { useGetAllRequestsQuery } from "~/features/reimbursement-api-slice";
-import {
-  clearReimbursementForm,
-  toggleCancelDialog,
-  toggleFormDialog,
-} from "~/features/reimbursement-form-slice";
-import { setSelectedItems } from "~/features/reimbursement-request-page-slice";
-import {
-  ReimbursementDetailsSchema,
-  type ReimbursementDetailsType,
-} from "~/schema/reimbursement-details.schema";
 import {
   type IReimbursementsFilterQuery,
   type ReimbursementRequest,
@@ -40,7 +28,6 @@ import TableSkeleton from "../core/table/TableSkeleton";
 import DateFiledFilter from "../core/table/filters/DateFiledFilter";
 
 const Dialog = dynamic(() => import("~/components/core/Dialog"));
-const ReimburseForm = dynamic(() => import("./reimburse-form"));
 
 const StatusFilter = dynamic(
   () => import("~/components/core/table/filters/StatusFilter"),
@@ -55,8 +42,9 @@ const ReimbursementTypeFilter = dynamic(
 const MyReimbursements: React.FC = () => {
   const dispatch = useAppDispatch();
   const { user, accessToken } = useAppSelector((state) => state.session);
-  const { formDialogIsOpen, cancelDialogIsOpen, reimbursementDetails } =
-    useAppSelector((state) => state.reimbursementForm);
+
+  const [ open, setOpen ] = useState(false);
+  const [ downloadReportLoading, setDownloadReportLoading ] = useState(false);
 
   const { selectedItems, filters } = useAppSelector(
     (state) => state.pageTableState,
@@ -209,6 +197,7 @@ const MyReimbursements: React.FC = () => {
 
   const downloadReport = async () => {
     if (user?.assignedRole === "Finance") {
+      setDownloadReportLoading(true);
       const response = await axios.get<unknown, AxiosResponse<Blob>>(
         `${env.NEXT_PUBLIC_BASEAPI_URL}/api/finance/reimbursements/requests/reports/finance`,
         {
@@ -229,8 +218,11 @@ const MyReimbursements: React.FC = () => {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+      setDownloadReportLoading(false);
+      setOpen(false)
     }
     if (user?.assignedRole === "HRBP") {
+      setDownloadReportLoading(true);
       const response = await axios.get<unknown, AxiosResponse<Blob>>(
         `${env.NEXT_PUBLIC_BASEAPI_URL}/api/finance/reimbursements/requests/reports/hrbp`,
         {
@@ -251,48 +243,18 @@ const MyReimbursements: React.FC = () => {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+      setDownloadReportLoading(false);
+      setOpen(false)
     }
   };
 
-  //Form return for Details
-  const useReimbursementDetailsFormReturn = useForm<ReimbursementDetailsType>({
-    resolver: zodResolver(ReimbursementDetailsSchema),
-    defaultValues: useMemo(() => {
-      if (reimbursementDetails) {
-        return { ...reimbursementDetails };
-      }
-    }, [reimbursementDetails]),
-    mode: "onChange",
-  });
+  const openDownloadConfirmation = () => {
+    setOpen(true)
+  }
 
-  /***Closes the form and open cancel dialog */
-  const handleOpenCancelDialog = () => {
-    dispatch(toggleFormDialog());
-    dispatch(toggleCancelDialog());
-  };
-
-  /**Continue reimbursement request cancellation */
-  const handleConfirmCancellation = () => {
-    dispatch(clearReimbursementForm());
-    useReimbursementDetailsFormReturn.reset();
-    dispatch(toggleCancelDialog());
-  };
-
-  /**Aborts reimbursement request cancellation */
-  const handleAbortCancellation = () => {
-    dispatch(toggleCancelDialog());
-    dispatch(
-      appApiSlice.util.invalidateTags([
-        {
-          type: "ExpenseTypes",
-          id: useReimbursementDetailsFormReturn.getValues(
-            "reimbursement_request_type_id",
-          ),
-        },
-      ]),
-    );
-    dispatch(toggleFormDialog());
-  };
+  const closeDiologReport = () => {
+    setOpen(false);
+  }
 
   const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
     setIsSearching(true);
@@ -335,7 +297,7 @@ const MyReimbursements: React.FC = () => {
                     <Button
                       variant="success"
                       className="whitespace-nowrap"
-                      onClick={() => void downloadReport()}
+                      onClick={openDownloadConfirmation}
                     >
                       Download Report
                     </Button>
@@ -367,43 +329,39 @@ const MyReimbursements: React.FC = () => {
       </div>
 
       <Dialog
-        title="File a Reimbursement"
-        isVisible={formDialogIsOpen}
-        close={handleOpenCancelDialog}
-        hideCloseIcon
-      >
-        <ReimburseForm
-          formReturn={useReimbursementDetailsFormReturn}
-          handleOpenCancelDialog={handleOpenCancelDialog}
-        />
-      </Dialog>
-
-      <Dialog
-        title="Cancel Reimbursements?"
-        isVisible={cancelDialogIsOpen}
-        close={handleAbortCancellation}
+        title="Download Report"
+        isVisible={open}
+        close={closeDiologReport}
         hideCloseIcon
       >
         <div className="flex flex-col gap-8 pt-8">
-          <p className="text-neutral-800">
-            Are you sure you want to cancel reimbursement request?
-          </p>
+          {selectedItems && selectedItems.length === 1 && (
+            <p className="text-neutral-800">
+              Are you sure yo want to download `Name`, `R-ID` reimbursements?
+            </p>
+          )}
+          {selectedItems && selectedItems.length > 1 && (
+            <p className="text-neutral-800">
+              Are you sure yo want to download all <strong>{selectedItems.length}</strong> reimbursements?
+            </p>
+          )}
 
           <div className="flex items-center gap-4">
             <Button
               variant="neutral"
               buttonType="outlined"
               className="w-1/2"
-              onClick={handleAbortCancellation}
+              onClick={closeDiologReport}
             >
               No
             </Button>
             <Button
-              variant="danger"
+              loading={downloadReportLoading}
+              variant="success"
               className="w-1/2"
-              onClick={handleConfirmCancellation}
+              onClick={() => void downloadReport()}
             >
-              Yes, Cancel
+              Yes, Download
             </Button>
           </div>
         </div>
