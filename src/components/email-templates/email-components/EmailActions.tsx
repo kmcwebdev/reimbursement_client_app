@@ -57,7 +57,7 @@ const EmailActions: React.FC<EmailActionsProps> = ({ subject }) => {
             <Column align="right">
               <Button
                 className="rounded-md bg-orange-600 p-2 text-center text-md text-white hover:bg-orange-700"
-                href="https://dashboard.stripe.com/login"
+                href="https://reimbursement.kmcc-app.cc/api/auth/login"
               >
                 Log in to Reimbursement
               </Button>
