@@ -687,8 +687,9 @@ const MyApprovals: React.FC = () => {
 
                 {selectedItems && selectedItems.length > 1 && (
                   <>
-                    Are you sure you want to approve {selectedItems.length}{" "}
-                    selected reimbursement request?
+                    Are you sure you want to approve{" "}
+                    <strong>{selectedItems.length}</strong> selected
+                    reimbursement request?
                   </>
                 )}
               </p>
