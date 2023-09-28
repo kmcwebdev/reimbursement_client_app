@@ -97,9 +97,9 @@ const FilterView: React.FC<FilterViewProps> = ({ colSpan }) => {
         <div
           className={classNames(
             Object.keys(filters).length > 0
-              ? "h-16 border-b  border-b-[#F1F2F4] px-4 opacity-100 first:px-0"
+              ? "h-16 border-b border-b-[#F1F2F4] px-4 opacity-100 first:px-0"
               : "h-0 p-0 opacity-0",
-            "flex items-center justify-between gap-4 overflow-hidden transition-all ease-in-out",
+            "relative flex items-center justify-between gap-4 overflow-hidden transition-all ease-in-out",
           )}
         >
           <div className="flex items-center gap-2 px-4">
@@ -206,11 +206,13 @@ const FilterView: React.FC<FilterViewProps> = ({ colSpan }) => {
             </div>
           </div>
 
-          <Button buttonType="text" variant="danger" onClick={handleClear}>
-            <div className="flex gap-1">
-              <IoMdClose className="h-5 w-5" /> Clear All
-            </div>
-          </Button>
+          <div className="absolute right-5">
+            <Button buttonType="text" variant="danger" onClick={handleClear}>
+              <div className="flex gap-1">
+                <IoMdClose className="h-5 w-5" /> Clear All
+              </div>
+            </Button>
+          </div>
         </div>
       </td>
     </tr>

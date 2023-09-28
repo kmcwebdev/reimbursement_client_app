@@ -25,7 +25,7 @@ export const HRBPApproval: React.FC<Readonly<HRBPApprovalTemplateProps>> = ({
   <EmailMain receiver={approverFullName} subject="HRBP Approval">
     <Text>
       I hope this email finds you well. {fullName} has submitted a reimbursement
-      claim ${referenceNo} that requires your approval.
+      claim {referenceNo} that requires your approval.
     </Text>
     <Text>Details of the reimbursement claim are as follows:</Text>
     <Text>Employee ID: {employeeId}</Text>

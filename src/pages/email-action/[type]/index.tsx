@@ -3,6 +3,7 @@ import {
   type GetStaticProps,
   type GetStaticPropsContext,
 } from "next";
+import Head from "next/head";
 import React from "react";
 import { type IconType } from "react-icons-all-files";
 import { MdGavel } from "react-icons-all-files/md/MdGavel";
@@ -17,15 +18,20 @@ const index: React.FC<EmailActionTypeProps> = ({
   tokenNotFound,
 }) => {
   return (
-    <div className="grid-place-items-center grid h-full">
-      {(invalidAction || tokenNotFound) && (
-        <EmptyState
-          icon={MdGavel as IconType}
-          title="Invalid Url"
-          description="Please check your redirect url."
-        />
-      )}
-    </div>
+    <>
+      <Head>
+        <title>Email Action</title>
+      </Head>
+      <div className="grid-place-items-center grid h-full">
+        {(invalidAction || tokenNotFound) && (
+          <EmptyState
+            icon={MdGavel as IconType}
+            title="Invalid Url"
+            description="Please check your redirect url."
+          />
+        )}
+      </div>
+    </>
   );
 };
 
