@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { Rejected } from "~/components/email-templates/Rejected";
 import { resend } from "~/libs/resend";
-import { RejectReimbursementSchema } from "~/schema/reimbursement-reject-form.schema";
+import { RejectRequestSchema } from "~/schema/email-templates.schema";
 
 export default async function handler(
   req: NextApiRequest,
@@ -12,7 +12,7 @@ export default async function handler(
       return res.status(405).json({ message: "Method not allowed" });
     }
 
-    const validate = await RejectReimbursementSchema.safeParseAsync(req.body);
+    const validate = await RejectRequestSchema.safeParseAsync(req.body);
 
     if (!validate.success) {
       return res.status(400).json(validate.error);
