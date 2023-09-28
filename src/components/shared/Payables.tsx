@@ -33,6 +33,7 @@ import StatusFilter, {
 } from "../core/table/filters/StatusFilter";
 import ReimbursementsCardView from "../reimbursement-view";
 import FinanceAnalytics from "./analytics/FinanceAnalytics";
+import Dialog from "../core/Dialog";
 
 const ReimbursementTypeFilter = dynamic(
   () => import("../core/table/filters/ReimbursementTypeFilter"),
@@ -59,6 +60,17 @@ const Payables: React.FC = () => {
     open: openReimbursementView,
     close: closeReimbursementView,
   } = useDialogState();
+
+  
+  const [ openReportconFirm, setOpenReportconFirm ] = useState(false)
+
+  const openDownloadConfirmation = () => {
+    setOpenReportconFirm(true)
+  }
+
+  const closeDiologReport = () => {
+    setOpenReportconFirm(false);
+  }
 
   const { accessToken } = useAppSelector((state) => state.session);
 
@@ -286,9 +298,10 @@ const Payables: React.FC = () => {
               <Button
                 variant="success"
                 className="whitespace-nowrap"
-                onClick={() => void downloadReport()}
+                onClick={openDownloadConfirmation}
+                disabled={selectedItems.length === 0}
               >
-                Download Report
+                Download Reportss
               </Button>
             </CollapseWidthAnimation>
           </div>
@@ -327,6 +340,37 @@ const Payables: React.FC = () => {
             }}
           />
         )}
+
+      <Dialog
+        title="Download Report"
+        isVisible={openReportconFirm}
+        close={closeDiologReport}
+        hideCloseIcon
+      >
+        <div className="flex flex-col gap-8 pt-8">
+          <p className="text-neutral-800">
+            Downloading the report will change the reimbursement status to processing. Are you sure you want to download {selectedItems.length} reimbursements from `Date Range`?
+          </p>
+
+          <div className="flex items-center gap-4">
+            <Button
+              variant="neutral"
+              buttonType="outlined"
+              className="w-1/2"
+              onClick={closeDiologReport}
+            >
+              No
+            </Button>
+            <Button
+              variant="success"
+              className="w-1/2"
+              onClick={() => void downloadReport()}
+            >
+              Yes, Download
+            </Button>
+          </div>
+        </div>
+      </Dialog>
 
         {isFetching && <TableSkeleton />}
       </div>
