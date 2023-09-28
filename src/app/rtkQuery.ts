@@ -67,6 +67,7 @@ export const appApiSlice = createApi({
     "FinanceAnalytics",
     "ExpenseTypes",
     "AllExpenseTypes",
+    "AllStatuses",
     "AuditLogs",
   ],
   endpoints: (

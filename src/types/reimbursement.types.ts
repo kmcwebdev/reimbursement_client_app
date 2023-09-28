@@ -95,3 +95,8 @@ export type IReimbursementsFilterQuery = {
   from?: string;
   to?: string;
 }
+
+export type IStatus={
+  request_status_id: string;
+  request_status: string;
+}

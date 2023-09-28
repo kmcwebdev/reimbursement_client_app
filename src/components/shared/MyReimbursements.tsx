@@ -229,7 +229,7 @@ const MyReimbursements: React.FC = () => {
 
   return (
     <>
-      <div className="grid gap-y-2 p-5">
+      <div className="grid gap-y-4 bg-neutral-50 p-5">
         <MemberAnalytics />
 
         <div className="flex justify-between">
@@ -255,23 +255,21 @@ const MyReimbursements: React.FC = () => {
           )}
         </div>
 
-        {data && (
-          <Table
-            type="reimbursements"
-            loading={isFetching}
-            data={data}
-            columns={columns}
-            tableState={{
-              filters,
-              pagination,
-              selectedItems,
-            }}
-            tableStateActions={{
-              setSelectedItems: setSelectedItemsState,
-              setPagination,
-            }}
-          />
-        )}
+        <Table
+          type="reimbursements"
+          loading={isFetching}
+          data={data}
+          columns={columns}
+          tableState={{
+            filters,
+            pagination,
+            selectedItems,
+          }}
+          tableStateActions={{
+            setSelectedItems: setSelectedItemsState,
+            setPagination,
+          }}
+        />
       </div>
 
       <Dialog

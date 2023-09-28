@@ -80,7 +80,7 @@ const FilterView: React.FC<FilterViewProps> = ({ colSpan }) => {
   };
 
   return (
-    <tr className="">
+    <tr>
       <td colSpan={colSpan}>
         <div
           className={classNames(
@@ -90,79 +90,84 @@ const FilterView: React.FC<FilterViewProps> = ({ colSpan }) => {
             "flex items-center justify-between gap-4 overflow-hidden transition-all ease-in-out",
           )}
         >
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 px-4">
             <span className="font-bold text-neutral-900">Filters: </span>
-
-            <div className="flex items-center gap-8">
+            <div className="flex items-center gap-4 overflow-x-auto">
               {Object.keys(filters).length > 0 &&
                 filterViewState &&
                 Object.keys(filterViewState).map((key) => (
-                  <div key={key} className="flex items-center gap-2">
-                    {key === "request_status_ids" &&
-                      filterViewState.request_status_ids.length > 0 && (
-                        <MdLabel className="h-4 w-4 text-neutral-900" />
-                      )}
-
-                    {key === "request_type_ids" &&
-                      filterViewState.request_types_ids.length > 0 && (
-                        <MdAccessTimeFilled className="h-4 w-4 text-neutral-900" />
-                      )}
-
-                    {key === "expense_type_ids" &&
-                      filterViewState.expense_type_ids.length > 0 && (
-                        <HiCurrencyDollar className="h-4 w-4 text-neutral-900" />
-                      )}
-
-                    {key === "date" && filterViewState.date.length > 0 && (
-                      <MdCalendarToday className="h-4 w-4 text-neutral-900" />
-                    )}
-
+                  <>
                     {filterViewState[key as keyof IFilters].length > 0 && (
-                      <div className="flex gap-2 divide-x">
-                        {filterViewState[key as keyof IFilters].map((value) => (
-                          <span key={key + "-" + value}>
-                            {key === "request_status_ids" && (
-                              <StatusBadge
-                                key={value}
-                                status={value.toLowerCase() as StatusType}
-                              />
-                            )}
+                      <div key={key} className="flex items-center gap-2">
+                        {key === "request_status_ids" &&
+                          filterViewState.request_status_ids.length > 0 && (
+                            <MdLabel className="h-4 w-4 text-neutral-900" />
+                          )}
 
-                            {key === "expense_type_ids" && (
-                              <p
-                                key={value}
-                                className="pl-2 text-sm text-neutral-800"
-                              >
-                                {allExpenseTypesIsLoading
-                                  ? "..."
-                                  : allExpenseTypes?.find(
-                                      (a) => a.expense_type_id === value,
-                                    )?.expense_type}
-                              </p>
-                            )}
+                        {key === "request_type_ids" &&
+                          filterViewState.request_types_ids.length > 0 && (
+                            <MdAccessTimeFilled className="h-4 w-4 text-neutral-900" />
+                          )}
 
-                            {key === "request_type_ids" && (
-                              <p
-                                key={value}
-                                className="pl-2 text-sm text-neutral-800"
-                              >
-                                {value}
-                              </p>
-                            )}
+                        {key === "expense_type_ids" &&
+                          filterViewState.expense_type_ids.length > 0 && (
+                            <HiCurrencyDollar className="h-4 w-4 text-neutral-900" />
+                          )}
 
-                            {key === "date" && (
-                              <p
-                                key={value}
-                                className="pl-2 text-sm text-neutral-800"
-                              >
-                                {value}
-                              </p>
+                        {key === "date" && filterViewState.date.length > 0 && (
+                          <MdCalendarToday className="h-4 w-4 text-neutral-900" />
+                        )}
+
+                        {filterViewState[key as keyof IFilters].length > 0 && (
+                          <div className="flex gap-2 divide-x">
+                            {filterViewState[key as keyof IFilters].map(
+                              (value) => (
+                                <span key={key + "-" + value}>
+                                  {key === "request_status_ids" && (
+                                    <StatusBadge
+                                      key={value}
+                                      status={value.toLowerCase() as StatusType}
+                                    />
+                                  )}
+
+                                  {key === "expense_type_ids" && (
+                                    <p
+                                      key={value}
+                                      className="pl-2 text-sm text-neutral-800"
+                                    >
+                                      {allExpenseTypesIsLoading
+                                        ? "..."
+                                        : allExpenseTypes?.find(
+                                            (a) => a.expense_type_id === value,
+                                          )?.expense_type}
+                                    </p>
+                                  )}
+
+                                  {key === "request_type_ids" && (
+                                    <p
+                                      key={value}
+                                      className="pl-2 text-sm text-neutral-800"
+                                    >
+                                      {value}
+                                    </p>
+                                  )}
+
+                                  {key === "date" && (
+                                    <p
+                                      key={value}
+                                      className="pl-2 text-sm text-neutral-800"
+                                    >
+                                      {value}
+                                    </p>
+                                  )}
+                                </span>
+                              ),
                             )}
-                          </span>
-                        ))}
+                          </div>
+                        )}
                       </div>
                     )}
-                  </div>
+                  </>
                 ))}
             </div>
           </div>

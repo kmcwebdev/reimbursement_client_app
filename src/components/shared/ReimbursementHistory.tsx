@@ -4,7 +4,7 @@ import { type ColumnDef, type PaginationState } from "@tanstack/react-table";
 import axios, { type AxiosResponse } from "axios";
 import dayjs from "dayjs";
 import dynamic from "next/dynamic";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, type ChangeEvent } from "react";
 import { useForm } from "react-hook-form";
 import { type IconType } from "react-icons-all-files";
 import { AiOutlineSearch } from "react-icons-all-files/ai/AiOutlineSearch";
@@ -26,8 +26,12 @@ import {
   ReimbursementDetailsSchema,
   type ReimbursementDetailsType,
 } from "~/schema/reimbursement-details.schema";
-import { type ReimbursementRequest } from "~/types/reimbursement.types";
+import {
+  type IReimbursementsFilterQuery,
+  type ReimbursementRequest,
+} from "~/types/reimbursement.types";
 import { currencyFormat } from "~/utils/currencyFormat";
+import { useDebounce } from "~/utils/useDebounce";
 import CollapseWidthAnimation from "../animation/CollapseWidth";
 import SkeletonLoading from "../core/SkeletonLoading";
 import Input from "../core/form/fields/Input";
@@ -49,31 +53,32 @@ const ReimbursementTypeFilter = dynamic(
 );
 
 const MyReimbursements: React.FC = () => {
+  const dispatch = useAppDispatch();
   const { user, accessToken } = useAppSelector((state) => state.session);
-
   const { formDialogIsOpen, cancelDialogIsOpen, reimbursementDetails } =
     useAppSelector((state) => state.reimbursementForm);
 
   const { selectedItems, filters } = useAppSelector(
     (state) => state.pageTableState,
   );
-  const dispatch = useAppDispatch();
+
+  const [searchParams, setSearchParams] = useState<IReimbursementsFilterQuery>({
+    text_search: undefined,
+    expense_type_ids: undefined,
+    from: undefined,
+    to: undefined,
+  });
+  const debouncedSearchText = useDebounce(searchParams.text_search, 500);
+  const [isSearching, setIsSearching] = useState<boolean>(false);
 
   const setSelectedItemsState = (value: string[]) => {
     dispatch(setSelectedItems(value));
   };
 
-  /**Uncomment if filter is already available on endpoint */
-  // const [textSearch, setTextSearch] = useState<string>();
-  // const debouncedSearchText = useDebounce(textSearch, 500);
-  // const { isFetching, data } = useGetAllRequestsQuery(removeNull({text_search: debouncedSearchText}));
-
-  // const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
-  //   const searchValue = e.target.value;
-  //   setTextSearch(searchValue);
-  // };
-
-  const { isFetching, data } = useGetAllRequestsQuery({});
+  const { isFetching, data } = useGetAllRequestsQuery({
+    ...filters,
+    text_search: debouncedSearchText,
+  });
 
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
@@ -123,7 +128,6 @@ const MyReimbursements: React.FC = () => {
           return value.includes(row.getValue(id));
         },
         enableColumnFilter: true,
-        size: 10,
         meta: {
           filterComponent: (info: FilterProps) => <StatusFilter {...info} />,
         },
@@ -139,7 +143,6 @@ const MyReimbursements: React.FC = () => {
         accessorKey: "ID",
         cell: (info) => info.getValue(),
         header: "ID",
-        size: 20,
       },
       {
         id: "full_name",
@@ -152,7 +155,6 @@ const MyReimbursements: React.FC = () => {
         accessorKey: "reference_no",
         cell: (info) => info.getValue(),
         header: "R-ID",
-        size: 20,
       },
       {
         id: "request_type",
@@ -167,7 +169,6 @@ const MyReimbursements: React.FC = () => {
             <ReimbursementTypeFilter {...info} />
           ),
         },
-        size: 10,
       },
       {
         id: "expense_type",
@@ -177,7 +178,7 @@ const MyReimbursements: React.FC = () => {
         filterFn: (row, id, value: string) => {
           return value.includes(row.getValue(id));
         },
-        size: 10,
+
         meta: {
           filterComponent: (info: FilterProps) => (
             <ExpenseTypeFilter {...info} />
@@ -195,21 +196,19 @@ const MyReimbursements: React.FC = () => {
         meta: {
           filterComponent: (info: FilterProps) => <DateFiledFilter {...info} />,
         },
-        size: 10,
       },
       {
         id: "amount",
         accessorKey: "amount",
         cell: (info) => currencyFormat(info.getValue() as number),
         header: "Total",
-        size: 10,
       },
     ];
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const downloadReport = async () => {
-    if (user?.assignedRole === 'Finance') {
+    if (user?.assignedRole === "Finance") {
       const response = await axios.get<unknown, AxiosResponse<Blob>>(
         `${env.NEXT_PUBLIC_BASEAPI_URL}/api/finance/reimbursements/requests/reports/finance`,
         {
@@ -221,39 +220,39 @@ const MyReimbursements: React.FC = () => {
           params: { reimbursement_request_ids: JSON.stringify(selectedItems) },
         },
       );
-  
+
       const url = window.URL.createObjectURL(new Blob([response.data]));
-  
+
       const link = document.createElement("a");
       link.href = url;
       link.setAttribute("download", "filename.csv");
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-    };
-    if (user?.assignedRole === 'HRBP') {
-        const response = await axios.get<unknown, AxiosResponse<Blob>>(
-          `${env.NEXT_PUBLIC_BASEAPI_URL}/api/finance/reimbursements/requests/reports/hrbp`,
-          {
-            responseType: "blob", // Important to set this
-            headers: {
-              accept: "*/*",
-              Authorization: `Bearer ${accessToken}`,
-            },
-            params: { reimbursement_request_ids: JSON.stringify(selectedItems) },
+    }
+    if (user?.assignedRole === "HRBP") {
+      const response = await axios.get<unknown, AxiosResponse<Blob>>(
+        `${env.NEXT_PUBLIC_BASEAPI_URL}/api/finance/reimbursements/requests/reports/hrbp`,
+        {
+          responseType: "blob", // Important to set this
+          headers: {
+            accept: "*/*",
+            Authorization: `Bearer ${accessToken}`,
           },
-        );
-    
-        const url = window.URL.createObjectURL(new Blob([response.data]));
-    
-        const link = document.createElement("a");
-        link.href = url;
-        link.setAttribute("download", "filename.csv");
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    };
-  }
+          params: { reimbursement_request_ids: JSON.stringify(selectedItems) },
+        },
+      );
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "filename.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  };
 
   //Form return for Details
   const useReimbursementDetailsFormReturn = useForm<ReimbursementDetailsType>({
@@ -295,36 +294,55 @@ const MyReimbursements: React.FC = () => {
     dispatch(toggleFormDialog());
   };
 
+  const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
+    setIsSearching(true);
+    const searchValue = e.target.value;
+    setSearchParams({ ...searchParams, text_search: searchValue });
+  };
+
+  useEffect(() => {
+    if (isSearching && !isFetching) {
+      setIsSearching(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isFetching]);
+
   return (
     <>
-      <div className="grid gap-y-2 p-5">
+      <div className="grid gap-y-4 bg-neutral-50 p-5">
         <div className="flex flex-col justify-between gap-2 md:flex-row">
           <h4>Reimbursements History</h4>
 
-          {isFetching && <SkeletonLoading className="h-10 w-[5rem] rounded" />}
+          {!isSearching && isFetching ? (
+            <SkeletonLoading className="h-10 w-full rounded-sm md:w-64" />
+          ) : (
+            <div className="flex flex-col gap-2 md:flex-row md:gap-4">
+              <Input
+                name="inputText"
+                placeholder="Find anything..."
+                className="w-full md:w-64"
+                loading={isSearching && isFetching}
+                icon={AiOutlineSearch as IconType}
+                onChange={handleSearch}
+              />
 
-          <div className="flex flex-col gap-2 md:flex-row md:gap-4">
-            <Input
-              name="inputText"
-              placeholder="Find anything..."
-              icon={AiOutlineSearch as IconType}
-              // onChange={handleSearch}
-            />
-
-            {user && (user.assignedRole === "Finance" || user && user.assignedRole === "HRBP") && (
-              <CollapseWidthAnimation
-                isVisible={data && data.length > 0 ? true : false}
-              >
-                <Button
-                  variant="success"
-                  className="whitespace-nowrap"
-                  onClick={() => void downloadReport()}
-                >
-                  Download Report
-                </Button>
-              </CollapseWidthAnimation>
-            )}
-          </div>
+              {user &&
+                (user.assignedRole === "Finance" ||
+                  (user && user.assignedRole === "HRBP")) && (
+                  <CollapseWidthAnimation
+                    isVisible={data && data.length > 0 ? true : false}
+                  >
+                    <Button
+                      variant="success"
+                      className="whitespace-nowrap"
+                      onClick={() => void downloadReport()}
+                    >
+                      Download Report
+                    </Button>
+                  </CollapseWidthAnimation>
+                )}
+            </div>
+          )}
         </div>
 
         {!isFetching && data && (

@@ -25,6 +25,7 @@ import {
   type ReimbursementApproval,
   type ReimbursementRequest,
 } from "~/types/reimbursement.types";
+import { classNames } from "~/utils/classNames";
 import EmptyState from "../EmptyState";
 import SkeletonLoading from "../SkeletonLoading";
 import FilterView from "./FilterView";
@@ -117,9 +118,9 @@ const Table: React.FC<TableProps> = (props) => {
 
   return (
     <div className="relative flex flex-col gap-4 overflow-hidden">
-      <div className="min-h-[300px] overflow-x-auto bg-white">
-        <table className=" w-full overflow-x-scroll whitespace-nowrap bg-white">
-          <thead className="h-12 border-b border-neutral-300 text-xs">
+      <div className="overflow-x-auto">
+        <table className=" w-full whitespace-nowrap">
+          <thead className="h-12 rounded-t-sm border-b border-neutral-300 bg-white text-xs shadow-sm">
             {props.data &&
               table.getHeaderGroups().map((headerGroup, i) => (
                 <tr key={i}>
@@ -156,39 +157,30 @@ const Table: React.FC<TableProps> = (props) => {
                 </tr>
               ))}
           </thead>
-          <tbody className="min-h-[calc(300px-3rem)]">
+          <tbody className="h-full min-h-[70vh] rounded-b-sm bg-white shadow-sm">
             <FilterView colSpan={table.getAllColumns().length} />
 
-            {props.loading && (
-              <tr className="bg-neutral-100">
-                <td colSpan={table.getAllFlatColumns().length}>
-                  <div className="min-h-[calc(300px-3rem)]">
-                    {Array.from({ length: 10 }).map((_a, i) => (
-                      <div
-                        key={i}
-                        className="flex h-12 items-center justify-evenly border-b"
-                      >
-                        <SkeletonLoading className="h-5 w-14 rounded-md" />
-                        <SkeletonLoading className="h-5 w-14 rounded-md" />
-                        <SkeletonLoading className="h-5 w-14 rounded-md" />
-                        <SkeletonLoading className="h-5 w-14 rounded-md" />
-                        <SkeletonLoading className="h-5 w-14 rounded-md" />
-                        <SkeletonLoading className="h-5 w-14 rounded-md" />
-                        <SkeletonLoading className="h-5 w-14 rounded-md" />
-                      </div>
+            {props.loading &&
+              Array.from({ length: 10 }).map((_a, i) => (
+                <tr key={i} className="h-12">
+                  <>
+                    {Array.from({
+                      length: table.getAllFlatColumns().length,
+                    }).map((_a, i) => (
+                      <td key={i} className="px-2">
+                        <SkeletonLoading className="h-6 w-20 rounded-md" />
+                      </td>
                     ))}
-                  </div>
-                </td>
-              </tr>
-            )}
+                  </>
+                </tr>
+              ))}
 
             {/* Data is empty */}
-
-            {props.data && props.data.length === 0 && (
+            {!props.loading && props.data && props.data.length === 0 && (
               <tr>
-                <td colSpan={table.getAllFlatColumns().length}>
-                  <div className="py-4">
-                    <div className="grid h-96 place-items-center rounded-md  bg-neutral-100 py-10">
+                <td colSpan={table.getAllFlatColumns().length} className="pt-4">
+                  <div>
+                    <div className="grid h-[40vh] place-items-center rounded-md bg-neutral-100 py-10">
                       {props.type === "approvals" && (
                         <EmptyState
                           icon={MdBrowserNotSupported}
@@ -223,10 +215,10 @@ const Table: React.FC<TableProps> = (props) => {
               props.data &&
               props.data.length > 0 &&
               table.getRowModel().rows.length === 0 && (
-                <tr className="h-72 bg-neutral-100">
+                <tr className="bg-neutral-100">
                   <td colSpan={table.getAllFlatColumns().length}>
                     <div className="py-4">
-                      <div className="grid h-96 place-items-center rounded-md  bg-neutral-100 py-10">
+                      <div className="grid place-items-center rounded-md  bg-neutral-100 py-10">
                         <EmptyState
                           icon={MdBrowserNotSupported}
                           title="No Reimbursement Requests Available."
@@ -247,7 +239,12 @@ const Table: React.FC<TableProps> = (props) => {
                       return (
                         <td
                           key={i}
-                          className=" border-b border-b-neutral-200 px-4 first:px-0"
+                          className={classNames(
+                            cell.column.columnDef.id === "select"
+                              ? "px-0"
+                              : "px-4",
+                            "border-b border-b-neutral-200 ",
+                          )}
                         >
                           {flexRender(
                             cell.column.columnDef.cell,

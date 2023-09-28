@@ -3,7 +3,7 @@
 import { type ColumnDef, type PaginationState } from "@tanstack/react-table";
 import dayjs from "dayjs";
 import dynamic from "next/dynamic";
-import React, { useState, type ChangeEvent } from "react";
+import React, { useEffect, useState, type ChangeEvent } from "react";
 import { MdSearch } from "react-icons-all-files/md/MdSearch";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { appApiSlice } from "~/app/rtkQuery";
@@ -31,6 +31,7 @@ import { currencyFormat } from "~/utils/currencyFormat";
 import { useDebounce } from "~/utils/useDebounce";
 import CollapseWidthAnimation from "../animation/CollapseWidth";
 import Dialog from "../core/Dialog";
+import SkeletonLoading from "../core/SkeletonLoading";
 import { showToast } from "../core/Toast";
 import Input from "../core/form/fields/Input";
 import DateFiledFilter from "../core/table/filters/DateFiledFilter";
@@ -48,15 +49,20 @@ const ReimbursementTypeFilter = dynamic(
 );
 
 const MyApprovals: React.FC = () => {
+  const dispatch = useAppDispatch();
   const { user } = useAppSelector((state) => state.session);
   const { selectedItems, filters } = useAppSelector(
     (state) => state.pageTableState,
   );
-  const dispatch = useAppDispatch();
 
-  const setSelectedItemsState = (value: string[]) => {
-    dispatch(setSelectedItems(value));
-  };
+  const [searchParams, setSearchParams] = useState<IReimbursementsFilterQuery>({
+    text_search: undefined,
+    expense_type_ids: undefined,
+    from: undefined,
+    to: undefined,
+  });
+  const debouncedSearchText = useDebounce(searchParams.text_search, 500);
+  const [isSearching, setIsSearching] = useState<boolean>(false);
 
   const [focusedReimbursementId, setFocusedReimbursementId] =
     useState<string>();
@@ -71,6 +77,11 @@ const MyApprovals: React.FC = () => {
     { reimbursement_request_id: focusedReimbursementId! },
     { skip: !focusedReimbursementId },
   );
+
+  const { isFetching: isLoading, data } = useGetAllApprovalQuery({
+    ...filters,
+    text_search: debouncedSearchText,
+  });
 
   const {
     isVisible,
@@ -89,24 +100,15 @@ const MyApprovals: React.FC = () => {
     pageSize: 10,
   });
 
-  const [searchParams, setSearchParams] = useState<IReimbursementsFilterQuery>({
-    text_search: undefined,
-    expense_type_ids: undefined,
-    from: undefined,
-    to: undefined,
-  });
-
-  const debouncedSearchText = useDebounce(searchParams.text_search, 500);
+  const setSelectedItemsState = (value: string[]) => {
+    dispatch(setSelectedItems(value));
+  };
 
   const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
+    setIsSearching(true);
     const searchValue = e.target.value;
     setSearchParams({ ...searchParams, text_search: searchValue });
   };
-
-  const { isFetching: isLoading, data } = useGetAllApprovalQuery({
-    ...filters,
-    text_search: debouncedSearchText,
-  });
 
   const columns = React.useMemo<ColumnDef<ReimbursementApproval>[]>(() => {
     if (user?.assignedRole === "HRBP") {
@@ -560,9 +562,16 @@ const MyApprovals: React.FC = () => {
     }
   };
 
+  useEffect(() => {
+    if (isSearching && !isLoading) {
+      setIsSearching(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoading]);
+
   return (
     <>
-      <div className="grid gap-y-2 md:p-5">
+      <div className="grid gap-y-4 bg-neutral-50 md:p-5">
         {user && user.assignedRole === "HRBP" ? (
           <HRBPAnalytics />
         ) : (
@@ -572,33 +581,39 @@ const MyApprovals: React.FC = () => {
         <div className="flex flex-col md:flex-row md:justify-between">
           <h4>For Approval</h4>
 
-          <div
-            className={classNames(
-              "flex flex-col gap-2 md:flex-row md:items-center",
-            )}
-          >
-            <Input
-              name="searchFilter"
-              placeholder="Find anything..."
-              className="w-full md:w-64"
-              icon={MdSearch}
-              onChange={handleSearch}
-            />
-
-            <CollapseWidthAnimation
-              isVisible={selectedItems && selectedItems.length > 0}
+          {!isSearching && isLoading ? (
+            <SkeletonLoading className="h-10 w-full rounded-sm md:w-64" />
+          ) : (
+            <div
+              className={classNames(
+                "flex flex-col gap-2 md:flex-row md:items-center",
+              )}
             >
-              <Can I="access" a="CAN_BULK_APPROVE_REIMBURSEMENT">
-                <Button
-                  variant="primary"
-                  disabled={selectedItems.length === 0}
-                  onClick={handleBulkApprove}
-                >
-                  Approve
-                </Button>
-              </Can>
-            </CollapseWidthAnimation>
-          </div>
+              <Input
+                name="searchFilter"
+                placeholder="Find anything..."
+                loading={isLoading && isSearching}
+                className="w-full md:w-64"
+                icon={MdSearch}
+                defaultValue={filters.text_search}
+                onChange={handleSearch}
+              />
+
+              <CollapseWidthAnimation
+                isVisible={selectedItems && selectedItems.length > 0}
+              >
+                <Can I="access" a="CAN_BULK_APPROVE_REIMBURSEMENT">
+                  <Button
+                    variant="primary"
+                    disabled={selectedItems.length === 0}
+                    onClick={handleBulkApprove}
+                  >
+                    Approve
+                  </Button>
+                </Can>
+              </CollapseWidthAnimation>
+            </div>
+          )}
         </div>
 
         <Table
