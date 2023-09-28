@@ -58,15 +58,18 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
   setFocusedReimbursementId,
 }) => {
   const { user } = useAppSelector((state) => state.session);
-  const [reimbursementReqId,setReimbursementReqId] = useState<string>();
+  const [reimbursementReqId, setReimbursementReqId] = useState<string>();
 
-  useMemo(()=>{
- if(data){
-  setReimbursementReqId(data.reimbursement_request_id)
- }
-  },[data])
+  useMemo(() => {
+    if (data) {
+      setReimbursementReqId(data.reimbursement_request_id);
+    }
+  }, [data]);
 
-  const { data: auditLog, isFetching: auditLogIsFetching }= useAuditLogsQuery({reimbursement_request_id:reimbursementReqId!},{skip:!reimbursementReqId})
+  const { data: auditLog, isFetching: auditLogIsFetching } = useAuditLogsQuery(
+    { reimbursement_request_id: reimbursementReqId! },
+    { skip: !reimbursementReqId },
+  );
   const [approveReimbursement, { isLoading: isApproving }] =
     useApproveReimbursementMutation();
 
@@ -232,7 +235,6 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
     closeHoldDialog();
   };
 
-
   return (
     <div className="relative flex h-full w-full flex-col">
       {!isLoading && !isError && data && (
@@ -250,17 +252,18 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
               user={user?.assignedRole}
             />
 
-            {(data.finance_request_status === "On-hold" || data.finance_request_status === "Rejected" || data.finance_request_status === "Cancelled") && (
-
+            {(data.finance_request_status === "On-hold" ||
+              data.finance_request_status === "Rejected" ||
+              data.finance_request_status === "Cancelled") && (
               <>
-              {!auditLogIsFetching && auditLog && auditLog.length > 0 &&
-              <Notes note={auditLog[0].description} />
-              }
+                {!auditLogIsFetching && auditLog && auditLog.length > 0 && (
+                  <Notes note={auditLog[0].description} />
+                )}
               </>
             )}
 
             {data.approvers && data.approvers.length > 0 && (
-              <Approvers 
+              <Approvers
                 approvers={data.approvers}
                 finance_request_status={data.finance_request_status}
                 hrbp_request_status={data.hrbp_request_status}

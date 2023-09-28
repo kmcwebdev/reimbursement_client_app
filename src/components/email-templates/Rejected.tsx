@@ -8,6 +8,7 @@ interface RejectedTemplateProps {
   expenseDate: string;
   amount: string;
   receiptsAttached: string;
+  remarks: string;
 }
 
 export const Rejected: React.FC<Readonly<RejectedTemplateProps>> = ({
@@ -17,6 +18,7 @@ export const Rejected: React.FC<Readonly<RejectedTemplateProps>> = ({
   expenseDate,
   amount,
   receiptsAttached,
+  remarks,
 }) => (
   <EmailMain receiver={fullName} subject="Rejected">
     <Text>
@@ -35,6 +37,7 @@ export const Rejected: React.FC<Readonly<RejectedTemplateProps>> = ({
         Click here to view
       </Link>
     </Text>
+    <Text>Remarks: {remarks}</Text>
     <Text className="text-justify">
       We understand that this outcome might be disappointing. If you have any
       questions or need further clarification on the rejection, please do not
