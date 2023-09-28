@@ -9,12 +9,9 @@ import { type FilterProps } from "./StatusFilter";
 
 const ExpenseTypeFilter: React.FC<FilterProps> = () => {
   const { filters } = useAppSelector((state) => state.pageTableState);
-
   const { data: allExpenseTypes, isLoading: allExpenseTypesIsLoading } =
     useAllExpenseTypesQuery({});
-
   const dispatch = useAppDispatch();
-
   const [checked, setChecked] = useState<string[]>([]);
 
   const onChange = (e: ChangeEvent<HTMLInputElement>, value: string) => {
@@ -41,23 +38,28 @@ const ExpenseTypeFilter: React.FC<FilterProps> = () => {
     <Popover
       btn={<FaCaretDown className="text-neutral-900 hover:text-neutral-800" />}
       content={
-        <div className="w-full space-y-4 p-4">
-          <div className="flex h-48 gap-2 overflow-y-auto capitalize">
-            <div className="flex flex-col gap-4">
-              {!allExpenseTypesIsLoading &&
-                allExpenseTypes &&
-                allExpenseTypes.length > 0 &&
-                allExpenseTypes.map((option) => (
-                  <Checkbox
-                    key={option.expense_type_id}
-                    label={option.expense_type}
-                    name={option.expense_type_id}
-                    checked={filters.expense_type_ids
-                      ?.split(",")
-                      .includes(option.expense_type_id)}
-                    onChange={(e) => onChange(e, option.expense_type_id)}
-                  />
-                ))}
+        <div className="flex flex-col">
+          <div className="flex h-10 items-center border-b px-4 text-orange-600">
+            Pick Expense Types
+          </div>
+          <div className="h-60 w-72 space-y-4 overflow-y-scroll bg-neutral-50 p-4">
+            <div className="flex h-auto gap-2 capitalize">
+              <div className="flex flex-1 flex-col gap-4">
+                {!allExpenseTypesIsLoading &&
+                  allExpenseTypes &&
+                  allExpenseTypes.length > 0 &&
+                  allExpenseTypes.map((option) => (
+                    <Checkbox
+                      key={option.expense_type_id}
+                      label={option.expense_type}
+                      name={option.expense_type_id}
+                      checked={filters.expense_type_ids
+                        ?.split(",")
+                        .includes(option.expense_type_id)}
+                      onChange={(e) => onChange(e, option.expense_type_id)}
+                    />
+                  ))}
+              </div>
             </div>
           </div>
         </div>

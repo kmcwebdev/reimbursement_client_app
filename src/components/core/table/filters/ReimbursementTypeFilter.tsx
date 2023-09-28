@@ -52,27 +52,32 @@ const ReimbursementTypeFilter: React.FC<FilterProps> = () => {
     <Popover
       btn={<FaCaretDown className="text-neutral-900 hover:text-neutral-800" />}
       content={
-        <div className="w-32 p-4">
-          <div className="flex flex-col gap-2 capitalize">
-            {!requestTypesIsLoading &&
-              requestTypes &&
-              requestTypes.length > 0 &&
-              requestTypes.map((type) => (
-                <Checkbox
-                  key={type.request_type}
-                  label={
-                    <div className="flex items-center gap-2 capitalize">
-                      {type.request_type}
-                    </div>
-                  }
-                  value="Scheduled"
-                  name="Scheduled"
-                  checked={checked.includes(type.request_type)}
-                  onChange={(e) =>
-                    onChange(e, type.reimbursement_request_type_id)
-                  }
-                />
-              ))}
+        <div className="flex flex-col">
+          <div className="flex h-10 items-center border-b px-4 text-orange-600">
+            Pick Reimbursement Types
+          </div>
+          <div className="w-32 bg-neutral-50 p-4">
+            <div className="flex flex-col gap-2 capitalize">
+              {!requestTypesIsLoading &&
+                requestTypes &&
+                requestTypes.length > 0 &&
+                requestTypes.map((type) => (
+                  <Checkbox
+                    key={type.request_type}
+                    label={
+                      <div className="flex items-center gap-2 capitalize">
+                        {type.request_type}
+                      </div>
+                    }
+                    value="Scheduled"
+                    name="Scheduled"
+                    checked={checked.includes(type.request_type)}
+                    onChange={(e) =>
+                      onChange(e, type.reimbursement_request_type_id)
+                    }
+                  />
+                ))}
+            </div>
           </div>
         </div>
       }
