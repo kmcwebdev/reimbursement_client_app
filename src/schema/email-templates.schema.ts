@@ -223,3 +223,9 @@ export const HrbpApprovalSchema = z
       }),
   })
   .merge(DefaultEmailSchema);
+
+export const RejectRequestSchema = z
+  .object({
+    remarks: z.string().nonempty(),
+  })
+  .merge(DefaultEmailSchema);

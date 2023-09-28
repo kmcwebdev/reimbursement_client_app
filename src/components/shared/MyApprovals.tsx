@@ -15,7 +15,7 @@ import TableCheckbox from "~/components/core/table/TableCheckbox";
 import { type FilterProps } from "~/components/core/table/filters/StatusFilter";
 import ReimbursementsCardView from "~/components/reimbursement-view";
 import { Can } from "~/context/AbilityContext";
-import { setSelectedItems } from "~/features/approval-page-state-slice";
+import { setSelectedItems } from "~/features/page-state.slice";
 import {
   useApproveReimbursementMutation,
   useGetAllApprovalQuery,

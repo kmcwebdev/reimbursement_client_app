@@ -14,6 +14,7 @@ import StatusBadge, { type StatusType } from "~/components/core/StatusBadge";
 import Table from "~/components/core/table";
 import { type FilterProps } from "~/components/core/table/filters/StatusFilter";
 import ReimbursementsCardView from "~/components/reimbursement-view";
+import { setSelectedItems } from "~/features/page-state.slice";
 import {
   useGetAllRequestsQuery,
   useGetRequestQuery,
@@ -23,7 +24,6 @@ import {
   toggleCancelDialog,
   toggleFormDialog,
 } from "~/features/reimbursement-form-slice";
-import { setSelectedItems } from "~/features/reimbursement-request-page-slice";
 import { useDialogState } from "~/hooks/use-dialog-state";
 import {
   ReimbursementDetailsSchema,

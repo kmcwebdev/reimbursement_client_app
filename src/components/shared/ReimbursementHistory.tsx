@@ -12,8 +12,8 @@ import StatusBadge, { type StatusType } from "~/components/core/StatusBadge";
 import Table from "~/components/core/table";
 import { type FilterProps } from "~/components/core/table/filters/StatusFilter";
 import { env } from "~/env.mjs";
+import { setSelectedItems } from "~/features/page-state.slice";
 import { useGetAllRequestsQuery } from "~/features/reimbursement-api-slice";
-import { setSelectedItems } from "~/features/reimbursement-request-page-slice";
 import {
   type IReimbursementsFilterQuery,
   type ReimbursementRequest,

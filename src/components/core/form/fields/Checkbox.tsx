@@ -13,12 +13,15 @@ const Checkbox = ({
   onChange,
   ...rest
 }: CheckboxProps) => {
-  const [isChecked, setIsChecked] = useState(false);
+  const [isChecked, setIsChecked] = useState<boolean>(false);
   const formContext = useFormContext();
 
   useEffect(() => {
-    if (checked || (formContext && formContext.getValues(name)))
+    if (checked || (formContext && formContext.getValues(name))) {
       setIsChecked(true);
+    } else {
+      setIsChecked(false);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [checked, formContext]);
 

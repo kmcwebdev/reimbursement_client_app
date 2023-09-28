@@ -92,6 +92,7 @@ export type IReimbursementsFilterQuery = {
   text_search?: string;
   expense_type_ids?: string;
   request_status_ids?: string;
+  reimbursement_type_id?: string;
   from?: string;
   to?: string;
 }
