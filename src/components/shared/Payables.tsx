@@ -58,7 +58,6 @@ const Payables: React.FC = () => {
   });
   const debouncedSearchText = useDebounce(searchParams.text_search, 500);
   const [isSearching, setIsSearching] = useState<boolean>(false);
-
   const [focusedReimbursementId, setFocusedReimbursementId] =
     useState<string>();
 
