@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
+  useMemo,
   useState,
   type Dispatch,
   type PropsWithChildren,
   type SetStateAction,
-  useMemo,
 } from "react";
 import { useForm } from "react-hook-form";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
@@ -464,8 +464,8 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
             <>
               <p className="text-neutral-800">
                 Are you sure you want to approve reimbursement request{" "}
-                {data.reference_no} with total amount of{" "}
-                {currencyFormat(+data.amount)}
+                <strong>{data.reference_no} </strong>with total amount of{" "}
+                <strong>{currencyFormat(+data.amount)}</strong>
               </p>
 
               <div className="flex items-center gap-4">

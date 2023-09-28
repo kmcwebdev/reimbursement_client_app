@@ -5,14 +5,19 @@ import { MdAccessTimeFilled } from "react-icons-all-files/md/MdAccessTimeFilled"
 import { MdClose } from "react-icons-all-files/md/MdClose";
 // import { MdClose } from "react-icons-all-files/md/MdClose";
 import { Approvers } from "~/types/reimbursement.types";
-
+import utc from "dayjs/plugin/utc";
+dayjs.extend(utc);
 interface ApproversProps {
   approvers: Approvers[];
   finance_request_status: string;
   hrbp_request_status: string;
 }
 
-const Approvers: React.FC<ApproversProps> = ({ approvers, finance_request_status, hrbp_request_status }) => {
+const Approvers: React.FC<ApproversProps> = ({
+  approvers,
+  finance_request_status,
+  hrbp_request_status,
+}) => {
   const [lastApproverRejected, setLastApproverRejected] = useState<Approvers>();
 
   useMemo(() => {
@@ -65,10 +70,10 @@ const Approvers: React.FC<ApproversProps> = ({ approvers, finance_request_status
                   <div className="flex justify-between">
                     <>
                       <p className="text-xs text-neutral-600">
-                        {dayjs(approver.updated_at).format("MMM D, YYYY")}
+                        {dayjs.utc(approver.updated_at).format("MMM D, YYYY")}
                       </p>
                       <p className="text-xs text-neutral-600">
-                        {dayjs(approver.updated_at).format("hh:mm A")}
+                        {dayjs.utc(approver.updated_at).format("hh:mm A")}
                       </p>
                     </>
                   </div>
@@ -77,12 +82,15 @@ const Approvers: React.FC<ApproversProps> = ({ approvers, finance_request_status
             </div>
           </div>
         ))}
-              
-        { finance_request_status === "Pending" && hrbp_request_status === "Approved" && (
-          <div>
-            <p className="text-neutral-800 text-sm">Waiting for Payment Processing...</p>
-          </div>
-        )}
+
+        {finance_request_status === "Pending" &&
+          hrbp_request_status === "Approved" && (
+            <div>
+              <p className="text-sm text-neutral-800">
+                Waiting for Payment Processing...
+              </p>
+            </div>
+          )}
       </div>
     </>
   );

@@ -58,6 +58,7 @@ const MyApprovals: React.FC = () => {
   const [searchParams, setSearchParams] = useState<IReimbursementsFilterQuery>({
     text_search: undefined,
     expense_type_ids: undefined,
+    reimbursement_type_id: undefined,
     from: undefined,
     to: undefined,
   });
@@ -686,8 +687,9 @@ const MyApprovals: React.FC = () => {
 
                 {selectedItems && selectedItems.length > 1 && (
                   <>
-                    Are you sure you want to approve {selectedItems.length}{" "}
-                    selected reimbursement request?
+                    Are you sure you want to approve{" "}
+                    <strong>{selectedItems.length}</strong> selected
+                    reimbursement request?
                   </>
                 )}
               </p>

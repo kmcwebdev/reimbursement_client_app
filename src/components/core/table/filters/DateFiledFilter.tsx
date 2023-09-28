@@ -1,17 +1,16 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
 import { useState, type ChangeEvent } from "react";
 import { MdCalendarToday } from "react-icons-all-files/md/MdCalendarToday";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import CollapseHeightAnimation from "~/components/animation/CollapseHeight";
 import { setPageTableFilters } from "~/features/page-state.slice";
-import parseZone from "~/utils/parseZone";
 import { Button } from "../../Button";
 import Popover from "../../Popover";
 import Input from "../../form/fields/Input";
 import { type FilterProps } from "./StatusFilter";
-
-dayjs.extend(parseZone);
+dayjs.extend(utc);
 
 const DateFiledFilter: React.FC<FilterProps> = () => {
   const { filters } = useAppSelector((state) => state.pageTableState);
@@ -36,8 +35,8 @@ const DateFiledFilter: React.FC<FilterProps> = () => {
 
   const validate = () => {
     if (dateFrom && dateTo) {
-      const isBefore = dayjs(dateTo).isBefore(dayjs(dateFrom));
-      const isSame = dayjs(dateFrom).isSame(dayjs(dateTo));
+      const isBefore = dayjs.utc(dateTo).isBefore(dayjs.utc(dateFrom));
+      const isSame = dayjs.utc(dateFrom).isSame(dayjs.utc(dateTo));
 
       if (dateTo && isBefore) {
         setError("Selected date range invalid!");
@@ -57,16 +56,16 @@ const DateFiledFilter: React.FC<FilterProps> = () => {
       dispatch(
         setPageTableFilters({
           ...filters,
-          from: dateFrom && dayjs(dateFrom).toISOString(),
-          to: dateTo && dayjs(dateTo).toISOString(),
+          from: dateFrom && dayjs.utc(dateFrom).toISOString(),
+          to: dateTo && dayjs.utc(dateTo).toISOString(),
         }),
       );
     } else {
       dispatch(
         setPageTableFilters({
           ...filters,
-          from: dateFrom && dayjs(dateFrom).toISOString(),
-          to: dateTo && dayjs(dateTo).toISOString(),
+          from: dateFrom && dayjs.utc(dateFrom).toISOString(),
+          to: dateTo && dayjs.utc(dateTo).toISOString(),
         }),
       );
     }
