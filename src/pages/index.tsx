@@ -17,6 +17,7 @@ const Home: NextPage<SSRProps> = () => {
     if (isInitialLogin && JSON.parse(isInitialLogin)) {
       void router.push("/dashboard");
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleClick = () => {
