@@ -1,6 +1,7 @@
 import { getUserFromServerSideProps } from "@propelauth/nextjs/server/pages";
 import { type GetServerSideProps, type NextPage } from "next";
 import { useRouter } from "next/router";
+import { useMemo } from "react";
 import { Button } from "~/components/core/Button";
 
 interface SSRProps {
@@ -10,14 +11,25 @@ interface SSRProps {
 const Home: NextPage<SSRProps> = () => {
   const router = useRouter();
 
+  useMemo(() => {
+    const isInitialLogin = localStorage.getItem("alreadyLoggedIn");
+
+    if (isInitialLogin && JSON.parse(isInitialLogin)) {
+      void router.push("/dashboard");
+    }
+  }, []);
+
+  const handleClick = () => {
+    localStorage.setItem("alreadyLoggedIn", "true");
+    void router.push("/dashboard");
+  };
+
   return (
     <section className="grid h-full w-full place-items-center">
       <div className="flex flex-col items-center gap-4">
         <h1>Welcome!</h1>
         <p>File your reimbursements in one place!</p>
-        <Button onClick={() => void router.push("/dashboard")}>
-          File a Reimbursement
-        </Button>
+        <Button onClick={handleClick}>File a Reimbursement</Button>
       </div>
     </section>
   );

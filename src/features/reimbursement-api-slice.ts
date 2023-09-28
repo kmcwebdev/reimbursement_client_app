@@ -13,6 +13,7 @@ import { type ReimbursementRequestType } from "~/types/reimbursement.request-typ
 import {
   type AuditLog,
   type IReimbursementsFilterQuery,
+  type IStatus,
   type ReimbursementApproval,
   type ReimbursementRequest,
 } from "~/types/reimbursement.types";
@@ -137,6 +138,16 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
       },
       providesTags: (_result, _fetchBaseQuery, query) => [
         { type: "ExpenseTypes", id: query.request_type_id },
+      ],
+    }),
+     allStatuses: builder.query<IStatus[], unknown>({
+      query: () => {
+        return {
+          url: "/api/finance/reimbursements/requests/status",
+        };
+      },
+      providesTags: (_result, _fetchBaseQuery, _query) => [
+        { type: "AllStatuses", id: "/all" },
       ],
     }),
     allExpenseTypes: builder.query<ReimbursementExpenseType[], unknown>({
@@ -301,6 +312,7 @@ export const {
   useGetRequestQuery,
   useRequestTypesQuery,
   useExpenseTypesQuery,
+  useAllStatusesQuery,
   useAllExpenseTypesQuery,
   useAuditLogsQuery,
   useUploadFileMutation,

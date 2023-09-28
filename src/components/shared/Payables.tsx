@@ -247,7 +247,7 @@ const Payables: React.FC = () => {
   );
   return (
     <>
-      <div className="grid gap-y-2 p-5">
+      <div className="grid gap-y-4 bg-neutral-50 p-5">
         <FinanceAnalytics />
 
         <SideDrawer

@@ -35,7 +35,7 @@ const DateFiledFilter: React.FC<FilterProps> = () => {
   };
 
   const validate = () => {
-    if (dateFrom !== "" && dateTo !== "") {
+    if (dateFrom && dateTo) {
       const isBefore = dayjs(dateTo).isBefore(dayjs(dateFrom));
       const isSame = dayjs(dateFrom).isSame(dayjs(dateTo));
 
@@ -65,8 +65,8 @@ const DateFiledFilter: React.FC<FilterProps> = () => {
       dispatch(
         setPageTableFilters({
           ...filters,
-          from: dayjs(dateFrom).toISOString(),
-          to: dayjs(dateTo).toISOString(),
+          from: dateFrom && dayjs(dateFrom).toISOString(),
+          to: dateTo && dayjs(dateTo).toISOString(),
         }),
       );
     }
@@ -94,37 +94,42 @@ const DateFiledFilter: React.FC<FilterProps> = () => {
         <MdCalendarToday className="text-neutral-900 hover:text-neutral-800" />
       }
       content={
-        <div className="w-64 p-4">
-          <div className="flex flex-col gap-4 text-start">
-            <Input
-              type="date"
-              name="from"
-              label="From"
-              onBlur={onDateFromChanged}
-              hasErrors={hasErrors}
-            />
-            <Input
-              type="date"
-              name="to"
-              label="To"
-              min={dayjs(dateFrom).add(1, "day").format("YYYY-MM-DD")}
-              onBlur={onDateToChanged}
-              hasErrors={hasErrors}
-            />
+        <div className="flex flex-col">
+          <div className="flex h-10 items-center border-b px-4 text-orange-600">
+            Pick Dates
+          </div>
+          <div className="w-64 bg-neutral-50 p-4">
+            <div className="flex flex-col gap-4 text-start">
+              <Input
+                type="date"
+                name="from"
+                label="From"
+                onBlur={onDateFromChanged}
+                hasErrors={hasErrors}
+              />
+              <Input
+                type="date"
+                name="to"
+                label="To"
+                // min={dayjs(dateFrom).add(1, "day").format("YYYY-MM-DD")}
+                onBlur={onDateToChanged}
+                hasErrors={hasErrors}
+              />
 
-            {hasErrors && error && (
-              <p className="text-danger-default mt-1 text-sm">{error}</p>
-            )}
+              {hasErrors && error && (
+                <p className="text-danger-default mt-1 text-sm">{error}</p>
+              )}
 
-            <CollapseHeightAnimation isVisible={dateFrom !== ""}>
-              <div className="flex items-center justify-between">
-                <Button buttonType="text" onClick={clearDates}>
-                  Clear
-                </Button>
+              <CollapseHeightAnimation isVisible={dateFrom !== ""}>
+                <div className="flex items-center justify-between">
+                  <Button buttonType="text" onClick={clearDates}>
+                    Clear
+                  </Button>
 
-                <Button onClick={validate}>Apply</Button>
-              </div>
-            </CollapseHeightAnimation>
+                  <Button onClick={validate}>Apply</Button>
+                </div>
+              </CollapseHeightAnimation>
+            </div>
           </div>
         </div>
       }

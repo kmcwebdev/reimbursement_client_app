@@ -1,5 +1,6 @@
 import { useFormContext } from "react-hook-form";
 import { type IconType } from "react-icons-all-files";
+import { RiLoader4Fill } from "react-icons-all-files/ri/RiLoader4Fill";
 import { classNames } from "~/utils/classNames";
 
 export type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
@@ -10,6 +11,7 @@ export type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   hasErrors?: boolean;
   error?: string;
   required?: boolean;
+  loading?: boolean;
 };
 
 const Input = ({
@@ -22,6 +24,7 @@ const Input = ({
   hasErrors = false,
   error,
   required = false,
+  loading = false,
   ...rest
 }: InputProps) => {
   const formContext = useFormContext();
@@ -35,7 +38,16 @@ const Input = ({
       )}
 
       <div className={classNames(Icon && "relative", "rounded-md")}>
-        {Icon && (
+        {loading && (
+          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+            <RiLoader4Fill
+              className="h-5 w-5 animate-spin text-orange-600"
+              aria-hidden="true"
+            />
+          </div>
+        )}
+
+        {!loading && Icon && (
           <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
             <Icon
               className={classNames(

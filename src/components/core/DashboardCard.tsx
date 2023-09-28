@@ -20,14 +20,18 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
         <span>{icon}</span>
         <p className="text-sm text-neutral-800 md:text-base">{label}</p>
         <div className="text-md font-bold text-neutral-900 lg:text-lg">
-          {count && count} {totalCount && `- ${totalCount}`}
+          {count && count}
+          {totalCount?.toString() ? "/" : ""}
+          {totalCount && `${totalCount}`}
         </div>
       </div>
       <div className="flex h-[80px] w-full flex-col justify-between rounded border border-neutral-300 bg-white px-3 py-4 sm:hidden sm:h-[120px] md:w-[312px]">
         <div className="flex justify-between">
           <span>{icon}</span>
           <div className="text-md font-bold text-neutral-900 lg:text-lg">
-            {count && count} {totalCount && `- ${totalCount}`}
+            {count && count}
+            {totalCount?.toString() && "/"}
+            {totalCount && `${totalCount}`}
           </div>
         </div>
         <p className="truncate text-sm text-neutral-800 md:text-base">
