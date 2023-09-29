@@ -38,6 +38,7 @@ import StatusFilter, {
 } from "../core/table/filters/StatusFilter";
 import ReimbursementsCardView from "../reimbursement-view";
 import FinanceAnalytics from "./analytics/FinanceAnalytics";
+import { appApiSlice } from "~/app/rtkQuery";
 
 const ReimbursementTypeFilter = dynamic(
   () => import("../core/table/filters/ReimbursementTypeFilter"),
@@ -55,6 +56,9 @@ const Payables: React.FC = () => {
     from: undefined,
     to: undefined,
   });
+
+
+  const [downloadReportLoading, setDownloadReportLoading] = useState(false);
   const debouncedSearchText = useDebounce(searchParams.text_search, 500);
   const [isSearching, setIsSearching] = useState<boolean>(false);
   const [focusedReimbursementId, setFocusedReimbursementId] =
@@ -83,6 +87,7 @@ const Payables: React.FC = () => {
   const { accessToken } = useAppSelector((state) => state.session);
 
   const downloadReport = async () => {
+    setDownloadReportLoading(true)
     const response = await axios.get<unknown, AxiosResponse<Blob>>(
       `${env.NEXT_PUBLIC_BASEAPI_URL}/api/finance/reimbursements/requests/reports/finance`,
       {
@@ -102,6 +107,9 @@ const Payables: React.FC = () => {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    dispatch(appApiSlice.util.invalidateTags([{type: "ReimbursementApprovalList"}]));
+    closeReportConfirmDialog();
+    setDownloadReportLoading(false)
   };
 
   const dispatch = useAppDispatch();
@@ -416,6 +424,8 @@ const Payables: React.FC = () => {
                 No
               </Button>
               <Button
+                loading={downloadReportLoading}
+                disabled={downloadReportLoading}
                 variant="success"
                 className="w-1/2"
                 onClick={() => void downloadReport()}
