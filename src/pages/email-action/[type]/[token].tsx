@@ -20,7 +20,7 @@ interface EmailActionProps {
 const EmailAction: React.FC<EmailActionProps> = ({ noToken, type, token }) => {
   const [loading, setLoading] = useState<boolean>(true);
 
-  console.log(noToken, token);
+  console.log(noToken, token, type);
   return (
     <>
       <Head>
