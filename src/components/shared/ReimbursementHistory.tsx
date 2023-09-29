@@ -207,6 +207,7 @@ const MyReimbursements: React.FC = () => {
         size: 100,
       },
     ];
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.assignedRole]);
 
   const handleProceedDownload = (url: string) => {
