@@ -95,9 +95,10 @@ export type IReimbursementsFilterQuery = {
   reimbursement_type_id?: string;
   from?: string;
   to?: string;
-}
+  history?: boolean;
+};
 
-export type IStatus={
+export type IStatus = {
   request_status_id: string;
   request_status: string;
-}
+};

@@ -39,6 +39,10 @@ import Attachments from "./Attachments";
 import Details from "./Details";
 import Notes from "./Notes";
 import ReimbursementViewSkeleton from "./ReimbursementViewSkeleton";
+import Popover from "../core/Popover";
+import { BsChevronDown } from "react-icons-all-files/bs/BsChevronDown";
+import { AiOutlineStop } from "react-icons-all-files/ai/AiOutlineStop";
+import { AiOutlinePauseCircle } from "react-icons-all-files/ai/AiOutlinePauseCircle";
 
 export interface ReimbursementsCardViewProps extends PropsWithChildren {
   isLoading?: boolean;
@@ -59,6 +63,7 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
 }) => {
   const { user } = useAppSelector((state) => state.session);
   const [reimbursementReqId, setReimbursementReqId] = useState<string>();
+  const [ currentState, setCurrentState ] = useState<string>('Reject');
 
   useMemo(() => {
     if (data) {
@@ -169,6 +174,7 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
   };
 
   const handleConfirmReject = (values: RejectReimbursementType) => {
+    setCurrentState("On-Hold")
     if (data) {
       const payload = {
         approval_matrix_id:
@@ -199,6 +205,7 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
   };
 
   const handleConfirmHold = (values: OnholdReimbursementType) => {
+    setCurrentState("Reject")
     if (data) {
       const payload = {
         reimbursement_request_id: data.reimbursement_request_id,
@@ -289,7 +296,9 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
                 </Button>
 
                 {data.requestor_request_status !== "Cancelled" &&
-                  data.requestor_request_status === "Pending" && (
+                  data.requestor_request_status === "Pending" &&
+                  data.finance_request_status === "Pending" && 
+                  data.hrbp_request_status === "Pending" && (
                     <Button
                       className="w-full"
                       variant="danger"
@@ -329,30 +338,59 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
               )}
 
             {user && user.assignedRole === "Finance" && (
-              <>
-                <div className="grid w-full grid-cols-2 gap-2">
-                  <Button
-                    className="w-full"
-                    buttonType="outlined"
-                    variant="warning"
-                    onClick={openHoldDialog}
-                    disabled={data.request_status === "On-hold"}
-                    loading={isOnHolding}
-                  >
-                    Hold
-                  </Button>
+                <div className="absolute bottom-0 grid h-[72px] w-full grid-cols-2 items-center justify-center gap-2 border-t border-neutral-300 px-5">
+                  {data.finance_request_status !== "On-hold" && (
+                    <Popover
+                      panelClassName="translate-y-[-170px] w-full"
+                      btn={
+                        <div className="flex justify-between h-full border border-s-1 p-2 rounded-md divide-x-2">
+                          <div className="flex flex-1 h-full items-center justify-center gap-2">
+                              {currentState === "Reject" && 
+                                <AiOutlineStop className="text-red-600 w-6 h-6" /> ||<AiOutlinePauseCircle className="text-yellow-600 w-6 h-6" />
+                              }
+                              <p className={currentState === "Reject" ? "text-red-600" : "text-yellow-600"}>{currentState}</p>
+                          </div>
+                          <div className="w-[40px] grid place-items-center">
+                            <BsChevronDown className="w-[14px] h-[14px] text-gray-400 font-semibold "/>
+                          </div>
+                        </div>
 
+                      }
+                      content={
+                        <div className="w-full p-2">
+                          <div className="flex justify-start gap-2 items-center p-2 hover:bg-gray-100 rounded-sm cursor-pointer" onClick={openRejectDialog}>
+                            <AiOutlineStop className="text-red-600 w-6 h-6" />
+                            <p className="font-normal text-[16px] font-karla">Reject</p>
+                          </div>
+                          <div className="flex justify-start gap-2 items-center p-2 hover:bg-gray-100 rounded-sm cursor-pointer" onClick={openHoldDialog}>
+                            <AiOutlinePauseCircle className="text-yellow-600 w-6 h-6" />
+                            <p className="font-normal text-[16px] font-karla">Hold</p>
+                          </div>
+                        </div>
+                      }
+                    />
+                  )}
+                  { data.finance_request_status === "On-hold" && (
+                    <Button
+                      className="w-full"
+                      buttonType="outlined"
+                      variant="danger"
+                      loading={isRejecting}
+                      onClick={openRejectDialog}
+                    >
+                      Reject
+                    </Button>
+                  ) }
                   <Button
                     className="w-full"
-                    buttonType="outlined"
-                    variant="danger"
+                    buttonType="filled"
+                    variant="primary"
                     loading={isRejecting}
-                    onClick={openRejectDialog}
+                    onClick={openApproveDialog}
                   >
-                    Reject
+                    Approved
                   </Button>
                 </div>
-              </>
             )}
           </div>
         </>

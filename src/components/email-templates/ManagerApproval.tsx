@@ -9,6 +9,8 @@ interface ManagerApprovalTemplateProps {
   expenseDate: string;
   amount: string;
   receiptsAttached: string;
+  approvalLink?: string;
+  rejectionLink?: string;
 }
 
 export const ManagerApproval: React.FC<
@@ -21,9 +23,16 @@ export const ManagerApproval: React.FC<
   expenseDate,
   amount,
   receiptsAttached,
+  approvalLink,
+  rejectionLink,
 }) => (
   // TODO: NEED TO REFACTOR ALL EMAIL SCHEMA!!!!!!!!!
-  <EmailMain receiver={approverFullName} subject="Manager Approval">
+  <EmailMain
+    receiver={approverFullName}
+    subject="Manager Approval"
+    approvalLink={approvalLink}
+    rejectionLink={rejectionLink}
+  >
     <Text>
       I hope this email finds you well. {fullName} has submitted a reimbursement
       claim that requires your approval.

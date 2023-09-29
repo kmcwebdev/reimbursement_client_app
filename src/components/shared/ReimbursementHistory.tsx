@@ -72,6 +72,7 @@ const MyReimbursements: React.FC = () => {
   const { isFetching, data } = useGetAllRequestsQuery({
     ...filters,
     text_search: debouncedSearchText,
+    history: true 
   });
 
   const [pagination, setPagination] = useState<PaginationState>({
