@@ -2,7 +2,7 @@ import { getUserFromServerSideProps } from "@propelauth/nextjs/server/pages";
 import { type GetServerSideProps, type NextPage } from "next";
 import Head from "next/head";
 import { Fragment } from "react";
-import { IconType } from "react-icons-all-files";
+import { type IconType } from "react-icons-all-files";
 import { FaUserTie } from "react-icons-all-files/fa/FaUserTie";
 import { HiBriefcase } from "react-icons-all-files/hi/HiBriefcase";
 import { MdConstruction } from "react-icons-all-files/md/MdConstruction";
