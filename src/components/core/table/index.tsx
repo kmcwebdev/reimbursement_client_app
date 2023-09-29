@@ -155,7 +155,7 @@ const Table: React.FC<TableProps> = (props) => {
           <TableSkeleton length={table.getAllFlatColumns().length} />
         )}
 
-        {/* SKELETON LOADING NO DATA */}
+        {/* EMPTY STATE NO DATA */}
 
         {!props.loading && props.data && props.data.length === 0 && (
           <TableEmptyState
@@ -164,7 +164,7 @@ const Table: React.FC<TableProps> = (props) => {
           />
         )}
 
-        {/* SKELETON LOADING NO FILTER RESULTS */}
+        {/* EMPTY STATE NO FILTER RESULTS */}
         {!props.loading &&
           props.data &&
           props.data.length > 0 &&
