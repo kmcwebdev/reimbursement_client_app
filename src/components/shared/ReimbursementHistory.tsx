@@ -84,7 +84,7 @@ const MyReimbursements: React.FC = () => {
     return [
       {
         id: "select",
-        size: 10,
+        size: 30,
         header: ({ table }) => {
           if (table.getRowModel().rows.length > 0) {
             return (
@@ -99,21 +99,20 @@ const MyReimbursements: React.FC = () => {
         },
 
         cell: ({ row }) => (
-          <div className="px-4">
-            <TableCheckbox
-              checked={row.getIsSelected()}
-              tableHasChecked={selectedItems.length > 0}
-              disabled={!row.getCanSelect()}
-              indeterminate={row.getIsSomeSelected()}
-              onChange={row.getToggleSelectedHandler()}
-            />
-          </div>
+          <TableCheckbox
+            checked={row.getIsSelected()}
+            tableHasChecked={selectedItems.length > 0}
+            disabled={!row.getCanSelect()}
+            indeterminate={row.getIsSomeSelected()}
+            onChange={row.getToggleSelectedHandler()}
+          />
         ),
       },
       {
         id: `${user?.assignedRole === "Finance" ? "finance_request_status" : user?.assignedRole === "HRBP" ? "hrbp_request_status" : "requestor_request_status"}`,
         accessorKey: `${user?.assignedRole === "Finance" ? "finance_request_status" : user?.assignedRole === "HRBP" ? "hrbp_request_status" : "requestor_request_status"}`,
         header: "Status",
+        size: 110,
         cell: (info) => (
           <StatusBadge
             status={(info.getValue() as string).toLowerCase() as StatusType}
@@ -132,30 +131,35 @@ const MyReimbursements: React.FC = () => {
         accessorKey: "client_name",
         cell: (info) => info.getValue(),
         header: "Client",
+        size: 200,
       },
       {
-        id: "ID",
-        accessorKey: "ID",
+        id: "employee_id",
+        accessorKey: "employee_id",
         cell: (info) => info.getValue(),
         header: "ID",
+        size: 70,
       },
       {
         id: "full_name",
         accessorKey: "full_name",
         cell: (info) => info.getValue(),
         header: "Name",
+        size: 220,
       },
       {
         id: "reference_no",
         accessorKey: "reference_no",
         cell: (info) => info.getValue(),
         header: "R-ID",
+        size: 80,
       },
       {
         id: "request_type",
         accessorKey: "request_type",
         cell: (info) => info.getValue(),
         header: "Type",
+        size: 120,
         filterFn: (row, id, value: string) => {
           return value.includes(row.getValue(id));
         },
@@ -170,10 +174,10 @@ const MyReimbursements: React.FC = () => {
         accessorKey: "expense_type",
         cell: (info) => info.getValue(),
         header: "Expense",
+        size: 120,
         filterFn: (row, id, value: string) => {
           return value.includes(row.getValue(id));
         },
-
         meta: {
           filterComponent: (info: FilterProps) => (
             <ExpenseTypeFilter {...info} />
@@ -185,6 +189,7 @@ const MyReimbursements: React.FC = () => {
         accessorKey: "created_at",
         cell: (info) => dayjs(info.getValue() as string).format("MMM D, YYYY"),
         header: `${user?.assignedRole === "Finance" ? "Approved" : "Filed"}`,
+        size: 100,
         filterFn: (row, id, value: string) => {
           return value.includes(row.getValue(id));
         },
@@ -197,6 +202,7 @@ const MyReimbursements: React.FC = () => {
         accessorKey: "amount",
         cell: (info) => currencyFormat(info.getValue() as number),
         header: "Total",
+        size: 100,
       },
     ];
   }, [user?.assignedRole]);
