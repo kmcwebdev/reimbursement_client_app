@@ -201,6 +201,31 @@ export const ConfirmationEmailSchema = z.object({
     }),
 });
 
+export const ManagerApprovalSchema = z
+  .object({
+    referenceNo: z
+      .string({
+        description: "Reference no",
+        required_error: "Reference no is required",
+        invalid_type_error: "Reference no is invalid",
+      })
+      .nonempty({
+        message: "Reference no is required",
+      }),
+    approverFullName: z
+      .string({
+        description: "Approver Full Name",
+        required_error: "Approver Full Name is required",
+        invalid_type_error: "Approver Full Name is invalid",
+      })
+      .nonempty({
+        message: "Approver Full Name is required",
+      }),
+    approvalLink: z.string().url().optional(),
+    rejectionLink: z.string().url().optional(),
+  })
+  .merge(DefaultEmailSchema);
+
 export const HrbpApprovalSchema = z
   .object({
     referenceNo: z

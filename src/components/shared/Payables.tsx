@@ -31,7 +31,6 @@ import ButtonGroup from "../core/form/fields/ButtonGroup";
 import Input from "../core/form/fields/Input";
 import Table from "../core/table";
 import TableCheckbox from "../core/table/TableCheckbox";
-import TableSkeleton from "../core/table/TableSkeleton";
 import DateFiledFilter from "../core/table/filters/DateFiledFilter";
 import ExpenseTypeFilter from "../core/table/filters/ExpenseTypeFilter";
 import StatusFilter, {
@@ -426,8 +425,6 @@ const Payables: React.FC = () => {
             </div>
           </div>
         </Dialog>
-
-        {isFetching && <TableSkeleton />}
       </div>
     </>
   );

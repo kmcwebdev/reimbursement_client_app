@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { ManagerApproval } from "~/components/email-templates/ManagerApproval";
 import { resend } from "~/libs/resend";
-import { HrbpApprovalSchema } from "~/schema/email-templates.schema";
+import { ManagerApprovalSchema } from "~/schema/email-templates.schema";
 
 export default async function handler(
   req: NextApiRequest,
@@ -12,7 +12,7 @@ export default async function handler(
       return res.status(405).json({ message: "Method not allowed" });
     }
 
-    const validate = await HrbpApprovalSchema.safeParseAsync(req.body);
+    const validate = await ManagerApprovalSchema.safeParseAsync(req.body);
 
     if (!validate.success) {
       return res.status(400).json(validate.error);
@@ -27,6 +27,8 @@ export default async function handler(
       expenseDate,
       amount,
       receiptsAttached,
+      approvalLink,
+      rejectionLink,
     } = validate.data;
 
     const sendEmail = await resend.emails.send({
@@ -41,6 +43,8 @@ export default async function handler(
         expenseDate,
         amount,
         receiptsAttached,
+        approvalLink,
+        rejectionLink,
       }),
       text: JSON.stringify(validate.data, null, 2),
     });
