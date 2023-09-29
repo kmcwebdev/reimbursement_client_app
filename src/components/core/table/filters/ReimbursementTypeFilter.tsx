@@ -57,7 +57,13 @@ const ReimbursementTypeFilter: React.FC<FilterProps> = () => {
                         {type.request_type}
                       </div>
                     }
-                    checked={checked[0] === type.reimbursement_request_type_id}
+                    checked={
+                      filters.reimbursement_type_id &&
+                      filters.reimbursement_type_id ===
+                        type.reimbursement_request_type_id
+                        ? true
+                        : false
+                    }
                     value={type.reimbursement_request_type_id}
                     name={type.reimbursement_request_type_id}
                     onChange={(e) =>

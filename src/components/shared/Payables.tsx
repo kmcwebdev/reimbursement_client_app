@@ -342,23 +342,21 @@ const Payables: React.FC = () => {
           </div>
         </CollapseWidthAnimation>
 
-        {!isFetching && data && (
-          <Table
-            type="approvals"
-            loading={isFetching}
-            data={data}
-            columns={columns}
-            tableState={{
-              pagination,
-              selectedItems,
-              filters,
-            }}
-            tableStateActions={{
-              setSelectedItems: setSelectedItemsState,
-              setPagination,
-            }}
-          />
-        )}
+        <Table
+          type="approvals"
+          loading={isFetching}
+          data={data}
+          columns={columns}
+          tableState={{
+            pagination,
+            selectedItems,
+            filters,
+          }}
+          tableStateActions={{
+            setSelectedItems: setSelectedItemsState,
+            setPagination,
+          }}
+        />
 
         <Dialog
           title="Download Report"
