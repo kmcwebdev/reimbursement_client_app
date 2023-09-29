@@ -4,22 +4,31 @@ import { type SubjectTypes } from "./EmailMain";
 
 interface EmailActionsProps {
   subject: SubjectTypes;
+  approvalLink?: string;
+  rejectionLink?: string;
 }
 
-const EmailActions: React.FC<EmailActionsProps> = ({ subject }) => {
+const REMIMBURSEMENT_AUTH_URL =
+  "https://reimbursement.kmcc-app.cc/api/auth/login";
+
+const EmailActions: React.FC<EmailActionsProps> = ({
+  subject,
+  approvalLink,
+  rejectionLink,
+}) => {
   if (subject === "Confirmation") {
     return null;
   }
 
   return (
     <>
-      {(subject === "HRBP Approval" || subject === "Manager Approval") && (
+      {subject === "Manager Approval" && (
         <Container className="mb-4">
           <Row>
             <Column align="left">
               <Button
                 className="p-2 text-center text-md text-orange-700 hover:text-orange-700"
-                href="https://dashboard.stripe.com/login"
+                href={REMIMBURSEMENT_AUTH_URL}
               >
                 Login to Reimbursement
               </Button>
@@ -29,7 +38,9 @@ const EmailActions: React.FC<EmailActionsProps> = ({ subject }) => {
                 <Column align="left">
                   <Button
                     className="mr-1 block rounded-md border border-solid border-red-600 p-2 text-center text-md text-red-600 hover:border-red-700"
-                    href="https://dashboard.stripe.com/login"
+                    href={
+                      rejectionLink ? rejectionLink : REMIMBURSEMENT_AUTH_URL
+                    }
                   >
                     Reject
                   </Button>
@@ -38,7 +49,7 @@ const EmailActions: React.FC<EmailActionsProps> = ({ subject }) => {
                 <Column align="right">
                   <Button
                     className="ml-1 block rounded-md bg-orange-600 p-2 text-center text-md text-white hover:bg-orange-700"
-                    href="https://dashboard.stripe.com/login"
+                    href={approvalLink ? approvalLink : REMIMBURSEMENT_AUTH_URL}
                   >
                     Approve
                   </Button>
@@ -57,7 +68,7 @@ const EmailActions: React.FC<EmailActionsProps> = ({ subject }) => {
             <Column align="right">
               <Button
                 className="rounded-md bg-orange-600 p-2 text-center text-md text-white hover:bg-orange-700"
-                href="https://dashboard.stripe.com/login"
+                href={REMIMBURSEMENT_AUTH_URL}
               >
                 Log in to Reimbursement
               </Button>
