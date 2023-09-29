@@ -5,11 +5,15 @@ import {
 } from "next";
 import Head from "next/head";
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { HiCheckCircle } from "react-icons-all-files/hi/HiCheckCircle";
 import { MdClose } from "react-icons-all-files/md/MdClose";
 import { RiLoader4Fill } from "react-icons-all-files/ri/RiLoader4Fill";
 import CollapseHeightAnimation from "~/components/animation/CollapseHeight";
+import {
+  useApproveReimbursementViaEmailMutation,
+  useRejectReimbursementViaEmailMutation,
+} from "~/features/reimbursement-api-slice";
 
 interface EmailActionProps {
   type: "approve" | "reject";
@@ -19,8 +23,26 @@ interface EmailActionProps {
 
 const EmailAction: React.FC<EmailActionProps> = ({ noToken, type, token }) => {
   const [loading, setLoading] = useState<boolean>(true);
+  const [approveRequest, { isLoading: approveRequestIsLoading }] =
+    useApproveReimbursementViaEmailMutation();
+  const [rejectRequest, { isLoading: rejectRequestIsLoading }] =
+    useRejectReimbursementViaEmailMutation();
 
-  console.log(noToken, token);
+  useEffect(() => {
+    if (!noToken && type) {
+      console.log(token, type);
+
+      if (type === "approve") {
+        void approveRequest(token);
+      }
+
+      if (type === "reject") {
+        void rejectRequest(token);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [noToken, type]);
+
   return (
     <>
       <Head>
@@ -63,7 +85,9 @@ const EmailAction: React.FC<EmailActionProps> = ({ noToken, type, token }) => {
             [Name] [R-ID] has been{" "}
             {type === "approve" ? "approved" : "rejected"}
           </p>
-          <CollapseHeightAnimation isVisible={loading}>
+          <CollapseHeightAnimation
+            isVisible={approveRequestIsLoading || rejectRequestIsLoading}
+          >
             <div className="grid h-20 place-items-center ">
               <RiLoader4Fill className="h-14 w-14 animate-spin text-orange-600" />
             </div>
