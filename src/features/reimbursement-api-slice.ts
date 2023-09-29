@@ -6,7 +6,12 @@ import {
 import { type ReimbursementDetailsType } from "~/schema/reimbursement-details.schema";
 import { type OnholdReimbursementType } from "~/schema/reimbursement-onhold-form.schema";
 import { type RejectReimbursementType } from "~/schema/reimbursement-reject-form.schema";
-import { type IFinanceAnalytics, type IHRBPAnalytics, type IManagerAnalytics, type IMemberAnalytics } from "~/types/dashboard-analytics.type";
+import {
+  type IFinanceAnalytics,
+  type IHRBPAnalytics,
+  type IManagerAnalytics,
+  type IMemberAnalytics,
+} from "~/types/dashboard-analytics.type";
 import { type UploadFileResponse } from "~/types/file-upload-response.type";
 import { type ReimbursementExpenseType } from "~/types/reimbursement.expese-type";
 import { type ReimbursementRequestType } from "~/types/reimbursement.request-type";
@@ -32,7 +37,7 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
         { type: "MemberAnalytics", id: JSON.stringify(query) },
       ],
     }),
-     getHRBPAnalytics: builder.query<IHRBPAnalytics, void>({
+    getHRBPAnalytics: builder.query<IHRBPAnalytics, void>({
       query: () => {
         return {
           url: "/api/finance/reimbursements/requests/dashboard/analytics/hrbp",
@@ -41,8 +46,8 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
       providesTags: (_result, _fetchBaseQuery, query) => [
         { type: "HRBPAnalytics", id: JSON.stringify(query) },
       ],
-     }),
-      getManagerAnalytics: builder.query<IManagerAnalytics, void>({
+    }),
+    getManagerAnalytics: builder.query<IManagerAnalytics, void>({
       query: () => {
         return {
           url: "/api/finance/reimbursements/requests/dashboard/analytics/managers",
@@ -51,8 +56,8 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
       providesTags: (_result, _fetchBaseQuery, query) => [
         { type: "ManagerAnalytics", id: JSON.stringify(query) },
       ],
-      }),
-       getFinanceAnalytics: builder.query<IFinanceAnalytics, void>({
+    }),
+    getFinanceAnalytics: builder.query<IFinanceAnalytics, void>({
       query: () => {
         return {
           url: "/api/finance/reimbursements/requests/dashboard/analytics/finance",
@@ -68,11 +73,11 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
       IReimbursementsFilterQuery
     >({
       query: (query) => {
-        const searchParams = createSearchParams(query)
+        const searchParams = createSearchParams(query);
         return {
           url: "/api/finance/reimbursements/requests",
-          params: searchParams && searchParams.size ?searchParams.toString() : {},
-          
+          params:
+            searchParams && searchParams.size ? searchParams.toString() : {},
         };
       },
       providesTags: (_result, _fetchBaseQuery, query) => [
@@ -81,13 +86,14 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
     }),
     getAllApproval: builder.query<
       ReimbursementApproval[],
-      IReimbursementsFilterQuery  
+      IReimbursementsFilterQuery
     >({
       query: (query) => {
-        const searchParams = createSearchParams(query)
+        const searchParams = createSearchParams(query);
         return {
           url: "/api/finance/reimbursements/requests/for-approvals",
-          params: searchParams && searchParams.size ?searchParams.toString() : {},
+          params:
+            searchParams && searchParams.size ? searchParams.toString() : {},
         };
       },
       providesTags: (_result, _fetchBaseQuery, query) => [
@@ -140,7 +146,7 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
         { type: "ExpenseTypes", id: query.request_type_id },
       ],
     }),
-     allStatuses: builder.query<IStatus[], unknown>({
+    allStatuses: builder.query<IStatus[], unknown>({
       query: () => {
         return {
           url: "/api/finance/reimbursements/requests/status",
@@ -160,7 +166,7 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
         { type: "AllExpenseTypes", id: "/all" },
       ],
     }),
-     auditLogs: builder.query<AuditLog[], { reimbursement_request_id: string }>({
+    auditLogs: builder.query<AuditLog[], { reimbursement_request_id: string }>({
       query: (query) => {
         return {
           url: "/api/finance/reimbursements/requests/auditlogs",
@@ -239,6 +245,20 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
         { type: "HRBPAnalytics" },
         { type: "FinanceAnalytics" },
       ],
+    }),
+    approveReimbursementViaEmail: builder.mutation<string, string>({
+      query: (token) => ({
+        method: "POST",
+        url: "/api/finance/reimbursement/requests/email-approval/approve",
+        body: { token },
+      }),
+    }),
+    rejectReimbursementViaEmail: builder.mutation<string, string>({
+      query: (token) => ({
+        method: "POST",
+        url: "/api/finance/reimbursement/requests/email-approval/reject",
+        body: { token },
+      }),
     }),
     cancelReimbursement: builder.mutation<
       unknown,
@@ -320,7 +340,8 @@ export const {
   useApproveReimbursementMutation,
   useRejectReimbursementMutation,
   useHoldReimbursementMutation,
+  useApproveReimbursementViaEmailMutation,
+  useRejectReimbursementViaEmailMutation,
   useCancelReimbursementMutation,
   useChangeRoleMutation,
- 
 } = reimbursementApiSlice;

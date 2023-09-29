@@ -8,7 +8,7 @@ const TableSkeleton: React.FC<TableSkeletonProps> = ({ length }) => {
   return (
     <div className="h-[30rem] overflow-hidden">
       <table className="w-full whitespace-nowrap">
-        <tbody className="h-full min-h-[70vh] rounded-b-sm bg-white shadow-sm">
+        <tbody className="h-full rounded-b-sm bg-white shadow-sm">
           {Array.from({ length: 10 }).map((_a, i) => (
             <tr key={i} className="h-12">
               <>
