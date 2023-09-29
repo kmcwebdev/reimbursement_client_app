@@ -13,7 +13,7 @@ const EmailActions: React.FC<EmailActionsProps> = ({ subject }) => {
 
   return (
     <>
-      {(subject === "HRBP Approval" || subject === "Manager Approval") && (
+      {subject === "Manager Approval" && (
         <Container className="mb-4">
           <Row>
             <Column align="left">
