@@ -88,6 +88,7 @@ const MyReimbursements: React.FC = () => {
         id: "finance_request_status",
         accessorKey: "finance_request_status",
         header: "Status",
+        size: 120,
         cell: (info) => (
           <StatusBadge
             status={(info.getValue() as string).toLowerCase() as StatusType}
@@ -97,7 +98,6 @@ const MyReimbursements: React.FC = () => {
           return value.includes(row.getValue(id));
         },
         enableColumnFilter: true,
-        size: 10,
         meta: {
           filterComponent: (info: FilterProps) => <StatusFilter {...info} />,
         },
@@ -107,13 +107,14 @@ const MyReimbursements: React.FC = () => {
         accessorKey: "reference_no",
         cell: (info) => info.getValue(),
         header: "R-ID",
-        size: 20,
+        size: 90,
       },
       {
         id: "request_type",
         accessorKey: "request_type",
         cell: (info) => info.getValue(),
         header: "Type",
+        size: 130,
         filterFn: (row, id, value: string) => {
           return value.includes(row.getValue(id));
         },
@@ -122,17 +123,16 @@ const MyReimbursements: React.FC = () => {
             <ReimbursementTypeFilter {...info} />
           ),
         },
-        size: 10,
       },
       {
         id: "expense_type",
         accessorKey: "expense_type",
         cell: (info) => info.getValue(),
         header: "Expense",
+        size: 130,
         filterFn: (row, id, value: string) => {
           return value.includes(row.getValue(id));
         },
-        size: 10,
         meta: {
           filterComponent: (info: FilterProps) => (
             <ExpenseTypeFilter {...info} />
@@ -144,20 +144,20 @@ const MyReimbursements: React.FC = () => {
         accessorKey: "created_at",
         cell: (info) => dayjs(info.getValue() as string).format("MMM D, YYYY"),
         header: "Filed",
+        size: 130,
         filterFn: (row, id, value: string) => {
           return value.includes(row.getValue(id));
         },
         meta: {
           filterComponent: (info: FilterProps) => <DateFiledFilter {...info} />,
         },
-        size: 10,
       },
       {
         id: "amount",
         accessorKey: "amount",
         cell: (info) => currencyFormat(info.getValue() as number),
         header: "Total",
-        size: 10,
+        size: 100,
       },
       {
         id: "actions",
@@ -174,7 +174,7 @@ const MyReimbursements: React.FC = () => {
           </Button>
         ),
         header: "",
-        size: 5,
+        size: 70,
       },
     ];
     // eslint-disable-next-line react-hooks/exhaustive-deps

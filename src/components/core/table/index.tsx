@@ -116,18 +116,25 @@ const Table: React.FC<TableProps> = (props) => {
   });
 
   return (
-    <div className="relative flex flex-col gap-4 overflow-hidden">
-      <div className="overflow-x-auto overflow-y-hidden">
+    <div className="relative flex flex-col gap-4 overflow-x-auto">
+      <div className="h-full w-full">
         {/* TABLE HEADER */}
-        <table className="w-full whitespace-nowrap">
+        <table className="sticky top-0 z-[5] w-full whitespace-nowrap">
           <thead className="h-12 rounded-t-sm bg-white text-xs shadow-sm">
             {props.data &&
               table.getHeaderGroups().map((headerGroup, i) => (
                 <tr key={i} className="h-12 border-b">
                   {headerGroup.headers.map((header, i) => {
                     return (
-                      <th key={i} colSpan={header.colSpan} className=" px-4">
-                        <div className="flex items-center justify-between">
+                      <th
+                        key={i}
+                        colSpan={header.colSpan}
+                        style={{
+                          minWidth: header.column.columnDef.size,
+                          maxWidth: header.column.columnDef.size,
+                        }}
+                      >
+                        <div className="flex items-center justify-between first:pl-4 last:pr-4">
                           {flexRender(
                             header.column.columnDef.header,
                             header.getContext(),
@@ -149,39 +156,34 @@ const Table: React.FC<TableProps> = (props) => {
             <FilterView colSpan={table.getAllColumns().length} />
           </thead>
         </table>
-
         {/* SKELETON LOADING */}
         {props.loading && (
           <TableSkeleton length={table.getAllFlatColumns().length} />
         )}
-
         {/* EMPTY STATE NO DATA */}
-
-        {!props.loading && props.data && props.data.length === 0 && (
+        {!props.loading && props.data && props.data.length === 0 && table && (
           <TableEmptyState
             type={props.type}
             length={table.getAllFlatColumns().length}
           />
         )}
-
         {/* EMPTY STATE NO FILTER RESULTS */}
         {!props.loading &&
           props.data &&
           props.data.length > 0 &&
+          table &&
           table.getRowModel().rows.length === 0 && (
             <TableEmptyState
               type="no-results"
               length={table.getAllFlatColumns().length}
             />
           )}
-
         {/* TABLE DATA */}
-        <div className="h-[30rem] overflow-y-auto">
-          <table className="w-full whitespace-nowrap">
-            <tbody className="h-full min-h-[70vh] rounded-b-sm bg-white shadow-sm">
-              {!props.loading &&
-                props.data &&
-                table.getRowModel().rows.map((row, i) => {
+        {!props.loading && props.data && table && (
+          <div className="h-[30rem] w-full">
+            <table className="w-full whitespace-nowrap">
+              <tbody className="h-full w-full rounded-b-sm bg-white shadow-sm">
+                {table.getRowModel().rows.map((row, i) => {
                   return (
                     <tr key={i} className="group h-16">
                       {row.getVisibleCells().map((cell, i) => {
@@ -190,10 +192,14 @@ const Table: React.FC<TableProps> = (props) => {
                             key={i}
                             className={classNames(
                               cell.column.columnDef.id === "select"
-                                ? "px-0"
-                                : "px-4",
-                              "border-b border-b-neutral-200 ",
+                                ? "pl-4"
+                                : "pl-4",
+                              "border-b border-b-neutral-200",
                             )}
+                            style={{
+                              minWidth: cell.column.columnDef.size,
+                              maxWidth: cell.column.columnDef.size,
+                            }}
                           >
                             {flexRender(
                               cell.column.columnDef.cell,
@@ -205,10 +211,10 @@ const Table: React.FC<TableProps> = (props) => {
                     </tr>
                   );
                 })}
-            </tbody>
-          </table>
-        </div>
-
+              </tbody>
+            </table>
+          </div>
+        )}
         {/* TABLE DATA */}
       </div>
       {/* <Pagination table={table} /> */}

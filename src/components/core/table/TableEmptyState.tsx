@@ -10,9 +10,9 @@ interface TableEmptyStateProps {
 
 const TableEmptyState: React.FC<TableEmptyStateProps> = ({ type, length }) => {
   return (
-    <div className="h-[30rem]">
+    <div className="h-[30rem] overflow-hidden">
       <table className="w-full whitespace-nowrap">
-        <tbody className="h-full min-h-[70vh]">
+        <tbody className="h-full">
           {/* Data is empty */}
 
           {type !== "no-results" && (
