@@ -38,7 +38,7 @@ const Popover: React.FC<PopoverProps> = ({
         >
           <HUIPopover.Panel
             className={classNames(
-              "min-w-32 absolute top-4 z-10 transform px-4 sm:px-0",
+              "min-w-32 absolute top-4 z-50 transform px-4 sm:px-0",
               panelClassName,
             )}
           >

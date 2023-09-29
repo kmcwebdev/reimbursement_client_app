@@ -1,10 +1,8 @@
-import dayjs from "dayjs";
 import React from "react";
 import StatusBadge, { type StatusType } from "~/components/core/StatusBadge";
 import { currencyFormat } from "~/utils/currencyFormat";
+import { parseTimezone } from "~/utils/parse-timezone";
 import List from "../core/List";
-import utc from "dayjs/plugin/utc";
-dayjs.extend(utc);
 
 export interface DetailsProps {
   requestor_request_status: string;
@@ -79,14 +77,17 @@ const Details: React.FC<DetailsProps> = ({
       )}
       <List.Item
         label="Filed"
-        value={dayjs.utc(created_at).format("MMM D,YYYY")}
+        value={parseTimezone(created_at).format("MMM D,YYYY")}
       />
       <List.Item label="Amount" value={currencyFormat(+amount)} />
 
       <div className="flex flex-col">
         {(requestor_request_status === "Processing" ||
           requestor_request_status === "Credited") && (
-          <List.Item label="Payout" value={created_at} />
+          <List.Item
+            label="Payout"
+            value={parseTimezone(created_at).format("MMMM DD,YYYY")}
+          />
         )}
       </div>
     </List>

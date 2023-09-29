@@ -4,9 +4,10 @@ import { HiCheckCircle } from "react-icons-all-files/hi/HiCheckCircle";
 import { MdAccessTimeFilled } from "react-icons-all-files/md/MdAccessTimeFilled";
 import { MdClose } from "react-icons-all-files/md/MdClose";
 // import { MdClose } from "react-icons-all-files/md/MdClose";
+import timezone from "dayjs/plugin/timezone";
 import { Approvers } from "~/types/reimbursement.types";
-import utc from "dayjs/plugin/utc";
-dayjs.extend(utc);
+import { parseTimezone } from "~/utils/parse-timezone";
+dayjs.extend(timezone);
 interface ApproversProps {
   approvers: Approvers[];
   finance_request_status: string;
@@ -70,10 +71,12 @@ const Approvers: React.FC<ApproversProps> = ({
                   <div className="flex justify-between">
                     <>
                       <p className="text-xs text-neutral-600">
-                        {dayjs.utc(approver.updated_at).format("MMM D, YYYY")}
+                        {parseTimezone(approver.updated_at).format(
+                          "MMM D, YYYY",
+                        )}
                       </p>
                       <p className="text-xs text-neutral-600">
-                        {dayjs.utc(approver.updated_at).format("hh:mm A")}
+                        {parseTimezone(approver.updated_at).format("hh:mm A")}
                       </p>
                     </>
                   </div>
