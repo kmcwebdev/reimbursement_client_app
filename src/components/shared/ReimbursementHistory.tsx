@@ -80,6 +80,8 @@ const MyReimbursements: React.FC = () => {
     pageSize: 10,
   });
 
+  console.log(selectedItems);
+
   const columns = React.useMemo<ColumnDef<ReimbursementRequest>[]>(() => {
     return [
       {
@@ -205,6 +207,7 @@ const MyReimbursements: React.FC = () => {
         size: 100,
       },
     ];
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.assignedRole]);
 
   const handleProceedDownload = (url: string) => {

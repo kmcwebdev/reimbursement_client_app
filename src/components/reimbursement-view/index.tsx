@@ -43,6 +43,8 @@ import Popover from "../core/Popover";
 import { BsChevronDown } from "react-icons-all-files/bs/BsChevronDown";
 import { AiOutlineStop } from "react-icons-all-files/ai/AiOutlineStop";
 import { AiOutlinePauseCircle } from "react-icons-all-files/ai/AiOutlinePauseCircle";
+import axios, { type AxiosResponse } from "axios";
+import { env } from "~/env.mjs";
 
 export interface ReimbursementsCardViewProps extends PropsWithChildren {
   isLoading?: boolean;
@@ -61,7 +63,7 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
   isError = false,
   setFocusedReimbursementId,
 }) => {
-  const { user } = useAppSelector((state) => state.session);
+  const { user, accessToken } = useAppSelector((state) => state.session);
   const [reimbursementReqId, setReimbursementReqId] = useState<string>();
   const [ currentState, setCurrentState ] = useState<string>('Reject');
 
@@ -71,6 +73,7 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
     }
   }, [data]);
 
+  const [downloadReportLoading, setDownloadReportLoading] = useState(false);
   const { data: auditLog, isFetching: auditLogIsFetching } = useAuditLogsQuery(
     { reimbursement_request_id: reimbursementReqId! },
     { skip: !reimbursementReqId },
@@ -147,6 +150,34 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
     }
   };
 
+  const downloadReport = async () => {
+    setDownloadReportLoading(true)
+    console.log(data?.reimbursement_request_id);
+    const response = await axios.get<unknown, AxiosResponse<Blob>>(
+      `${env.NEXT_PUBLIC_BASEAPI_URL}/api/finance/reimbursements/requests/reports/finance`,
+      {
+        responseType: "blob", // Important to set this
+        headers: {
+          accept: "*/*",
+          Authorization: `Bearer ${accessToken}`,
+        },
+        params: { reimbursement_request_ids: JSON.stringify([data?.reimbursement_request_id]) },
+      },
+    );
+
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "filename.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    dispatch(appApiSlice.util.invalidateTags([{type: "ReimbursementApprovalList"}]));
+    setDownloadReportLoading(false);
+    closeApproveDialog();
+    closeDrawer();
+  };
+
   const handleApprove = () => {
     if (data) {
       const payload = { approval_matrix_ids: [data.next_approval_matrix_id] };
@@ -171,7 +202,7 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
           });
         });
     }
-  };
+  }
 
   const handleConfirmReject = (values: RejectReimbursementType) => {
     setCurrentState("On-Hold")
@@ -384,11 +415,11 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
                   <Button
                     className="w-full"
                     buttonType="filled"
-                    variant="primary"
+                    variant="success"
                     loading={isRejecting}
                     onClick={openApproveDialog}
                   >
-                    Approved
+                    Download
                   </Button>
                 </div>
             )}
@@ -515,14 +546,29 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
                 >
                   Cancel
                 </Button>
-                <Button
-                  className="w-1/2"
-                  onClick={handleApprove}
-                  disabled={isApproving}
-                  loading={isApproving}
-                >
-                  Approve
-                </Button>
+
+                {user?.assignedRole !== "Finance" && user?.assignedRole !== "Member" && (
+                  <Button
+                    className="w-1/2"
+                    onClick={handleApprove}
+                    disabled={isApproving}
+                    loading={isApproving}
+                  >
+                    Approve
+                  </Button>
+                ) }
+
+                {user?.assignedRole === "Finance" && (
+                  <Button
+                    className="w-1/2"
+                    variant="success"
+                    onClick={() => void downloadReport()}
+                    disabled={downloadReportLoading}
+                    loading={downloadReportLoading}
+                  >
+                    Yes, Download
+                  </Button>
+                )}
               </div>
             </>
           )}

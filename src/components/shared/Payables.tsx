@@ -186,6 +186,7 @@ const Payables: React.FC = () => {
       },
       {
         id: "full_name",
+        size: 220,
         accessorKey: "full_name",
         cell: (info) => info.getValue(),
         header: "Name",
