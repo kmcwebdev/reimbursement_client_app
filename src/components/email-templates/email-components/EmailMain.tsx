@@ -25,11 +25,15 @@ export type SubjectTypes =
 interface EmailMainProps {
   subject: SubjectTypes;
   receiver: string;
+  approvalLink?: string;
+  rejectionLink?: string;
 }
 
 const EmailMain: React.FC<PropsWithChildren<EmailMainProps>> = ({
   subject,
   receiver,
+  approvalLink,
+  rejectionLink,
   children,
 }) => {
   return (
@@ -46,7 +50,11 @@ const EmailMain: React.FC<PropsWithChildren<EmailMainProps>> = ({
               {children}
 
               <Hr className="my-5 border border-gray-300" />
-              <EmailActions subject={subject} />
+              <EmailActions
+                subject={subject}
+                approvalLink={approvalLink}
+                rejectionLink={rejectionLink}
+              />
             </Container>
             <EmailFooter />
           </Container>
