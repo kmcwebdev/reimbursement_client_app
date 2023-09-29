@@ -51,7 +51,7 @@ const StatusFilter: React.FC<FilterProps> = () => {
           <div className="flex h-10 items-center border-b px-4 text-orange-600">
             Pick Status
           </div>
-          <div className="w-32 bg-neutral-50 p-4">
+          <div className="w-40 bg-neutral-50 p-4">
             <div className="flex flex-col gap-2 capitalize">
               {!allStatusesIsLoading &&
                 allStatuses &&
@@ -66,7 +66,9 @@ const StatusFilter: React.FC<FilterProps> = () => {
                       />
                     }
                     name={option.request_status}
-                    checked={checked.includes(option.request_status_id)}
+                    checked={filters.request_status_ids?.includes(
+                      option.request_status_id,
+                    )}
                     onChange={(e) => onChange(e, option.request_status_id)}
                   />
                 ))}
