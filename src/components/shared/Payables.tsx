@@ -369,7 +369,7 @@ const Payables: React.FC = () => {
               <p className="text-neutral-800">
                 Downloading the report will change the reimbursements status to
                 processing. Are you sure you want to download{" "}
-                <strong>all</strong>
+                <strong>all</strong>{" "}
                 reimbursements?
               </p>
             )}
@@ -390,7 +390,7 @@ const Payables: React.FC = () => {
                       (a) => a.reimbursement_request_id === selectedItems[0],
                     )?.reference_no
                   }
-                </strong>
+                </strong>{" "}
                 reimbursements?
               </p>
             )}
@@ -399,7 +399,7 @@ const Payables: React.FC = () => {
               <p className="text-neutral-800">
                 Downloading the report will change the reimbursements status to
                 processing. Are you sure you want to download{" "}
-                <strong>{selectedItems.length}</strong>
+                <strong>{selectedItems.length}</strong>{" "}
                 reimbursements?
               </p>
             )}
