@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
-import { useState, type ChangeEvent } from "react";
+import { useMemo, useState, type ChangeEvent } from "react";
 import { MdCalendarToday } from "react-icons-all-files/md/MdCalendarToday";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import CollapseHeightAnimation from "~/components/animation/CollapseHeight";
@@ -16,10 +16,24 @@ const DateFiledFilter: React.FC<FilterProps> = () => {
   const { filters } = useAppSelector((state) => state.pageTableState);
 
   const dispatch = useAppDispatch();
-  const [dateFrom, setDateFrom] = useState<string | undefined>(filters.from);
-  const [dateTo, setDateTo] = useState<string | undefined>(filters.to);
+  const [dateFrom, setDateFrom] = useState<string | undefined>(undefined);
+  const [dateTo, setDateTo] = useState<string | undefined>(undefined);
   const [hasErrors, setHasErrors] = useState<boolean>(false);
   const [error, setError] = useState<string>();
+
+  useMemo(() => {
+    if (filters.from) {
+      setDateFrom(dayjs(filters.from).format("YYYY-MM-DD"));
+    } else {
+      setDateFrom(undefined);
+    }
+
+    if (filters.to) {
+      setDateTo(dayjs(filters.to).format("YYYY-MM-DD"));
+    } else {
+      setDateTo(undefined);
+    }
+  }, [filters.from, filters.to]);
 
   const clearDates = () => {
     setDateFrom(undefined);
@@ -73,18 +87,10 @@ const DateFiledFilter: React.FC<FilterProps> = () => {
 
   const onDateFromChanged = (e: ChangeEvent<HTMLInputElement>) => {
     setDateFrom(e.target.value);
-
-    // column.setFilterValue(
-    //   selectedDates.map((a) => dayjs(a).format("MM/DD/YYYY")),
-    // );
-    // validate();
   };
 
   const onDateToChanged = (e: ChangeEvent<HTMLInputElement>) => {
     setDateTo(e.target.value);
-    // column.setFilterValue(
-    //   selectedDates.map((a) => dayjs(a).format("MM/DD/YYYY")),
-    // );
   };
 
   return (
@@ -103,15 +109,21 @@ const DateFiledFilter: React.FC<FilterProps> = () => {
                 type="date"
                 name="from"
                 label="From"
-                onBlur={onDateFromChanged}
+                value={dateFrom ? dayjs(dateFrom).format("YYYY-MM-DD") : ""}
+                onChange={onDateFromChanged}
                 hasErrors={hasErrors}
               />
               <Input
                 type="date"
                 name="to"
                 label="To"
-                // min={dayjs(dateFrom).add(1, "day").format("YYYY-MM-DD")}
-                onBlur={onDateToChanged}
+                value={dateTo ? dayjs(dateTo).format("YYYY-MM-DD") : ""}
+                min={
+                  dateFrom
+                    ? dayjs(dateFrom).add(1, "day").format("YYYY-MM-DD")
+                    : ""
+                }
+                onChange={onDateToChanged}
                 hasErrors={hasErrors}
               />
 
@@ -119,7 +131,7 @@ const DateFiledFilter: React.FC<FilterProps> = () => {
                 <p className="text-danger-default mt-1 text-sm">{error}</p>
               )}
 
-              <CollapseHeightAnimation isVisible={dateFrom !== ""}>
+              <CollapseHeightAnimation isVisible={!!dateFrom}>
                 <div className="flex items-center justify-between">
                   <Button buttonType="text" onClick={clearDates}>
                     Clear

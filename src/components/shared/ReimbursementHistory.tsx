@@ -72,7 +72,7 @@ const MyReimbursements: React.FC = () => {
   const { isFetching, data } = useGetAllRequestsQuery({
     ...filters,
     text_search: debouncedSearchText,
-    history: true 
+    history: true,
   });
 
   const [pagination, setPagination] = useState<PaginationState>({
@@ -199,7 +199,6 @@ const MyReimbursements: React.FC = () => {
         header: "Total",
       },
     ];
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.assignedRole]);
 
   const handleProceedDownload = (url: string) => {
@@ -300,23 +299,21 @@ const MyReimbursements: React.FC = () => {
           )}
         </div>
 
-        {!isFetching && data && (
-          <Table
-            type="reimbursements"
-            loading={isFetching}
-            data={data}
-            columns={columns}
-            tableState={{
-              filters,
-              pagination,
-              selectedItems,
-            }}
-            tableStateActions={{
-              setSelectedItems: setSelectedItemsState,
-              setPagination,
-            }}
-          />
-        )}
+        <Table
+          type="reimbursements"
+          loading={isFetching}
+          data={data}
+          columns={columns}
+          tableState={{
+            filters,
+            pagination,
+            selectedItems,
+          }}
+          tableStateActions={{
+            setSelectedItems: setSelectedItemsState,
+            setPagination,
+          }}
+        />
       </div>
 
       <Dialog
