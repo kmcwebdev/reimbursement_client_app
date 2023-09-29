@@ -1,5 +1,6 @@
 import { Text, Link } from "@react-email/components";
 import EmailMain from "./email-components/EmailMain";
+import { parseTimezone } from "~/utils/parse-timezone";
 
 interface ConfirmationTemplateProps {
   requestType: "scheduled" | "unscheduled";
@@ -32,7 +33,7 @@ export const Confirmation: React.FC<Readonly<ConfirmationTemplateProps>> = ({
     <Text>Below are the details of your submission:</Text>
     <Text>Employee ID: {employeeId}</Text>
     <Text>Expense Description: {expenseType}</Text>
-    <Text>Expense Date: {expenseDate}</Text>
+    <Text>Expense Date: {parseTimezone(expenseDate).format("MMMM DD,YYYY")}</Text>
     <Text>Amount: {amount}</Text>
     <Text>
       Receipts Attached:{" "}
