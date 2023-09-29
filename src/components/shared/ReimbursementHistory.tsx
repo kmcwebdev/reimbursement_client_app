@@ -80,6 +80,8 @@ const MyReimbursements: React.FC = () => {
     pageSize: 10,
   });
 
+  console.log(selectedItems);
+
   const columns = React.useMemo<ColumnDef<ReimbursementRequest>[]>(() => {
     return [
       {
