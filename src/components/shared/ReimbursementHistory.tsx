@@ -109,8 +109,8 @@ const MyReimbursements: React.FC = () => {
         ),
       },
       {
-        id: "hrbp_request_status",
-        accessorKey: "hrbp_request_status",
+        id: `${user?.assignedRole === "Finance" ? "finance_request_status" : user?.assignedRole === "HRBP" ? "hrbp_request_status" : "requestor_request_status"}`,
+        accessorKey: `${user?.assignedRole === "Finance" ? "finance_request_status" : user?.assignedRole === "HRBP" ? "hrbp_request_status" : "requestor_request_status"}`,
         header: "Status",
         size: 110,
         cell: (info) => (
@@ -205,8 +205,7 @@ const MyReimbursements: React.FC = () => {
         size: 100,
       },
     ];
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data]);
+  }, [user?.assignedRole]);
 
   const handleProceedDownload = (url: string) => {
     const link = document.createElement("a");
