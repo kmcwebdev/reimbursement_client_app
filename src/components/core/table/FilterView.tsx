@@ -116,7 +116,7 @@ const FilterView: React.FC<FilterViewProps> = ({ colSpan }) => {
               {Object.keys(filters).length > 0 &&
                 filterViewState &&
                 Object.keys(filterViewState).map((key) => (
-                  <>
+                  <div key={key}>
                     {filterViewState[key as keyof IFilters].length > 0 && (
                       <div key={key} className="flex items-center gap-2">
                         {key === "request_status_ids" &&
@@ -209,7 +209,7 @@ const FilterView: React.FC<FilterViewProps> = ({ colSpan }) => {
                         )}
                       </div>
                     )}
-                  </>
+                  </div>
                 ))}
             </div>
           </div>

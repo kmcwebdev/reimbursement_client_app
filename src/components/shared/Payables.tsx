@@ -27,7 +27,6 @@ import Dialog from "../core/Dialog";
 import SideDrawer from "../core/SideDrawer";
 import SkeletonLoading from "../core/SkeletonLoading";
 import StatusBadge, { type StatusType } from "../core/StatusBadge";
-import ButtonGroup from "../core/form/fields/ButtonGroup";
 import Input from "../core/form/fields/Input";
 import Table from "../core/table";
 import TableCheckbox from "../core/table/TableCheckbox";
@@ -132,7 +131,7 @@ const Payables: React.FC = () => {
     () => [
       {
         id: "select",
-        size: 10,
+        size: 40,
         header: ({ table }) => {
           if (table.getRowModel().rows.length > 0) {
             return (
@@ -147,15 +146,13 @@ const Payables: React.FC = () => {
         },
 
         cell: ({ row }) => (
-          <div className="px-4">
-            <TableCheckbox
-              checked={row.getIsSelected()}
-              tableHasChecked={selectedItems.length > 0}
-              disabled={!row.getCanSelect()}
-              indeterminate={row.getIsSomeSelected()}
-              onChange={row.getToggleSelectedHandler()}
-            />
-          </div>
+          <TableCheckbox
+            checked={row.getIsSelected()}
+            tableHasChecked={selectedItems.length > 0}
+            disabled={!row.getCanSelect()}
+            indeterminate={row.getIsSomeSelected()}
+            onChange={row.getToggleSelectedHandler()}
+          />
         ),
       },
       {
@@ -334,7 +331,7 @@ const Payables: React.FC = () => {
           )}
         </div>
 
-        <CollapseWidthAnimation
+        {/* <CollapseWidthAnimation
           isVisible={data && data.length > 0 ? true : false}
         >
           <div className="w-52">
@@ -348,25 +345,23 @@ const Payables: React.FC = () => {
               ]}
             />
           </div>
-        </CollapseWidthAnimation>
+        </CollapseWidthAnimation> */}
 
-        {!isFetching && data && (
-          <Table
-            type="approvals"
-            loading={isFetching}
-            data={data}
-            columns={columns}
-            tableState={{
-              pagination,
-              selectedItems,
-              filters,
-            }}
-            tableStateActions={{
-              setSelectedItems: setSelectedItemsState,
-              setPagination,
-            }}
-          />
-        )}
+        <Table
+          type="approvals"
+          loading={isFetching}
+          data={data}
+          columns={columns}
+          tableState={{
+            pagination,
+            selectedItems,
+            filters,
+          }}
+          tableStateActions={{
+            setSelectedItems: setSelectedItemsState,
+            setPagination,
+          }}
+        />
 
         <Dialog
           title="Download Report"
@@ -379,8 +374,10 @@ const Payables: React.FC = () => {
               <p className="text-neutral-800">
                 Downloading the report will change the reimbursements status to
                 processing. Are you sure you want to download{" "}
+
                 <strong>all</strong>{" "}
                 reimbursements?
+
               </p>
             )}
 
