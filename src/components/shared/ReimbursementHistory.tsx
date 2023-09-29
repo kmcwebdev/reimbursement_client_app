@@ -25,7 +25,6 @@ import CollapseWidthAnimation from "../animation/CollapseWidth";
 import SkeletonLoading from "../core/SkeletonLoading";
 import Input from "../core/form/fields/Input";
 import TableCheckbox from "../core/table/TableCheckbox";
-import TableSkeleton from "../core/table/TableSkeleton";
 import DateFiledFilter from "../core/table/filters/DateFiledFilter";
 
 const Dialog = dynamic(() => import("~/components/core/Dialog"));
@@ -317,8 +316,6 @@ const MyReimbursements: React.FC = () => {
             }}
           />
         )}
-
-        {isFetching && <TableSkeleton />}
       </div>
 
       <Dialog
