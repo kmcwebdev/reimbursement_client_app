@@ -2,10 +2,12 @@ import { type Row } from "@tanstack/react-table";
 import React, { type ChangeEvent } from "react";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { setSelectedItems } from "~/features/page-state.slice";
+import useLongAndShortPress from "~/hooks/use-press";
 import {
   type ReimbursementApproval,
   type ReimbursementRequest,
 } from "~/types/reimbursement.types";
+import { classNames } from "~/utils/classNames";
 import { currencyFormat } from "~/utils/currencyFormat";
 import { parseTimezone } from "~/utils/parse-timezone";
 import StatusBadge, { type StatusType } from "../StatusBadge";
@@ -25,6 +27,15 @@ const MobileListItem: React.FC<MobileListItemProps> = ({
 }) => {
   const { selectedItems } = useAppSelector((state) => state.pageTableState);
 
+  const pressHandler = useLongAndShortPress(
+    () =>
+      type !== "reimbursements"
+        ? handleLongPress(row.original.reimbursement_request_id)
+        : undefined,
+    () =>
+      onClick ? onClick(row.original.reimbursement_request_id) : undefined,
+  );
+
   const dispatch = useAppDispatch();
 
   const handleCheckboxChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -43,9 +54,24 @@ const MobileListItem: React.FC<MobileListItemProps> = ({
     }
   };
 
+  const handleLongPress = (e: string) => {
+    if (selectedItems.includes(e)) {
+      const updated = selectedItems.filter((item) => item !== e);
+      dispatch(setSelectedItems([...updated]));
+    } else {
+      dispatch(setSelectedItems([...selectedItems, e]));
+    }
+  };
+
   return (
-    <div className="p-2">
-      <div className="flex h-28 flex-col gap-4 rounded-md p-2">
+    <div>
+      <div
+        className={classNames(
+          selectedItems.includes(row.original.reimbursement_request_id) &&
+            "bg-orange-50",
+          "flex h-28 flex-col gap-4 rounded-md p-4",
+        )}
+      >
         <div className="flex">
           {type !== "reimbursements" && (
             <div className="w-6">
@@ -53,17 +79,24 @@ const MobileListItem: React.FC<MobileListItemProps> = ({
                 name="checkbox"
                 value={row.original.reimbursement_request_id}
                 onChange={handleCheckboxChange}
+                checked={selectedItems.includes(
+                  row.original.reimbursement_request_id,
+                )}
               />
             </div>
           )}
 
           <div
-            className="flex flex-1 flex-col gap-2"
-            onClick={() =>
-              onClick
-                ? onClick(row.original.reimbursement_request_id)
-                : undefined
-            }
+            className="flex flex-1 flex-col gap-1"
+            {...pressHandler}
+            // onClick={() =>
+            //   onClick
+            //     ? onClick(row.original.reimbursement_request_id)
+            //     : undefined
+            // }
+            // onMouseDown={() =>
+            //   handleDrag(row.original.reimbursement_request_id)
+            // }
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 divide-x">
@@ -94,7 +127,9 @@ const MobileListItem: React.FC<MobileListItemProps> = ({
 
             <div className="mt-2 grid grid-cols-3 divide-x text-sm text-neutral-800">
               <p>{row.original.request_type}</p>
-              <p className="text-center">{row.original.expense_type}</p>
+              <p className="w-24 truncate px-2 text-center">
+                {row.original.expense_type}
+              </p>
               <p className="text-right">
                 {currencyFormat(+row.original.amount)}
               </p>

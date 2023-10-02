@@ -58,7 +58,7 @@ const Layout: React.FC<PropsWithChildren> = ({ children }) => {
           </div>
           <div className="absolute h-16" />
 
-          <div className="flex h-16 items-center justify-evenly border-t bg-black px-8 md:hidden">
+          <div className="z-[50] flex h-16 items-center justify-evenly border-t bg-black px-8 md:hidden">
             <div
               className="flex flex-col items-center justify-center gap-1"
               onClick={() => void router.push("/dashboard")}
