@@ -43,7 +43,7 @@ import Popover from "../core/Popover";
 import { BsChevronDown } from "react-icons-all-files/bs/BsChevronDown";
 import { AiOutlineStop } from "react-icons-all-files/ai/AiOutlineStop";
 import { AiOutlinePauseCircle } from "react-icons-all-files/ai/AiOutlinePauseCircle";
-import axios, { type AxiosResponse } from "axios";
+// import axios, { type AxiosResponse } from "axios";
 import { env } from "~/env.mjs";
 
 export interface ReimbursementsCardViewProps extends PropsWithChildren {
@@ -150,31 +150,58 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
     }
   };
 
-  const downloadReport = async () => {
+  const downloadReport =  () => {
     setDownloadReportLoading(true)
-    console.log(data?.reimbursement_request_id);
-    const response = await axios.get<unknown, AxiosResponse<Blob>>(
-      `${env.NEXT_PUBLIC_BASEAPI_URL}/api/finance/reimbursements/requests/reports/finance`,
-      {
-        responseType: "blob", // Important to set this
-        headers: {
-          accept: "*/*",
-          Authorization: `Bearer ${accessToken}`,
-        },
-        params: { reimbursement_request_ids: JSON.stringify([data?.reimbursement_request_id]) },
+    const options = {
+      method: 'GET',
+      headers: {
+        accept: 'application/json',
+        Authorization: `Bearer ${accessToken}`
       },
-    );
+    };
+    
+    fetch(`${env.NEXT_PUBLIC_BASEAPI_URL}/api/finance/reimbursements/requests/reports/finance?reimbursement_request_ids=${JSON.stringify([data?.reimbursement_request_id])}`, options)
+      .then(response => response.blob())
+      .then(response => {
+        const url = window.URL.createObjectURL(new Blob([response], { type: 'csv' }));
 
-    const url = window.URL.createObjectURL(new Blob([response.data]));
-    const link = document.createElement("a");
-    link.href = url;
-    link.setAttribute("download", "filename.csv");
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    dispatch(appApiSlice.util.invalidateTags([{type: "ReimbursementApprovalList"}]));
-    setDownloadReportLoading(false);
-    closeApproveDialog();
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `filename.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        dispatch(appApiSlice.util.invalidateTags([{type: "ReimbursementApprovalList"}]));
+        dispatch(appApiSlice.util.invalidateTags([{type: "FinanceAnalytics"}]));
+        setDownloadReportLoading(false)
+        closeApproveDialog();
+      })
+      .catch(err => console.error(err)
+    ); 
+
+    // const response = await axios.get<unknown, AxiosResponse<Blob>>(
+    //   `${env.NEXT_PUBLIC_BASEAPI_URL}/api/finance/reimbursements/requests/reports/finance`,
+    //   {
+    //     responseType: "blob", // Important to set this
+    //     headers: {
+    //       accept: "*/*",
+    //       Authorization: `Bearer ${accessToken}`,
+    //     },
+    //     params: { reimbursement_request_ids: JSON.stringify([data?.reimbursement_request_id]) },
+    //   },
+    // );
+
+    // const url = window.URL.createObjectURL(new Blob([response.data]));
+    // const link = document.createElement("a");
+    // link.href = url;
+    // link.setAttribute("download", "filename.csv");
+    // document.body.appendChild(link);
+    // link.click();
+    // document.body.removeChild(link);
+    // dispatch(appApiSlice.util.invalidateTags([{type: "ReimbursementApprovalList"}]));
+    // dispatch(appApiSlice.util.invalidateTags([{type: "FinanceAnalytics"}]));
+    // setDownloadReportLoading(false);
+    // closeApproveDialog();
     closeDrawer();
   };
 
@@ -246,6 +273,7 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
       void holdReimbursement(payload)
         .unwrap()
         .then(() => {
+          dispatch(appApiSlice.util.invalidateTags([{type: "ReimbursementRequest"}]));
           showToast({
             type: "success",
             description: "Reimbursement Request successfully put onhold!",
@@ -532,7 +560,7 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
           {data && (
             <>
               <p className="text-neutral-800">
-                Are you sure you want to approve reimbursement request{" "}
+                Are you sure you want to {user?.assignedRole === 'Finance' ? "download" : "approve" } reimbursement request{" "}
                 <strong>{data.reference_no} </strong>with total amount of{" "}
                 <strong>{currencyFormat(+data.amount)}</strong>
               </p>

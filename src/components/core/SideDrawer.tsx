@@ -35,9 +35,9 @@ const SideDrawer: React.FC<DrawerProps> = ({
           <div className="fixed inset-0 bg-black bg-opacity-50 transition-opacity" />
         </Transition.Child>
 
-        <div className="fixed inset-0 overflow-hidden">
+        <div className="fixed inset-0 overflow-hidden md:bottom-0">
           <div className="absolute inset-0 overflow-hidden">
-            <div className="pointer-events-none fixed bottom-5 right-5 top-5 flex max-w-full">
+            <div className="pointer-events-none fixed bottom-14 right-0 top-0 flex max-w-full md:bottom-5 md:right-5 md:top-5">
               <Transition.Child
                 as={Fragment}
                 enter="transform transition ease-in-out duration-400 sm:duration-500"
@@ -47,8 +47,8 @@ const SideDrawer: React.FC<DrawerProps> = ({
                 leaveFrom="translate-x-0"
                 leaveTo="translate-x-full"
               >
-                <Dialog.Panel className="pointer-events-auto w-[300px] sm:w-[424px]">
-                  <div className="flex h-full flex-col rounded bg-white shadow-xl">
+                <Dialog.Panel className="pointer-events-auto w-screen text-xs sm:text-base md:w-[424px]">
+                  <div className="flex h-full flex-col bg-white shadow-xl md:rounded">
                     <div className="border-neutral-subtle flex h-[72px] items-center justify-between border-b px-4">
                       <Dialog.Title className="font-karla text-lg font-bold uppercase text-neutral-900">
                         <span>{title}</span>

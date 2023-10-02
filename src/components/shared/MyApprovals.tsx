@@ -116,7 +116,6 @@ const MyApprovals: React.FC = () => {
       return [
         {
           id: "select",
-          size: 30,
           header: ({ table }) => {
             if (table.getRowModel().rows.length > 0) {
               return (
@@ -131,22 +130,19 @@ const MyApprovals: React.FC = () => {
           },
 
           cell: ({ row }) => (
-            <div className="px-4">
-              <TableCheckbox
-                checked={row.getIsSelected()}
-                tableHasChecked={selectedItems.length > 0}
-                disabled={!row.getCanSelect()}
-                indeterminate={row.getIsSomeSelected()}
-                onChange={row.getToggleSelectedHandler()}
-              />
-            </div>
+            <TableCheckbox
+              checked={row.getIsSelected()}
+              tableHasChecked={selectedItems.length > 0}
+              disabled={!row.getCanSelect()}
+              indeterminate={row.getIsSomeSelected()}
+              onChange={row.getToggleSelectedHandler()}
+            />
           ),
         },
         {
           id: "hrbp_request_status",
           accessorKey: "hrbp_request_status",
           header: "Status",
-          size: 110,
           cell: (info) => (
             <StatusBadge
               status={(info.getValue() as string).toLowerCase() as StatusType}
@@ -165,35 +161,30 @@ const MyApprovals: React.FC = () => {
           accessorKey: "client_name",
           header: "Client",
           cell: (info) => info.getValue(),
-          size: 200,
         },
         {
           id: "employee_id",
           accessorKey: "employee_id",
           header: "ID",
           cell: (info) => info.getValue(),
-          size: 70,
         },
         {
           id: "full_name",
           accessorKey: "full_name",
           cell: (info) => info.getValue(),
           header: "Name",
-          size: 200,
         },
         {
           id: "reference_no",
           accessorKey: "reference_no",
           cell: (info) => info.getValue(),
           header: "R-ID",
-          size: 80,
         },
         {
           id: "request_type",
           accessorKey: "request_type",
           cell: (info) => info.getValue(),
           header: "Type",
-          size: 130,
           filterFn: (row, id, value: string) => {
             return value.includes(row.getValue(id));
           },
@@ -208,7 +199,6 @@ const MyApprovals: React.FC = () => {
           accessorKey: "expense_type",
           cell: (info) => info.getValue(),
           header: "Expense",
-          size: 130,
           filterFn: (row, id, value: string) => {
             return value.includes(row.getValue(id));
           },
@@ -224,7 +214,6 @@ const MyApprovals: React.FC = () => {
           cell: (info) =>
             dayjs(info.getValue() as string).format("MMM D, YYYY"),
           header: "Filed",
-          size: 120,
           filterFn: (row, id, value: string) => {
             return value.includes(row.getValue(id));
           },
@@ -239,7 +228,6 @@ const MyApprovals: React.FC = () => {
           accessorKey: "amount",
           cell: (info) => currencyFormat(info.getValue() as number),
           header: "Amount",
-          size: 110,
         },
         {
           id: "actions",
@@ -256,7 +244,6 @@ const MyApprovals: React.FC = () => {
             </Button>
           ),
           header: "",
-          size: 60,
         },
       ];
     }
@@ -264,7 +251,6 @@ const MyApprovals: React.FC = () => {
       return [
         {
           id: "select",
-          size: 30,
           header: ({ table }) => {
             if (table.getRowModel().rows.length > 0) {
               return (
@@ -293,7 +279,6 @@ const MyApprovals: React.FC = () => {
           id: "hrbp_request_status",
           accessorKey: "hrbp_request_status",
           header: "Status",
-          size: 110,
           cell: (info) => (
             <StatusBadge
               status={(info.getValue() as string).toLowerCase() as StatusType}
@@ -305,28 +290,24 @@ const MyApprovals: React.FC = () => {
           accessorKey: "employee_id",
           header: "ID",
           cell: (info) => info.getValue(),
-          size: 70,
         },
         {
           id: "full_name",
           accessorKey: "full_name",
           cell: (info) => info.getValue(),
           header: "Name",
-          size: 200,
         },
         {
           id: "reference_no",
           accessorKey: "reference_no",
           cell: (info) => info.getValue(),
           header: "R-ID",
-          size: 100,
         },
         {
           id: "request_type",
           accessorKey: "request_type",
           cell: (info) => info.getValue(),
           header: "Type",
-          size: 140,
           filterFn: (row, id, value: string) => {
             return value.includes(row.getValue(id));
           },
@@ -341,7 +322,6 @@ const MyApprovals: React.FC = () => {
           accessorKey: "expense_type",
           cell: (info) => info.getValue(),
           header: "Expense",
-          size: 170,
           filterFn: (row, id, value: string) => {
             return value.includes(row.getValue(id));
           },
@@ -357,7 +337,6 @@ const MyApprovals: React.FC = () => {
           cell: (info) =>
             dayjs(info.getValue() as string).format("MMM D, YYYY"),
           header: "Filed",
-          size: 140,
           filterFn: (row, id, value: string) => {
             return value.includes(row.getValue(id));
           },
@@ -372,7 +351,6 @@ const MyApprovals: React.FC = () => {
           accessorKey: "amount",
           cell: (info) => currencyFormat(info.getValue() as number),
           header: "Amount",
-          size: 150,
         },
         {
           id: "actions",
@@ -389,7 +367,6 @@ const MyApprovals: React.FC = () => {
             </Button>
           ),
           header: "",
-          size: 80,
         },
       ];
     }
@@ -397,7 +374,6 @@ const MyApprovals: React.FC = () => {
     return [
       {
         id: "select",
-        size: 10,
         header: ({ table }) => {
           if (table.getRowModel().rows.length > 0) {
             return (
@@ -575,14 +551,14 @@ const MyApprovals: React.FC = () => {
 
   return (
     <>
-      <div className="grid gap-y-4 bg-neutral-50 md:p-5">
+      <div className="grid bg-neutral-50 md:gap-y-4 md:p-5">
         {user && user.assignedRole === "HRBP" ? (
           <HRBPAnalytics />
         ) : (
           <ManagerAnalytics />
         )}
 
-        <div className="flex flex-col md:flex-row md:justify-between">
+        <div className="flex flex-col p-4 md:flex-row md:justify-between lg:p-0">
           <h4>For Approval</h4>
 
           {!isSearching && isLoading ? (

@@ -26,6 +26,7 @@ import {
 } from "~/types/reimbursement.types";
 import { classNames } from "~/utils/classNames";
 import FilterView from "./FilterView";
+import MobileListItem from "./MobileListItem";
 import TableEmptyState from "./TableEmptyState";
 import TableSkeleton from "./TableSkeleton";
 // import Pagination from "./Pagination";
@@ -47,6 +48,11 @@ type ReimbursementTable = {
   data?: ReimbursementRequest[];
 };
 
+type HistoryTable = {
+  type: "history";
+  data?: ReimbursementRequest[];
+};
+
 type ApprovalTable = {
   type: "approvals";
   data?: ReimbursementApproval[];
@@ -61,8 +67,9 @@ type TableProps = {
   loading?: boolean;
   tableState?: ITableState;
   tableStateActions?: ITableStateActions;
+  handleMobileClick?: (e: string) => void;
   columns: any;
-} & (ReimbursementTable | ApprovalTable | FinanceTable);
+} & (ReimbursementTable | ApprovalTable | FinanceTable | HistoryTable);
 
 interface CustomFilterMeta extends FilterMeta {
   filterComponent: () => JSX.Element;
@@ -113,25 +120,32 @@ const Table: React.FC<TableProps> = (props) => {
       ? true
       : false,
     manualPagination: true,
+    defaultColumn: {
+      minSize: 0,
+      size: Number.MAX_SAFE_INTEGER,
+      maxSize: Number.MAX_SAFE_INTEGER,
+    },
   });
 
   return (
-    <div className="relative flex flex-col gap-4 overflow-x-auto">
-      <div className="h-full w-full">
+    <div className="flex h-[31.5rem] flex-col gap-4 overflow-x-auto overflow-y-hidden">
+      <div className="h-full w-full  overflow-y-auto">
         {/* TABLE HEADER */}
-        <table className="sticky top-0 z-[5] w-full whitespace-nowrap">
-          <thead className="h-12 rounded-t-sm bg-white text-xs shadow-sm">
+        <table className="relative w-full whitespace-nowrap">
+          <thead className="sticky top-0 z-[5] hidden h-12 rounded-t-sm bg-white text-xs shadow-sm  md:table-header-group">
             {props.data &&
               table.getHeaderGroups().map((headerGroup, i) => (
-                <tr key={i} className="h-12 border-b">
-                  {headerGroup.headers.map((header, i) => {
+                <tr key={i} className="h-12">
+                  {headerGroup.headers.map((header, index) => {
                     return (
                       <th
-                        key={i}
+                        key={`header-${index}`}
                         colSpan={header.colSpan}
                         style={{
-                          minWidth: header.column.columnDef.size,
-                          maxWidth: header.column.columnDef.size,
+                          width:
+                            header.getSize() === Number.MAX_SAFE_INTEGER
+                              ? "auto"
+                              : header.getSize(),
                         }}
                       >
                         <div className="flex items-center justify-between first:pl-4 last:pr-4">
@@ -152,70 +166,89 @@ const Table: React.FC<TableProps> = (props) => {
                   })}
                 </tr>
               ))}
-
-            <FilterView colSpan={table.getAllColumns().length} />
           </thead>
+
+          <tbody className="relative h-full w-full rounded-b-sm bg-white p-4 shadow-sm">
+            <FilterView colSpan={table.getAllColumns().length} />
+            {props.loading && (
+              <TableSkeleton length={table.getAllFlatColumns().length} />
+            )}
+
+            {/* {props.loading && <MobileListSkeleton />} */}
+            {/* EMPTY STATE NO DATA */}
+            {!props.loading &&
+              props.data &&
+              props.data.length === 0 &&
+              table && <TableEmptyState type={props.type} colSpan={11} />}
+            {/* EMPTY STATE NO FILTER RESULTS */}
+            {!props.loading &&
+              props.data &&
+              props.data.length > 0 &&
+              table &&
+              table.getRowModel().rows.length === 0 && (
+                <TableEmptyState
+                  type="no-results"
+                  colSpan={table.getAllColumns().length}
+                />
+              )}
+
+            {!props.loading &&
+              props.data &&
+              table &&
+              table.getRowModel().rows.map((row, i) => {
+                return (
+                  <tr key={`mobile-${i}`} className="md:hidden">
+                    <td colSpan={row.getVisibleCells().length}>
+                      <MobileListItem
+                        type={props.type}
+                        row={row}
+                        onClick={(e: string) =>
+                          props.handleMobileClick
+                            ? props.handleMobileClick(e)
+                            : undefined
+                        }
+                      />
+                    </td>
+                  </tr>
+                );
+              })}
+
+            {!props.loading &&
+              props.data &&
+              table &&
+              table.getRowModel().rows.map((row, i) => {
+                return (
+                  <tr
+                    key={`web-${i}`}
+                    className="group hidden h-16 md:table-row"
+                  >
+                    {row.getVisibleCells().map((cell, index) => {
+                      return (
+                        <td
+                          key={`child-${index}`}
+                          className={classNames(
+                            "h-16 border-y border-b-neutral-200 px-4 md:border-b",
+                          )}
+                          style={{
+                            width:
+                              cell.column.getSize() === Number.MAX_SAFE_INTEGER
+                                ? "auto"
+                                : cell.column.getSize(),
+                          }}
+                        >
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext(),
+                          )}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                );
+              })}
+          </tbody>
         </table>
         {/* SKELETON LOADING */}
-        {props.loading && (
-          <TableSkeleton length={table.getAllFlatColumns().length} />
-        )}
-        {/* EMPTY STATE NO DATA */}
-        {!props.loading && props.data && props.data.length === 0 && table && (
-          <TableEmptyState
-            type={props.type}
-            length={table.getAllFlatColumns().length}
-          />
-        )}
-        {/* EMPTY STATE NO FILTER RESULTS */}
-        {!props.loading &&
-          props.data &&
-          props.data.length > 0 &&
-          table &&
-          table.getRowModel().rows.length === 0 && (
-            <TableEmptyState
-              type="no-results"
-              length={table.getAllFlatColumns().length}
-            />
-          )}
-        {/* TABLE DATA */}
-        {!props.loading && props.data && table && (
-          <div className="h-[30rem] w-full">
-            <table className="w-full whitespace-nowrap">
-              <tbody className="h-full w-full rounded-b-sm bg-white shadow-sm">
-                {table.getRowModel().rows.map((row, i) => {
-                  return (
-                    <tr key={i} className="group h-16">
-                      {row.getVisibleCells().map((cell, i) => {
-                        return (
-                          <td
-                            key={i}
-                            className={classNames(
-                              cell.column.columnDef.id === "select"
-                                ? "pl-4"
-                                : "pl-4",
-                              "border-b border-b-neutral-200",
-                            )}
-                            style={{
-                              minWidth: cell.column.columnDef.size,
-                              maxWidth: cell.column.columnDef.size,
-                            }}
-                          >
-                            {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext(),
-                            )}
-                          </td>
-                        );
-                      })}
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        )}
-        {/* TABLE DATA */}
       </div>
       {/* <Pagination table={table} /> */}
     </div>
