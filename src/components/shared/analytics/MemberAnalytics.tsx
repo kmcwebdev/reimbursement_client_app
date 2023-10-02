@@ -10,7 +10,7 @@ const MemberAnalytics: React.FC = () => {
   const { isFetching: analyticsIsLoading, data: analytics } =
     useGetMemberAnalyticsQuery();
   return (
-    <div className="mb-5 flex place-items-start gap-4 md:overflow-x-auto">
+    <div className="grid grid-cols-2 place-items-start gap-4 p-4 md:flex md:overflow-x-auto lg:mb-5 lg:p-0">
       {analyticsIsLoading && (
         <>
           <DashboardCardSkeleton />

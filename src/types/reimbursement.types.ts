@@ -57,6 +57,7 @@ export type ReimbursementRequest = {
   next_approval_matrix_id: string;
   next_approver_order: number;
   approvers: Approvers[];
+  client_name: string;
 };
 
 export type ReimbursementApproval = {
@@ -83,6 +84,7 @@ export type ReimbursementApproval = {
   full_name: string | null;
   email: string;
   client_id: string;
+  client_name: string;
   hrbp_approver_email: string;
   payroll_account?: string;
   employee_id: string;
