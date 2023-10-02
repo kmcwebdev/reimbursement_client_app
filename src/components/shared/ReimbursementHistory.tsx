@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { type ColumnDef, type PaginationState } from "@tanstack/react-table";
-import axios, { type AxiosResponse } from "axios";
+// import axios, { type AxiosResponse } from "axios";
 import dayjs from "dayjs";
 import dynamic from "next/dynamic";
 import React, { useEffect, useState, type ChangeEvent } from "react";
@@ -79,8 +79,6 @@ const MyReimbursements: React.FC = () => {
     pageIndex: 0,
     pageSize: 10,
   });
-
-  console.log(selectedItems);
 
   const columns = React.useMemo<ColumnDef<ReimbursementRequest>[]>(() => {
     return [
@@ -207,54 +205,101 @@ const MyReimbursements: React.FC = () => {
         size: 100,
       },
     ];
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?.assignedRole]);
+  }, [selectedItems, user?.assignedRole]);
 
-  const handleProceedDownload = (url: string) => {
-    const link = document.createElement("a");
-    link.href = url;
-    link.setAttribute("download", "filename.csv");
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    setDownloadReportLoading(false);
-    closeDownloadConfirmation();
-  };
+  // REMOVE THIS IF FETCH METHOD IS THE FINAL USAGE FOR DOWNLOAD
+  // const handleProceedDownload = (url: string) => {
+  //   const link = document.createElement("a");
+  //   link.href = url;
+  //   link.setAttribute("download", "filename.csv");
+  //   document.body.appendChild(link);
+  //   link.click();
+  //   document.body.removeChild(link);
+  //   setDownloadReportLoading(false);
+  //   closeDownloadConfirmation();
+  // };
 
-  const downloadReport = async () => {
+  const downloadReport = () => {
+    setDownloadReportLoading(true);
+    const options = {
+      method: 'GET',
+      headers: {
+        accept: 'application/json',
+        Authorization: `Bearer ${accessToken}`
+      },
+    };
+    
     if (user?.assignedRole === "Finance") {
-      setDownloadReportLoading(true);
-      const response = await axios.get<unknown, AxiosResponse<Blob>>(
-        `${env.NEXT_PUBLIC_BASEAPI_URL}/api/finance/reimbursements/requests/reports/finance`,
-        {
-          responseType: "blob", // Important to set this
-          headers: {
-            accept: "*/*",
-            Authorization: `Bearer ${accessToken}`,
-          },
-          params: { reimbursement_request_ids: JSON.stringify(selectedItems) },
-        },
-      );
+      fetch(`${env.NEXT_PUBLIC_BASEAPI_URL}/api/finance/reimbursements/requests/reports/finance?reimbursement_request_ids=${ JSON.stringify(selectedItems)}`, options)
+        .then(response => response.blob())
+        .then(response => {
+          const url = window.URL.createObjectURL(new Blob([response], { type: 'csv' }));
 
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      handleProceedDownload(url);
+          const link = document.createElement('a');
+          link.href = url;
+          link.setAttribute('download', `filename.csv`);
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          setDownloadReportLoading(false);
+          closeDownloadConfirmation();
+        })
+        .catch(err => console.error(err)
+      ); 
     }
     if (user?.assignedRole === "HRBP") {
-      setDownloadReportLoading(true);
-      const response = await axios.get<unknown, AxiosResponse<Blob>>(
-        `${env.NEXT_PUBLIC_BASEAPI_URL}/api/finance/reimbursements/requests/reports/hrbp`,
-        {
-          responseType: "blob", // Important to set this
-          headers: {
-            accept: "*/*",
-            Authorization: `Bearer ${accessToken}`,
-          },
-          params: { reimbursement_request_ids: JSON.stringify(selectedItems) },
-        },
-      );
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      handleProceedDownload(url);
+      fetch(`${env.NEXT_PUBLIC_BASEAPI_URL}/api/finance/reimbursements/requests/reports/hrbp?reimbursement_request_ids=${ JSON.stringify(selectedItems)}`, options)
+        .then(response => response.blob())
+        .then(response => {
+          const url = window.URL.createObjectURL(new Blob([response], { type: 'csv' }));
+
+          const link = document.createElement('a');
+          link.href = url;
+          link.setAttribute('download', `filename.csv`);
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          setDownloadReportLoading(false);
+          closeDownloadConfirmation();
+        })
+        .catch(err => console.error(err)
+      ); 
     }
+
+    // REMOVE THIS IF FETCH METHOD IS THE FINAL USAGE FOR DOWNLOAD
+    // if (user?.assignedRole === "Finance") {
+    //   setDownloadReportLoading(true);
+    //   const response = await axios.get<unknown, AxiosResponse<Blob>>(
+    //     `${env.NEXT_PUBLIC_BASEAPI_URL}/api/finance/reimbursements/requests/reports/finance`,
+    //     {
+    //       responseType: "blob", // Important to set this
+    //       headers: {
+    //         accept: "*/*",
+    //         Authorization: `Bearer ${accessToken}`,
+    //       },
+    //       params: { reimbursement_request_ids: JSON.stringify(selectedItems) },
+    //     },
+    //   );
+
+    //   const url = window.URL.createObjectURL(new Blob([response.data]));
+    //   handleProceedDownload(url);
+    // }
+  //   if (user?.assignedRole === "HRBP") {
+  //     setDownloadReportLoading(true);
+  //     const response = await axios.get<unknown, AxiosResponse<Blob>>(
+  //       `${env.NEXT_PUBLIC_BASEAPI_URL}/api/finance/reimbursements/requests/reports/hrbp`,
+  //       {
+  //         responseType: "blob", // Important to set this
+  //         headers: {
+  //           accept: "*/*",
+  //           Authorization: `Bearer ${accessToken}`,
+  //         },
+  //         params: { reimbursement_request_ids: JSON.stringify(selectedItems) },
+  //       },
+  //     );
+  //     const url = window.URL.createObjectURL(new Blob([response.data]));
+  //     handleProceedDownload(url);
+  //   }
   };
 
   const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {

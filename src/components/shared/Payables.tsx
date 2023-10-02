@@ -2,7 +2,7 @@
 import React, { useEffect, useState, type ChangeEvent } from "react";
 
 import { type ColumnDef, type PaginationState } from "@tanstack/react-table";
-import axios, { type AxiosResponse } from "axios";
+// import axios, { type AxiosResponse } from "axios";
 import dayjs from "dayjs";
 import dynamic from "next/dynamic";
 import { type IconType } from "react-icons-all-files";
@@ -85,30 +85,54 @@ const Payables: React.FC = () => {
 
   const { accessToken } = useAppSelector((state) => state.session);
 
-  const downloadReport = async () => {
+  const downloadReport = () => {
     setDownloadReportLoading(true)
-    const response = await axios.get<unknown, AxiosResponse<Blob>>(
-      `${env.NEXT_PUBLIC_BASEAPI_URL}/api/finance/reimbursements/requests/reports/finance`,
-      {
-        responseType: "blob", // Important to set this
-        headers: {
-          accept: "*/*",
-          Authorization: `Bearer ${accessToken}`,
-        },
-        params: { reimbursement_request_ids: JSON.stringify(selectedItems) },
-      },
-    );
+    // REMOVE THIS IF FETCH METHOD IS THE FINAL USAGE FOR DOWNLOAD
+    // const response = await axios.get<unknown, AxiosResponse<Blob>>(
+    //   `${env.NEXT_PUBLIC_BASEAPI_URL}/api/finance/reimbursements/requests/reports/finance`,
+    //   {
+    //     responseType: "blob", // Important to set this
+    //     headers: {
+    //       accept: "*/*",
+    //       Authorization: `Bearer ${accessToken}`,
+    //     },
+    //     params: { reimbursement_request_ids: JSON.stringify(selectedItems) },
+    //   },
+    // );
 
-    const url = window.URL.createObjectURL(new Blob([response.data]));
-    const link = document.createElement("a");
-    link.href = url;
-    link.setAttribute("download", "filename.csv");
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    dispatch(appApiSlice.util.invalidateTags([{type: "ReimbursementApprovalList"}]));
-    closeReportConfirmDialog();
-    setDownloadReportLoading(false)
+    // const url = window.URL.createObjectURL(new Blob([response.data]));
+    // const link = document.createElement("a");
+    // link.href = url;
+    // link.setAttribute("download", "filename.csv");
+    // document.body.appendChild(link);
+    // link.click();
+    // document.body.removeChild(link);
+    const options = {
+      method: 'GET',
+      headers: {
+        accept: 'application/json',
+        Authorization: `Bearer ${accessToken}`
+      },
+    };
+    
+    fetch(`${env.NEXT_PUBLIC_BASEAPI_URL}/api/finance/reimbursements/requests/reports/finance?reimbursement_request_ids=${ JSON.stringify(selectedItems)}`, options)
+      .then(response => response.blob())
+      .then(response => {
+        const url = window.URL.createObjectURL(new Blob([response], { type: 'csv' }));
+
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `filename.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        dispatch(appApiSlice.util.invalidateTags([{type: "ReimbursementApprovalList"}]));
+        dispatch(appApiSlice.util.invalidateTags([{type: "FinanceAnalytics"}]));
+        setDownloadReportLoading(false)
+        closeReportConfirmDialog();
+      })
+      .catch(err => console.error(err)
+    ); 
   };
 
   const dispatch = useAppDispatch();
@@ -325,7 +349,7 @@ const Payables: React.FC = () => {
                   className="whitespace-nowrap"
                   onClick={openReportConfirmDialog}
                 >
-                  Download Reports
+                  Download Report
                 </Button>
               </CollapseWidthAnimation>
             </div>
