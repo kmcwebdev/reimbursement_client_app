@@ -1,5 +1,7 @@
 import { type Row } from "@tanstack/react-table";
-import React from "react";
+import React, { type ChangeEvent } from "react";
+import { useAppDispatch, useAppSelector } from "~/app/hook";
+import { setSelectedItems } from "~/features/page-state.slice";
 import {
   type ReimbursementApproval,
   type ReimbursementRequest,
@@ -10,7 +12,7 @@ import StatusBadge, { type StatusType } from "../StatusBadge";
 import Checkbox from "../form/fields/Checkbox";
 
 interface MobileListItemProps {
-  type: "approvals" | "default";
+  type: "approvals" | "reimbursements" | "finance" | "history";
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   row: Row<ReimbursementRequest | ReimbursementApproval>;
   onClick?: (e: string) => void;
@@ -21,13 +23,37 @@ const MobileListItem: React.FC<MobileListItemProps> = ({
   row,
   onClick,
 }) => {
+  const { selectedItems } = useAppSelector((state) => state.pageTableState);
+
+  const dispatch = useAppDispatch();
+
+  const handleCheckboxChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const checked = e.target.checked;
+    const value = e.target.value;
+
+    if (checked) {
+      if (!selectedItems.includes(value)) {
+        dispatch(setSelectedItems([...selectedItems, value]));
+      }
+    } else {
+      if (selectedItems.includes(value)) {
+        const updated = selectedItems.filter((item) => item !== value);
+        dispatch(setSelectedItems([...updated]));
+      }
+    }
+  };
+
   return (
     <div className="p-2">
       <div className="flex h-28 flex-col gap-4 rounded-md p-2">
         <div className="flex">
-          {type !== "default" && (
+          {type !== "reimbursements" && (
             <div className="w-6">
-              <Checkbox name="checkbox" />
+              <Checkbox
+                name="checkbox"
+                value={row.original.reimbursement_request_id}
+                onChange={handleCheckboxChange}
+              />
             </div>
           )}
 

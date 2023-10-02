@@ -4,7 +4,7 @@ import { MdBrowserNotSupported } from "react-icons-all-files/md/MdBrowserNotSupp
 import EmptyState from "../EmptyState";
 
 interface TableEmptyStateProps {
-  type: "finance" | "approvals" | "reimbursements" | "no-results";
+  type: "finance" | "approvals" | "reimbursements" | "no-results" | "history";
   colSpan: number;
 }
 
@@ -29,6 +29,14 @@ const TableEmptyState: React.FC<TableEmptyStateProps> = ({ type, colSpan }) => {
                     icon={MdBrowserNotSupported as IconType}
                     title="No Pending Reimbursement Requests"
                     description={`Submit a reimbursement request by clicking the "Reimburse" button above the table.`}
+                  />
+                )}
+
+                {type === "history" && (
+                  <EmptyState
+                    icon={MdBrowserNotSupported as IconType}
+                    title="No Reimbursement Requests History"
+                    description={`Reimbursement History is Empty.`}
                   />
                 )}
 

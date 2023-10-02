@@ -50,6 +50,8 @@ const MyReimbursements: React.FC = () => {
     (state) => state.pageTableState,
   );
 
+  console.log(selectedItems);
+
   const [searchParams, setSearchParams] = useState<IReimbursementsFilterQuery>({
     text_search: undefined,
     expense_type_ids: undefined,
@@ -80,8 +82,6 @@ const MyReimbursements: React.FC = () => {
     pageIndex: 0,
     pageSize: 10,
   });
-
-  console.log(selectedItems);
 
   const columns = React.useMemo<ColumnDef<ReimbursementRequest>[]>(() => {
     return [
@@ -336,7 +336,7 @@ const MyReimbursements: React.FC = () => {
         </div>
 
         <Table
-          type="reimbursements"
+          type="history"
           loading={isFetching}
           data={data}
           columns={columns}

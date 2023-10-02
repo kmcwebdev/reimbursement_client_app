@@ -48,6 +48,11 @@ type ReimbursementTable = {
   data?: ReimbursementRequest[];
 };
 
+type HistoryTable = {
+  type: "history";
+  data?: ReimbursementRequest[];
+};
+
 type ApprovalTable = {
   type: "approvals";
   data?: ReimbursementApproval[];
@@ -64,7 +69,7 @@ type TableProps = {
   tableStateActions?: ITableStateActions;
   handleMobileClick?: (e: string) => void;
   columns: any;
-} & (ReimbursementTable | ApprovalTable | FinanceTable);
+} & (ReimbursementTable | ApprovalTable | FinanceTable | HistoryTable);
 
 interface CustomFilterMeta extends FilterMeta {
   filterComponent: () => JSX.Element;
@@ -219,11 +224,7 @@ const Table: React.FC<TableProps> = (props) => {
                     <tr className="md:hidden">
                       <td colSpan={row.getVisibleCells().length}>
                         <MobileListItem
-                          type={
-                            props.type === "reimbursements"
-                              ? "default"
-                              : "approvals"
-                          }
+                          type={props.type}
                           row={row}
                           onClick={(e: string) =>
                             props.handleMobileClick
