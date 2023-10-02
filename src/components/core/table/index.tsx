@@ -136,10 +136,10 @@ const Table: React.FC<TableProps> = (props) => {
             {props.data &&
               table.getHeaderGroups().map((headerGroup, i) => (
                 <tr key={i} className="h-12">
-                  {headerGroup.headers.map((header, i) => {
+                  {headerGroup.headers.map((header, index) => {
                     return (
                       <th
-                        key={i}
+                        key={`header-${index}`}
                         colSpan={header.colSpan}
                         style={{
                           width:
@@ -173,6 +173,8 @@ const Table: React.FC<TableProps> = (props) => {
             {props.loading && (
               <TableSkeleton length={table.getAllFlatColumns().length} />
             )}
+
+            {/* {props.loading && <MobileListSkeleton />} */}
             {/* EMPTY STATE NO DATA */}
             {!props.loading &&
               props.data &&
@@ -195,46 +197,53 @@ const Table: React.FC<TableProps> = (props) => {
               table &&
               table.getRowModel().rows.map((row, i) => {
                 return (
-                  <>
-                    <tr key={i} className="group hidden h-16 md:table-row">
-                      {row.getVisibleCells().map((cell, i) => {
-                        return (
-                          <td
-                            key={i}
-                            className={classNames(
-                              "h-16 border-y border-b-neutral-200 px-4 md:border-b",
-                            )}
-                            style={{
-                              width:
-                                cell.column.getSize() ===
-                                Number.MAX_SAFE_INTEGER
-                                  ? "auto"
-                                  : cell.column.getSize(),
-                            }}
-                          >
-                            {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext(),
-                            )}
-                          </td>
-                        );
-                      })}
-                    </tr>
+                  <tr key={`mobile-${i}`} className="md:hidden">
+                    <td colSpan={row.getVisibleCells().length}>
+                      <MobileListItem
+                        type={props.type}
+                        row={row}
+                        onClick={(e: string) =>
+                          props.handleMobileClick
+                            ? props.handleMobileClick(e)
+                            : undefined
+                        }
+                      />
+                    </td>
+                  </tr>
+                );
+              })}
 
-                    <tr className="md:hidden">
-                      <td colSpan={row.getVisibleCells().length}>
-                        <MobileListItem
-                          type={props.type}
-                          row={row}
-                          onClick={(e: string) =>
-                            props.handleMobileClick
-                              ? props.handleMobileClick(e)
-                              : undefined
-                          }
-                        />
-                      </td>
-                    </tr>
-                  </>
+            {!props.loading &&
+              props.data &&
+              table &&
+              table.getRowModel().rows.map((row, i) => {
+                return (
+                  <tr
+                    key={`web-${i}`}
+                    className="group hidden h-16 md:table-row"
+                  >
+                    {row.getVisibleCells().map((cell, index) => {
+                      return (
+                        <td
+                          key={`child-${index}`}
+                          className={classNames(
+                            "h-16 border-y border-b-neutral-200 px-4 md:border-b",
+                          )}
+                          style={{
+                            width:
+                              cell.column.getSize() === Number.MAX_SAFE_INTEGER
+                                ? "auto"
+                                : cell.column.getSize(),
+                          }}
+                        >
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext(),
+                          )}
+                        </td>
+                      );
+                    })}
+                  </tr>
                 );
               })}
           </tbody>
