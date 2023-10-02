@@ -131,15 +131,13 @@ const MyApprovals: React.FC = () => {
           },
 
           cell: ({ row }) => (
-            <div className="px-4">
-              <TableCheckbox
-                checked={row.getIsSelected()}
-                tableHasChecked={selectedItems.length > 0}
-                disabled={!row.getCanSelect()}
-                indeterminate={row.getIsSomeSelected()}
-                onChange={row.getToggleSelectedHandler()}
-              />
-            </div>
+            <TableCheckbox
+              checked={row.getIsSelected()}
+              tableHasChecked={selectedItems.length > 0}
+              disabled={!row.getCanSelect()}
+              indeterminate={row.getIsSomeSelected()}
+              onChange={row.getToggleSelectedHandler()}
+            />
           ),
         },
         {

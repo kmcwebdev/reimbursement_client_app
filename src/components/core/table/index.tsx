@@ -26,6 +26,7 @@ import {
 } from "~/types/reimbursement.types";
 import { classNames } from "~/utils/classNames";
 import FilterView from "./FilterView";
+import MobileListItem from "./MobileListItem";
 import TableEmptyState from "./TableEmptyState";
 import TableSkeleton from "./TableSkeleton";
 // import Pagination from "./Pagination";
@@ -116,14 +117,14 @@ const Table: React.FC<TableProps> = (props) => {
   });
 
   return (
-    <div className="relative flex flex-col gap-4 overflow-x-auto">
-      <div className="h-full w-full">
+    <div className="flex h-[31.5rem] flex-col gap-4 overflow-x-auto overflow-y-hidden">
+      <div className="h-full w-full  overflow-y-auto">
         {/* TABLE HEADER */}
-        <table className="sticky top-0 z-[5] w-full whitespace-nowrap">
-          <thead className="h-12 rounded-t-sm bg-white text-xs shadow-sm">
+        <table className="relative w-full whitespace-nowrap">
+          <thead className="sticky top-0 z-[5] h-12 rounded-t-sm bg-white text-xs  shadow-sm">
             {props.data &&
               table.getHeaderGroups().map((headerGroup, i) => (
-                <tr key={i} className="h-12 border-b">
+                <tr key={i} className="h-12">
                   {headerGroup.headers.map((header, i) => {
                     return (
                       <th
@@ -152,49 +153,43 @@ const Table: React.FC<TableProps> = (props) => {
                   })}
                 </tr>
               ))}
-
-            <FilterView colSpan={table.getAllColumns().length} />
           </thead>
-        </table>
-        {/* SKELETON LOADING */}
-        {props.loading && (
-          <TableSkeleton length={table.getAllFlatColumns().length} />
-        )}
-        {/* EMPTY STATE NO DATA */}
-        {!props.loading && props.data && props.data.length === 0 && table && (
-          <TableEmptyState
-            type={props.type}
-            length={table.getAllFlatColumns().length}
-          />
-        )}
-        {/* EMPTY STATE NO FILTER RESULTS */}
-        {!props.loading &&
-          props.data &&
-          props.data.length > 0 &&
-          table &&
-          table.getRowModel().rows.length === 0 && (
-            <TableEmptyState
-              type="no-results"
-              length={table.getAllFlatColumns().length}
-            />
-          )}
-        {/* TABLE DATA */}
-        {!props.loading && props.data && table && (
-          <div className="h-[30rem] w-full">
-            <table className="w-full whitespace-nowrap">
-              <tbody className="h-full w-full rounded-b-sm bg-white shadow-sm">
-                {table.getRowModel().rows.map((row, i) => {
-                  return (
-                    <tr key={i} className="group h-16">
+
+          <tbody className="relative h-full w-full rounded-b-sm bg-white shadow-sm">
+            <FilterView colSpan={table.getAllColumns().length} />
+            {props.loading && (
+              <TableSkeleton length={table.getAllFlatColumns().length} />
+            )}
+            {/* EMPTY STATE NO DATA */}
+            {!props.loading &&
+              props.data &&
+              props.data.length === 0 &&
+              table && <TableEmptyState type={props.type} colSpan={11} />}
+            {/* EMPTY STATE NO FILTER RESULTS */}
+            {!props.loading &&
+              props.data &&
+              props.data.length > 0 &&
+              table &&
+              table.getRowModel().rows.length === 0 && (
+                <TableEmptyState
+                  type="no-results"
+                  colSpan={table.getAllColumns().length}
+                />
+              )}
+
+            {!props.loading &&
+              props.data &&
+              table &&
+              table.getRowModel().rows.map((row, i) => {
+                return (
+                  <>
+                    <tr key={i} className="group hidden h-16 md:table-row">
                       {row.getVisibleCells().map((cell, i) => {
                         return (
                           <td
                             key={i}
                             className={classNames(
-                              cell.column.columnDef.id === "select"
-                                ? "pl-4"
-                                : "pl-4",
-                              "border-b border-b-neutral-200",
+                              "h-16 border-y border-b-neutral-200 px-4 md:border-b",
                             )}
                             style={{
                               minWidth: cell.column.columnDef.size,
@@ -209,13 +204,25 @@ const Table: React.FC<TableProps> = (props) => {
                         );
                       })}
                     </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        )}
-        {/* TABLE DATA */}
+
+                    <tr className="md:hidden">
+                      <td colSpan={row.getVisibleCells().length}>
+                        <MobileListItem
+                          type={
+                            props.type === "reimbursements"
+                              ? "default"
+                              : "approvals"
+                          }
+                          row={row}
+                        />
+                      </td>
+                    </tr>
+                  </>
+                );
+              })}
+          </tbody>
+        </table>
+        {/* SKELETON LOADING */}
       </div>
       {/* <Pagination table={table} /> */}
     </div>

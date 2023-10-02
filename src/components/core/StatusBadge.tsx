@@ -37,7 +37,12 @@ const statusVariant = cva(
 
 const StatusBadge: React.FC<StatusBadgeProps> = ({ status, label }) => {
   return (
-    <div className={classNames("capitalize", statusVariant({ status }))}>
+    <div
+      className={classNames(
+        "text-xs capitalize md:text-sm",
+        statusVariant({ status }),
+      )}
+    >
       {label ? label : status}
     </div>
   );

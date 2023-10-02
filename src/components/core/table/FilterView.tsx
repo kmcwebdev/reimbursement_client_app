@@ -92,12 +92,12 @@ const FilterView: React.FC<FilterViewProps> = ({ colSpan }) => {
   };
 
   return (
-    <tr className="relative">
-      <th
+    <tr className="sticky top-12 z-[4] bg-white shadow-sm">
+      <td
         colSpan={colSpan}
         className={classNames(
           Object.keys(filters).length > 0
-            ? "h-16 border-b px-4 opacity-100 first:px-0"
+            ? "h-16 px-4 opacity-100 first:px-0"
             : "h-0 p-0 opacity-0",
           "overflow-hidden",
         )}
@@ -222,7 +222,7 @@ const FilterView: React.FC<FilterViewProps> = ({ colSpan }) => {
             </Button>
           </div>
         </div>
-      </th>
+      </td>
     </tr>
   );
 };

@@ -229,10 +229,10 @@ const MyReimbursements: React.FC = () => {
 
   return (
     <>
-      <div className="grid gap-y-4 bg-neutral-50 p-5">
+      <div className="grid bg-neutral-50 md:gap-y-4 lg:p-5">
         <MemberAnalytics />
 
-        <div className="flex justify-between">
+        <div className="flex justify-between p-4 lg:p-0">
           <h4>Reimbursements</h4>
           {isFetching && <SkeletonLoading className="h-10 w-[5rem] rounded" />}
           {!isFetching && (
