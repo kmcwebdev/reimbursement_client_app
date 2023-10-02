@@ -93,7 +93,7 @@ const FilterView: React.FC<FilterViewProps> = ({ colSpan }) => {
 
   return (
     <tr className="sticky top-12 z-[4] bg-white shadow-sm">
-      <td
+      <th
         colSpan={colSpan}
         className={classNames(
           Object.keys(filters).length > 0
@@ -222,7 +222,7 @@ const FilterView: React.FC<FilterViewProps> = ({ colSpan }) => {
             </Button>
           </div>
         </div>
-      </td>
+      </th>
     </tr>
   );
 };

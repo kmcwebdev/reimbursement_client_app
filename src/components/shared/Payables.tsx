@@ -8,6 +8,7 @@ import dynamic from "next/dynamic";
 import { type IconType } from "react-icons-all-files";
 import { AiOutlineSearch } from "react-icons-all-files/ai/AiOutlineSearch";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
+import { appApiSlice } from "~/app/rtkQuery";
 import { env } from "~/env.mjs";
 import { setSelectedItems } from "~/features/page-state.slice";
 import {
@@ -37,7 +38,6 @@ import StatusFilter, {
 } from "../core/table/filters/StatusFilter";
 import ReimbursementsCardView from "../reimbursement-view";
 import FinanceAnalytics from "./analytics/FinanceAnalytics";
-import { appApiSlice } from "~/app/rtkQuery";
 
 const ReimbursementTypeFilter = dynamic(
   () => import("../core/table/filters/ReimbursementTypeFilter"),
@@ -55,7 +55,6 @@ const Payables: React.FC = () => {
     from: undefined,
     to: undefined,
   });
-
 
   const [downloadReportLoading, setDownloadReportLoading] = useState(false);
   const debouncedSearchText = useDebounce(searchParams.text_search, 500);
@@ -86,7 +85,7 @@ const Payables: React.FC = () => {
   const { accessToken } = useAppSelector((state) => state.session);
 
   const downloadReport = async () => {
-    setDownloadReportLoading(true)
+    setDownloadReportLoading(true);
     const response = await axios.get<unknown, AxiosResponse<Blob>>(
       `${env.NEXT_PUBLIC_BASEAPI_URL}/api/finance/reimbursements/requests/reports/finance`,
       {
@@ -106,9 +105,11 @@ const Payables: React.FC = () => {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    dispatch(appApiSlice.util.invalidateTags([{type: "ReimbursementApprovalList"}]));
+    dispatch(
+      appApiSlice.util.invalidateTags([{ type: "ReimbursementApprovalList" }]),
+    );
     closeReportConfirmDialog();
-    setDownloadReportLoading(false)
+    setDownloadReportLoading(false);
   };
 
   const dispatch = useAppDispatch();
@@ -131,7 +132,6 @@ const Payables: React.FC = () => {
     () => [
       {
         id: "select",
-        size: 40,
         header: ({ table }) => {
           if (table.getRowModel().rows.length > 0) {
             return (
@@ -186,7 +186,6 @@ const Payables: React.FC = () => {
       },
       {
         id: "full_name",
-        size: 220,
         accessorKey: "full_name",
         cell: (info) => info.getValue(),
         header: "Name",
@@ -280,7 +279,7 @@ const Payables: React.FC = () => {
 
   return (
     <>
-      <div className="grid gap-y-4 bg-neutral-50 p-5">
+      <div className="grid bg-neutral-50 md:gap-y-4 lg:p-5">
         <FinanceAnalytics />
 
         <SideDrawer
@@ -302,7 +301,7 @@ const Payables: React.FC = () => {
         </SideDrawer>
 
         {/* table */}
-        <div className="flex flex-col justify-between gap-2 md:flex-row">
+        <div className="flex flex-col justify-between gap-2 p-4 md:flex-row lg:p-0">
           <h4>For Approvals</h4>
 
           {!isSearching && isFetching ? (
@@ -375,10 +374,7 @@ const Payables: React.FC = () => {
               <p className="text-neutral-800">
                 Downloading the report will change the reimbursements status to
                 processing. Are you sure you want to download{" "}
-
-                <strong>all</strong>{" "}
-                reimbursements?
-
+                <strong>all</strong> reimbursements?
               </p>
             )}
 
@@ -407,8 +403,7 @@ const Payables: React.FC = () => {
               <p className="text-neutral-800">
                 Downloading the report will change the reimbursements status to
                 processing. Are you sure you want to download{" "}
-                <strong>{selectedItems.length}</strong>{" "}
-                reimbursements?
+                <strong>{selectedItems.length}</strong> reimbursements?
               </p>
             )}
 

@@ -13,17 +13,32 @@ interface MobileListItemProps {
   type: "approvals" | "default";
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   row: Row<ReimbursementRequest | ReimbursementApproval>;
+  onClick?: (e: string) => void;
 }
 
-const MobileListItem: React.FC<MobileListItemProps> = ({ type, row }) => {
+const MobileListItem: React.FC<MobileListItemProps> = ({
+  type,
+  row,
+  onClick,
+}) => {
   return (
     <div className="p-2">
       <div className="flex h-28 flex-col gap-4 rounded-md p-2">
         <div className="flex">
-          <div className="w-6">
-            <Checkbox name="checkbox" />
-          </div>
-          <div className="flex flex-1 flex-col gap-2">
+          {type !== "default" && (
+            <div className="w-6">
+              <Checkbox name="checkbox" />
+            </div>
+          )}
+
+          <div
+            className="flex flex-1 flex-col gap-2"
+            onClick={() =>
+              onClick
+                ? onClick(row.original.reimbursement_request_id)
+                : undefined
+            }
+          >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 divide-x">
                 <StatusBadge

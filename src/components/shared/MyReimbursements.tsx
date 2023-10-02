@@ -5,7 +5,7 @@ import dayjs from "dayjs";
 import dynamic from "next/dynamic";
 import React, { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
-import { HiPlusCircle } from "react-icons-all-files/hi/HiPlusCircle";
+import { AiOutlinePlusCircle } from "react-icons-all-files/ai/AiOutlinePlusCircle";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { appApiSlice } from "~/app/rtkQuery";
 import { Button } from "~/components/core/Button";
@@ -88,7 +88,6 @@ const MyReimbursements: React.FC = () => {
         id: "finance_request_status",
         accessorKey: "finance_request_status",
         header: "Status",
-        size: 120,
         cell: (info) => (
           <StatusBadge
             status={(info.getValue() as string).toLowerCase() as StatusType}
@@ -107,14 +106,12 @@ const MyReimbursements: React.FC = () => {
         accessorKey: "reference_no",
         cell: (info) => info.getValue(),
         header: "R-ID",
-        size: 90,
       },
       {
         id: "request_type",
         accessorKey: "request_type",
         cell: (info) => info.getValue(),
         header: "Type",
-        size: 130,
         filterFn: (row, id, value: string) => {
           return value.includes(row.getValue(id));
         },
@@ -129,7 +126,6 @@ const MyReimbursements: React.FC = () => {
         accessorKey: "expense_type",
         cell: (info) => info.getValue(),
         header: "Expense",
-        size: 130,
         filterFn: (row, id, value: string) => {
           return value.includes(row.getValue(id));
         },
@@ -144,7 +140,6 @@ const MyReimbursements: React.FC = () => {
         accessorKey: "created_at",
         cell: (info) => dayjs(info.getValue() as string).format("MMM D, YYYY"),
         header: "Filed",
-        size: 130,
         filterFn: (row, id, value: string) => {
           return value.includes(row.getValue(id));
         },
@@ -157,7 +152,6 @@ const MyReimbursements: React.FC = () => {
         accessorKey: "amount",
         cell: (info) => currencyFormat(info.getValue() as number),
         header: "Total",
-        size: 100,
       },
       {
         id: "actions",
@@ -174,7 +168,6 @@ const MyReimbursements: React.FC = () => {
           </Button>
         ),
         header: "",
-        size: 70,
       },
     ];
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -232,9 +225,11 @@ const MyReimbursements: React.FC = () => {
       <div className="grid bg-neutral-50 md:gap-y-4 lg:p-5">
         <MemberAnalytics />
 
-        <div className="flex justify-between p-4 lg:p-0">
+        <div className="flex items-center justify-between p-4 lg:p-0">
           <h4>Reimbursements</h4>
-          {isFetching && <SkeletonLoading className="h-10 w-[5rem] rounded" />}
+          {isFetching && (
+            <SkeletonLoading className="h-5 w-5 rounded-full md:h-10 md:w-[5rem] md:rounded" />
+          )}
           {!isFetching && (
             <>
               <Button
@@ -249,7 +244,7 @@ const MyReimbursements: React.FC = () => {
                 className="block md:hidden"
                 onClick={() => dispatch(toggleFormDialog())}
               >
-                <HiPlusCircle className="h-5 w-5" />
+                <AiOutlinePlusCircle className="h-5 w-5" />
               </Button>
             </>
           )}
@@ -260,6 +255,10 @@ const MyReimbursements: React.FC = () => {
           loading={isFetching}
           data={data}
           columns={columns}
+          handleMobileClick={(e: string) => {
+            setFocusedReimbursementId(e);
+            open();
+          }}
           tableState={{
             filters,
             pagination,

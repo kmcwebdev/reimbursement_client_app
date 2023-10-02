@@ -62,6 +62,7 @@ type TableProps = {
   loading?: boolean;
   tableState?: ITableState;
   tableStateActions?: ITableStateActions;
+  handleMobileClick?: (e: string) => void;
   columns: any;
 } & (ReimbursementTable | ApprovalTable | FinanceTable);
 
@@ -114,6 +115,11 @@ const Table: React.FC<TableProps> = (props) => {
       ? true
       : false,
     manualPagination: true,
+    defaultColumn: {
+      minSize: 0,
+      size: Number.MAX_SAFE_INTEGER,
+      maxSize: Number.MAX_SAFE_INTEGER,
+    },
   });
 
   return (
@@ -121,7 +127,7 @@ const Table: React.FC<TableProps> = (props) => {
       <div className="h-full w-full  overflow-y-auto">
         {/* TABLE HEADER */}
         <table className="relative w-full whitespace-nowrap">
-          <thead className="sticky top-0 z-[5] h-12 rounded-t-sm bg-white text-xs  shadow-sm">
+          <thead className="sticky top-0 z-[5] hidden h-12 rounded-t-sm bg-white text-xs shadow-sm  md:table-header-group">
             {props.data &&
               table.getHeaderGroups().map((headerGroup, i) => (
                 <tr key={i} className="h-12">
@@ -131,8 +137,10 @@ const Table: React.FC<TableProps> = (props) => {
                         key={i}
                         colSpan={header.colSpan}
                         style={{
-                          minWidth: header.column.columnDef.size,
-                          maxWidth: header.column.columnDef.size,
+                          width:
+                            header.getSize() === Number.MAX_SAFE_INTEGER
+                              ? "auto"
+                              : header.getSize(),
                         }}
                       >
                         <div className="flex items-center justify-between first:pl-4 last:pr-4">
@@ -155,7 +163,7 @@ const Table: React.FC<TableProps> = (props) => {
               ))}
           </thead>
 
-          <tbody className="relative h-full w-full rounded-b-sm bg-white shadow-sm">
+          <tbody className="relative h-full w-full rounded-b-sm bg-white p-4 shadow-sm">
             <FilterView colSpan={table.getAllColumns().length} />
             {props.loading && (
               <TableSkeleton length={table.getAllFlatColumns().length} />
@@ -192,8 +200,11 @@ const Table: React.FC<TableProps> = (props) => {
                               "h-16 border-y border-b-neutral-200 px-4 md:border-b",
                             )}
                             style={{
-                              minWidth: cell.column.columnDef.size,
-                              maxWidth: cell.column.columnDef.size,
+                              width:
+                                cell.column.getSize() ===
+                                Number.MAX_SAFE_INTEGER
+                                  ? "auto"
+                                  : cell.column.getSize(),
                             }}
                           >
                             {flexRender(
@@ -214,6 +225,11 @@ const Table: React.FC<TableProps> = (props) => {
                               : "approvals"
                           }
                           row={row}
+                          onClick={(e: string) =>
+                            props.handleMobileClick
+                              ? props.handleMobileClick(e)
+                              : undefined
+                          }
                         />
                       </td>
                     </tr>

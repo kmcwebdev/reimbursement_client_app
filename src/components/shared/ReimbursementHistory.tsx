@@ -6,6 +6,7 @@ import dynamic from "next/dynamic";
 import React, { useEffect, useState, type ChangeEvent } from "react";
 import { type IconType } from "react-icons-all-files";
 import { AiOutlineSearch } from "react-icons-all-files/ai/AiOutlineSearch";
+import { MdDownload } from "react-icons-all-files/md/MdDownload";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { Button } from "~/components/core/Button";
 import StatusBadge, { type StatusType } from "~/components/core/StatusBadge";
@@ -86,7 +87,6 @@ const MyReimbursements: React.FC = () => {
     return [
       {
         id: "select",
-        size: 30,
         header: ({ table }) => {
           if (table.getRowModel().rows.length > 0) {
             return (
@@ -111,10 +111,22 @@ const MyReimbursements: React.FC = () => {
         ),
       },
       {
-        id: `${user?.assignedRole === "Finance" ? "finance_request_status" : user?.assignedRole === "HRBP" ? "hrbp_request_status" : "requestor_request_status"}`,
-        accessorKey: `${user?.assignedRole === "Finance" ? "finance_request_status" : user?.assignedRole === "HRBP" ? "hrbp_request_status" : "requestor_request_status"}`,
+        id: `${
+          user?.assignedRole === "Finance"
+            ? "finance_request_status"
+            : user?.assignedRole === "HRBP"
+            ? "hrbp_request_status"
+            : "requestor_request_status"
+        }`,
+        accessorKey: `${
+          user?.assignedRole === "Finance"
+            ? "finance_request_status"
+            : user?.assignedRole === "HRBP"
+            ? "hrbp_request_status"
+            : "requestor_request_status"
+        }`,
         header: "Status",
-        size: 110,
+
         cell: (info) => (
           <StatusBadge
             status={(info.getValue() as string).toLowerCase() as StatusType}
@@ -133,35 +145,31 @@ const MyReimbursements: React.FC = () => {
         accessorKey: "client_name",
         cell: (info) => info.getValue(),
         header: "Client",
-        size: 200,
       },
       {
         id: "employee_id",
         accessorKey: "employee_id",
         cell: (info) => info.getValue(),
         header: "ID",
-        size: 70,
       },
       {
         id: "full_name",
         accessorKey: "full_name",
         cell: (info) => info.getValue(),
         header: "Name",
-        size: 220,
       },
       {
         id: "reference_no",
         accessorKey: "reference_no",
         cell: (info) => info.getValue(),
         header: "R-ID",
-        size: 80,
       },
       {
         id: "request_type",
         accessorKey: "request_type",
         cell: (info) => info.getValue(),
         header: "Type",
-        size: 120,
+
         filterFn: (row, id, value: string) => {
           return value.includes(row.getValue(id));
         },
@@ -176,7 +184,7 @@ const MyReimbursements: React.FC = () => {
         accessorKey: "expense_type",
         cell: (info) => info.getValue(),
         header: "Expense",
-        size: 120,
+
         filterFn: (row, id, value: string) => {
           return value.includes(row.getValue(id));
         },
@@ -191,7 +199,7 @@ const MyReimbursements: React.FC = () => {
         accessorKey: "created_at",
         cell: (info) => dayjs(info.getValue() as string).format("MMM D, YYYY"),
         header: `${user?.assignedRole === "Finance" ? "Approved" : "Filed"}`,
-        size: 100,
+
         filterFn: (row, id, value: string) => {
           return value.includes(row.getValue(id));
         },
@@ -204,10 +212,9 @@ const MyReimbursements: React.FC = () => {
         accessorKey: "amount",
         cell: (info) => currencyFormat(info.getValue() as number),
         header: "Total",
-        size: 100,
       },
     ];
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.assignedRole]);
 
   const handleProceedDownload = (url: string) => {
@@ -272,9 +279,29 @@ const MyReimbursements: React.FC = () => {
 
   return (
     <>
-      <div className="grid gap-y-4 bg-neutral-50 p-5">
-        <div className="flex flex-col justify-between gap-2 md:flex-row">
-          <h4>Reimbursements History</h4>
+      <div className="grid bg-neutral-50 md:gap-y-4 lg:p-5">
+        <div className="flex flex-col justify-between gap-2 p-4 md:flex-row lg:p-0">
+          <div className="flex items-center justify-between">
+            <h4>Reimbursements History</h4>
+            {!isSearching && isFetching ? (
+              <SkeletonLoading className="h-5 w-5 rounded-full" />
+            ) : (
+              <>
+                {user &&
+                  (user.assignedRole === "Finance" ||
+                    user.assignedRole === "HRBP") && (
+                    <CollapseWidthAnimation
+                      isVisible={data && data.length > 0 ? true : false}
+                    >
+                      <MdDownload
+                        onClick={openDownloadConfirmation}
+                        className="h-5 w-5 rounded-full border border-green-600 p-0.5 text-green-600"
+                      />
+                    </CollapseWidthAnimation>
+                  )}
+              </>
+            )}
+          </div>
 
           {!isSearching && isFetching ? (
             <SkeletonLoading className="h-10 w-full rounded-sm md:w-64" />
@@ -297,7 +324,7 @@ const MyReimbursements: React.FC = () => {
                   >
                     <Button
                       variant="success"
-                      className="whitespace-nowrap"
+                      className="hidden whitespace-nowrap md:flex"
                       onClick={openDownloadConfirmation}
                     >
                       Download Report
