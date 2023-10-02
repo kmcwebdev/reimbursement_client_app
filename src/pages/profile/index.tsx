@@ -22,7 +22,7 @@ const Profile: NextPage<DashboardSSRProps> = () => {
         <title>Profile</title>
       </Head>
       <div className="flex w-full flex-col gap-4 p-4">
-        <div className="flex gap-8 rounded-md bg-white p-8 shadow-sm">
+        <div className="flex flex-col items-center gap-8 rounded-md bg-white p-8 shadow-sm md:flex-row md:items-start">
           <div className="h-40 w-40 rounded-full border border-orange-600 p-1">
             <div className="grid h-full w-full place-items-center rounded-full bg-neutral-300 font-barlow font-bold text-orange-600">
               <h1 className="text-7xl">

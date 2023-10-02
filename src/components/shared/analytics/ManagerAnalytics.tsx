@@ -10,7 +10,7 @@ const ManagerAnalytics: React.FC = () => {
   const { isLoading: analyticsIsLoading, data: analytics } =
     useGetManagerAnalyticsQuery();
   return (
-    <div className="mb-5 flex gap-4">
+    <div className="flex gap-4 p-4 lg:mb-5 lg:p-0">
       {analyticsIsLoading && (
         <>
           <DashboardCardSkeleton />

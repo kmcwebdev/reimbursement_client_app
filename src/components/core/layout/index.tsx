@@ -51,14 +51,14 @@ const Layout: React.FC<PropsWithChildren> = ({ children }) => {
         <div className="relative flex h-[calc(100vh_-_4rem)] w-full flex-col">
           <div
             className={classNames(
-              "relative h-full w-full overflow-hidden overflow-y-auto bg-neutral-100 p-4 lg:p-0",
+              "relative h-full w-full overflow-hidden overflow-y-auto bg-neutral-100",
             )}
           >
             {children}
           </div>
           <div className="absolute h-16" />
 
-          <div className="flex h-16 items-center justify-evenly border-t bg-black px-8 md:hidden">
+          <div className="z-[50] flex h-16 items-center justify-evenly border-t bg-black px-8 md:hidden">
             <div
               className="flex flex-col items-center justify-center gap-1"
               onClick={() => void router.push("/dashboard")}
