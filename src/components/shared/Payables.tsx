@@ -15,6 +15,7 @@ import {
   useGetAllApprovalQuery,
   useGetRequestQuery,
 } from "~/features/reimbursement-api-slice";
+import { useDebounce } from "~/hooks/use-debounce";
 import { useDialogState } from "~/hooks/use-dialog-state";
 import { useReportDownload } from "~/hooks/use-report-download";
 import {
@@ -22,27 +23,31 @@ import {
   type ReimbursementApproval,
 } from "~/types/reimbursement.types";
 import { currencyFormat } from "~/utils/currencyFormat";
-import { useDebounce } from "~/utils/useDebounce";
 import CollapseWidthAnimation from "../animation/CollapseWidth";
 import { Button } from "../core/Button";
-import Dialog from "../core/Dialog";
-import SideDrawer from "../core/SideDrawer";
 import SkeletonLoading from "../core/SkeletonLoading";
 import StatusBadge, { type StatusType } from "../core/StatusBadge";
 import { showToast } from "../core/Toast";
 import Input from "../core/form/fields/Input";
 import Table from "../core/table";
 import TableCheckbox from "../core/table/TableCheckbox";
-import DateFiledFilter from "../core/table/filters/DateFiledFilter";
-import ExpenseTypeFilter from "../core/table/filters/ExpenseTypeFilter";
-import StatusFilter, {
-  type FilterProps,
-} from "../core/table/filters/StatusFilter";
-import ReimbursementsCardView from "../reimbursement-view";
+import { type FilterProps } from "../core/table/filters/StatusFilter";
 import FinanceAnalytics from "./analytics/FinanceAnalytics";
 
+const ReimbursementsCardView = dynamic(() => import("../reimbursement-view"));
+const SideDrawer = dynamic(() => import("../core/SideDrawer"));
+const Dialog = dynamic(() => import("../core/Dialog"));
 const ReimbursementTypeFilter = dynamic(
   () => import("../core/table/filters/ReimbursementTypeFilter"),
+);
+const StatusFilter = dynamic(
+  () => import("../core/table/filters/StatusFilter"),
+);
+const ExpenseTypeFilter = dynamic(
+  () => import("../core/table/filters/ExpenseTypeFilter"),
+);
+const DateFiledFilter = dynamic(
+  () => import("../core/table/filters/DateFiledFilter"),
 );
 
 const Payables: React.FC = () => {

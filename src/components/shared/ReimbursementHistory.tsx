@@ -15,6 +15,7 @@ import { type FilterProps } from "~/components/core/table/filters/StatusFilter";
 import { env } from "~/env.mjs";
 import { setSelectedItems } from "~/features/page-state.slice";
 import { useGetAllRequestsQuery } from "~/features/reimbursement-api-slice";
+import { useDebounce } from "~/hooks/use-debounce";
 import { useDialogState } from "~/hooks/use-dialog-state";
 import { useReportDownload } from "~/hooks/use-report-download";
 import {
@@ -22,16 +23,13 @@ import {
   type ReimbursementRequest,
 } from "~/types/reimbursement.types";
 import { currencyFormat } from "~/utils/currencyFormat";
-import { useDebounce } from "~/utils/useDebounce";
 import CollapseWidthAnimation from "../animation/CollapseWidth";
 import SkeletonLoading from "../core/SkeletonLoading";
 import { showToast } from "../core/Toast";
 import Input from "../core/form/fields/Input";
 import TableCheckbox from "../core/table/TableCheckbox";
-import DateFiledFilter from "../core/table/filters/DateFiledFilter";
 
 const Dialog = dynamic(() => import("~/components/core/Dialog"));
-
 const StatusFilter = dynamic(
   () => import("~/components/core/table/filters/StatusFilter"),
 );
@@ -40,6 +38,10 @@ const ExpenseTypeFilter = dynamic(
 );
 const ReimbursementTypeFilter = dynamic(
   () => import("~/components/core/table/filters/ReimbursementTypeFilter"),
+);
+
+const DateFiledFilter = dynamic(
+  () => import("~/components/core/table/filters/DateFiledFilter"),
 );
 
 const MyReimbursements: React.FC = () => {

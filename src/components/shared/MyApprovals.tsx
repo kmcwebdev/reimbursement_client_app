@@ -8,12 +8,10 @@ import { MdSearch } from "react-icons-all-files/md/MdSearch";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { appApiSlice } from "~/app/rtkQuery";
 import { Button } from "~/components/core/Button";
-import SideDrawer from "~/components/core/SideDrawer";
 import StatusBadge, { type StatusType } from "~/components/core/StatusBadge";
 import Table from "~/components/core/table";
 import TableCheckbox from "~/components/core/table/TableCheckbox";
 import { type FilterProps } from "~/components/core/table/filters/StatusFilter";
-import ReimbursementsCardView from "~/components/reimbursement-view";
 import { Can } from "~/context/AbilityContext";
 import { setSelectedItems } from "~/features/page-state.slice";
 import {
@@ -21,6 +19,7 @@ import {
   useGetAllApprovalQuery,
   useGetRequestQuery,
 } from "~/features/reimbursement-api-slice";
+import { useDebounce } from "~/hooks/use-debounce";
 import { useDialogState } from "~/hooks/use-dialog-state";
 import {
   type IReimbursementsFilterQuery,
@@ -28,15 +27,18 @@ import {
 } from "~/types/reimbursement.types";
 import { classNames } from "~/utils/classNames";
 import { currencyFormat } from "~/utils/currencyFormat";
-import { useDebounce } from "~/utils/useDebounce";
 import CollapseWidthAnimation from "../animation/CollapseWidth";
-import Dialog from "../core/Dialog";
 import SkeletonLoading from "../core/SkeletonLoading";
 import { showToast } from "../core/Toast";
 import Input from "../core/form/fields/Input";
-import DateFiledFilter from "../core/table/filters/DateFiledFilter";
+
 import HRBPAnalytics from "./analytics/HRBPAnalytics";
 import ManagerAnalytics from "./analytics/ManagerAnalytics";
+const ReimbursementsCardView = dynamic(
+  () => import("~/components/reimbursement-view"),
+);
+const SideDrawer = dynamic(() => import("~/components/core/SideDrawer"));
+const Dialog = dynamic(() => import("~/components/core/Dialog"));
 
 const StatusFilter = dynamic(
   () => import("~/components/core/table/filters/StatusFilter"),
@@ -46,6 +48,10 @@ const ExpenseTypeFilter = dynamic(
 );
 const ReimbursementTypeFilter = dynamic(
   () => import("~/components/core/table/filters/ReimbursementTypeFilter"),
+);
+
+const DateFiledFilter = dynamic(
+  () => import("~/components/core/table/filters/DateFiledFilter"),
 );
 
 const MyApprovals: React.FC = () => {
