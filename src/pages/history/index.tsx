@@ -23,7 +23,6 @@ const ReimbursementsHistory: NextPage<DashboardSSRProps> = () => {
 
 export default ReimbursementsHistory;
 
-
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const user = await getUserFromServerSideProps(context);
 
@@ -34,6 +33,20 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         permanent: false,
       },
     };
+  }
+
+  if (user) {
+    const userOrgs = user.getOrgs();
+    const assignedRole = userOrgs[0].assignedRole;
+
+    if (assignedRole === "Member") {
+      return {
+        redirect: {
+          destination: "/401",
+          permanent: false,
+        },
+      };
+    }
   }
 
   return {
