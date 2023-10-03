@@ -13,7 +13,7 @@ const FinanceAnalytics: React.FC = () => {
   return (
     <div className="mb-5 place-items-start gap-4 md:overflow-x-auto">
       {analyticsIsLoading && (
-        <div className="grid grid-cols-2 gap-3 sm:flex">
+        <div className="grid grid-cols-2 gap-3 p-4 sm:flex lg:p-0">
           <DashboardCardSkeleton />
           <DashboardCardSkeleton />
           <DashboardCardSkeleton />

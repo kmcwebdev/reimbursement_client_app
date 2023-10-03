@@ -100,7 +100,8 @@ const MyReimbursements: React.FC = () => {
   });
 
   const columns = React.useMemo<ColumnDef<ReimbursementRequest>[]>(() => {
-    return [
+    //FINANCE COLUMNS
+    const defaultColumns: ColumnDef<ReimbursementRequest>[] = [
       {
         id: "select",
         header: ({ table }) => {
@@ -230,6 +231,12 @@ const MyReimbursements: React.FC = () => {
         header: "Total",
       },
     ];
+
+    if (user?.assignedRole === "External Reimbursement Approver Manager") {
+      return defaultColumns.filter((a) => a.id !== "select");
+    }
+
+    return defaultColumns;
   }, [selectedItems, user?.assignedRole]);
 
   // REMOVE THIS IF FETCH METHOD IS THE FINAL USAGE FOR DOWNLOAD
@@ -346,7 +353,10 @@ const MyReimbursements: React.FC = () => {
           </div>
 
           {!isSearching && isFetching ? (
-            <SkeletonLoading className="h-10 w-full rounded-sm md:w-64" />
+            <div className="flex gap-2">
+              <SkeletonLoading className="h-10 w-full rounded-sm md:w-64" />
+              <SkeletonLoading className="h-10 w-full rounded-sm md:w-40" />
+            </div>
           ) : (
             <div className="flex flex-col gap-2 md:flex-row md:gap-4">
               <Input
