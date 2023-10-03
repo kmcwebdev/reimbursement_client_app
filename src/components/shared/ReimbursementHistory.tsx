@@ -283,24 +283,27 @@ const MyReimbursements: React.FC = () => {
         <div className="flex flex-col justify-between gap-2 p-4 md:flex-row lg:p-0">
           <div className="flex items-center justify-between">
             <h4>Reimbursements History</h4>
-            {!isSearching && isFetching ? (
-              <SkeletonLoading className="h-5 w-5 rounded-full" />
-            ) : (
-              <>
-                {user &&
-                  (user.assignedRole === "Finance" ||
-                    user.assignedRole === "HRBP") && (
-                    <CollapseWidthAnimation
-                      isVisible={data && data.length > 0 ? true : false}
-                    >
-                      <MdDownload
-                        onClick={openDownloadConfirmation}
-                        className="h-5 w-5 rounded-full border border-green-600 p-0.5 text-green-600"
-                      />
-                    </CollapseWidthAnimation>
-                  )}
-              </>
-            )}
+
+            <div className="flex md:hidden">
+              {!isSearching && isFetching ? (
+                <SkeletonLoading className="h-5 w-5 rounded-full" />
+              ) : (
+                <>
+                  {user &&
+                    (user.assignedRole === "Finance" ||
+                      user.assignedRole === "HRBP") && (
+                      <CollapseWidthAnimation
+                        isVisible={data && data.length > 0 ? true : false}
+                      >
+                        <MdDownload
+                          onClick={openDownloadConfirmation}
+                          className="h-5 w-5 rounded-full border border-green-600 p-0.5 text-green-600"
+                        />
+                      </CollapseWidthAnimation>
+                    )}
+                </>
+              )}
+            </div>
           </div>
 
           {!isSearching && isFetching ? (
