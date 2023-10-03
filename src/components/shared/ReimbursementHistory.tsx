@@ -275,7 +275,7 @@ const MyReimbursements: React.FC = () => {
       ); 
     }
 
-    // REMOVE THIS IF FETCH METHOD IS THE FINAL USAGE FOR DOWNLOAD
+    // REMOVE THIS IF FETCH METHOD IS THE FINAL USAGE FOR DOWNLOADs
     // if (user?.assignedRole === "Finance") {
     //   setDownloadReportLoading(true);
     //   const response = await axios.get<unknown, AxiosResponse<Blob>>(
