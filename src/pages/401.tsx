@@ -1,5 +1,3 @@
-import { getUserFromServerSideProps } from "@propelauth/nextjs/server/pages";
-import { type GetServerSideProps } from "next";
 import Head from "next/head";
 import React from "react";
 import EmptyState from "~/components/core/EmptyState";
@@ -23,22 +21,3 @@ const ForbiddenPage: React.FC = () => {
 };
 
 export default ForbiddenPage;
-
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const user = await getUserFromServerSideProps(context);
-
-  if (!user) {
-    return {
-      redirect: {
-        destination: "/api/auth/login",
-        permanent: false,
-      },
-    };
-  }
-
-  return {
-    props: {
-      userJson: JSON.stringify(user),
-    },
-  };
-};
