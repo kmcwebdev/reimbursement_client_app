@@ -40,6 +40,7 @@ export const useReportDownload = ({
       }
     } catch (error) {
       if (error) {
+        onError();
       }
     }
   };
