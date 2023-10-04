@@ -38,10 +38,21 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const userOrgs = user.getOrgs();
   const assignedRole = userOrgs[0].assignedRole;
 
-  if (assignedRole === "HRBP") {
+  console.log(assignedRole);
+
+  if (assignedRole === "HRBP" || assignedRole === "Finance") {
     return {
       redirect: {
         destination: "/dashboard",
+        permanent: false,
+      },
+    };
+  }
+
+  if (assignedRole === "Member") {
+    return {
+      redirect: {
+        destination: "/401",
         permanent: false,
       },
     };

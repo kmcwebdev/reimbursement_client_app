@@ -26,6 +26,7 @@ const MobileListItem: React.FC<MobileListItemProps> = ({
   onClick,
 }) => {
   const { selectedItems } = useAppSelector((state) => state.pageTableState);
+  const { user } = useAppSelector((state) => state.session);
 
   const pressHandler = useLongAndShortPress(
     () =>
@@ -73,18 +74,21 @@ const MobileListItem: React.FC<MobileListItemProps> = ({
         )}
       >
         <div className="flex">
-          {type !== "reimbursements" && (
-            <div className="w-6">
-              <Checkbox
-                name="checkbox"
-                value={row.original.reimbursement_request_id}
-                onChange={handleCheckboxChange}
-                checked={selectedItems.includes(
-                  row.original.reimbursement_request_id,
-                )}
-              />
-            </div>
-          )}
+          {type !== "reimbursements" &&
+            type === "history" &&
+            user &&
+            user.assignedRole !== "External Reimbursement Approver Manager" && (
+              <div className="w-6">
+                <Checkbox
+                  name="checkbox"
+                  value={row.original.reimbursement_request_id}
+                  onChange={handleCheckboxChange}
+                  checked={selectedItems.includes(
+                    row.original.reimbursement_request_id,
+                  )}
+                />
+              </div>
+            )}
 
           <div
             className="flex flex-1 flex-col gap-1"

@@ -15,32 +15,39 @@ import {
   useGetAllApprovalQuery,
   useGetRequestQuery,
 } from "~/features/reimbursement-api-slice";
+import { useDebounce } from "~/hooks/use-debounce";
 import { useDialogState } from "~/hooks/use-dialog-state";
+import { useReportDownload } from "~/hooks/use-report-download";
 import {
   type IReimbursementsFilterQuery,
   type ReimbursementApproval,
 } from "~/types/reimbursement.types";
 import { currencyFormat } from "~/utils/currencyFormat";
-import { useDebounce } from "~/utils/useDebounce";
 import CollapseWidthAnimation from "../animation/CollapseWidth";
 import { Button } from "../core/Button";
-import Dialog from "../core/Dialog";
-import SideDrawer from "../core/SideDrawer";
 import SkeletonLoading from "../core/SkeletonLoading";
 import StatusBadge, { type StatusType } from "../core/StatusBadge";
+import { showToast } from "../core/Toast";
 import Input from "../core/form/fields/Input";
 import Table from "../core/table";
 import TableCheckbox from "../core/table/TableCheckbox";
-import DateFiledFilter from "../core/table/filters/DateFiledFilter";
-import ExpenseTypeFilter from "../core/table/filters/ExpenseTypeFilter";
-import StatusFilter, {
-  type FilterProps,
-} from "../core/table/filters/StatusFilter";
-import ReimbursementsCardView from "../reimbursement-view";
+import { type FilterProps } from "../core/table/filters/StatusFilter";
 import FinanceAnalytics from "./analytics/FinanceAnalytics";
 
+const ReimbursementsCardView = dynamic(() => import("../reimbursement-view"));
+const SideDrawer = dynamic(() => import("../core/SideDrawer"));
+const Dialog = dynamic(() => import("../core/Dialog"));
 const ReimbursementTypeFilter = dynamic(
   () => import("../core/table/filters/ReimbursementTypeFilter"),
+);
+const StatusFilter = dynamic(
+  () => import("../core/table/filters/StatusFilter"),
+);
+const ExpenseTypeFilter = dynamic(
+  () => import("../core/table/filters/ExpenseTypeFilter"),
+);
+const DateFiledFilter = dynamic(
+  () => import("../core/table/filters/DateFiledFilter"),
 );
 
 const Payables: React.FC = () => {
@@ -82,10 +89,30 @@ const Payables: React.FC = () => {
     close: closeReportConfirmDialog,
   } = useDialogState();
 
-  const { accessToken } = useAppSelector((state) => state.session);
+  const { download: exportReport } = useReportDownload({
+    onSuccess: () => {
+      dispatch(setSelectedItems([]));
+      dispatch(
+        appApiSlice.util.invalidateTags([
+          { type: "ReimbursementApprovalList" },
+        ]),
+      );
+      dispatch(appApiSlice.util.invalidateTags([{ type: "FinanceAnalytics" }]));
+      setDownloadReportLoading(false);
+      closeReportConfirmDialog();
+    },
+    onError: () => {
+      showToast({
+        type: "error",
+        description: "Error downloading.Please try again.",
+      });
+      setDownloadReportLoading(false);
+      closeReportConfirmDialog();
+    },
+  });
 
-  const downloadReport = () => {
-    setDownloadReportLoading(true)
+  const downloadReport = async () => {
+    setDownloadReportLoading(true);
     // REMOVE THIS IF FETCH METHOD IS THE FINAL USAGE FOR DOWNLOAD
     // const response = await axios.get<unknown, AxiosResponse<Blob>>(
     //   `${env.NEXT_PUBLIC_BASEAPI_URL}/api/finance/reimbursements/requests/reports/finance`,
@@ -106,58 +133,41 @@ const Payables: React.FC = () => {
     // document.body.appendChild(link);
     // link.click();
     // document.body.removeChild(link);
-    const options = {
-      method: 'GET',
-      headers: {
-        accept: 'application/json',
-        Authorization: `Bearer ${accessToken}`
-      },
-    };
-    
-    fetch(`${env.NEXT_PUBLIC_BASEAPI_URL}/api/finance/reimbursements/requests/reports/finance?reimbursement_request_ids=${ JSON.stringify(selectedItems)}`, options)
-      .then(response => response.blob())
-      .then(response => {
-        const url = window.URL.createObjectURL(new Blob([response], { type: 'csv' }));
 
-        const link = document.createElement('a');
-        link.href = url;
-        link.setAttribute('download', `filename.csv`);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        dispatch(appApiSlice.util.invalidateTags([{type: "ReimbursementApprovalList"}]));
-        dispatch(appApiSlice.util.invalidateTags([{type: "FinanceAnalytics"}]));
-        setDownloadReportLoading(false)
-        closeReportConfirmDialog();
-      })
-      .catch(err => console.error(err)
-    ); 
-//   const downloadReport = async () => {
-//     setDownloadReportLoading(true);
-//     const response = await axios.get<unknown, AxiosResponse<Blob>>(
-//       `${env.NEXT_PUBLIC_BASEAPI_URL}/api/finance/reimbursements/requests/reports/finance`,
-//       {
-//         responseType: "blob", // Important to set this
-//         headers: {
-//           accept: "*/*",
-//           Authorization: `Bearer ${accessToken}`,
-//         },
-//         params: { reimbursement_request_ids: JSON.stringify(selectedItems) },
-//       },
-//     );
+    await exportReport(
+      `${
+        env.NEXT_PUBLIC_BASEAPI_URL
+      }/api/finance/reimbursements/requests/reports/finance?reimbursement_request_ids=${JSON.stringify(
+        selectedItems,
+      )}`,
+    );
 
-//     const url = window.URL.createObjectURL(new Blob([response.data]));
-//     const link = document.createElement("a");
-//     link.href = url;
-//     link.setAttribute("download", "filename.csv");
-//     document.body.appendChild(link);
-//     link.click();
-//     document.body.removeChild(link);
-//     dispatch(
-//       appApiSlice.util.invalidateTags([{ type: "ReimbursementApprovalList" }]),
-//     );
-//     closeReportConfirmDialog();
-//     setDownloadReportLoading(false);
+    //   const downloadReport = async () => {
+    //     setDownloadReportLoading(true);
+    //     const response = await axios.get<unknown, AxiosResponse<Blob>>(
+    //       `${env.NEXT_PUBLIC_BASEAPI_URL}/api/finance/reimbursements/requests/reports/finance`,
+    //       {
+    //         responseType: "blob", // Important to set this
+    //         headers: {
+    //           accept: "*/*",
+    //           Authorization: `Bearer ${accessToken}`,
+    //         },
+    //         params: { reimbursement_request_ids: JSON.stringify(selectedItems) },
+    //       },
+    //     );
+
+    //     const url = window.URL.createObjectURL(new Blob([response.data]));
+    //     const link = document.createElement("a");
+    //     link.href = url;
+    //     link.setAttribute("download", "filename.csv");
+    //     document.body.appendChild(link);
+    //     link.click();
+    //     document.body.removeChild(link);
+    //     dispatch(
+    //       appApiSlice.util.invalidateTags([{ type: "ReimbursementApprovalList" }]),
+    //     );
+    //     closeReportConfirmDialog();
+    //     setDownloadReportLoading(false);
   };
 
   const dispatch = useAppDispatch();
