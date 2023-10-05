@@ -90,18 +90,7 @@ const MobileListItem: React.FC<MobileListItemProps> = ({
               </div>
             )}
 
-          <div
-            className="flex flex-1 flex-col gap-1"
-            {...pressHandler}
-            // onClick={() =>
-            //   onClick
-            //     ? onClick(row.original.reimbursement_request_id)
-            //     : undefined
-            // }
-            // onMouseDown={() =>
-            //   handleDrag(row.original.reimbursement_request_id)
-            // }
-          >
+          <div className="flex flex-1 flex-col gap-1" {...pressHandler}>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 divide-x">
                 <StatusBadge

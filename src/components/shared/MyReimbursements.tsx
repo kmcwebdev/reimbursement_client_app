@@ -47,7 +47,6 @@ const ExpenseTypeFilter = dynamic(
 const ReimbursementTypeFilter = dynamic(
   () => import("~/components/core/table/filters/ReimbursementTypeFilter"),
 );
-
 const DateFiledFilter = dynamic(
   () => import("~/components/core/table/filters/DateFiledFilter"),
 );
@@ -55,7 +54,6 @@ const DateFiledFilter = dynamic(
 const MyReimbursements: React.FC = () => {
   const { formDialogIsOpen, cancelDialogIsOpen, reimbursementDetails } =
     useAppSelector((state) => state.reimbursementForm);
-
   const { selectedItems, filters } = useAppSelector(
     (state) => state.pageTableState,
   );

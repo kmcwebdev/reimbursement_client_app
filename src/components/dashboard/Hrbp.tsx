@@ -3,11 +3,7 @@ import React from "react";
 import MyApprovals from "../shared/MyApprovals";
 
 const HrbpDashboard: React.FC = () => {
-  return (
-    <>
-      <MyApprovals />
-    </>
-  );
+  return <MyApprovals />;
 };
 
 export default HrbpDashboard;

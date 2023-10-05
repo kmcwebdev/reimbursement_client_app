@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { type ColumnDef, type PaginationState } from "@tanstack/react-table";
-// import axios, { type AxiosResponse } from "axios";
 import dayjs from "dayjs";
 import dynamic from "next/dynamic";
 import React, { useEffect, useState, type ChangeEvent } from "react";
@@ -239,18 +238,6 @@ const MyReimbursements: React.FC = () => {
     return defaultColumns;
   }, [selectedItems, user?.assignedRole]);
 
-  // REMOVE THIS IF FETCH METHOD IS THE FINAL USAGE FOR DOWNLOAD
-  // const handleProceedDownload = (url: string) => {
-  //   const link = document.createElement("a");
-  //   link.href = url;
-  //   link.setAttribute("download", "filename.csv");
-  //   document.body.appendChild(link);
-  //   link.click();
-  //   document.body.removeChild(link);
-  //   setDownloadReportLoading(false);
-  //   closeDownloadConfirmation();
-  // };
-
   const downloadReport = async () => {
     setDownloadReportLoading(true);
 
@@ -273,41 +260,6 @@ const MyReimbursements: React.FC = () => {
         )}`,
       );
     }
-
-    // REMOVE THIS IF FETCH METHOD IS THE FINAL USAGE FOR DOWNLOAD
-    // if (user?.assignedRole === "Finance") {
-    //   setDownloadReportLoading(true);
-    //   const response = await axios.get<unknown, AxiosResponse<Blob>>(
-    //     `${env.NEXT_PUBLIC_BASEAPI_URL}/api/finance/reimbursements/requests/reports/finance`,
-    //     {
-    //       responseType: "blob", // Important to set this
-    //       headers: {
-    //         accept: "*/*",
-    //         Authorization: `Bearer ${accessToken}`,
-    //       },
-    //       params: { reimbursement_request_ids: JSON.stringify(selectedItems) },
-    //     },
-    //   );
-
-    //   const url = window.URL.createObjectURL(new Blob([response.data]));
-    //   handleProceedDownload(url);
-    // }
-    //   if (user?.assignedRole === "HRBP") {
-    //     setDownloadReportLoading(true);
-    //     const response = await axios.get<unknown, AxiosResponse<Blob>>(
-    //       `${env.NEXT_PUBLIC_BASEAPI_URL}/api/finance/reimbursements/requests/reports/hrbp`,
-    //       {
-    //         responseType: "blob", // Important to set this
-    //         headers: {
-    //           accept: "*/*",
-    //           Authorization: `Bearer ${accessToken}`,
-    //         },
-    //         params: { reimbursement_request_ids: JSON.stringify(selectedItems) },
-    //       },
-    //     );
-    //     const url = window.URL.createObjectURL(new Blob([response.data]));
-    //     handleProceedDownload(url);
-    //   }
   };
 
   const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {

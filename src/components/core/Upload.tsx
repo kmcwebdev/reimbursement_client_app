@@ -30,12 +30,7 @@ export interface UploadProps extends DropzoneOptions {
 const Upload: React.FC<UploadProps> = ({
   onDrop,
   accept = {
-    // "text/csv": [".csv"],
     "application/pdf": [".pdf"],
-    // "application/vnd.ms-excel": [".xls"],
-    // "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [
-    //   ".xslx",
-    // ],
     "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [
       ".docx",
     ],
