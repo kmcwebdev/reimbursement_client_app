@@ -1,5 +1,6 @@
 import { z } from "zod";
-import { EXPENSE_TYPE_OTHERS, UNSCHEDULED } from "~/utils/constant";
+import { EXPENSE_TYPE_OTHERS } from "~/constants/other-expense";
+import { UNSCHEDULED } from "~/constants/request-types";
 
 export const ReimbursementDetailsSchema = z
   .object({

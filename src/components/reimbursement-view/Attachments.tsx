@@ -13,23 +13,24 @@ const Attachments: React.FC<AttachmentsProps> = ({
   attachment_mask_name,
 }) => {
   return (
-    <>
-      <div className="mt-7 flex flex-col gap-4">
-        <h6 className="text-base font-semibold">Attachment</h6>
-        <div className="flex w-full items-center justify-between rounded border p-3 cursor-pointer" onClick={() => window.open(attachment)}>
-          <div className="flex w-10/12 items-center gap-3">
-            <AiTwotoneFile className="h-4 w-4 text-neutral-800" />
-            <span className="truncate text-sm text-neutral-900">
-              {attachment_mask_name}
-            </span>
-          </div>
-
-          <Button buttonType="text">
-            <FaArrowRight className="h-3 w-3 " />
-          </Button>
+    <div className="mt-7 flex flex-col gap-4">
+      <h6 className="text-base font-semibold">Attachment</h6>
+      <div
+        className="flex w-full cursor-pointer items-center justify-between rounded border p-3"
+        onClick={() => window.open(attachment)}
+      >
+        <div className="flex w-10/12 items-center gap-3">
+          <AiTwotoneFile className="h-4 w-4 text-neutral-800" />
+          <span className="truncate text-sm text-neutral-900">
+            {attachment_mask_name}
+          </span>
         </div>
+
+        <Button buttonType="text">
+          <FaArrowRight className="h-3 w-3 " />
+        </Button>
       </div>
-    </>
+    </div>
   );
 };
 

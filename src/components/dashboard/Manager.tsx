@@ -3,11 +3,7 @@ import React from "react";
 import MyReimbursements from "../shared/MyReimbursements";
 
 const ManagerDashboard: React.FC = () => {
-  return (
-    <>
-      <MyReimbursements />
-    </>
-  );
+  return <MyReimbursements />;
 };
 
 export default ManagerDashboard;
