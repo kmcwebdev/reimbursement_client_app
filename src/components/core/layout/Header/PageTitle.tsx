@@ -15,11 +15,11 @@ const PageTitle: React.FC = () => {
     );
   }
 
-  if (window.location.pathname.includes("401")) {
+  if (window.location.pathname.includes("forbidden")) {
     return <h3 className="font-bold uppercase text-navy">Forbidden</h3>;
   }
 
-  if (window.location.pathname.includes("404")) {
+  if (window.location.pathname.includes("not-found")) {
     return <h3 className="font-bold uppercase text-navy">Page not Found</h3>;
   }
 

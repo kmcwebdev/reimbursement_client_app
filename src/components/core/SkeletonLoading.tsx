@@ -26,7 +26,7 @@ const SkeletonLoading: React.FC<SkeletonLoadingProps> = ({
     >
       <div
         {...rest}
-        className={classNames("bg-neutral-200", className && className)}
+        className={classNames("bg-neutral-300", className && className)}
         style={{ width, height, ...style }}
       ></div>
     </div>

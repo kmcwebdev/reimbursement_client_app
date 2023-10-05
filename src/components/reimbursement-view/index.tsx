@@ -8,9 +8,13 @@ import {
   type SetStateAction,
 } from "react";
 import { useForm } from "react-hook-form";
+import { AiOutlinePauseCircle } from "react-icons-all-files/ai/AiOutlinePauseCircle";
+import { AiOutlineStop } from "react-icons-all-files/ai/AiOutlineStop";
+import { BsChevronDown } from "react-icons-all-files/bs/BsChevronDown";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { appApiSlice } from "~/app/rtkQuery";
 import { Button } from "~/components/core/Button";
+import { env } from "~/env.mjs";
 import {
   useApproveReimbursementMutation,
   useAuditLogsQuery,
@@ -19,6 +23,7 @@ import {
   useRejectReimbursementMutation,
 } from "~/features/reimbursement-api-slice";
 import { useDialogState } from "~/hooks/use-dialog-state";
+import { useReportDownload } from "~/hooks/use-report-download";
 import {
   OnholdReimbursementSchema,
   type OnholdReimbursementType,
@@ -31,6 +36,7 @@ import { type ReimbursementRequest } from "~/types/reimbursement.types";
 import { currencyFormat } from "~/utils/currencyFormat";
 import Dialog from "../core/Dialog";
 import EmptyState from "../core/EmptyState";
+import Popover from "../core/Popover";
 import { showToast } from "../core/Toast";
 import Form from "../core/form";
 import TextArea from "../core/form/fields/TextArea";
@@ -39,12 +45,6 @@ import Attachments from "./Attachments";
 import Details from "./Details";
 import Notes from "./Notes";
 import ReimbursementViewSkeleton from "./ReimbursementViewSkeleton";
-import Popover from "../core/Popover";
-import { BsChevronDown } from "react-icons-all-files/bs/BsChevronDown";
-import { AiOutlineStop } from "react-icons-all-files/ai/AiOutlineStop";
-import { AiOutlinePauseCircle } from "react-icons-all-files/ai/AiOutlinePauseCircle";
-// import axios, { type AxiosResponse } from "axios";
-import { env } from "~/env.mjs";
 
 export interface ReimbursementsCardViewProps extends PropsWithChildren {
   isLoading?: boolean;
@@ -63,9 +63,9 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
   isError = false,
   setFocusedReimbursementId,
 }) => {
-  const { user, accessToken } = useAppSelector((state) => state.session);
+  const { user } = useAppSelector((state) => state.session);
   const [reimbursementReqId, setReimbursementReqId] = useState<string>();
-  const [ currentState, setCurrentState ] = useState<string>('Reject');
+  const [currentState, setCurrentState] = useState<string>("Reject");
 
   useMemo(() => {
     if (data) {
@@ -126,6 +126,27 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
     mode: "onChange",
   });
 
+  const { download: exportReport } = useReportDownload({
+    onSuccess: () => {
+      dispatch(
+        appApiSlice.util.invalidateTags([
+          { type: "ReimbursementApprovalList" },
+        ]),
+      );
+      dispatch(appApiSlice.util.invalidateTags([{ type: "FinanceAnalytics" }]));
+      setDownloadReportLoading(false);
+      closeApproveDialog();
+    },
+    onError: () => {
+      showToast({
+        type: "error",
+        description: "Error downloading.Please try again.",
+      });
+      setDownloadReportLoading(false);
+      closeApproveDialog();
+    },
+  });
+
   const handleConfirmCancellation = () => {
     if (data) {
       void cancelReimbursement({
@@ -150,58 +171,17 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
     }
   };
 
-  const downloadReport =  () => {
-    setDownloadReportLoading(true)
-    const options = {
-      method: 'GET',
-      headers: {
-        accept: 'application/json',
-        Authorization: `Bearer ${accessToken}`
-      },
-    };
-    
-    fetch(`${env.NEXT_PUBLIC_BASEAPI_URL}/api/finance/reimbursements/requests/reports/finance?reimbursement_request_ids=${JSON.stringify([data?.reimbursement_request_id])}`, options)
-      .then(response => response.blob())
-      .then(response => {
-        const url = window.URL.createObjectURL(new Blob([response], { type: 'csv' }));
+  const downloadReport = async () => {
+    setDownloadReportLoading(true);
 
-        const link = document.createElement('a');
-        link.href = url;
-        link.setAttribute('download', `filename.csv`);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        dispatch(appApiSlice.util.invalidateTags([{type: "ReimbursementApprovalList"}]));
-        dispatch(appApiSlice.util.invalidateTags([{type: "FinanceAnalytics"}]));
-        setDownloadReportLoading(false)
-        closeApproveDialog();
-      })
-      .catch(err => console.error(err)
-    ); 
+    await exportReport(
+      `${
+        env.NEXT_PUBLIC_BASEAPI_URL
+      }/api/finance/reimbursements/requests/reports/finance?reimbursement_request_ids=${JSON.stringify(
+        [data?.reimbursement_request_id],
+      )}`,
+    );
 
-    // const response = await axios.get<unknown, AxiosResponse<Blob>>(
-    //   `${env.NEXT_PUBLIC_BASEAPI_URL}/api/finance/reimbursements/requests/reports/finance`,
-    //   {
-    //     responseType: "blob", // Important to set this
-    //     headers: {
-    //       accept: "*/*",
-    //       Authorization: `Bearer ${accessToken}`,
-    //     },
-    //     params: { reimbursement_request_ids: JSON.stringify([data?.reimbursement_request_id]) },
-    //   },
-    // );
-
-    // const url = window.URL.createObjectURL(new Blob([response.data]));
-    // const link = document.createElement("a");
-    // link.href = url;
-    // link.setAttribute("download", "filename.csv");
-    // document.body.appendChild(link);
-    // link.click();
-    // document.body.removeChild(link);
-    // dispatch(appApiSlice.util.invalidateTags([{type: "ReimbursementApprovalList"}]));
-    // dispatch(appApiSlice.util.invalidateTags([{type: "FinanceAnalytics"}]));
-    // setDownloadReportLoading(false);
-    // closeApproveDialog();
     closeDrawer();
   };
 
@@ -229,10 +209,10 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
           });
         });
     }
-  }
+  };
 
   const handleConfirmReject = (values: RejectReimbursementType) => {
-    setCurrentState("On-Hold")
+    setCurrentState("On-Hold");
     if (data) {
       const payload = {
         approval_matrix_id:
@@ -263,7 +243,7 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
   };
 
   const handleConfirmHold = (values: OnholdReimbursementType) => {
-    setCurrentState("Reject")
+    setCurrentState("Reject");
     if (data) {
       const payload = {
         reimbursement_request_id: data.reimbursement_request_id,
@@ -273,7 +253,9 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
       void holdReimbursement(payload)
         .unwrap()
         .then(() => {
-          dispatch(appApiSlice.util.invalidateTags([{type: "ReimbursementRequest"}]));
+          dispatch(
+            appApiSlice.util.invalidateTags([{ type: "ReimbursementRequest" }]),
+          );
           showToast({
             type: "success",
             description: "Reimbursement Request successfully put onhold!",
@@ -309,7 +291,6 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
             <Details
               request_type={data.request_type}
               requestor_request_status={data.requestor_request_status}
-              hrbp_request_status={data.hrbp_request_status}
               finance_request_status={data.finance_request_status}
               expense_type={data.expense_type}
               created_at={data.created_at}
@@ -356,7 +337,7 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
 
                 {data.requestor_request_status !== "Cancelled" &&
                   data.requestor_request_status === "Pending" &&
-                  data.finance_request_status === "Pending" && 
+                  data.finance_request_status === "Pending" &&
                   data.hrbp_request_status === "Pending" && (
                     <Button
                       className="w-full"
@@ -397,59 +378,78 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
               )}
 
             {user && user.assignedRole === "Finance" && (
-                <div className="absolute bottom-0 grid h-[72px] w-full grid-cols-2 items-center justify-center gap-2 border-t border-neutral-300 px-5">
-                  {data.finance_request_status !== "On-hold" && (
-                    <Popover
-                      panelClassName="translate-y-[-170px] w-full"
-                      btn={
-                        <div className="flex justify-between h-full border border-s-1 p-2 rounded-md divide-x-2">
-                          <div className="flex flex-1 h-full items-center justify-center gap-2">
-                              {currentState === "Reject" && 
-                                <AiOutlineStop className="text-red-600 w-6 h-6" /> ||<AiOutlinePauseCircle className="text-yellow-600 w-6 h-6" />
-                              }
-                              <p className={currentState === "Reject" ? "text-red-600" : "text-yellow-600"}>{currentState}</p>
-                          </div>
-                          <div className="w-[40px] grid place-items-center">
-                            <BsChevronDown className="w-[14px] h-[14px] text-gray-400 font-semibold "/>
-                          </div>
+              <div className="absolute bottom-0 grid h-[72px] w-full grid-cols-2 items-center justify-center gap-2 border-t border-neutral-300 px-5">
+                {data.finance_request_status !== "On-hold" && (
+                  <Popover
+                    panelClassName="translate-y-[-170px] w-full"
+                    btn={
+                      <div className="border-s-1 flex h-full justify-between divide-x-2 rounded-md border p-2">
+                        <div className="flex h-full flex-1 items-center justify-center gap-2">
+                          {(currentState === "Reject" && (
+                            <AiOutlineStop className="h-6 w-6 text-red-600" />
+                          )) || (
+                            <AiOutlinePauseCircle className="h-6 w-6 text-yellow-600" />
+                          )}
+                          <p
+                            className={
+                              currentState === "Reject"
+                                ? "text-red-600"
+                                : "text-yellow-600"
+                            }
+                          >
+                            {currentState}
+                          </p>
                         </div>
-
-                      }
-                      content={
-                        <div className="w-full p-2">
-                          <div className="flex justify-start gap-2 items-center p-2 hover:bg-gray-100 rounded-sm cursor-pointer" onClick={openRejectDialog}>
-                            <AiOutlineStop className="text-red-600 w-6 h-6" />
-                            <p className="font-normal text-[16px] font-karla">Reject</p>
-                          </div>
-                          <div className="flex justify-start gap-2 items-center p-2 hover:bg-gray-100 rounded-sm cursor-pointer" onClick={openHoldDialog}>
-                            <AiOutlinePauseCircle className="text-yellow-600 w-6 h-6" />
-                            <p className="font-normal text-[16px] font-karla">Hold</p>
-                          </div>
+                        <div className="grid w-[40px] place-items-center">
+                          <BsChevronDown className="h-[14px] w-[14px] font-semibold text-gray-400 " />
                         </div>
-                      }
-                    />
-                  )}
-                  { data.finance_request_status === "On-hold" && (
-                    <Button
-                      className="w-full"
-                      buttonType="outlined"
-                      variant="danger"
-                      loading={isRejecting}
-                      onClick={openRejectDialog}
-                    >
-                      Reject
-                    </Button>
-                  ) }
+                      </div>
+                    }
+                    content={
+                      <div className="w-full p-2">
+                        <div
+                          className="flex cursor-pointer items-center justify-start gap-2 rounded-sm p-2 hover:bg-gray-100"
+                          onClick={openRejectDialog}
+                        >
+                          <AiOutlineStop className="h-6 w-6 text-red-600" />
+                          <p className="font-karla text-[16px] font-normal">
+                            Reject
+                          </p>
+                        </div>
+                        <div
+                          className="flex cursor-pointer items-center justify-start gap-2 rounded-sm p-2 hover:bg-gray-100"
+                          onClick={openHoldDialog}
+                        >
+                          <AiOutlinePauseCircle className="h-6 w-6 text-yellow-600" />
+                          <p className="font-karla text-[16px] font-normal">
+                            Hold
+                          </p>
+                        </div>
+                      </div>
+                    }
+                  />
+                )}
+                {data.finance_request_status === "On-hold" && (
                   <Button
                     className="w-full"
-                    buttonType="filled"
-                    variant="success"
+                    buttonType="outlined"
+                    variant="danger"
                     loading={isRejecting}
-                    onClick={openApproveDialog}
+                    onClick={openRejectDialog}
                   >
-                    Download
+                    Reject
                   </Button>
-                </div>
+                )}
+                <Button
+                  className="w-full"
+                  buttonType="filled"
+                  variant="success"
+                  loading={isRejecting}
+                  onClick={openApproveDialog}
+                >
+                  Download
+                </Button>
+              </div>
             )}
           </div>
         </>
@@ -560,9 +560,10 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
           {data && (
             <>
               <p className="text-neutral-800">
-                Are you sure you want to {user?.assignedRole === 'Finance' ? "download" : "approve" } reimbursement request{" "}
-                <strong>{data.reference_no} </strong>with total amount of{" "}
-                <strong>{currencyFormat(+data.amount)}</strong>
+                Are you sure you want to{" "}
+                {user?.assignedRole === "Finance" ? "download" : "approve"}{" "}
+                reimbursement request <strong>{data.reference_no} </strong>with
+                total amount of <strong>{currencyFormat(+data.amount)}</strong>
               </p>
 
               <div className="flex items-center gap-4">
@@ -575,16 +576,17 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
                   Cancel
                 </Button>
 
-                {user?.assignedRole !== "Finance" && user?.assignedRole !== "Member" && (
-                  <Button
-                    className="w-1/2"
-                    onClick={handleApprove}
-                    disabled={isApproving}
-                    loading={isApproving}
-                  >
-                    Approve
-                  </Button>
-                ) }
+                {user?.assignedRole !== "Finance" &&
+                  user?.assignedRole !== "Member" && (
+                    <Button
+                      className="w-1/2"
+                      onClick={handleApprove}
+                      disabled={isApproving}
+                      loading={isApproving}
+                    >
+                      Approve
+                    </Button>
+                  )}
 
                 {user?.assignedRole === "Finance" && (
                   <Button

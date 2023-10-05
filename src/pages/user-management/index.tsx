@@ -11,8 +11,6 @@ interface DashboardSSRProps {
 }
 
 const UserManagement: NextPage<DashboardSSRProps> = () => {
-  // const propel = UserFromToken.fromJSON(props.userJson);
-
   return (
     <Fragment>
       <Head>

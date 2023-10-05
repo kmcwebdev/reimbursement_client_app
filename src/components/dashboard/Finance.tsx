@@ -4,11 +4,7 @@ import React from "react";
 import Payables from "../shared/Payables";
 
 const FinanceDashboard: React.FC = () => {
-  return (
-    <>
-      <Payables />
-    </>
-  );
+  return <Payables />;
 };
 
 export default FinanceDashboard;

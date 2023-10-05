@@ -2,7 +2,6 @@ import React, { useMemo, useState } from "react";
 import { useFieldArray, type UseFormReturn } from "react-hook-form";
 import { type IconType } from "react-icons-all-files";
 import { AiOutlineMinusCircle } from "react-icons-all-files/ai/AiOutlineMinusCircle";
-// import { AiOutlinePlus } from "react-icons-all-files/ai/AiOutlinePlus";
 import { MdAccessTime } from "react-icons-all-files/md/MdAccessTime";
 import { MdMail } from "react-icons-all-files/md/MdMail";
 import { type PropsValue } from "react-select";
@@ -15,6 +14,8 @@ import CardSelection, {
 } from "~/components/core/form/fields/CardSelection";
 import Input from "~/components/core/form/fields/Input";
 import Select, { type OptionData } from "~/components/core/form/fields/Select";
+import { EXPENSE_TYPE_OTHERS } from "~/constants/other-expense";
+import { UNSCHEDULED } from "~/constants/request-types";
 import {
   useExpenseTypesQuery,
   useRequestTypesQuery,
@@ -25,15 +26,12 @@ import {
 } from "~/features/reimbursement-form-slice";
 import { type ReimbursementDetailsType } from "~/schema/reimbursement-details.schema";
 import { type ReimbursementDetailsDTO } from "~/types/reimbursement.types";
+import StepperDots from "./StepperDots";
 
 interface ReimbursementDetailsFormProps {
   formReturn: UseFormReturn<ReimbursementDetailsDTO>;
   handleOpenCancelDialog: () => void;
 }
-
-const UNSCHEDULED = "9850f2aa-40c4-4fd5-8708-c8edf734d83f";
-const SCHEDULED = "83ad9a7a-3ff6-469f-a4e0-20c202ac6ba4";
-const OTHER_EXPENSE = "1de6c849-39d9-421b-b0db-2fb3202cb7c6";
 
 const ReimbursementDetailsForm: React.FC<ReimbursementDetailsFormProps> = ({
   formReturn,
@@ -69,8 +67,8 @@ const ReimbursementDetailsForm: React.FC<ReimbursementDetailsFormProps> = ({
   }, [formReturn]);
 
   const { fields, append, remove } = useFieldArray({
-    control: formReturn.control, // control props comes from useForm (optional: if you are using FormContext)
-    name: "approvers", // unique name for your Field Array
+    control: formReturn.control,
+    name: "approvers",
   });
 
   const onSubmit = (e: ReimbursementDetailsType) => {
@@ -139,7 +137,7 @@ const ReimbursementDetailsForm: React.FC<ReimbursementDetailsFormProps> = ({
         />
 
         <CollapseHeightAnimation
-          isVisible={selectedExpense === OTHER_EXPENSE ? true : false}
+          isVisible={selectedExpense === EXPENSE_TYPE_OTHERS}
           className="pb-4"
         >
           <Input
@@ -160,9 +158,7 @@ const ReimbursementDetailsForm: React.FC<ReimbursementDetailsFormProps> = ({
         />
       </CollapseHeightAnimation>
 
-      <CollapseHeightAnimation
-        isVisible={selectedType === UNSCHEDULED ? true : false}
-      >
+      <CollapseHeightAnimation isVisible={selectedType === UNSCHEDULED}>
         <label className="text-xs font-bold text-neutral-900">Approvers</label>
 
         {fields.map((item, i) => (
@@ -202,26 +198,12 @@ const ReimbursementDetailsForm: React.FC<ReimbursementDetailsFormProps> = ({
         </Button> */}
       </CollapseHeightAnimation>
 
-      <CollapseHeightAnimation
-        isVisible={
-          selectedType === UNSCHEDULED
-            ? true
-            : false || selectedType === SCHEDULED
-            ? true
-            : false
-        }
-      >
-        <div className="my-4 flex items-center justify-center gap-2">
-          <div className="h-2 w-2 rounded-full bg-orange-600"></div>
-          <div className="h-2 w-2 rounded-full bg-orange-200"></div>
-        </div>
+      <CollapseHeightAnimation isVisible={!!selectedType}>
+        <StepperDots currentStep={1} />
       </CollapseHeightAnimation>
 
       <div className="grid grid-cols-2 items-center gap-4">
         <div>
-          {/* <CollapseHeightAnimation
-            isVisible={!!formReturn.getValues("reimbursement_request_type_id")}
-          > */}
           <Button
             type="button"
             buttonType="outlined"
@@ -231,7 +213,6 @@ const ReimbursementDetailsForm: React.FC<ReimbursementDetailsFormProps> = ({
           >
             Cancel
           </Button>
-          {/* </CollapseHeightAnimation> */}
         </div>
 
         <Button type="submit" className="w-full">

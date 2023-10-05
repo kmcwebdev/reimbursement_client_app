@@ -2,7 +2,6 @@
 import React, { useEffect, useState, type ChangeEvent } from "react";
 
 import { type ColumnDef, type PaginationState } from "@tanstack/react-table";
-// import axios, { type AxiosResponse } from "axios";
 import dayjs from "dayjs";
 import dynamic from "next/dynamic";
 import { type IconType } from "react-icons-all-files";
@@ -113,27 +112,6 @@ const Payables: React.FC = () => {
 
   const downloadReport = async () => {
     setDownloadReportLoading(true);
-    // REMOVE THIS IF FETCH METHOD IS THE FINAL USAGE FOR DOWNLOAD
-    // const response = await axios.get<unknown, AxiosResponse<Blob>>(
-    //   `${env.NEXT_PUBLIC_BASEAPI_URL}/api/finance/reimbursements/requests/reports/finance`,
-    //   {
-    //     responseType: "blob", // Important to set this
-    //     headers: {
-    //       accept: "*/*",
-    //       Authorization: `Bearer ${accessToken}`,
-    //     },
-    //     params: { reimbursement_request_ids: JSON.stringify(selectedItems) },
-    //   },
-    // );
-
-    // const url = window.URL.createObjectURL(new Blob([response.data]));
-    // const link = document.createElement("a");
-    // link.href = url;
-    // link.setAttribute("download", "filename.csv");
-    // document.body.appendChild(link);
-    // link.click();
-    // document.body.removeChild(link);
-
     await exportReport(
       `${
         env.NEXT_PUBLIC_BASEAPI_URL
@@ -141,33 +119,6 @@ const Payables: React.FC = () => {
         selectedItems,
       )}`,
     );
-
-    //   const downloadReport = async () => {
-    //     setDownloadReportLoading(true);
-    //     const response = await axios.get<unknown, AxiosResponse<Blob>>(
-    //       `${env.NEXT_PUBLIC_BASEAPI_URL}/api/finance/reimbursements/requests/reports/finance`,
-    //       {
-    //         responseType: "blob", // Important to set this
-    //         headers: {
-    //           accept: "*/*",
-    //           Authorization: `Bearer ${accessToken}`,
-    //         },
-    //         params: { reimbursement_request_ids: JSON.stringify(selectedItems) },
-    //       },
-    //     );
-
-    //     const url = window.URL.createObjectURL(new Blob([response.data]));
-    //     const link = document.createElement("a");
-    //     link.href = url;
-    //     link.setAttribute("download", "filename.csv");
-    //     document.body.appendChild(link);
-    //     link.click();
-    //     document.body.removeChild(link);
-    //     dispatch(
-    //       appApiSlice.util.invalidateTags([{ type: "ReimbursementApprovalList" }]),
-    //     );
-    //     closeReportConfirmDialog();
-    //     setDownloadReportLoading(false);
   };
 
   const dispatch = useAppDispatch();
@@ -309,7 +260,6 @@ const Payables: React.FC = () => {
             onClick={() => {
               setFocusedReimbursementId(info.getValue() as string);
               openReimbursementView();
-              console.log(info);
             }}
           >
             View
@@ -388,22 +338,6 @@ const Payables: React.FC = () => {
             </div>
           )}
         </div>
-
-        {/* <CollapseWidthAnimation
-          isVisible={data && data.length > 0 ? true : false}
-        >
-          <div className="w-52">
-            <ButtonGroup
-              handleChange={(e) => console.log(e)}
-              label=""
-              name=""
-              options={[
-                { label: "Pending", value: "Pending" },
-                { label: "On-Hold", value: "On-Hold" },
-              ]}
-            />
-          </div>
-        </CollapseWidthAnimation> */}
 
         <Table
           type="approvals"

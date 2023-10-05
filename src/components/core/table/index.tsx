@@ -29,7 +29,6 @@ import FilterView from "./FilterView";
 import MobileListItem from "./MobileListItem";
 import TableEmptyState from "./TableEmptyState";
 import TableSkeleton from "./TableSkeleton";
-// import Pagination from "./Pagination";
 
 export type ITableState = {
   filters: IReimbursementsFilterQuery;

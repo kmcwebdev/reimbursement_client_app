@@ -42,7 +42,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     if (assignedRole === "Member") {
       return {
         redirect: {
-          destination: "/401",
+          destination: "/forbidden",
           permanent: false,
         },
       };
