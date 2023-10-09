@@ -101,6 +101,15 @@ const Table: React.FC<TableProps> = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rowSelection]);
 
+  /** Resets the row selection state to its initial state/no selected record */
+  useEffect(() => {
+    const selected = props.tableState?.selectedItems;
+    if (Array.isArray(selected) && selected.length === 0) {
+      table.resetRowSelection();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.tableState?.selectedItems]);
+
   const table = useReactTable<ReimbursementRequest | ReimbursementApproval>({
     data: props.data!,
     columns,
