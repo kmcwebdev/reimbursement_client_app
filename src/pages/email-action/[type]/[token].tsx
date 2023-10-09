@@ -24,10 +24,17 @@ interface EmailActionProps {
 
 const EmailAction: React.FC<EmailActionProps> = ({ noToken, type, token }) => {
   const [loading, setLoading] = useState<boolean>(true);
-  const [approveRequest, { isLoading: approveRequestIsLoading }] =
-    useApproveReimbursementViaEmailMutation();
-  const [rejectRequest, { isLoading: rejectRequestIsLoading }] =
-    useRejectReimbursementViaEmailMutation();
+  const [
+    approveRequest,
+    {
+      isLoading: approveRequestIsLoading,
+      isUninitialized: approvalUninitialized,
+    },
+  ] = useApproveReimbursementViaEmailMutation();
+  const [
+    rejectRequest,
+    { isLoading: rejectRequestIsLoading, isUninitialized: rejectUninitialized },
+  ] = useRejectReimbursementViaEmailMutation();
 
   const { query } = useRouter();
 
@@ -67,29 +74,34 @@ const EmailAction: React.FC<EmailActionProps> = ({ noToken, type, token }) => {
               fill
             />
           </div>
-          <div className="flex items-center gap-2">
-            {type === "reject" && (
-              <>
-                <MdClose className="h-5 w-5 text-red-600" />
-                Reject
-              </>
-            )}
-
-            {type === "approve" && (
-              <>
-                <HiCheckCircle className="h-5 w-5 text-green-600" />
-                Approved
-              </>
-            )}
-          </div>
 
           <CollapseHeightAnimation
-            isVisible={!approveRequestIsLoading && !rejectRequestIsLoading}
+            isVisible={
+              (!approveRequestIsLoading && !approvalUninitialized) ||
+              (!rejectRequestIsLoading && !rejectUninitialized)
+            }
           >
-            <p className="text-neutral-600">
-              {query.requestor} {query.rid} has been{" "}
-              {type === "approve" ? "approved" : "rejected"}
-            </p>
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center gap-2">
+                {type === "reject" && (
+                  <>
+                    <MdClose className="h-5 w-5 text-red-600" />
+                    Reject
+                  </>
+                )}
+
+                {type === "approve" && (
+                  <>
+                    <HiCheckCircle className="h-5 w-5 text-green-600" />
+                    Approved
+                  </>
+                )}
+              </div>
+              <p className="text-neutral-600">
+                {query.requestor} {query.rid} has been{" "}
+                {type === "approve" ? "approved" : "rejected"}
+              </p>
+            </div>
           </CollapseHeightAnimation>
 
           <CollapseHeightAnimation
