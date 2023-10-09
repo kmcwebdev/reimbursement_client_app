@@ -5,8 +5,6 @@ dayjs.extend(timezone);
 dayjs.extend(utc);
 
 export const parseTimezone = (dateString: string) => {
-  // dayjs.tz.setDefault('');
-
-  console.log("TIMEZONE", timezone);
-  return dayjs.utc(dateString).tz("Asia/Manila");
+  const defaultTimezone = "Asia/Manila";
+  return dayjs.utc(dateString).tz(defaultTimezone);
 };
