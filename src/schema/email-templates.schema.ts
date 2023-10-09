@@ -12,6 +12,7 @@ export const DefaultEmailSchema = z.object({
         message: "Email address is invalid",
       }),
   ),
+  referenceNo: z.string().nonempty(),
   fullName: z
     .string({
       description: "Full Name",
