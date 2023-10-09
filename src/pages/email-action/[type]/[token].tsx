@@ -30,8 +30,6 @@ const EmailAction: React.FC<EmailActionProps> = ({ noToken, type, token }) => {
 
   useEffect(() => {
     if (!noToken && type) {
-      console.log(token, type);
-
       if (type === "approve") {
         void approveRequest(token);
       }

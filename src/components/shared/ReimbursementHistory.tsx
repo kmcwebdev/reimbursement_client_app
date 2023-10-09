@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { type ColumnDef, type PaginationState } from "@tanstack/react-table";
-// import axios, { type AxiosResponse } from "axios";
 import dayjs from "dayjs";
 import dynamic from "next/dynamic";
 import React, { useEffect, useState, type ChangeEvent } from "react";
@@ -15,6 +14,7 @@ import { type FilterProps } from "~/components/core/table/filters/StatusFilter";
 import { env } from "~/env.mjs";
 import { setSelectedItems } from "~/features/page-state.slice";
 import { useGetAllRequestsQuery } from "~/features/reimbursement-api-slice";
+import { useDebounce } from "~/hooks/use-debounce";
 import { useDialogState } from "~/hooks/use-dialog-state";
 import { useReportDownload } from "~/hooks/use-report-download";
 import {
@@ -22,16 +22,13 @@ import {
   type ReimbursementRequest,
 } from "~/types/reimbursement.types";
 import { currencyFormat } from "~/utils/currencyFormat";
-import { useDebounce } from "~/utils/useDebounce";
 import CollapseWidthAnimation from "../animation/CollapseWidth";
 import SkeletonLoading from "../core/SkeletonLoading";
 import { showToast } from "../core/Toast";
 import Input from "../core/form/fields/Input";
 import TableCheckbox from "../core/table/TableCheckbox";
-import DateFiledFilter from "../core/table/filters/DateFiledFilter";
 
 const Dialog = dynamic(() => import("~/components/core/Dialog"));
-
 const StatusFilter = dynamic(
   () => import("~/components/core/table/filters/StatusFilter"),
 );
@@ -40,6 +37,10 @@ const ExpenseTypeFilter = dynamic(
 );
 const ReimbursementTypeFilter = dynamic(
   () => import("~/components/core/table/filters/ReimbursementTypeFilter"),
+);
+
+const DateFiledFilter = dynamic(
+  () => import("~/components/core/table/filters/DateFiledFilter"),
 );
 
 const MyReimbursements: React.FC = () => {
@@ -98,7 +99,8 @@ const MyReimbursements: React.FC = () => {
   });
 
   const columns = React.useMemo<ColumnDef<ReimbursementRequest>[]>(() => {
-    return [
+    //FINANCE COLUMNS
+    const defaultColumns: ColumnDef<ReimbursementRequest>[] = [
       {
         id: "select",
         header: ({ table }) => {
@@ -228,19 +230,13 @@ const MyReimbursements: React.FC = () => {
         header: "Total",
       },
     ];
-  }, [selectedItems, user?.assignedRole]);
 
-  // REMOVE THIS IF FETCH METHOD IS THE FINAL USAGE FOR DOWNLOAD
-  // const handleProceedDownload = (url: string) => {
-  //   const link = document.createElement("a");
-  //   link.href = url;
-  //   link.setAttribute("download", "filename.csv");
-  //   document.body.appendChild(link);
-  //   link.click();
-  //   document.body.removeChild(link);
-  //   setDownloadReportLoading(false);
-  //   closeDownloadConfirmation();
-  // };
+    if (user?.assignedRole === "External Reimbursement Approver Manager") {
+      return defaultColumns.filter((a) => a.id !== "select");
+    }
+
+    return defaultColumns;
+  }, [selectedItems, user?.assignedRole]);
 
   const downloadReport = async () => {
     setDownloadReportLoading(true);
@@ -264,41 +260,6 @@ const MyReimbursements: React.FC = () => {
         )}`,
       );
     }
-
-    // REMOVE THIS IF FETCH METHOD IS THE FINAL USAGE FOR DOWNLOADs
-    // if (user?.assignedRole === "Finance") {
-    //   setDownloadReportLoading(true);
-    //   const response = await axios.get<unknown, AxiosResponse<Blob>>(
-    //     `${env.NEXT_PUBLIC_BASEAPI_URL}/api/finance/reimbursements/requests/reports/finance`,
-    //     {
-    //       responseType: "blob", // Important to set this
-    //       headers: {
-    //         accept: "*/*",
-    //         Authorization: `Bearer ${accessToken}`,
-    //       },
-    //       params: { reimbursement_request_ids: JSON.stringify(selectedItems) },
-    //     },
-    //   );
-
-    //   const url = window.URL.createObjectURL(new Blob([response.data]));
-    //   handleProceedDownload(url);
-    // }
-    //   if (user?.assignedRole === "HRBP") {
-    //     setDownloadReportLoading(true);
-    //     const response = await axios.get<unknown, AxiosResponse<Blob>>(
-    //       `${env.NEXT_PUBLIC_BASEAPI_URL}/api/finance/reimbursements/requests/reports/hrbp`,
-    //       {
-    //         responseType: "blob", // Important to set this
-    //         headers: {
-    //           accept: "*/*",
-    //           Authorization: `Bearer ${accessToken}`,
-    //         },
-    //         params: { reimbursement_request_ids: JSON.stringify(selectedItems) },
-    //       },
-    //     );
-    //     const url = window.URL.createObjectURL(new Blob([response.data]));
-    //     handleProceedDownload(url);
-    //   }
   };
 
   const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
@@ -344,7 +305,10 @@ const MyReimbursements: React.FC = () => {
           </div>
 
           {!isSearching && isFetching ? (
-            <SkeletonLoading className="h-10 w-full rounded-sm md:w-64" />
+            <div className="flex gap-2">
+              <SkeletonLoading className="h-10 w-full rounded-sm md:w-64" />
+              <SkeletonLoading className="h-10 w-full rounded-sm md:w-40" />
+            </div>
           ) : (
             <div className="flex flex-col gap-2 md:flex-row md:gap-4">
               <Input

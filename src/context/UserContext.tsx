@@ -78,11 +78,10 @@ export const UserAccessProvider: React.FC<PropsWithChildren> = ({
         }),
       );
 
-      console.log({ propelauth, assignedRole, permissions });
-
       dispatch(setAccessToken(accessToken));
     }
-  }, [propelauth, accessToken, dispatch]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [propelauth, accessToken]);
 
   if (userIsLoading) {
     return <AuthLoader />;

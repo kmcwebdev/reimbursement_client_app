@@ -8,12 +8,10 @@ import { MdSearch } from "react-icons-all-files/md/MdSearch";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { appApiSlice } from "~/app/rtkQuery";
 import { Button } from "~/components/core/Button";
-import SideDrawer from "~/components/core/SideDrawer";
 import StatusBadge, { type StatusType } from "~/components/core/StatusBadge";
 import Table from "~/components/core/table";
 import TableCheckbox from "~/components/core/table/TableCheckbox";
 import { type FilterProps } from "~/components/core/table/filters/StatusFilter";
-import ReimbursementsCardView from "~/components/reimbursement-view";
 import { Can } from "~/context/AbilityContext";
 import { setSelectedItems } from "~/features/page-state.slice";
 import {
@@ -21,6 +19,7 @@ import {
   useGetAllApprovalQuery,
   useGetRequestQuery,
 } from "~/features/reimbursement-api-slice";
+import { useDebounce } from "~/hooks/use-debounce";
 import { useDialogState } from "~/hooks/use-dialog-state";
 import {
   type IReimbursementsFilterQuery,
@@ -28,15 +27,18 @@ import {
 } from "~/types/reimbursement.types";
 import { classNames } from "~/utils/classNames";
 import { currencyFormat } from "~/utils/currencyFormat";
-import { useDebounce } from "~/utils/useDebounce";
 import CollapseWidthAnimation from "../animation/CollapseWidth";
-import Dialog from "../core/Dialog";
 import SkeletonLoading from "../core/SkeletonLoading";
 import { showToast } from "../core/Toast";
 import Input from "../core/form/fields/Input";
-import DateFiledFilter from "../core/table/filters/DateFiledFilter";
+
 import HRBPAnalytics from "./analytics/HRBPAnalytics";
 import ManagerAnalytics from "./analytics/ManagerAnalytics";
+const ReimbursementsCardView = dynamic(
+  () => import("~/components/reimbursement-view"),
+);
+const SideDrawer = dynamic(() => import("~/components/core/SideDrawer"));
+const Dialog = dynamic(() => import("~/components/core/Dialog"));
 
 const StatusFilter = dynamic(
   () => import("~/components/core/table/filters/StatusFilter"),
@@ -46,6 +48,10 @@ const ExpenseTypeFilter = dynamic(
 );
 const ReimbursementTypeFilter = dynamic(
   () => import("~/components/core/table/filters/ReimbursementTypeFilter"),
+);
+
+const DateFiledFilter = dynamic(
+  () => import("~/components/core/table/filters/DateFiledFilter"),
 );
 
 const MyApprovals: React.FC = () => {
@@ -112,266 +118,8 @@ const MyApprovals: React.FC = () => {
   };
 
   const columns = React.useMemo<ColumnDef<ReimbursementApproval>[]>(() => {
-    if (user?.assignedRole === "HRBP") {
-      return [
-        {
-          id: "select",
-          header: ({ table }) => {
-            if (table.getRowModel().rows.length > 0) {
-              return (
-                <TableCheckbox
-                  checked={table.getIsAllRowsSelected()}
-                  indeterminate={table.getIsSomeRowsSelected()}
-                  onChange={table.getToggleAllRowsSelectedHandler()}
-                  showOnHover={false}
-                />
-              );
-            }
-          },
-
-          cell: ({ row }) => (
-            <TableCheckbox
-              checked={row.getIsSelected()}
-              tableHasChecked={selectedItems.length > 0}
-              disabled={!row.getCanSelect()}
-              indeterminate={row.getIsSomeSelected()}
-              onChange={row.getToggleSelectedHandler()}
-            />
-          ),
-        },
-        {
-          id: "hrbp_request_status",
-          accessorKey: "hrbp_request_status",
-          header: "Status",
-          cell: (info) => (
-            <StatusBadge
-              status={(info.getValue() as string).toLowerCase() as StatusType}
-            />
-          ),
-          filterFn: (row, id, value: string) => {
-            return value.includes(row.getValue(id));
-          },
-          enableColumnFilter: true,
-          meta: {
-            filterComponent: (info: FilterProps) => <StatusFilter {...info} />,
-          },
-        },
-        {
-          id: "client_name",
-          accessorKey: "client_name",
-          header: "Client",
-          cell: (info) => info.getValue(),
-        },
-        {
-          id: "employee_id",
-          accessorKey: "employee_id",
-          header: "ID",
-          cell: (info) => info.getValue(),
-        },
-        {
-          id: "full_name",
-          accessorKey: "full_name",
-          cell: (info) => info.getValue(),
-          header: "Name",
-        },
-        {
-          id: "reference_no",
-          accessorKey: "reference_no",
-          cell: (info) => info.getValue(),
-          header: "R-ID",
-        },
-        {
-          id: "request_type",
-          accessorKey: "request_type",
-          cell: (info) => info.getValue(),
-          header: "Type",
-          filterFn: (row, id, value: string) => {
-            return value.includes(row.getValue(id));
-          },
-          meta: {
-            filterComponent: (info: FilterProps) => (
-              <ReimbursementTypeFilter {...info} />
-            ),
-          },
-        },
-        {
-          id: "expense_type",
-          accessorKey: "expense_type",
-          cell: (info) => info.getValue(),
-          header: "Expense",
-          filterFn: (row, id, value: string) => {
-            return value.includes(row.getValue(id));
-          },
-          meta: {
-            filterComponent: (info: FilterProps) => (
-              <ExpenseTypeFilter {...info} />
-            ),
-          },
-        },
-        {
-          id: "created_at",
-          accessorKey: "created_at",
-          cell: (info) =>
-            dayjs(info.getValue() as string).format("MMM D, YYYY"),
-          header: "Filed",
-          filterFn: (row, id, value: string) => {
-            return value.includes(row.getValue(id));
-          },
-          meta: {
-            filterComponent: (info: FilterProps) => (
-              <DateFiledFilter {...info} />
-            ),
-          },
-        },
-        {
-          id: "amount",
-          accessorKey: "amount",
-          cell: (info) => currencyFormat(info.getValue() as number),
-          header: "Amount",
-        },
-        {
-          id: "actions",
-          accessorKey: "reimbursement_request_id",
-          cell: (info) => (
-            <Button
-              buttonType="text"
-              onClick={() => {
-                setFocusedReimbursementId(info.getValue() as string);
-                openReimbursementView();
-              }}
-            >
-              View
-            </Button>
-          ),
-          header: "",
-        },
-      ];
-    }
-    if (user?.assignedRole === "External Reimbursement Approver Manager") {
-      return [
-        {
-          id: "select",
-          header: ({ table }) => {
-            if (table.getRowModel().rows.length > 0) {
-              return (
-                <TableCheckbox
-                  checked={table.getIsAllRowsSelected()}
-                  indeterminate={table.getIsSomeRowsSelected()}
-                  onChange={table.getToggleAllRowsSelectedHandler()}
-                  showOnHover={false}
-                />
-              );
-            }
-          },
-
-          cell: ({ row }) => (
-            <TableCheckbox
-              checked={row.getIsSelected()}
-              tableHasChecked={selectedItems.length > 0}
-              disabled={!row.getCanSelect()}
-              indeterminate={row.getIsSomeSelected()}
-              onChange={row.getToggleSelectedHandler()}
-            />
-          ),
-        },
-
-        {
-          id: "hrbp_request_status",
-          accessorKey: "hrbp_request_status",
-          header: "Status",
-          cell: (info) => (
-            <StatusBadge
-              status={(info.getValue() as string).toLowerCase() as StatusType}
-            />
-          ),
-        },
-        {
-          id: "employee_id",
-          accessorKey: "employee_id",
-          header: "ID",
-          cell: (info) => info.getValue(),
-        },
-        {
-          id: "full_name",
-          accessorKey: "full_name",
-          cell: (info) => info.getValue(),
-          header: "Name",
-        },
-        {
-          id: "reference_no",
-          accessorKey: "reference_no",
-          cell: (info) => info.getValue(),
-          header: "R-ID",
-        },
-        {
-          id: "request_type",
-          accessorKey: "request_type",
-          cell: (info) => info.getValue(),
-          header: "Type",
-          filterFn: (row, id, value: string) => {
-            return value.includes(row.getValue(id));
-          },
-          meta: {
-            filterComponent: (info: FilterProps) => (
-              <ReimbursementTypeFilter {...info} />
-            ),
-          },
-        },
-        {
-          id: "expense_type",
-          accessorKey: "expense_type",
-          cell: (info) => info.getValue(),
-          header: "Expense",
-          filterFn: (row, id, value: string) => {
-            return value.includes(row.getValue(id));
-          },
-          meta: {
-            filterComponent: (info: FilterProps) => (
-              <ExpenseTypeFilter {...info} />
-            ),
-          },
-        },
-        {
-          id: "created_at",
-          accessorKey: "created_at",
-          cell: (info) =>
-            dayjs(info.getValue() as string).format("MMM D, YYYY"),
-          header: "Filed",
-          filterFn: (row, id, value: string) => {
-            return value.includes(row.getValue(id));
-          },
-          meta: {
-            filterComponent: (info: FilterProps) => (
-              <DateFiledFilter {...info} />
-            ),
-          },
-        },
-        {
-          id: "amount",
-          accessorKey: "amount",
-          cell: (info) => currencyFormat(info.getValue() as number),
-          header: "Amount",
-        },
-        {
-          id: "actions",
-          accessorKey: "reimbursement_request_id",
-          cell: (info) => (
-            <Button
-              buttonType="text"
-              onClick={() => {
-                setFocusedReimbursementId(info.getValue() as string);
-                openReimbursementView();
-              }}
-            >
-              View
-            </Button>
-          ),
-          header: "",
-        },
-      ];
-    }
-
-    return [
+    //HRBP COLUMNS
+    const defaultColumns: ColumnDef<ReimbursementApproval>[] = [
       {
         id: "select",
         header: ({ table }) => {
@@ -388,39 +136,49 @@ const MyApprovals: React.FC = () => {
         },
 
         cell: ({ row }) => (
-          <div className="px-4">
-            <TableCheckbox
-              checked={row.getIsSelected()}
-              tableHasChecked={selectedItems.length > 0}
-              disabled={!row.getCanSelect()}
-              indeterminate={row.getIsSomeSelected()}
-              onChange={row.getToggleSelectedHandler()}
-            />
-          </div>
+          <TableCheckbox
+            checked={row.getIsSelected()}
+            tableHasChecked={selectedItems.length > 0}
+            disabled={!row.getCanSelect()}
+            indeterminate={row.getIsSomeSelected()}
+            onChange={row.getToggleSelectedHandler()}
+          />
         ),
       },
-
       {
-        id: "requestor_request_status",
-        accessorKey: "requestor_request_status",
+        id: "hrbp_request_status",
+        accessorKey: "hrbp_request_status",
         header: "Status",
         cell: (info) => (
           <StatusBadge
             status={(info.getValue() as string).toLowerCase() as StatusType}
           />
         ),
-        // filterFn: (row, id, value: string) => {
-        //   return value.includes(row.getValue(id));
-        // },
-        // enableColumnFilter: true,
-        // meta: {
-        //   filterComponent: (info: FilterProps) => (
-        //     <StatusFilter
-        //       {...info}
-        //
-        //     />
-        //   ),
-        // },
+        filterFn: (row, id, value: string) => {
+          return value.includes(row.getValue(id));
+        },
+        enableColumnFilter: true,
+        meta: {
+          filterComponent: (info: FilterProps) => <StatusFilter {...info} />,
+        },
+      },
+      {
+        id: "client_name",
+        accessorKey: "client_name",
+        header: "Client",
+        cell: (info) => info.getValue(),
+      },
+      {
+        id: "employee_id",
+        accessorKey: "employee_id",
+        header: "ID",
+        cell: (info) => info.getValue(),
+      },
+      {
+        id: "full_name",
+        accessorKey: "full_name",
+        cell: (info) => info.getValue(),
+        header: "Name",
       },
       {
         id: "reference_no",
@@ -491,6 +249,13 @@ const MyApprovals: React.FC = () => {
         header: "",
       },
     ];
+
+    if (user?.assignedRole === "External Reimbursement Approver Manager") {
+      return defaultColumns.filter((a) => a.id !== "client_name");
+    }
+
+    return defaultColumns;
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedItems, data]);
 

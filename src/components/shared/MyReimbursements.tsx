@@ -9,11 +9,9 @@ import { AiOutlinePlusCircle } from "react-icons-all-files/ai/AiOutlinePlusCircl
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { appApiSlice } from "~/app/rtkQuery";
 import { Button } from "~/components/core/Button";
-import SideDrawer from "~/components/core/SideDrawer";
 import StatusBadge, { type StatusType } from "~/components/core/StatusBadge";
 import Table from "~/components/core/table";
 import { type FilterProps } from "~/components/core/table/filters/StatusFilter";
-import ReimbursementsCardView from "~/components/reimbursement-view";
 import { setSelectedItems } from "~/features/page-state.slice";
 import {
   useGetAllRequestsQuery,
@@ -32,12 +30,14 @@ import {
 import { type ReimbursementRequest } from "~/types/reimbursement.types";
 import { currencyFormat } from "~/utils/currencyFormat";
 import SkeletonLoading from "../core/SkeletonLoading";
-import DateFiledFilter from "../core/table/filters/DateFiledFilter";
 import MemberAnalytics from "./analytics/MemberAnalytics";
 
+const ReimbursementsCardView = dynamic(
+  () => import("~/components/reimbursement-view"),
+);
 const Dialog = dynamic(() => import("~/components/core/Dialog"));
+const SideDrawer = dynamic(() => import("~/components/core/SideDrawer"));
 const ReimburseForm = dynamic(() => import("./reimburse-form"));
-
 const StatusFilter = dynamic(
   () => import("~/components/core/table/filters/StatusFilter"),
 );
@@ -47,11 +47,13 @@ const ExpenseTypeFilter = dynamic(
 const ReimbursementTypeFilter = dynamic(
   () => import("~/components/core/table/filters/ReimbursementTypeFilter"),
 );
+const DateFiledFilter = dynamic(
+  () => import("~/components/core/table/filters/DateFiledFilter"),
+);
 
 const MyReimbursements: React.FC = () => {
   const { formDialogIsOpen, cancelDialogIsOpen, reimbursementDetails } =
     useAppSelector((state) => state.reimbursementForm);
-
   const { selectedItems, filters } = useAppSelector(
     (state) => state.pageTableState,
   );
