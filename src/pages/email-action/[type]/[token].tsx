@@ -5,6 +5,7 @@ import {
 } from "next";
 import Head from "next/head";
 import Image from "next/image";
+import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { HiCheckCircle } from "react-icons-all-files/hi/HiCheckCircle";
 import { MdClose } from "react-icons-all-files/md/MdClose";
@@ -27,6 +28,8 @@ const EmailAction: React.FC<EmailActionProps> = ({ noToken, type, token }) => {
     useApproveReimbursementViaEmailMutation();
   const [rejectRequest, { isLoading: rejectRequestIsLoading }] =
     useRejectReimbursementViaEmailMutation();
+
+  const { query } = useRouter();
 
   useEffect(() => {
     if (!noToken && type) {
@@ -79,10 +82,16 @@ const EmailAction: React.FC<EmailActionProps> = ({ noToken, type, token }) => {
               </>
             )}
           </div>
-          <p className="text-neutral-600">
-            [Name] [R-ID] has been{" "}
-            {type === "approve" ? "approved" : "rejected"}
-          </p>
+
+          <CollapseHeightAnimation
+            isVisible={!approveRequestIsLoading && !rejectRequestIsLoading}
+          >
+            <p className="text-neutral-600">
+              {query.requestor} {query.rid} has been{" "}
+              {type === "approve" ? "approved" : "rejected"}
+            </p>
+          </CollapseHeightAnimation>
+
           <CollapseHeightAnimation
             isVisible={approveRequestIsLoading || rejectRequestIsLoading}
           >
