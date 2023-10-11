@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next/router";
 import React from "react";
 import { type IconType } from "react-icons-all-files";
 import { classNames } from "~/utils/classNames";
@@ -19,7 +19,7 @@ const NavigationItem: React.FC<NavigationItemProps> = ({
   icon: Icon,
   label,
 }) => {
-  const navigation = useRouter();
+  const { push } = useRouter();
   return (
     <div
       className={classNames(
@@ -27,8 +27,7 @@ const NavigationItem: React.FC<NavigationItemProps> = ({
         "relative flex h-11 items-center gap-2 rounded-[4px] p-2 text-white transition-all ease-in-out ",
       )}
       key={href}
-      // eslint-disable-next-line @typescript-eslint/no-misused-promises
-      onClick={() => navigation.push(href)}
+      onClick={() => void push(href)}
     >
       {active && (
         <AnimatePresence>

@@ -13,7 +13,7 @@ import {
   type IMemberAnalytics,
 } from "~/types/dashboard-analytics.type";
 import { type UploadFileResponse } from "~/types/file-upload-response.type";
-import { type ReimbursementExpenseType } from "~/types/reimbursement.expese-type";
+import { type ReimbursementExpenseType } from "~/types/reimbursement.expense-type";
 import { type ReimbursementRequestType } from "~/types/reimbursement.request-type";
 import {
   type AuditLog,
