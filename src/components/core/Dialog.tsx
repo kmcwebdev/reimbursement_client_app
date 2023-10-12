@@ -71,7 +71,7 @@ const Dialog: React.FC<DialogProps> = ({
                 as="div"
                 className={classNames(
                   "my-8 inline-block w-full transform rounded-md bg-white p-4 text-left align-middle shadow-xl transition-all",
-                  sideBarCollapsed ? "ml-[88px]" : "ml-0 sm:ml-14 md:lg-64",
+                  sideBarCollapsed ? "ml-[88px]" : "md:lg-64 ml-0 sm:ml-14",
                   className && className,
                   dialogSize[size],
                 )}

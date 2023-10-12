@@ -22,7 +22,7 @@ const Popover: React.FC<PopoverProps> = ({
     <HUIPopover as="div" className="relative" {...rest}>
       <HUIPopover.Button
         ref={buttonRef}
-        className="cursor-pointer focus:outline-none w-full"
+        className="w-full cursor-pointer focus:outline-none"
       >
         {btn}
       </HUIPopover.Button>
