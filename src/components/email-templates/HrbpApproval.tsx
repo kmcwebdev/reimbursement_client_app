@@ -1,6 +1,6 @@
 import { Link, Text } from "@react-email/components";
-import EmailMain from "./email-components/EmailMain";
 import { parseTimezone } from "~/utils/parse-timezone";
+import EmailMain from "./email-components/EmailMain";
 
 interface HRBPApprovalTemplateProps {
   referenceNo: string;
@@ -32,7 +32,9 @@ export const HRBPApproval: React.FC<Readonly<HRBPApprovalTemplateProps>> = ({
     <Text>Employee ID: {employeeId}</Text>
     <Text>Employee Name: {fullName}</Text>
     <Text>Expense Description: {expenseType}</Text>
-    <Text>Expense Date: {parseTimezone(expenseDate).format("MMMM DD,YYYY")}</Text>
+    <Text>
+      Expense Date: {parseTimezone(expenseDate).format("MMMM DD,YYYY")}
+    </Text>
     <Text>Amount: {amount}</Text>
     <Text>
       Receipts Attached:{" "}

@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
+  useContext,
   useMemo,
   useState,
   type Dispatch,
@@ -8,12 +9,10 @@ import {
   type SetStateAction,
 } from "react";
 import { useForm } from "react-hook-form";
-import { AiOutlinePauseCircle } from "react-icons-all-files/ai/AiOutlinePauseCircle";
-import { AiOutlineStop } from "react-icons-all-files/ai/AiOutlineStop";
-import { BsChevronDown } from "react-icons-all-files/bs/BsChevronDown";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { appApiSlice } from "~/app/rtkQuery";
 import { Button } from "~/components/core/Button";
+import { AbilityContext } from "~/context/AbilityContext";
 import { env } from "~/env.mjs";
 import {
   useApproveReimbursementMutation,
@@ -36,7 +35,6 @@ import { type ReimbursementRequest } from "~/types/reimbursement.types";
 import { currencyFormat } from "~/utils/currencyFormat";
 import Dialog from "../core/Dialog";
 import EmptyState from "../core/EmptyState";
-import Popover from "../core/Popover";
 import { showToast } from "../core/Toast";
 import Form from "../core/form";
 import TextArea from "../core/form/fields/TextArea";
@@ -45,6 +43,9 @@ import Attachments from "./Attachments";
 import Details from "./Details";
 import Notes from "./Notes";
 import ReimbursementViewSkeleton from "./ReimbursementViewSkeleton";
+import ApproverButtons from "./action-buttons/ApproverButtons";
+import FinanceButtons from "./action-buttons/FinanceButtons";
+import MemberButtons from "./action-buttons/MemberButtons";
 
 export interface ReimbursementsCardViewProps extends PropsWithChildren {
   isLoading?: boolean;
@@ -63,6 +64,8 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
   isError = false,
   setFocusedReimbursementId,
 }) => {
+  const ability = useContext(AbilityContext);
+
   const { user } = useAppSelector((state) => state.session);
   const [reimbursementReqId, setReimbursementReqId] = useState<string>();
   const [currentState, setCurrentState] = useState<string>("Reject");
@@ -325,132 +328,36 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
 
           <div className="absolute bottom-0 grid h-[72px] w-full grid-cols-2 items-center justify-center gap-2 border-t border-neutral-300 px-5">
             {!isApproverView && (
-              <>
-                <Button
-                  onClick={closeDrawer}
-                  className="w-full"
-                  buttonType="outlined"
-                  variant="neutral"
-                >
-                  Back
-                </Button>
-
-                {data.requestor_request_status !== "Cancelled" &&
+              <MemberButtons
+                onClose={closeDrawer}
+                onCancel={openCancelDialog}
+                isCancellable={
+                  data.requestor_request_status !== "Cancelled" &&
                   data.requestor_request_status === "Pending" &&
                   data.finance_request_status === "Pending" &&
-                  data.hrbp_request_status === "Pending" && (
-                    <Button
-                      className="w-full"
-                      variant="danger"
-                      onClick={openCancelDialog}
-                    >
-                      Cancel
-                    </Button>
-                  )}
-              </>
+                  data.hrbp_request_status === "Pending"
+                }
+              />
             )}
 
-            {user &&
-              (user.assignedRole === "HRBP" ||
-                user.assignedRole ===
-                  "External Reimbursement Approver Manager") &&
-              isApproverView && (
-                <>
-                  <Button
-                    className="w-full"
-                    buttonType="outlined"
-                    variant="danger"
-                    onClick={openRejectDialog}
-                  >
-                    Reject
-                  </Button>
-
-                  <Button
-                    className="w-full"
-                    variant="primary"
-                    disabled={isApproving}
-                    loading={isApproving}
-                    onClick={openApproveDialog}
-                  >
-                    Approve
-                  </Button>
-                </>
+            {isApproverView &&
+              ability.can("access", "REIMBURSEMENT_VIEW_APPROVAL") && (
+                <ApproverButtons
+                  onApprove={openApproveDialog}
+                  onReject={openRejectDialog}
+                />
               )}
 
-            {user && user.assignedRole === "Finance" && (
-              <div className="absolute bottom-0 grid h-[72px] w-full grid-cols-2 items-center justify-center gap-2 border-t border-neutral-300 px-5">
-                {data.finance_request_status !== "On-hold" && (
-                  <Popover
-                    panelClassName="translate-y-[-170px] w-full"
-                    btn={
-                      <div className="border-s-1 flex h-full justify-between divide-x-2 rounded-md border p-2">
-                        <div className="flex h-full flex-1 items-center justify-center gap-2">
-                          {(currentState === "Reject" && (
-                            <AiOutlineStop className="h-6 w-6 text-red-600" />
-                          )) || (
-                            <AiOutlinePauseCircle className="h-6 w-6 text-yellow-600" />
-                          )}
-                          <p
-                            className={
-                              currentState === "Reject"
-                                ? "text-red-600"
-                                : "text-yellow-600"
-                            }
-                          >
-                            {currentState}
-                          </p>
-                        </div>
-                        <div className="grid w-[40px] place-items-center">
-                          <BsChevronDown className="h-[14px] w-[14px] font-semibold text-gray-400 " />
-                        </div>
-                      </div>
-                    }
-                    content={
-                      <div className="w-full p-2">
-                        <div
-                          className="flex cursor-pointer items-center justify-start gap-2 rounded-sm p-2 hover:bg-gray-100"
-                          onClick={openRejectDialog}
-                        >
-                          <AiOutlineStop className="h-6 w-6 text-red-600" />
-                          <p className="font-karla text-[16px] font-normal">
-                            Reject
-                          </p>
-                        </div>
-                        <div
-                          className="flex cursor-pointer items-center justify-start gap-2 rounded-sm p-2 hover:bg-gray-100"
-                          onClick={openHoldDialog}
-                        >
-                          <AiOutlinePauseCircle className="h-6 w-6 text-yellow-600" />
-                          <p className="font-karla text-[16px] font-normal">
-                            Hold
-                          </p>
-                        </div>
-                      </div>
-                    }
-                  />
-                )}
-                {data.finance_request_status === "On-hold" && (
-                  <Button
-                    className="w-full"
-                    buttonType="outlined"
-                    variant="danger"
-                    loading={isRejecting}
-                    onClick={openRejectDialog}
-                  >
-                    Reject
-                  </Button>
-                )}
-                <Button
-                  className="w-full"
-                  buttonType="filled"
-                  variant="success"
-                  loading={isRejecting}
-                  onClick={openApproveDialog}
-                >
-                  Download
-                </Button>
-              </div>
-            )}
+            {isApproverView &&
+              ability.can("access", "REIMBURSEMENT_VIEW_DOWNLOAD_HOLD") && (
+                <FinanceButtons
+                  isOnHold={data.finance_request_status === "On-hold"}
+                  currentState={currentState}
+                  onApprove={openApproveDialog}
+                  onHold={openHoldDialog}
+                  onReject={openRejectDialog}
+                />
+              )}
           </div>
         </>
       )}

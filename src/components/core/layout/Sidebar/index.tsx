@@ -11,10 +11,10 @@ const Sidebar: React.FC = () => {
   );
 
   const dispatch = useAppDispatch();
-
   const toggleSidebar = () => {
     dispatch(toggleSidebarCollapse());
   };
+
   return (
     <>
       {/* Sidebar for tablet screens */}
