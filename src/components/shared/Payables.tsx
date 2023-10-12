@@ -97,6 +97,7 @@ const Payables: React.FC = () => {
         ]),
       );
       dispatch(appApiSlice.util.invalidateTags([{ type: "FinanceAnalytics" }]));
+      dispatch(setSelectedItems([]));
       setDownloadReportLoading(false);
       closeReportConfirmDialog();
     },

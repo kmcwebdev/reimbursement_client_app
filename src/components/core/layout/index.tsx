@@ -1,4 +1,4 @@
-import { useRouter } from "next/navigation";
+import { useRouter } from "next/router";
 import React, { useEffect, type PropsWithChildren } from "react";
 import { MdDashboard } from "react-icons-all-files/md/MdDashboard";
 import { MdGavel } from "react-icons-all-files/md/MdGavel";
@@ -14,7 +14,7 @@ import Sidebar from "./Sidebar";
 
 const Layout: React.FC<PropsWithChildren> = ({ children }) => {
   const { user } = useAppSelector((state) => state.session);
-  const router = useRouter();
+  const { push } = useRouter();
   const dispatch = useAppDispatch();
 
   /**
@@ -61,7 +61,7 @@ const Layout: React.FC<PropsWithChildren> = ({ children }) => {
           <div className="z-[50] flex h-16 items-center justify-evenly border-t bg-black px-8 md:hidden">
             <div
               className="flex flex-col items-center justify-center gap-1"
-              onClick={() => void router.push("/dashboard")}
+              onClick={() => void push("/dashboard")}
             >
               <MdDashboard
                 className={classNames(
@@ -79,7 +79,7 @@ const Layout: React.FC<PropsWithChildren> = ({ children }) => {
                 "External Reimbursement Approver Manager" && (
                 <div
                   className="flex flex-col items-center justify-center gap-1"
-                  onClick={() => void router.push("/approval")}
+                  onClick={() => void push("/approval")}
                 >
                   <MdGavel
                     className={classNames(
@@ -99,7 +99,7 @@ const Layout: React.FC<PropsWithChildren> = ({ children }) => {
                   "External Reimbursement Approver Manager") && (
                 <div
                   className="flex flex-col items-center justify-center gap-1"
-                  onClick={() => void router.push("/history")}
+                  onClick={() => void push("/history")}
                 >
                   <MdReceipt
                     className={classNames(
@@ -115,7 +115,7 @@ const Layout: React.FC<PropsWithChildren> = ({ children }) => {
 
             <div
               className="flex flex-col items-center justify-center gap-1"
-              onClick={() => void router.push("/profile")}
+              onClick={() => void push("/profile")}
             >
               <MdPerson
                 className={classNames(

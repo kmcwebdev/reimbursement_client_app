@@ -22,6 +22,7 @@ export const UserAccessProvider: React.FC<PropsWithChildren> = ({
   const dispatch = useAppDispatch();
   const { loading: userIsLoading, user: propelauth, accessToken } = useUser();
   const [permissions, setPermissions] = useState<AppClaims[]>();
+  const [assignedRole, setAssignedRole] = useState<IRole>();
 
   useEffect(() => {
     if (propelauth && accessToken) {
@@ -45,6 +46,8 @@ export const UserAccessProvider: React.FC<PropsWithChildren> = ({
       }
 
       const assignedRole = org[0].assignedRole;
+
+      setAssignedRole(assignedRole as IRole);
 
       const permissions = org[0].permissions;
 
@@ -88,7 +91,7 @@ export const UserAccessProvider: React.FC<PropsWithChildren> = ({
   }
 
   return (
-    <AbilityContext.Provider value={defineAbility(permissions)}>
+    <AbilityContext.Provider value={defineAbility(assignedRole, permissions)}>
       {children}
     </AbilityContext.Provider>
   );

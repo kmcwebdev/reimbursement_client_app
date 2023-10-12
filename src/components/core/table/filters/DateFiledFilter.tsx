@@ -87,6 +87,10 @@ const DateFiledFilter: React.FC<FilterProps> = () => {
 
   const onDateFromChanged = (e: ChangeEvent<HTMLInputElement>) => {
     setDateFrom(e.target.value);
+
+    if (!dateTo) {
+      setDateTo(dayjs(e.target.value).add(5, "days").format("YYYY-MM-DD"));
+    }
   };
 
   const onDateToChanged = (e: ChangeEvent<HTMLInputElement>) => {
@@ -109,21 +113,23 @@ const DateFiledFilter: React.FC<FilterProps> = () => {
                 type="date"
                 name="from"
                 label="From"
-                value={dateFrom ? dayjs(dateFrom).format("YYYY-MM-DD") : ""}
-                onChange={onDateFromChanged}
+                defaultValue={
+                  dateFrom ? dayjs(dateFrom).format("YYYY-MM-DD") : ""
+                }
+                onBlur={onDateFromChanged}
                 hasErrors={hasErrors}
               />
               <Input
                 type="date"
                 name="to"
                 label="To"
-                value={dateTo ? dayjs(dateTo).format("YYYY-MM-DD") : ""}
+                defaultValue={dateTo ? dayjs(dateTo).format("YYYY-MM-DD") : ""}
                 min={
                   dateFrom
                     ? dayjs(dateFrom).add(1, "day").format("YYYY-MM-DD")
                     : ""
                 }
-                onChange={onDateToChanged}
+                onBlur={onDateToChanged}
                 hasErrors={hasErrors}
               />
 

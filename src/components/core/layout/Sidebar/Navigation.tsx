@@ -4,7 +4,6 @@ import { MdDashboard } from "react-icons-all-files/md/MdDashboard";
 import { MdGavel } from "react-icons-all-files/md/MdGavel";
 import { MdPerson } from "react-icons-all-files/md/MdPerson";
 import { MdReceipt } from "react-icons-all-files/md/MdReceipt";
-import { useAppSelector } from "~/app/hook";
 import { Can } from "~/context/AbilityContext";
 import NavigationItem from "./NavigationItem";
 
@@ -12,8 +11,6 @@ interface NavigationProps {
   collapsed: boolean;
 }
 const Navigation: React.FC<NavigationProps> = ({ collapsed }) => {
-  const { user } = useAppSelector((state) => state.session);
-
   return (
     <div className="flex flex-col gap-2">
       <NavigationItem
@@ -24,31 +21,25 @@ const Navigation: React.FC<NavigationProps> = ({ collapsed }) => {
         collapsed={collapsed}
       />
 
-      {user &&
-        user.assignedRole === "External Reimbursement Approver Manager" && (
-          <Can I="access" a="CAN_APPROVE_REIMBURSEMENT">
-            <NavigationItem
-              label="Approval"
-              icon={MdGavel as IconType}
-              active={window.location.pathname.includes("approval")}
-              href="/approval"
-              collapsed={collapsed}
-            />
-          </Can>
-        )}
+      <Can I="access" a="NAV_ITEM_APPROVAL">
+        <NavigationItem
+          label="Approval"
+          icon={MdGavel as IconType}
+          active={window.location.pathname.includes("approval")}
+          href="/approval"
+          collapsed={collapsed}
+        />
+      </Can>
 
-      {user &&
-        (user.assignedRole === "Finance" ||
-          user.assignedRole === "HRBP" ||
-          user.assignedRole === "External Reimbursement Approver Manager") && (
-          <NavigationItem
-            label="History"
-            icon={MdReceipt as IconType}
-            active={window.location.pathname.includes("history")}
-            href="/history"
-            collapsed={collapsed}
-          />
-        )}
+      <Can I="access" a="NAV_ITEM_HISTORY">
+        <NavigationItem
+          label="History"
+          icon={MdReceipt as IconType}
+          active={window.location.pathname.includes("history")}
+          href="/history"
+          collapsed={collapsed}
+        />
+      </Can>
 
       <NavigationItem
         label="Profile"

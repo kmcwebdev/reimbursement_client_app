@@ -23,7 +23,9 @@ const pageTableStateSlice = createSlice({
       state,
       action: PayloadAction<IReimbursementsFilterQuery>,
     ) {
-      state.filters = removeUndefinedValues(action.payload) as IReimbursementsFilterQuery;
+      state.filters = removeUndefinedValues(
+        action.payload,
+      ) as IReimbursementsFilterQuery;
     },
     resetPageTableState(state) {
       state.selectedItems = [];
