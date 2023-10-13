@@ -247,17 +247,17 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
       ],
     }),
     approveReimbursementViaEmail: builder.mutation<string, string>({
-      query: (token) => ({
+      query: (hash) => ({
         method: "POST",
         url: "/api/finance/reimbursement/requests/email-approval/approve",
-        body: { token },
+        body: { hash },
       }),
     }),
     rejectReimbursementViaEmail: builder.mutation<string, string>({
-      query: (token) => ({
+      query: (hash) => ({
         method: "POST",
         url: "/api/finance/reimbursement/requests/email-approval/reject",
-        body: { token },
+        body: { hash },
       }),
     }),
     cancelReimbursement: builder.mutation<

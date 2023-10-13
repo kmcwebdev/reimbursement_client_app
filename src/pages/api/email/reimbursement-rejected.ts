@@ -27,12 +27,13 @@ export default async function handler(
       amount,
       receiptsAttached,
       remarks,
+      referenceNo,
     } = validate.data;
 
     const sendEmail = await resend.emails.send({
       from: "KMC Reimbursement <no-reply@reimbursement.kmc.solutions>",
       to,
-      subject: `Reimbursement Request Rejected`,
+      subject: `Reimbursement Request Rejected - ${referenceNo}`,
       react: Rejected({
         fullName,
         employeeId,
