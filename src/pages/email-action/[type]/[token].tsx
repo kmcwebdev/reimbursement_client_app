@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import {
   type GetStaticPaths,
   type GetStaticProps,
@@ -8,6 +9,7 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { HiCheckCircle } from "react-icons-all-files/hi/HiCheckCircle";
+import { HiExclamationCircle } from "react-icons-all-files/hi/HiExclamationCircle";
 import { MdClose } from "react-icons-all-files/md/MdClose";
 import { RiLoader4Fill } from "react-icons-all-files/ri/RiLoader4Fill";
 import CollapseHeightAnimation from "~/components/animation/CollapseHeight";
@@ -29,11 +31,17 @@ const EmailAction: React.FC<EmailActionProps> = ({ noToken, type, token }) => {
     {
       isLoading: approveRequestIsLoading,
       isUninitialized: approvalUninitialized,
+      isError: isApprovalError,
     },
   ] = useApproveReimbursementViaEmailMutation();
+
   const [
     rejectRequest,
-    { isLoading: rejectRequestIsLoading, isUninitialized: rejectUninitialized },
+    {
+      isLoading: rejectRequestIsLoading,
+      isUninitialized: rejectUninitialized,
+      isError: isRejectError,
+    },
   ] = useRejectReimbursementViaEmailMutation();
 
   const { query } = useRouter();
@@ -81,27 +89,39 @@ const EmailAction: React.FC<EmailActionProps> = ({ noToken, type, token }) => {
               (!rejectRequestIsLoading && !rejectUninitialized)
             }
           >
-            <div className="flex flex-col gap-2">
-              <div className="flex items-center gap-2">
-                {type === "reject" && (
-                  <>
-                    <MdClose className="h-5 w-5 text-red-600" />
-                    Reject
-                  </>
-                )}
+            {!isApprovalError && !isRejectError ? (
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center gap-2">
+                  {type === "reject" && (
+                    <>
+                      <MdClose className="h-5 w-5 text-red-600" />
+                      Reject
+                    </>
+                  )}
 
-                {type === "approve" && (
-                  <>
-                    <HiCheckCircle className="h-5 w-5 text-green-600" />
-                    Approved
-                  </>
-                )}
+                  {type === "approve" && (
+                    <>
+                      <HiCheckCircle className="h-5 w-5 text-green-600" />
+                      Approved
+                    </>
+                  )}
+                </div>
+                <p className="text-neutral-600">
+                  {query.requestor} {query.rid} has been{" "}
+                  {type === "approve" ? "approved" : "rejected"}
+                </p>
               </div>
-              <p className="text-neutral-600">
-                {query.requestor} {query.rid} has been{" "}
-                {type === "approve" ? "approved" : "rejected"}
-              </p>
-            </div>
+            ) : (
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center gap-2">
+                  <HiExclamationCircle className="h-5 w-5 text-red-600" />
+                  Something went wrong!
+                </div>
+                <p className="text-neutral-600">
+                  Approval link not found or has expired.
+                </p>
+              </div>
+            )}
           </CollapseHeightAnimation>
 
           <CollapseHeightAnimation
