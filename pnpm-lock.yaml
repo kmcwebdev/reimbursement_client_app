@@ -28,7 +28,7 @@ dependencies:
     version: 1.9.5(react-redux@8.1.2)(react@18.2.0)
   '@t3-oss/env-nextjs':
     specifier: ^0.7.0
-    version: 0.7.0(typescript@5.1.6)(zod@3.22.2)
+    version: 0.7.0(typescript@5.1.6)(zod@3.22.3)
   '@tailwindcss/forms':
     specifier: ^0.5.4
     version: 0.5.4(tailwindcss@3.3.3)
@@ -96,8 +96,8 @@ dependencies:
     specifier: ^3.0.5
     version: 3.0.5(tailwindcss@3.3.3)
   zod:
-    specifier: ^3.22.2
-    version: 3.22.2
+    specifier: ^3.22.3
+    version: 3.22.3
 
 devDependencies:
   '@types/node':
@@ -116,8 +116,8 @@ devDependencies:
     specifier: ^6.4.0
     version: 6.4.0(eslint@8.46.0)(typescript@5.1.6)
   autoprefixer:
-    specifier: 10.4.15
-    version: 10.4.15(postcss@8.4.27)
+    specifier: 10.4.16
+    version: 10.4.16(postcss@8.4.31)
   eslint:
     specifier: 8.46.0
     version: 8.46.0
@@ -128,8 +128,8 @@ devDependencies:
     specifier: ^8.0.3
     version: 8.0.3
   postcss:
-    specifier: 8.4.27
-    version: 8.4.27
+    specifier: 8.4.31
+    version: 8.4.31
   prettier:
     specifier: ^3.0.2
     version: 3.0.2
@@ -958,7 +958,7 @@ packages:
       tslib: 2.6.1
     dev: false
 
-  /@t3-oss/env-core@0.7.0(typescript@5.1.6)(zod@3.22.2):
+  /@t3-oss/env-core@0.7.0(typescript@5.1.6)(zod@3.22.3):
     resolution: {integrity: sha512-cgunN82CqgQOOyuMOK/bGtujX5/ooXQTwGMJVWI6mCowq6WE5EgRLOqF/DRcrElI0gSFGA9i9GrxzCnk73HZLQ==}
     peerDependencies:
       typescript: '>=4.7.2'
@@ -968,10 +968,10 @@ packages:
         optional: true
     dependencies:
       typescript: 5.1.6
-      zod: 3.22.2
+      zod: 3.22.3
     dev: false
 
-  /@t3-oss/env-nextjs@0.7.0(typescript@5.1.6)(zod@3.22.2):
+  /@t3-oss/env-nextjs@0.7.0(typescript@5.1.6)(zod@3.22.3):
     resolution: {integrity: sha512-rjQIt6P3tac2eRx4BNQLNaJ+AIb2P8wXw4uFvYbEekqMGShikkUALnX3hUn1twYiGVGHXRm6UbU+LqtjIktuGg==}
     peerDependencies:
       typescript: '>=4.7.2'
@@ -980,9 +980,9 @@ packages:
       typescript:
         optional: true
     dependencies:
-      '@t3-oss/env-core': 0.7.0(typescript@5.1.6)(zod@3.22.2)
+      '@t3-oss/env-core': 0.7.0(typescript@5.1.6)(zod@3.22.3)
       typescript: 5.1.6
-      zod: 3.22.2
+      zod: 3.22.3
     dev: false
 
   /@tailwindcss/forms@0.5.4(tailwindcss@3.3.3):
@@ -1438,19 +1438,19 @@ packages:
     engines: {node: '>=4'}
     dev: false
 
-  /autoprefixer@10.4.15(postcss@8.4.27):
-    resolution: {integrity: sha512-KCuPB8ZCIqFdA4HwKXsvz7j6gvSDNhDP7WnUjBleRkKjPdvCmHFuQ77ocavI8FT6NdvlBnE2UFr2H4Mycn8Vew==}
+  /autoprefixer@10.4.16(postcss@8.4.31):
+    resolution: {integrity: sha512-7vd3UC6xKp0HLfua5IjZlcXvGAGy7cBAXTg2lyQ/8WpNhd6SiZ8Be+xm3FyBSYJx5GKcpRCzBh7RH4/0dnY+uQ==}
     engines: {node: ^10 || ^12 || >=14}
     hasBin: true
     peerDependencies:
       postcss: ^8.1.0
     dependencies:
       browserslist: 4.21.10
-      caniuse-lite: 1.0.30001524
-      fraction.js: 4.2.0
+      caniuse-lite: 1.0.30001547
+      fraction.js: 4.3.6
       normalize-range: 0.1.2
       picocolors: 1.0.0
-      postcss: 8.4.27
+      postcss: 8.4.31
       postcss-value-parser: 4.2.0
     dev: true
 
@@ -1601,7 +1601,7 @@ packages:
     engines: {node: ^6 || ^7 || ^8 || ^9 || ^10 || ^11 || ^12 || >=13.7}
     hasBin: true
     dependencies:
-      caniuse-lite: 1.0.30001524
+      caniuse-lite: 1.0.30001547
       electron-to-chromium: 1.4.504
       node-releases: 2.0.13
       update-browserslist-db: 1.0.11(browserslist@4.21.10)
@@ -1653,6 +1653,11 @@ packages:
 
   /caniuse-lite@1.0.30001524:
     resolution: {integrity: sha512-Jj917pJtYg9HSJBF95HVX3Cdr89JUyLT4IZ8SvM5aDRni95swKgYi3TgYLH5hnGfPE/U1dg6IfZ50UsIlLkwSA==}
+    dev: false
+
+  /caniuse-lite@1.0.30001547:
+    resolution: {integrity: sha512-W7CrtIModMAxobGhz8iXmDfuJiiKg1WADMO/9x7/CLNin5cpSbuBjooyoIUVB5eyCc36QuTVlkVa1iB2S5+/eA==}
+    dev: true
 
   /chalk@2.4.2:
     resolution: {integrity: sha512-Mti+f9lpJNcwF4tWV8/OrTTtF1gZi+f8FqlyAdouralcFWFQWF2+NgCHShjkCb+IFBLq9buZwE1xckQU4peSuQ==}
@@ -2707,8 +2712,8 @@ packages:
     engines: {node: '>= 0.6'}
     dev: false
 
-  /fraction.js@4.2.0:
-    resolution: {integrity: sha512-MhLuK+2gUcnZe8ZHlaaINnQLl0xRIGRfcGk2yl8xoQAfHrSsL3rYu6FCmBdkdbhc9EPlwyGHewaRsvwRMJtAlA==}
+  /fraction.js@4.3.6:
+    resolution: {integrity: sha512-n2aZ9tNfYDwaHhvFTkhFErqOMIb8uyzSQ+vGJBjZyanAKZVbGUQ1sngfk9FdkBw7G26O7AgNjLcecLffD1c7eg==}
     dev: true
 
   /framer-motion@10.15.0(react-dom@18.2.0)(react@18.2.0):
@@ -4124,7 +4129,6 @@ packages:
       nanoid: 3.3.6
       picocolors: 1.0.0
       source-map-js: 1.0.2
-    dev: false
 
   /prebuild-install@7.1.1:
     resolution: {integrity: sha512-jAXscXWMcCK8GgCoHOfIr0ODh5ai8mj63L2nWrjuAgXE6tDyYGnx4/8o/rCgU+B4JSyZBKbeZqzhtwtC3ovxjw==}
@@ -5433,8 +5437,8 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
-  /zod@3.22.2:
-    resolution: {integrity: sha512-wvWkphh5WQsJbVk1tbx1l1Ly4yg+XecD+Mq280uBGt9wa5BKSWf4Mhp6GmrkPixhMxmabYY7RbzlwVP32pbGCg==}
+  /zod@3.22.3:
+    resolution: {integrity: sha512-EjIevzuJRiRPbVH4mGc8nApb/lVLKVpmUhAaR5R5doKGfAnGJ6Gr3CViAVjP+4FWSxCsybeWQdcgCtbX+7oZug==}
     dev: false
 
   github.com/alisamar/react-icons-all-files/7f607f596c600ffdcea65e0388f21c8a4fd17943(react@18.2.0):
