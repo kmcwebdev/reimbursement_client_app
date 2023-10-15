@@ -34,7 +34,7 @@ export default async function handler(
     const sendEmail = await resend.emails.send({
       from: "KMC Reimbursement <no-reply@reimbursement.kmc.solutions>",
       to,
-      subject: `New Reimbursement Request ${referenceNo}`,
+      subject: `New Reimbursement Request - ${referenceNo}`,
       react: Confirmation({
         requestType,
         referenceNo,
