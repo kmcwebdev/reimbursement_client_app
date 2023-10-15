@@ -117,7 +117,7 @@ devDependencies:
     version: 6.4.0(eslint@8.46.0)(typescript@5.1.6)
   autoprefixer:
     specifier: 10.4.16
-    version: 10.4.16(postcss@8.4.27)
+    version: 10.4.16(postcss@8.4.31)
   eslint:
     specifier: 8.46.0
     version: 8.46.0
@@ -128,8 +128,8 @@ devDependencies:
     specifier: ^8.0.3
     version: 8.0.3
   postcss:
-    specifier: 8.4.27
-    version: 8.4.27
+    specifier: 8.4.31
+    version: 8.4.31
   prettier:
     specifier: ^3.0.2
     version: 3.0.2
@@ -1438,7 +1438,7 @@ packages:
     engines: {node: '>=4'}
     dev: false
 
-  /autoprefixer@10.4.16(postcss@8.4.27):
+  /autoprefixer@10.4.16(postcss@8.4.31):
     resolution: {integrity: sha512-7vd3UC6xKp0HLfua5IjZlcXvGAGy7cBAXTg2lyQ/8WpNhd6SiZ8Be+xm3FyBSYJx5GKcpRCzBh7RH4/0dnY+uQ==}
     engines: {node: ^10 || ^12 || >=14}
     hasBin: true
@@ -1450,7 +1450,7 @@ packages:
       fraction.js: 4.3.6
       normalize-range: 0.1.2
       picocolors: 1.0.0
-      postcss: 8.4.27
+      postcss: 8.4.31
       postcss-value-parser: 4.2.0
     dev: true
 
@@ -4129,7 +4129,6 @@ packages:
       nanoid: 3.3.6
       picocolors: 1.0.0
       source-map-js: 1.0.2
-    dev: false
 
   /prebuild-install@7.1.1:
     resolution: {integrity: sha512-jAXscXWMcCK8GgCoHOfIr0ODh5ai8mj63L2nWrjuAgXE6tDyYGnx4/8o/rCgU+B4JSyZBKbeZqzhtwtC3ovxjw==}
