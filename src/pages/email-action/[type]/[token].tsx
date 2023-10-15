@@ -29,6 +29,7 @@ const EmailAction: React.FC<EmailActionProps> = ({ noToken, type, token }) => {
   const [
     approveRequest,
     {
+      data: approveRequestData,
       isLoading: approveRequestIsLoading,
       isUninitialized: approvalUninitialized,
       isError: isApprovalError,
@@ -38,6 +39,7 @@ const EmailAction: React.FC<EmailActionProps> = ({ noToken, type, token }) => {
   const [
     rejectRequest,
     {
+      data: rejectRequestData,
       isLoading: rejectRequestIsLoading,
       isUninitialized: rejectUninitialized,
       isError: isRejectError,
@@ -47,6 +49,8 @@ const EmailAction: React.FC<EmailActionProps> = ({ noToken, type, token }) => {
   const { query } = useRouter();
 
   useEffect(() => {
+    console.log(token);
+
     if (!noToken && type) {
       if (type === "approve") {
         void approveRequest(token);
@@ -58,6 +62,9 @@ const EmailAction: React.FC<EmailActionProps> = ({ noToken, type, token }) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [noToken, type]);
+
+  console.log('approveRequestData', approveRequestData);
+  console.log('rejectRequestData', rejectRequestData);
 
   return (
     <>
