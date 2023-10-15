@@ -246,14 +246,14 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
         { type: "FinanceAnalytics" },
       ],
     }),
-    approveReimbursementViaEmail: builder.mutation<string, string>({
+    approveReimbursementViaEmail: builder.mutation<{ message: string }, string>({
       query: (hash) => ({
         method: "POST",
         url: "/api/finance/reimbursement/requests/email-approval/approve",
         body: { hash },
       }),
     }),
-    rejectReimbursementViaEmail: builder.mutation<string, string>({
+    rejectReimbursementViaEmail: builder.mutation<{ message: string }, string>({
       query: (hash) => ({
         method: "POST",
         url: "/api/finance/reimbursement/requests/email-approval/reject",
