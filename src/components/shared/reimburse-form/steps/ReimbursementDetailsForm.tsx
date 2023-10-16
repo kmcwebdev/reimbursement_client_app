@@ -37,11 +37,16 @@ const ReimbursementDetailsForm: React.FC<ReimbursementDetailsFormProps> = ({
   formReturn,
   handleOpenCancelDialog,
 }) => {
+
+
+  const { user } = useAppSelector((state) => state.session);
+
   const { activeStep, reimbursementDetails } = useAppSelector(
     (state) => state.reimbursementForm,
   );
   const dispatch = useAppDispatch();
-
+  
+  const [ sameEmail, setSameEmail ] = useState<boolean>(false);
   const [selectedType, setSelectedType] = useState<string>();
   const [selectedExpense, setSelectedExpense] = useState<string>();
   const { isLoading: requestTypesIsLoading, data: requestTypes } =
@@ -89,7 +94,15 @@ const ReimbursementDetailsForm: React.FC<ReimbursementDetailsFormProps> = ({
   const handleExpenseTypeChange = (e: PropsValue<OptionData>) => {
     const selected = e as OptionData;
     setSelectedExpense(selected.value);
-  };
+  }
+
+  const handleChangeEmail = (e: string) => {
+    if( e === user?.email ) {
+      setSameEmail(true);
+    } else {
+      setSameEmail(false);
+    }
+  }
 
   return (
     <Form
@@ -167,6 +180,7 @@ const ReimbursementDetailsForm: React.FC<ReimbursementDetailsFormProps> = ({
               icon={MdMail as IconType}
               name={`approvers.${i}.email`}
               placeholder="Add an Approver"
+              onChange={(e) => handleChangeEmail(e.target.value)}
               hasErrors={
                 formReturn.formState.errors.approvers &&
                 (formReturn.formState.errors.approvers[i]?.email?.message ||
@@ -215,7 +229,7 @@ const ReimbursementDetailsForm: React.FC<ReimbursementDetailsFormProps> = ({
           </Button>
         </div>
 
-        <Button type="submit" className="w-full">
+        <Button type="submit" className="w-full" disabled={sameEmail}>
           Continue
         </Button>
       </div>
