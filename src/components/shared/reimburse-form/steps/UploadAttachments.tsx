@@ -98,10 +98,17 @@ const UploadAttachments: React.FC<UploadAttachmentsProps> = ({
                 });
               })
               .catch((error: MutationError) => {
-                showToast({
-                  type: "error",
-                  description: error.data.errors[0].message,
-                });
+                if( Array.isArray(error.data.errors) ) {
+                  showToast({
+                    type: "error",
+                    description: error.data.errors[0].message,
+                  });
+                } else { 
+                  showToast({
+                    type: "error",
+                    description: error.data.message,
+                  });
+                }
               });
           }
         })
