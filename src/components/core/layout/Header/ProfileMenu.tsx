@@ -107,10 +107,6 @@ const ProfileMenu: React.FC = () => {
 
               <div className="flex flex-col gap-2">
                 <p className="text-xs text-neutral-600">{user?.assignedRole}</p>
-                {(user?.email === "leanna.pedragosa@kmc.solutions" ||
-                  user?.email === "christian.sulit@kmc.solutions" ||
-                  user?.email === "jayzur.gandia@kmc.solutions" ||
-                  user?.email === "jomar.perante@kmc.solutions") && (
                   <Popover
                     panelClassName="-translate-x-1/2"
                     buttonRef={buttonChildRef}
@@ -130,7 +126,6 @@ const ProfileMenu: React.FC = () => {
                       </div>
                     }
                   />
-                )}
               </div>
             </div>
           </div>
