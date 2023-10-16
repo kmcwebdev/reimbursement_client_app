@@ -12,7 +12,7 @@ export const DefaultEmailSchema = z.object({
         message: "Email address is invalid",
       }),
   ),
-  referenceNo: z.string().nonempty(),
+  referenceNo: z.string().min(1),
   fullName: z
     .string({
       description: "Full Name",
@@ -252,6 +252,6 @@ export const HrbpApprovalSchema = z
 
 export const RejectRequestSchema = z
   .object({
-    remarks: z.string().nonempty(),
+    remarks: z.string().min(1),
   })
   .merge(DefaultEmailSchema);

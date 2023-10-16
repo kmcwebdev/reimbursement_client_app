@@ -29,12 +29,13 @@ export default async function handler(
       receiptsAttached,
       approvalLink,
       rejectionLink,
+      referenceNo,
     } = validate.data;
 
     const sendEmail = await resend.emails.send({
       from: "KMC Reimbursement <no-reply@reimbursement.kmc.solutions>",
       to,
-      subject: `Manager Approval`,
+      subject: `Manager Approval - ${referenceNo}`,
       react: ManagerApproval({
         approverFullName,
         fullName,

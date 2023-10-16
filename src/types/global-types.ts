@@ -12,3 +12,12 @@ type G_IError = {
   message: string;
   path: string[];
 };
+
+type G_EmailError = {
+  statusCode: number;
+  message: string;
+};
+
+export type EmailActionMutationError = Omit<MutationError, "data"> & {
+  data: G_EmailError;
+};
