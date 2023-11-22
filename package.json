@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "engines": {
-    "node": "18.13.0"
+    "node": ">=18.17.0"
   },
   "scripts": {
     "dev": "next dev",
@@ -29,10 +29,10 @@
     "dayjs": "^1.11.9",
     "framer-motion": "^10.15.0",
     "memphis-dev": "^1.1.2",
-    "next": "13.5.4",
+    "next": "^14.0.3",
     "pusher-js": "^8.3.0",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "react-dropzone": "^14.2.3",
     "react-hook-form": "^7.45.4",
     "react-hot-toast": "^2.4.1",
@@ -47,13 +47,13 @@
   },
   "devDependencies": {
     "@types/node": "20.4.8",
-    "@types/react": "18.2.18",
-    "@types/react-dom": "18.2.7",
+    "@types/react": "^18.2.38",
+    "@types/react-dom": "^18.2.17",
     "@typescript-eslint/eslint-plugin": "^6.4.0",
     "@typescript-eslint/parser": "^6.4.0",
     "autoprefixer": "10.4.16",
     "eslint": "8.46.0",
-    "eslint-config-next": "13.5.4",
+    "eslint-config-next": "^14.0.3",
     "husky": "^8.0.3",
     "postcss": "8.4.31",
     "prettier": "^3.0.2",
