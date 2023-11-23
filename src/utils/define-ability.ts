@@ -1,5 +1,6 @@
 import { defineAbility as CASLdefineAbility } from "@casl/ability";
-import { type IRole } from "~/context/UserContext";
+import { type IRole } from "~/app/components/providers/AbilityContextProvider";
+
 import { type AppAbility, type AppClaims } from "~/types/permission-types";
 
 export const defineAbility = (assignedRole?: IRole, claims?: AppClaims[]) => {

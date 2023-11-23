@@ -1,0 +1,59 @@
+// import { getUserFromServerSideProps } from "@propelauth/nextjs/server/pages";
+// import { type GetServerSideProps, type NextPage } from "next";
+"use client";
+import { type NextPage } from "next";
+import Head from "next/head";
+import PageAnimation from "~/app/components/animation/PageAnimation";
+import ReimbursementHistory from "~/app/components/shared/ReimbursementHistory";
+
+// interface DashboardSSRProps {
+//   userJson: string;
+// }
+
+const ReimbursementsHistory: NextPage = () => {
+  return (
+    <div>
+      <Head>
+        <title>Reimbursements History</title>
+      </Head>
+      <PageAnimation>
+        <ReimbursementHistory />
+      </PageAnimation>
+    </div>
+  );
+};
+
+export default ReimbursementsHistory;
+
+// export const getServerSideProps: GetServerSideProps = async (context) => {
+//   const user = await getUserFromServerSideProps(context);
+
+//   if (!user) {
+//     return {
+//       redirect: {
+//         destination: "/api/auth/login",
+//         permanent: false,
+//       },
+//     };
+//   }
+
+//   if (user) {
+//     const userOrgs = user.getOrgs();
+//     const assignedRole = userOrgs[0].assignedRole;
+
+//     if (assignedRole === "Member") {
+//       return {
+//         redirect: {
+//           destination: "/forbidden",
+//           permanent: false,
+//         },
+//       };
+//     }
+//   }
+
+//   return {
+//     props: {
+//       userJson: JSON.stringify(user),
+//     },
+//   };
+// };

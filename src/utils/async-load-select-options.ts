@@ -1,4 +1,4 @@
-import { type OptionData } from "~/components/core/form/fields/Select";
+import { type OptionData } from "~/app/components/core/form/fields/Select";
 
 export const asyncLoadOptions = (
   options: OptionData[],
