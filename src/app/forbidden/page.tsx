@@ -1,11 +1,6 @@
 import React from "react";
 import EmptyState from "~/app/components/core/EmptyState";
-export function generateMetadata({ type }: { type: string }) {
-  return {
-    title:
-      type === "approve" ? "Reimbursement Approval" : "Reimbursement Rejection",
-  };
-}
+
 const ForbiddenPage: React.FC = () => {
   return (
     <div className="grid h-full w-full place-items-center">
