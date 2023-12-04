@@ -9,7 +9,7 @@ import MemberDashboard from "./Member";
 const DashboardComponent: React.FC = () => {
   const { user } = useAppSelector((state) => state.session);
   return (
-    <>
+    <div>
       {user && (
         <>
           {user.assignedRole === "External Reimbursement Approver Manager" && (
@@ -20,7 +20,7 @@ const DashboardComponent: React.FC = () => {
           {user.assignedRole === "Finance" && <FinanceDashboard />}
         </>
       )}
-    </>
+    </div>
   );
 };
 

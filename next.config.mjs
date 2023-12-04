@@ -9,11 +9,27 @@ const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   images: {
-    domains: [
-      "kmcstorage1.blob.core.windows.net",
-      "cdn.kmc.solutions",
-      "kmc.solutions",
-      "img.propelauth.com",
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "kmcstorage1.blob.core.windows.net",
+        pathname: "**",
+      },
+      {
+        protocol: "https",
+        hostname: "cdn.kmc.solutions",
+        pathname: "**",
+      },
+      {
+        protocol: "https",
+        hostname: "kmc.solutions",
+        pathname: "**",
+      },
+      {
+        protocol: "https",
+        hostname: "img.propelauth.com",
+        pathname: "**",
+      },
     ],
   },
 };

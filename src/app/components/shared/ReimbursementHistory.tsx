@@ -16,7 +16,10 @@ import { type FilterProps } from "~/app/components/core/table/filters/StatusFilt
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { env } from "~/env.mjs";
 import { setSelectedItems } from "~/features/page-state.slice";
-import { useGetAllRequestsQuery } from "~/features/reimbursement-api-slice";
+import {
+  useGetAllRequestsQuery,
+  useGetRequestQuery,
+} from "~/features/reimbursement-api-slice";
 import { useDebounce } from "~/hooks/use-debounce";
 import { useDialogState } from "~/hooks/use-dialog-state";
 import { useReportDownload } from "~/hooks/use-report-download";
@@ -30,6 +33,7 @@ import SkeletonLoading from "../core/SkeletonLoading";
 import { showToast } from "../core/Toast";
 import Input from "../core/form/fields/Input";
 import TableCheckbox from "../core/table/TableCheckbox";
+import ReimbursementsCardView from "../reimbursement-view";
 
 const Dialog = dynamic(() => import("~/app/components/core/Dialog"));
 const StatusFilter = dynamic(
@@ -46,13 +50,28 @@ const DateFiledFilter = dynamic(
   () => import("~/app/components/core/table/filters/DateFiledFilter"),
 );
 
+const SideDrawer = dynamic(() => import("~/app/components/core/SideDrawer"));
+
 const MyReimbursements: React.FC = () => {
   const dispatch = useAppDispatch();
   const { user } = useAppSelector((state) => state.session);
   const [downloadReportLoading, setDownloadReportLoading] = useState(false);
 
+  const { isVisible, open, close } = useDialogState();
+  const [focusedReimbursementId, setFocusedReimbursementId] =
+    useState<string>();
+
   const { selectedItems, filters } = useAppSelector(
     (state) => state.pageTableState,
+  );
+
+  const {
+    isFetching: reimbursementRequestDataIsLoading,
+    isError: reimbursementRequestDataIsError,
+    currentData: reimbursementRequestData,
+  } = useGetRequestQuery(
+    { reimbursement_request_id: focusedReimbursementId! },
+    { skip: !focusedReimbursementId },
   );
 
   const [searchParams, setSearchParams] = useState<IReimbursementsFilterQuery>({
@@ -232,6 +251,22 @@ const MyReimbursements: React.FC = () => {
         cell: (info) => currencyFormat(info.getValue() as number),
         header: "Total",
       },
+      {
+        id: "actions",
+        accessorKey: "reimbursement_request_id",
+        cell: (info) => (
+          <Button
+            buttonType="text"
+            onClick={() => {
+              setFocusedReimbursementId(info.getValue() as string);
+              open();
+            }}
+          >
+            View
+          </Button>
+        ),
+        header: "",
+      },
     ];
 
     if (user?.assignedRole === "External Reimbursement Approver Manager") {
@@ -239,6 +274,7 @@ const MyReimbursements: React.FC = () => {
     }
 
     return defaultColumns;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedItems, user?.assignedRole]);
 
   const downloadReport = async () => {
@@ -358,6 +394,26 @@ const MyReimbursements: React.FC = () => {
           }}
         />
       </div>
+
+      <SideDrawer
+        title={
+          !reimbursementRequestDataIsLoading && reimbursementRequestData
+            ? reimbursementRequestData.reference_no
+            : reimbursementRequestDataIsError
+            ? "Error"
+            : "..."
+        }
+        isVisible={isVisible}
+        closeDrawer={close}
+      >
+        <ReimbursementsCardView
+          closeDrawer={close}
+          isLoading={reimbursementRequestDataIsLoading}
+          isError={reimbursementRequestDataIsError}
+          data={reimbursementRequestData}
+          setFocusedReimbursementId={setFocusedReimbursementId}
+        />
+      </SideDrawer>
 
       <Dialog
         title="Download Report"

@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-    useContext,
-    useMemo,
-    useState,
-    type Dispatch,
-    type PropsWithChildren,
-    type SetStateAction,
+  useContext,
+  useMemo,
+  useState,
+  type Dispatch,
+  type PropsWithChildren,
+  type SetStateAction,
 } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "~/app/components/core/Button";
@@ -15,21 +15,21 @@ import { appApiSlice } from "~/app/rtkQuery";
 import { AbilityContext } from "~/context/AbilityContext";
 import { env } from "~/env.mjs";
 import {
-    useApproveReimbursementMutation,
-    useAuditLogsQuery,
-    useCancelReimbursementMutation,
-    useHoldReimbursementMutation,
-    useRejectReimbursementMutation,
+  useApproveReimbursementMutation,
+  useAuditLogsQuery,
+  useCancelReimbursementMutation,
+  useHoldReimbursementMutation,
+  useRejectReimbursementMutation,
 } from "~/features/reimbursement-api-slice";
 import { useDialogState } from "~/hooks/use-dialog-state";
 import { useReportDownload } from "~/hooks/use-report-download";
 import {
-    OnholdReimbursementSchema,
-    type OnholdReimbursementType,
+  OnholdReimbursementSchema,
+  type OnholdReimbursementType,
 } from "~/schema/reimbursement-onhold-form.schema";
 import {
-    RejectReimbursementSchema,
-    type RejectReimbursementType,
+  RejectReimbursementSchema,
+  type RejectReimbursementType,
 } from "~/schema/reimbursement-reject-form.schema";
 import { type ReimbursementRequest } from "~/types/reimbursement.types";
 import { currencyFormat } from "~/utils/currencyFormat";
@@ -50,6 +50,7 @@ import MemberButtons from "./action-buttons/MemberButtons";
 export interface ReimbursementsCardViewProps extends PropsWithChildren {
   isLoading?: boolean;
   isApproverView?: boolean;
+  isHistoryView?: boolean;
   data?: ReimbursementRequest;
   closeDrawer: () => void;
   isError?: boolean;
@@ -61,6 +62,7 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
   data,
   isLoading = false,
   isApproverView = false,
+  isHistoryView = false,
   isError = false,
   setFocusedReimbursementId,
 }) => {
@@ -327,7 +329,18 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
           </div>
 
           <div className="absolute bottom-0 grid h-[72px] w-full grid-cols-2 items-center justify-center gap-2 border-t border-neutral-300 px-5">
-            {!isApproverView && (
+            {isHistoryView && (
+              <Button
+                onClick={closeDrawer}
+                className="w-full"
+                buttonType="outlined"
+                variant="neutral"
+              >
+                Back
+              </Button>
+            )}
+
+            {!isHistoryView && !isApproverView && (
               <MemberButtons
                 onClose={closeDrawer}
                 onCancel={openCancelDialog}
@@ -340,7 +353,8 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
               />
             )}
 
-            {isApproverView &&
+            {!isHistoryView &&
+              isApproverView &&
               ability.can("access", "REIMBURSEMENT_VIEW_APPROVAL") && (
                 <ApproverButtons
                   onApprove={openApproveDialog}
@@ -348,7 +362,8 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
                 />
               )}
 
-            {isApproverView &&
+            {!isHistoryView &&
+              isApproverView &&
               ability.can("access", "REIMBURSEMENT_VIEW_DOWNLOAD_HOLD") && (
                 <FinanceButtons
                   isOnHold={data.finance_request_status === "On-hold"}
