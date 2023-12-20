@@ -63,6 +63,7 @@ interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
   disabled?: boolean;
   hasError?: boolean;
   initialValue?: PropsValue<OptionData>;
+  placeholder?: string;
 }
 
 const Select: React.FC<SelectProps> = ({
@@ -271,7 +272,7 @@ const Select: React.FC<SelectProps> = ({
         formContext.formState.errors &&
         formContext.formState.errors[name] &&
         formContext.formState.errors[name]?.message && (
-          <p className="text-danger-default mt-1 text-sm" id="email-error">
+          <p className="mt-1 text-sm text-red-600" id="email-error">
             {formContext.formState.errors[name]?.message as string}
           </p>
         )}

@@ -1,12 +1,12 @@
-import dynamic from "next/dynamic";
 import React from "react";
 import { type UseFormReturn } from "react-hook-form";
 import { useAppSelector } from "~/app/hook";
+import AddParticulars from "./steps/AddParticulars";
+import Attachments from "./steps/Attachments";
+import SelectAttachmentMethod from "./steps/SelectAttachmentMethod";
+import SelectReimbursementType from "./steps/SelectReimbursementType";
 
-const ReimbursementDetailsForm = dynamic(
-  () => import("./steps/ReimbursementDetailsForm"),
-);
-const UploadAttachments = dynamic(() => import("./steps/UploadAttachments"));
+// const UploadAttachments = dynamic(() => import("./steps/UploadAttachments"));
 
 interface ReimburseFormProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -21,14 +21,19 @@ const ReimburseForm: React.FC<ReimburseFormProps> = ({
   const { activeStep } = useAppSelector((state) => state.reimbursementForm);
 
   return (
-    <div className="py-4">
-      {activeStep === 0 && formReturn && (
-        <ReimbursementDetailsForm
+    <div>
+      {activeStep === 0 && (
+        <SelectReimbursementType
           formReturn={formReturn}
           handleOpenCancelDialog={handleOpenCancelDialog}
         />
       )}
-      {activeStep === 1 && <UploadAttachments formReturn={formReturn} />}
+      {activeStep === 1 && (
+        <AddParticulars handleOpenCancelDialog={handleOpenCancelDialog} />
+      )}
+
+      {activeStep === 2 && <SelectAttachmentMethod />}
+      {activeStep === 3 && <Attachments />}
     </div>
   );
 };

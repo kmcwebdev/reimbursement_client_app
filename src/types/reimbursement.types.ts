@@ -1,8 +1,16 @@
+import { type ReimbursementParticulars } from "~/schema/reimbursement-particulars.schema";
+
 export type ReimbursementDetailsDTO = {
   reimbursement_request_type_id: string;
   expense_type_id: string;
   remarks?: string;
   amount: number;
+  approvers?: { email: string }[];
+};
+
+export type CreateReimbursementDTO = {
+  reimbursement_request_type_id: string;
+  particulars: ReimbursementParticulars[];
   approvers?: { email: string }[];
 };
 

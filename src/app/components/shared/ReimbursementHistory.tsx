@@ -153,15 +153,15 @@ const MyReimbursements: React.FC = () => {
           user?.assignedRole === "Finance"
             ? "finance_request_status"
             : user?.assignedRole === "HRBP"
-            ? "hrbp_request_status"
-            : "requestor_request_status"
+              ? "hrbp_request_status"
+              : "requestor_request_status"
         }`,
         accessorKey: `${
           user?.assignedRole === "Finance"
             ? "finance_request_status"
             : user?.assignedRole === "HRBP"
-            ? "hrbp_request_status"
-            : "requestor_request_status"
+              ? "hrbp_request_status"
+              : "requestor_request_status"
         }`,
         header: "Status",
 
@@ -400,8 +400,8 @@ const MyReimbursements: React.FC = () => {
           !reimbursementRequestDataIsLoading && reimbursementRequestData
             ? reimbursementRequestData.reference_no
             : reimbursementRequestDataIsError
-            ? "Error"
-            : "..."
+              ? "Error"
+              : "..."
         }
         isVisible={isVisible}
         closeDrawer={close}

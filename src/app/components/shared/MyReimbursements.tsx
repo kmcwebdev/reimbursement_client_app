@@ -7,37 +7,39 @@ import React, { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { AiOutlinePlusCircle } from "react-icons-all-files/ai/AiOutlinePlusCircle";
 import { Button } from "~/app/components/core/Button";
-import StatusBadge, { type StatusType } from "~/app/components/core/StatusBadge";
+import StatusBadge, {
+  type StatusType,
+} from "~/app/components/core/StatusBadge";
 import Table from "~/app/components/core/table";
 import { type FilterProps } from "~/app/components/core/table/filters/StatusFilter";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { appApiSlice } from "~/app/rtkQuery";
 import { setSelectedItems } from "~/features/page-state.slice";
 import {
-    useGetAllRequestsQuery,
-    useGetRequestQuery,
+  useGetAllRequestsQuery,
+  useGetRequestQuery,
 } from "~/features/reimbursement-api-slice";
 import {
-    clearReimbursementForm,
-    toggleCancelDialog,
-    toggleFormDialog,
+  clearReimbursementForm,
+  toggleCancelDialog,
+  toggleFormDialog,
 } from "~/features/reimbursement-form-slice";
 import { useDialogState } from "~/hooks/use-dialog-state";
 import {
-    ReimbursementDetailsSchema,
-    type ReimbursementDetailsType,
-} from "~/schema/reimbursement-details.schema";
+  ReimbursementTypeSchema,
+  type ReimbursementFormType,
+} from "~/schema/reimbursement-type.schema";
 import { type ReimbursementRequest } from "~/types/reimbursement.types";
 import { currencyFormat } from "~/utils/currencyFormat";
 import SkeletonLoading from "../core/SkeletonLoading";
 import MemberAnalytics from "./analytics/MemberAnalytics";
+import ReimburseForm from "./reimburse-form";
 
 const ReimbursementsCardView = dynamic(
   () => import("~/app/components/reimbursement-view"),
 );
 const Dialog = dynamic(() => import("~/app/components/core/Dialog"));
 const SideDrawer = dynamic(() => import("~/app/components/core/SideDrawer"));
-const ReimburseForm = dynamic(() => import("./reimburse-form"));
 const StatusFilter = dynamic(
   () => import("~/app/components/core/table/filters/StatusFilter"),
 );
@@ -52,8 +54,13 @@ const DateFiledFilter = dynamic(
 );
 
 const MyReimbursements: React.FC = () => {
-  const { formDialogIsOpen, cancelDialogIsOpen, reimbursementDetails } =
-    useAppSelector((state) => state.reimbursementForm);
+  const {
+    formDialogIsOpen,
+    cancelDialogIsOpen,
+    reimbursementFormValues,
+    activeStep,
+    isParticularFormActive,
+  } = useAppSelector((state) => state.reimbursementForm);
   const { selectedItems, filters } = useAppSelector(
     (state) => state.pageTableState,
   );
@@ -175,14 +182,21 @@ const MyReimbursements: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
-  //Form return for Details
-  const useReimbursementDetailsFormReturn = useForm<ReimbursementDetailsType>({
-    resolver: zodResolver(ReimbursementDetailsSchema),
-    defaultValues: useMemo(() => {
-      if (reimbursementDetails) {
-        return { ...reimbursementDetails };
+  //Form return for reimbursement type selection
+  const useReimbursementDetailsFormReturn = useForm<ReimbursementFormType>({
+    resolver: useMemo(() => {
+      if (activeStep === 0) {
+        return zodResolver(ReimbursementTypeSchema);
       }
-    }, [reimbursementDetails]),
+    }, [activeStep]),
+    defaultValues: useMemo(() => {
+      if (reimbursementFormValues.reimbursement_request_type_id) {
+        return {
+          reimbursement_request_type_id:
+            reimbursementFormValues.reimbursement_request_type_id,
+        };
+      }
+    }, [reimbursementFormValues]),
     mode: "onChange",
   });
 
@@ -274,7 +288,17 @@ const MyReimbursements: React.FC = () => {
       </div>
 
       <Dialog
-        title="File a Reimbursement"
+        title={
+          activeStep === 0
+            ? "Reimbursement Type"
+            : activeStep === 1 && !isParticularFormActive
+              ? "Add Particulars"
+              : activeStep === 1 && isParticularFormActive
+                ? "Particular"
+                : activeStep === 2
+                  ? "File a Reimbursement"
+                  : "Upload Files"
+        }
         isVisible={formDialogIsOpen}
         close={handleOpenCancelDialog}
         hideCloseIcon
@@ -321,8 +345,8 @@ const MyReimbursements: React.FC = () => {
           !reimbursementRequestDataIsLoading && reimbursementRequestData
             ? reimbursementRequestData.reference_no
             : reimbursementRequestDataIsError
-            ? "Error"
-            : "..."
+              ? "Error"
+              : "..."
         }
         isVisible={isVisible}
         closeDrawer={close}

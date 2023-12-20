@@ -52,10 +52,10 @@ const TextArea = ({
             type === "date" && formContext.getValues(name) ? true : false,
         }
       : type === "number"
-      ? {
-          setValueAs: (v: string) => (v === "" ? undefined : parseInt(v, 10)),
-        }
-      : undefined;
+        ? {
+            setValueAs: (v: string) => (v === "" ? undefined : parseInt(v, 10)),
+          }
+        : undefined;
 
   return (
     <div className="space-y-2">

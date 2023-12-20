@@ -192,7 +192,7 @@ const CardSelection = React.forwardRef<HTMLDivElement, CardSelectionProps>(
   },
 );
 
-const CardSelectionSkeleton: React.FC = () => {
+export const CardSelectionSkeleton: React.FC = () => {
   return (
     <div className="mt-2 flex flex-1 items-center gap-4 overflow-hidden">
       <SkeletonLoading
