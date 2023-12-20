@@ -25,8 +25,8 @@ export const controlConfig = (
         ? "1px solid #C5280C"
         : "1px solid #FF7200"
       : hasError
-      ? "1px solid #C5280C"
-      : "1px solid #EBECEF",
+        ? "1px solid #C5280C"
+        : "1px solid #EBECEF",
   boxShadow: state.isFocused ? "0.094rem #f97316" : "none",
   "&:hover": {
     boxShadow: "0.094rem solid #f97316",

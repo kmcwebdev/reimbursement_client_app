@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { useEffect, useMemo, useState, type SelectHTMLAttributes } from "react";
 import {
   Controller,
@@ -174,11 +171,13 @@ const Select: React.FC<SelectProps> = ({
                     base,
                     state,
                     formContext?.formState.errors[name] ? true : false,
-                  ),
-                input: inputConfig,
-                menu: menuConfig,
-                option: optionConfig,
-                clearIndicator: clearIndicatorConfig,
+                  ) as CSSObjectWithLabel,
+                input: (base) => inputConfig(base) as CSSObjectWithLabel,
+                menu: (base) => menuConfig(base) as CSSObjectWithLabel,
+                option: (base, state) =>
+                  optionConfig(base, state) as CSSObjectWithLabel,
+                clearIndicator: (base) =>
+                  clearIndicatorConfig(base) as CSSObjectWithLabel,
               }}
               theme={themeConfig}
               ref={ref}
@@ -212,6 +211,7 @@ const Select: React.FC<SelectProps> = ({
                 if (Array.isArray(newValue)) {
                   const values = [];
 
+                  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
                   newValue.forEach((value) => values.push(value.value));
                   onChange(newValue);
                 } else {
@@ -241,11 +241,13 @@ const Select: React.FC<SelectProps> = ({
             control: (
               base: CSSObjectWithLabel,
               state: ControlProps<OptionData, boolean, GroupBase<OptionData>>,
-            ) => controlConfig(base, state, hasError),
-            input: inputConfig,
-            menu: menuConfig,
-            option: optionConfig,
-            clearIndicator: clearIndicatorConfig,
+            ) => controlConfig(base, state, hasError) as CSSObjectWithLabel,
+            input: (base) => inputConfig(base) as CSSObjectWithLabel,
+            menu: (base) => menuConfig(base) as CSSObjectWithLabel,
+            option: (base, state) =>
+              optionConfig(base, state) as CSSObjectWithLabel,
+            clearIndicator: (base) =>
+              clearIndicatorConfig(base) as CSSObjectWithLabel,
           }}
           theme={themeConfig}
           name={name}
