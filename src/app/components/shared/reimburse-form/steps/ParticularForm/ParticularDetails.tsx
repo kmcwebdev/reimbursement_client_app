@@ -1,6 +1,5 @@
-import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useMemo, useState } from "react";
-import { useForm } from "react-hook-form";
+import { UseFormReturn } from "react-hook-form";
 import { type PropsValue } from "react-select";
 import CollapseHeightAnimation from "~/app/components/animation/CollapseHeight";
 import { Button } from "~/app/components/core/Button";
@@ -14,49 +13,26 @@ import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { EXPENSE_TYPE_OTHERS } from "~/constants/other-expense";
 import { useExpenseTypesQuery } from "~/features/reimbursement-api-slice";
 import {
+  setActiveParticularStep,
   setReimbursementFormValues,
-  setSelectedParticularIndex,
 } from "~/features/reimbursement-form-slice";
-import {
-  ReimbursementParticularsSchema,
-  type ReimbursementParticulars,
-} from "~/schema/reimbursement-particulars.schema";
+import { type ReimbursementParticularDetails } from "~/schema/reimbursement-particulars.schema";
 
-interface ParticularFormProps {
-  setParticularFormIsActive: (e: boolean) => void;
+interface ParticularDetailsProps {
+  formReturn: UseFormReturn<ReimbursementParticularDetails>;
 }
 
-const ParticularForm: React.FC<ParticularFormProps> = ({
-  setParticularFormIsActive,
+const ParticularDetails: React.FC<ParticularDetailsProps> = ({
+  formReturn,
 }) => {
-  const { reimbursementFormValues, selectedParticularIndex } = useAppSelector(
+  const dispatch = useAppDispatch();
+  const { reimbursementFormValues, activeParticularIndex } = useAppSelector(
     (state) => state.reimbursementForm,
   );
   const [selectedExpense, setSelectedExpense] = useState<string>();
-  const dispatch = useAppDispatch();
-
   const { isFetching: expenseTypesIsLoading, currentData: expenseTypes } =
     useExpenseTypesQuery({
       request_type_id: reimbursementFormValues.reimbursement_request_type_id!,
-    });
-
-  const useReimbursementParticularsFormReturn =
-    useForm<ReimbursementParticulars>({
-      resolver: zodResolver(ReimbursementParticularsSchema),
-      mode: "onChange",
-      defaultValues: useMemo(() => {
-        if (
-          selectedParticularIndex !== null &&
-          reimbursementFormValues &&
-          reimbursementFormValues.particulars &&
-          reimbursementFormValues.particulars.length > 0
-        ) {
-          return {
-            ...reimbursementFormValues.particulars[selectedParticularIndex],
-          };
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-      }, [selectedParticularIndex]),
     });
 
   const handleExpenseTypeChange = (e: PropsValue<OptionData>) => {
@@ -66,33 +42,41 @@ const ParticularForm: React.FC<ParticularFormProps> = ({
 
   useMemo(() => {
     if (
-      selectedParticularIndex !== null &&
-      reimbursementFormValues.particulars &&
+      activeParticularIndex &&
       reimbursementFormValues.particulars.length > 0 &&
-      reimbursementFormValues.particulars[selectedParticularIndex]
+      reimbursementFormValues.particulars[+activeParticularIndex]
     ) {
       setSelectedExpense(
-        reimbursementFormValues.particulars[selectedParticularIndex]
+        reimbursementFormValues.particulars[+activeParticularIndex].details
           .expense_type_id,
       );
     }
-  }, [reimbursementFormValues, selectedParticularIndex]);
+  }, [reimbursementFormValues, activeParticularIndex]);
 
-  const onSubmit = (e: ReimbursementParticulars) => {
+  const handleSubmit = (e: ReimbursementParticularDetails) => {
     let particularsCopy = reimbursementFormValues.particulars;
 
-    if (selectedParticularIndex === null) {
+    if (
+      activeParticularIndex &&
+      !reimbursementFormValues.particulars[+activeParticularIndex]
+    ) {
       if (particularsCopy && particularsCopy.length > 0) {
-        particularsCopy = [...particularsCopy, e];
+        particularsCopy = [...particularsCopy, { details: e }];
       } else {
-        particularsCopy = [e];
+        particularsCopy = [{ details: e }];
       }
     }
 
-    if (selectedParticularIndex !== null) {
+    if (
+      activeParticularIndex &&
+      reimbursementFormValues.particulars[+activeParticularIndex]
+    ) {
       if (particularsCopy && particularsCopy.length > 0) {
         const parts = [...particularsCopy];
-        parts[selectedParticularIndex] = e;
+        parts[+activeParticularIndex] = {
+          ...parts[+activeParticularIndex],
+          details: e,
+        };
         particularsCopy = parts;
       }
     }
@@ -103,16 +87,14 @@ const ParticularForm: React.FC<ParticularFormProps> = ({
         particulars: particularsCopy,
       }),
     );
-    dispatch(setSelectedParticularIndex(null));
-    setParticularFormIsActive(false);
-    useReimbursementParticularsFormReturn.reset();
+    dispatch(setActiveParticularStep("method-selection"));
   };
 
   return (
     <Form
       name="particular-form"
-      useFormReturn={useReimbursementParticularsFormReturn}
-      onSubmit={onSubmit}
+      useFormReturn={formReturn}
+      onSubmit={handleSubmit}
       className="flex flex-col gap-4"
     >
       <Select
@@ -168,8 +150,8 @@ const ParticularForm: React.FC<ParticularFormProps> = ({
             variant="neutral"
             className="w-full"
             onClick={() => {
-              useReimbursementParticularsFormReturn.reset();
-              setParticularFormIsActive(false);
+              formReturn.reset();
+              dispatch(setActiveParticularStep("particular-list"));
             }}
           >
             Cancel
@@ -177,11 +159,14 @@ const ParticularForm: React.FC<ParticularFormProps> = ({
         </div>
 
         <Button type="submit" className="w-full">
-          {selectedParticularIndex !== null ? "Update" : "Add"}
+          {activeParticularIndex &&
+          reimbursementFormValues.particulars[+activeParticularIndex]
+            ? "Update"
+            : "Add"}
         </Button>
       </div>
     </Form>
   );
 };
 
-export default ParticularForm;
+export default ParticularDetails;

@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const ReimbursementParticularsSchema = z.object({
+export const ReimbursementParticularDetailsSchema = z.object({
   expense_type_id: z
     .string({ required_error: "Please choose a type of expense!" })
     .uuid({
@@ -27,6 +27,25 @@ export const ReimbursementParticularsSchema = z.object({
     .min(1, "Please input total!"),
 });
 
-export type ReimbursementParticulars = z.infer<
-  typeof ReimbursementParticularsSchema
+export const ReimbursementParticularAttachmentSchema = z.object({
+  attachment: z
+    .string({ required_error: "Please add attachment!" })
+    .nonempty({
+      message: "Please add attachment!",
+    })
+    .optional(),
+});
+
+export const ReimbursementParticularSchema = z
+  .object({
+    details: z.object({}).merge(ReimbursementParticularDetailsSchema),
+  })
+  .merge(ReimbursementParticularAttachmentSchema);
+
+export type ReimbursementParticularDetails = z.infer<
+  typeof ReimbursementParticularDetailsSchema
+>;
+
+export type ReimbursementParticular = z.infer<
+  typeof ReimbursementParticularSchema
 >;

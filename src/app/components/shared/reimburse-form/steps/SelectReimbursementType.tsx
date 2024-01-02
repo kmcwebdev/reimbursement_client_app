@@ -12,6 +12,7 @@ import CardSelection, {
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { useRequestTypesQuery } from "~/features/reimbursement-api-slice";
 import {
+  setActiveParticularStep,
   setActiveStep,
   setReimbursementFormValues,
 } from "~/features/reimbursement-form-slice";
@@ -44,6 +45,7 @@ const SelectReimbursementType: React.FC<SelectReimbursementTypeProps> = ({
       ...e,
     };
     dispatch(setReimbursementFormValues(values));
+    dispatch(setActiveParticularStep("particular-list"));
     dispatch(setActiveStep(activeStep + 1));
   };
 

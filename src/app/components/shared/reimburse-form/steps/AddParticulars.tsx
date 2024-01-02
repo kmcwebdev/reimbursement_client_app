@@ -1,14 +1,17 @@
-import React, { useState } from "react";
-import { FaArrowRight } from "react-icons-all-files/fa/FaArrowRight";
+import React from "react";
 import { HiOutlinePlus } from "react-icons-all-files/hi/HiOutlinePlus";
+import { MdOutlineDelete } from "react-icons-all-files/md/MdOutlineDelete";
 import { MdReceipt } from "react-icons-all-files/md/MdReceipt";
 import CollapseHeightAnimation from "~/app/components/animation/CollapseHeight";
 import { Button } from "~/app/components/core/Button";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
+import { SCHEDULED } from "~/constants/request-types";
 import { useAllExpenseTypesQuery } from "~/features/reimbursement-api-slice";
 import {
+  setActiveParticularIndex,
+  setActiveParticularStep,
   setActiveStep,
-  setSelectedParticularIndex,
+  setReimbursementFormValues,
 } from "~/features/reimbursement-form-slice";
 import { arraySum } from "~/utils/array-sum";
 import { currencyFormat } from "~/utils/currencyFormat";
@@ -21,12 +24,8 @@ interface AddParticularsProps {
 const AddParticulars: React.FC<AddParticularsProps> = ({
   handleOpenCancelDialog,
 }) => {
-  const [particularFormIsActive, setParticularFormIsActive] =
-    useState<boolean>(false);
-
-  const { activeStep, reimbursementFormValues } = useAppSelector(
-    (state) => state.reimbursementForm,
-  );
+  const { activeStep, activeParticularStep, reimbursementFormValues } =
+    useAppSelector((state) => state.reimbursementForm);
   const dispatch = useAppDispatch();
 
   const { data: allExpenseTypes, isLoading: allExpenseTypesIsLoading } =
@@ -45,65 +44,102 @@ const AddParticulars: React.FC<AddParticularsProps> = ({
   //   }
   // }, [reimbursementFormValues]);
 
+  const handleDelete = (i: number) => {
+    const particularsCopy = [...reimbursementFormValues.particulars];
+
+    particularsCopy.splice(i, 1);
+
+    dispatch(
+      setReimbursementFormValues({
+        ...reimbursementFormValues,
+        particulars: particularsCopy,
+      }),
+    );
+  };
+
+  const handleNext = () => {
+    if (reimbursementFormValues.reimbursement_request_type_id === SCHEDULED) {
+      //submit form
+    } else {
+      dispatch(setActiveStep(activeStep + 1));
+    }
+  };
+
   return (
     <div className="flex flex-col gap-4">
-      {!particularFormIsActive &&
+      {activeParticularStep === "particular-list" &&
         reimbursementFormValues.particulars &&
         reimbursementFormValues.particulars.length > 0 && (
           <div className="pt-2 text-neutral-800">
             Total:{" "}
             {currencyFormat(
-              +arraySum(reimbursementFormValues.particulars, "amount"),
+              +arraySum(
+                reimbursementFormValues.particulars,
+                "details",
+                "amount",
+              ),
             )}
           </div>
         )}
 
       <div className="my-2 h-px bg-neutral-300" />
 
-      {!particularFormIsActive &&
-        reimbursementFormValues.particulars &&
+      {activeParticularStep === "particular-list" &&
         reimbursementFormValues.particulars.length > 0 &&
         reimbursementFormValues.particulars.map((part, i) => (
           <div
-            key={part.particular}
-            className="flex w-full cursor-pointer items-center justify-between rounded border p-3"
+            key={part.details.particular}
+            className="flex w-full items-center justify-between rounded border p-3"
             // onClick={() => window.open(attachment)}
           >
             <div className="flex w-10/12 items-center gap-3">
               <MdReceipt className="h-4 w-4 text-neutral-800" />
-              <span className="truncate text-sm text-neutral-900">
-                {allExpenseTypesIsLoading
-                  ? "..."
-                  : `${allExpenseTypes?.find(
-                      (a) => a.expense_type_id === part.expense_type_id,
-                    )?.expense_type}-${part.particular}`}
-              </span>
+              <Button
+                buttonType="text"
+                variant="primary"
+                onClick={() => {
+                  dispatch(setActiveParticularIndex(i.toString()));
+                  dispatch(setActiveParticularStep("details"));
+                }}
+              >
+                <span className="truncate text-sm">
+                  {allExpenseTypesIsLoading
+                    ? "..."
+                    : `${allExpenseTypes?.find(
+                        (a) =>
+                          a.expense_type_id === part.details.expense_type_id,
+                      )?.expense_type}-${part.details.particular}`}
+                </span>
+              </Button>
             </div>
 
-            <Button
-              buttonType="text"
-              onClick={() => {
-                dispatch(setSelectedParticularIndex(i));
-                setParticularFormIsActive(true);
-              }}
-            >
-              <FaArrowRight className="h-3 w-3 " />
+            <Button buttonType="text" variant="danger">
+              <MdOutlineDelete
+                className="h-5 w-5"
+                onClick={() => handleDelete(i)}
+              />
             </Button>
           </div>
         ))}
 
-      {!particularFormIsActive && (
+      {activeParticularStep === "particular-list" && (
         <Button
           type="button"
           buttonType="text"
-          onClick={() => setParticularFormIsActive(!particularFormIsActive)}
+          onClick={() => {
+            dispatch(setActiveParticularStep("details"));
+            dispatch(
+              setActiveParticularIndex(
+                reimbursementFormValues.particulars.length.toString(),
+              ),
+            );
+          }}
         >
           <span className="group flex gap-1">
             <HiOutlinePlus className="h-5 w-5" />
             <p className="text-neutral-900 group-hover:text-neutral-800">
               Add{" "}
-              {!particularFormIsActive &&
-                reimbursementFormValues.particulars &&
+              {reimbursementFormValues.particulars &&
                 reimbursementFormValues.particulars.length > 0 &&
                 "Another "}
               Particular
@@ -112,11 +148,13 @@ const AddParticulars: React.FC<AddParticularsProps> = ({
         </Button>
       )}
 
-      <CollapseHeightAnimation isVisible={particularFormIsActive}>
-        <ParticularForm setParticularFormIsActive={setParticularFormIsActive} />
+      <CollapseHeightAnimation
+        isVisible={activeParticularStep !== "particular-list"}
+      >
+        <ParticularForm />
       </CollapseHeightAnimation>
 
-      {!particularFormIsActive && (
+      {activeParticularStep === "particular-list" && (
         <div className="flex justify-end pt-4">
           <div className="flex w-1/2 items-center justify-center gap-2">
             <Button
@@ -138,9 +176,7 @@ const AddParticulars: React.FC<AddParticularsProps> = ({
                   (reimbursementFormValues.particulars &&
                     reimbursementFormValues.particulars.length === 0))
               }
-              onClick={() => {
-                dispatch(setActiveStep(activeStep + 1));
-              }}
+              onClick={handleNext}
             >
               Continue
             </Button>

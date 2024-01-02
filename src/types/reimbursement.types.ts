@@ -1,4 +1,4 @@
-import { type ReimbursementParticulars } from "~/schema/reimbursement-particulars.schema";
+import { type ReimbursementParticular } from "~/schema/reimbursement-particulars.schema";
 
 export type ReimbursementDetailsDTO = {
   reimbursement_request_type_id: string;
@@ -10,7 +10,7 @@ export type ReimbursementDetailsDTO = {
 
 export type CreateReimbursementDTO = {
   reimbursement_request_type_id: string;
-  particulars: ReimbursementParticulars[];
+  particulars: ReimbursementParticular[];
   approvers?: { email: string }[];
 };
 

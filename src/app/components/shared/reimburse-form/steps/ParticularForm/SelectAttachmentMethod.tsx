@@ -2,30 +2,20 @@ import React from "react";
 import { MdCameraAlt } from "react-icons-all-files/md/MdCameraAlt";
 import { MdCloudUpload } from "react-icons-all-files/md/MdCloudUpload";
 import { Button } from "~/app/components/core/Button";
-import { useAppDispatch, useAppSelector } from "~/app/hook";
-import {
-  setActiveStep,
-  setSelectedAttachmentMethod,
-} from "~/features/reimbursement-form-slice";
+import { useAppDispatch } from "~/app/hook";
+import { setActiveParticularStep } from "~/features/reimbursement-form-slice";
 
 const SelectAttachmentMethod: React.FC = () => {
-  const { activeStep } = useAppSelector((state) => state.reimbursementForm);
   const dispatch = useAppDispatch();
 
-  const handleAttachmentMethodSelect = (e: "capture" | "upload") => {
-    dispatch(setSelectedAttachmentMethod(e));
-    dispatch(setActiveStep(activeStep + 1));
-  };
-
   const handleReturn = () => {
-    dispatch(setSelectedAttachmentMethod(null));
-    dispatch(setActiveStep(activeStep - 1));
+    dispatch(setActiveParticularStep("details"));
   };
   return (
     <div className="flex flex-col gap-2 py-4">
       <div
         className="group grid h-44 cursor-pointer  place-items-center gap-2 rounded border border-neutral-300 px-4 py-[0.6rem] transition-all ease-in-out hover:border-orange-600"
-        onClick={() => handleAttachmentMethodSelect("capture")}
+        onClick={() => dispatch(setActiveParticularStep("capture"))}
       >
         <div className="flex flex-col items-center gap-4">
           <div className="grid h-12 w-12 place-items-center rounded-full bg-neutral-300">
@@ -43,7 +33,7 @@ const SelectAttachmentMethod: React.FC = () => {
       <p className="text-center font-bold text-neutral-600">Or</p>
       <div
         className="group grid h-44 cursor-pointer  place-items-center gap-2 rounded border border-neutral-300 px-4 py-[0.6rem] transition-all ease-in-out hover:border-orange-600"
-        onClick={() => handleAttachmentMethodSelect("upload")}
+        onClick={() => dispatch(setActiveParticularStep("upload"))}
       >
         <div className="flex flex-col items-center gap-4">
           <div className="grid h-12 w-12 place-items-center rounded-full bg-neutral-300">

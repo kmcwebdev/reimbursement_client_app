@@ -17,6 +17,11 @@ const nextConfig = {
       },
       {
         protocol: "https",
+        hostname: "cdn.filestackcontent.com",
+        pathname: "**",
+      },
+      {
+        protocol: "https",
         hostname: "cdn.kmc.solutions",
         pathname: "**",
       },

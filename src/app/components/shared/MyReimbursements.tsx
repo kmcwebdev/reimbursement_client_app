@@ -59,7 +59,7 @@ const MyReimbursements: React.FC = () => {
     cancelDialogIsOpen,
     reimbursementFormValues,
     activeStep,
-    isParticularFormActive,
+    activeParticularStep,
   } = useAppSelector((state) => state.reimbursementForm);
   const { selectedItems, filters } = useAppSelector(
     (state) => state.pageTableState,
@@ -291,13 +291,20 @@ const MyReimbursements: React.FC = () => {
         title={
           activeStep === 0
             ? "Reimbursement Type"
-            : activeStep === 1 && !isParticularFormActive
+            : activeStep === 1 && activeParticularStep === "particular-list"
               ? "Add Particulars"
-              : activeStep === 1 && isParticularFormActive
+              : activeStep === 1 && activeParticularStep === "details"
                 ? "Particular"
-                : activeStep === 2
-                  ? "File a Reimbursement"
-                  : "Upload Files"
+                : activeStep === 1 &&
+                    activeParticularStep === "method-selection"
+                  ? "Select Attachment Method"
+                  : activeStep === 1 && activeParticularStep === "capture"
+                    ? "Take Photo"
+                    : activeStep === 1 && activeParticularStep === "upload"
+                      ? "Upload File"
+                      : activeStep === 2
+                        ? "File a Reimbursement"
+                        : "Upload Files"
         }
         isVisible={formDialogIsOpen}
         close={handleOpenCancelDialog}

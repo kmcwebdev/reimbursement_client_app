@@ -2,8 +2,6 @@ import React from "react";
 import { type UseFormReturn } from "react-hook-form";
 import { useAppSelector } from "~/app/hook";
 import AddParticulars from "./steps/AddParticulars";
-import Attachments from "./steps/Attachments";
-import SelectAttachmentMethod from "./steps/SelectAttachmentMethod";
 import SelectReimbursementType from "./steps/SelectReimbursementType";
 
 // const UploadAttachments = dynamic(() => import("./steps/UploadAttachments"));
@@ -31,9 +29,6 @@ const ReimburseForm: React.FC<ReimburseFormProps> = ({
       {activeStep === 1 && (
         <AddParticulars handleOpenCancelDialog={handleOpenCancelDialog} />
       )}
-
-      {activeStep === 2 && <SelectAttachmentMethod />}
-      {activeStep === 3 && <Attachments />}
     </div>
   );
 };

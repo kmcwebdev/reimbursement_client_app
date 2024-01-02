@@ -1,63 +1,48 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { SetStateAction, useCallback } from "react";
 import {
   useDropzone,
   type DropzoneOptions,
   type FileWithPath,
 } from "react-dropzone";
-import { BiSpreadsheet } from "react-icons-all-files/bi/BiSpreadsheet";
-import { BsFiletypeDoc } from "react-icons-all-files/bs/BsFiletypeDoc";
-import { HiInformationCircle } from "react-icons-all-files/hi/HiInformationCircle";
 import { MdCloudUpload } from "react-icons-all-files/md/MdCloudUpload";
-import { MdOutlineDelete } from "react-icons-all-files/md/MdOutlineDelete";
-import { MdPictureAsPdf } from "react-icons-all-files/md/MdPictureAsPdf";
-import { useDispatch } from "react-redux";
-import {
-  setFileSelected,
-  setUploadedFileUrl,
-} from "~/features/reimbursement-form-slice";
 import { classNames } from "~/utils/classNames";
 import CollapseHeightAnimation from "../animation/CollapseHeight";
-import IndeterminateProgressBar from "../loaders/IndeterminateProgressBar";
-import { Button } from "./Button";
 
 export interface UploadProps extends DropzoneOptions {
   isUploading?: boolean;
   isUploaded?: boolean;
   uploadedFileUrl?: string;
-  fileSelected: FileWithPath | null;
+  handleUpload: (file: File) => void;
+  setAttachedFile: React.Dispatch<SetStateAction<File | undefined>>;
 }
 
 const Upload: React.FC<UploadProps> = ({
   onDrop,
   accept = {
     "application/pdf": [".pdf"],
-    "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [
-      ".docx",
-    ],
-    "application/msword": [".doc"],
+    "image/*": [".png", ".jpg", ".jpeg"],
+    // "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [
+    //   ".docx",
+    // ],
+    // "application/msword": [".doc"],
   },
-  isUploading = false,
-  isUploaded = false,
-  uploadedFileUrl,
-  fileSelected,
+  // isUploading = false,
+  // isUploaded = false,
+  // uploadedFileUrl,
+  handleUpload,
+  setAttachedFile,
   ...rest
 }) => {
-  const dispatch = useDispatch();
-  const [file, setFile] = useState<FileWithPath | null>();
+  // const dispatch = useDispatch();
+  // const [file, setFile] = useState<FileWithPath | null>();
 
   const handleDrop = useCallback(
     (e: FileWithPath) => {
-      setFile(e);
-      dispatch(setFileSelected(e));
+      setAttachedFile(e);
+      handleUpload(e);
     },
-    [dispatch],
+    [handleUpload, setAttachedFile],
   );
-
-  useMemo(() => {
-    if (fileSelected) {
-      setFile(fileSelected);
-    }
-  }, [fileSelected]);
 
   const { getRootProps, getInputProps, fileRejections } = useDropzone({
     onDrop: (e, i, f) => {
@@ -69,19 +54,21 @@ const Upload: React.FC<UploadProps> = ({
     ...rest,
   });
 
-  const deleteFile = useCallback(
-    () => {
-      setFile(null);
-      dispatch(setFileSelected(null));
-      dispatch(setUploadedFileUrl(null));
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [file],
-  );
+  // const deleteFile = useCallback(
+  //   () => {
+  //     setFile(null);
+  //     dispatch(setFileSelected(null));
+  //     dispatch(setUploadedFileUrl(null));
+  //   },
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  //   [file],
+  // );
 
-  const acceptedFileItem = useMemo(() => {
+  /*
+   const acceptedFileItem = useMemo(() => {
     if (file) {
       const isPDF = file.type === "application/pdf";
+      const isImage = file.type === "image/*";
       const isWord =
         file.type === "application/msword" ||
         file.type ===
@@ -102,9 +89,9 @@ const Upload: React.FC<UploadProps> = ({
         >
           <div className="flex flex-1 items-center gap-2 truncate">
             <span className="relative flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border border-neutral-300">
-              {isPDF && <MdPictureAsPdf className="h-5 w-5 text-navy" />}
-              {isSpreadsheet && <BiSpreadsheet className="h-5 w-5 text-navy" />}
-              {isWord && <BsFiletypeDoc className="h-5 w-5 text-navy" />}
+               {isPDF && <MdPictureAsPdf className="h-5 w-5 text-navy" />}
+              {isImage && <BiSpreadsheet className="h-5 w-5 text-navy" />} 
+              <MdFileCopy className="h-5 w-5 text-navy" />
             </span>
 
             <span
@@ -155,10 +142,11 @@ const Upload: React.FC<UploadProps> = ({
     getInputProps,
     deleteFile,
   ]);
+ */
 
   return (
     <section className="container p-0">
-      <CollapseHeightAnimation isVisible={!file}>
+      <CollapseHeightAnimation isVisible={true}>
         <div className="flex flex-col gap-2">
           <div
             {...getRootProps({ className: "dropzone" })}
@@ -177,29 +165,27 @@ const Upload: React.FC<UploadProps> = ({
 
             <p className="font-bold text-orange-600">Click/Drop to Upload</p>
 
-            <p className="text-neutral-600">
-              PDF or Word (add the images of particulars)
-            </p>
+            <p className="text-neutral-600">PDF or Image</p>
           </div>
 
-          <p className="flex items-center gap-2">
+          {/* <p className="flex items-center gap-2">
             <HiInformationCircle className="h-4 w-4 text-blue-600" />
             You can only upload 1 PDF or Word file.
-          </p>
+          </p> */}
         </div>
       </CollapseHeightAnimation>
 
-      <CollapseHeightAnimation isVisible={!!acceptedFileItem}>
+      {/* <CollapseHeightAnimation isVisible={!!acceptedFileItem}>
         <aside className="space-y-4 py-4">
           <p className="text-xs font-medium text-neutral-900">Uploaded Files</p>
           <ul className="mt-2 space-y-2">{acceptedFileItem}</ul>
         </aside>
-      </CollapseHeightAnimation>
+      </CollapseHeightAnimation> */}
 
       {fileRejections.length > 0 && (
         <p className="mt-1 text-sm text-red-600">
           Selected file type is invalid! Only{" "}
-          <span className="font-semibold">.pdf,.doc,.docx</span> files are
+          <span className="font-semibold">PDF and Image</span> files are
           accepted.
         </p>
       )}

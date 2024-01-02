@@ -1,15 +1,18 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { type FileWithPath } from "react-dropzone";
-import { type UploadFileResponse } from "~/types/file-upload-response.type";
 import { type ReimbursementFormValues } from "~/types/reimbursement-form-values.type";
 
+type ParticularStepType =
+  | "particular-list"
+  | "details"
+  | "method-selection"
+  | "capture"
+  | "upload";
 interface ReimburseFormState {
   activeStep: number;
-  isParticularFormActive: boolean;
-  selectedParticularIndex: number | null;
-  selectedAttachmentMethod: "capture" | "upload" | null;
+  activeParticularStep: ParticularStepType;
+  activeParticularIndex: string | null;
   reimbursementFormValues: ReimbursementFormValues;
-  reimbursementAttachment: UploadFileResponse | null;
   cancelDialogIsOpen: boolean;
   formDialogIsOpen: boolean;
   fileUploadedUrl: string | null;
@@ -18,15 +21,12 @@ interface ReimburseFormState {
 
 const initialState: ReimburseFormState = {
   activeStep: 0,
-  isParticularFormActive: false,
-  selectedParticularIndex: null,
-  selectedAttachmentMethod: null,
+  activeParticularStep: "details",
+  activeParticularIndex: null,
   reimbursementFormValues: {
     reimbursement_request_type_id: null,
-    particulars: null,
-    attachments: [],
+    particulars: [],
   },
-  reimbursementAttachment: null,
   formDialogIsOpen: false,
   cancelDialogIsOpen: false,
   fileUploadedUrl: null,
@@ -40,34 +40,23 @@ const reimbursementFormSlice = createSlice({
     setActiveStep(state, action: PayloadAction<number>) {
       state.activeStep = action.payload;
     },
-    setIsParticularFormActive(state, action: PayloadAction<boolean>) {
-      state.isParticularFormActive = action.payload;
+    setActiveParticularStep(state, action: PayloadAction<ParticularStepType>) {
+      state.activeParticularStep = action.payload;
     },
-    setSelectedParticularIndex(state, action: PayloadAction<number | null>) {
-      state.selectedParticularIndex = action.payload;
+
+    setActiveParticularIndex(state, action: PayloadAction<string | null>) {
+      state.activeParticularIndex = action.payload;
     },
-    setSelectedAttachmentMethod(
-      state,
-      action: PayloadAction<"capture" | "upload" | null>,
-    ) {
-      state.selectedAttachmentMethod = action.payload;
-    },
+
     setReimbursementFormValues(
       state,
       action: PayloadAction<ReimbursementFormValues>,
     ) {
       state.reimbursementFormValues = action.payload;
     },
-    setReimbursementAttachments(
-      state,
-      action: PayloadAction<UploadFileResponse | null>,
-    ) {
-      state.reimbursementAttachment = action.payload;
-    },
     clearReimbursementForm(state) {
       state.reimbursementFormValues = initialState.reimbursementFormValues;
       state.activeStep = 0;
-      state.reimbursementAttachment = null;
       state.fileSelected = null;
       state.fileUploadedUrl = null;
     },
@@ -88,11 +77,9 @@ const reimbursementFormSlice = createSlice({
 
 export const {
   setActiveStep,
-  setIsParticularFormActive,
-  setSelectedAttachmentMethod,
-  setSelectedParticularIndex,
+  setActiveParticularStep,
+  setActiveParticularIndex,
   setReimbursementFormValues,
-  setReimbursementAttachments,
   clearReimbursementForm,
   toggleFormDialog,
   toggleCancelDialog,
