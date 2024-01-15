@@ -26,25 +26,27 @@ const Profile: NextPage = () => {
           <div className="h-40 w-40 rounded-full border border-orange-600 p-1">
             <div className="grid h-full w-full place-items-center rounded-full bg-neutral-300 font-barlow font-bold text-orange-600">
               <h1 className="text-7xl">
-                {user && user.firstName?.charAt(0)}
-                {user && user.lastName?.charAt(0)}
+                {user && user.first_name?.charAt(0)}
+                {user && user.last_name?.charAt(0)}
               </h1>
             </div>
           </div>
           <div className="flex flex-col gap-4 p-4">
             <div className="flex gap-4">
               <h1 className="uppercase text-navy">
-                {user && user.firstName} {user && user.lastName}
+                {user && user.first_name} {user && user.last_name}
               </h1>
             </div>
             <div className="flex flex-col gap-2 font-bold">
               <div className="flex items-center gap-2 text-neutral-700">
                 <HiBriefcase className="h-5 w-5" />
-                <p className="mt-0.5">{user && user.orgName}</p>
+                <p className="mt-0.5">
+                  {(user && user.profile.organization) || "N/A"}
+                </p>
               </div>
               <div className="flex items-center gap-2 text-neutral-700">
                 <FaUserTie className="h-5 w-5" />
-                <p className="mt-0.5">{user && user.assignedRole}</p>
+                <p className="mt-0.5">{user && user.groups[0]}</p>
               </div>
 
               <div className="flex items-center gap-2 text-neutral-700">
