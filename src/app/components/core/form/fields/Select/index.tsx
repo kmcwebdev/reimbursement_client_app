@@ -34,7 +34,7 @@ import {
 } from "./select.config";
 
 export type OptionData = {
-  value: string;
+  value: string | number;
   label: string;
   color?: string;
   isFixed?: undefined;

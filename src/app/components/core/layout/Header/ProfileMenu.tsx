@@ -1,16 +1,14 @@
-import { useLogoutFunction } from "@propelauth/nextjs/client";
+import { signOut } from "next-auth/react";
 import React, { useRef, useState } from "react";
 import { AiOutlineLogout } from "react-icons-all-files/ai/AiOutlineLogout";
 import { MdChangeCircle } from "react-icons-all-files/md/MdChangeCircle";
-import { RiLoader4Fill } from "react-icons-all-files/ri/RiLoader4Fill";
-import { type PropsValue } from "react-select";
-import { useAppSelector } from "~/app/hook";
-import { useChangeRoleMutation } from "~/features/reimbursement-api-slice";
+import { useAppDispatch, useAppSelector } from "~/app/hook";
+import { clearUserSession } from "~/features/state/user-state.slice";
 import { useDialogState } from "~/hooks/use-dialog-state";
 import { Button } from "../../Button";
 import Dialog from "../../Dialog";
 import Popover from "../../Popover";
-import Select, { type OptionData } from "../../form/fields/Select";
+import Select from "../../form/fields/Select";
 
 const roleOptions = [
   {
@@ -36,6 +34,7 @@ const roleOptions = [
 const ProfileMenu: React.FC = () => {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const buttonChildRef = useRef<HTMLButtonElement>(null);
+  const dispatch = useAppDispatch();
   const user = useAppSelector((state) => state.session.user);
   const [signoutButtonIsLoading, setSignoutButtonIsLoading] =
     useState<boolean>(false);
@@ -46,33 +45,37 @@ const ProfileMenu: React.FC = () => {
     close: closeSignoutDialog,
   } = useDialogState();
 
-  const [changeRole, { isLoading: changeRoleIsLoading }] =
-    useChangeRoleMutation();
-  const logoutFn = useLogoutFunction();
+  // const [changeRole, { isLoading: changeRoleIsLoading }] =
+  //   useChangeRoleMutation();
 
-  const onRoleChanged = (selected: PropsValue<OptionData>) => {
-    const selectedOption = selected as OptionData;
-
-    if (user && user.orgId) {
-      buttonChildRef.current?.click();
-      const payload = {
-        org_id: user.orgId,
-        role: selectedOption.value,
-      };
-      void changeRole(payload)
-        .unwrap()
-        .then(() => {
-          window.location.reload();
-          buttonRef.current?.click();
-        });
-    }
-  };
-  const handleSignout = () => {
-    setSignoutButtonIsLoading(true);
-    void logoutFn().then(() => {
-      setSignoutButtonIsLoading(false);
+  const logoutFn = async () => {
+    await signOut({ redirect: false }).then(() => {
+      dispatch(clearUserSession);
       closeSignoutDialog();
     });
+  };
+
+  // const onRoleChanged = (selected: PropsValue<OptionData>) => {
+  //   const selectedOption = selected as OptionData;
+
+  //   if (user && user.orgId) {
+  //     buttonChildRef.current?.click();
+  //     const payload = {
+  //       org_id: user.orgId,
+  //       role: selectedOption.value,
+  //     };
+  //     void changeRole(payload)
+  //       .unwrap()
+  //       .then(() => {
+  //         window.location.reload();
+  //         buttonRef.current?.click();
+  //       });
+  //   }
+  // };
+
+  const handleSignout = async () => {
+    setSignoutButtonIsLoading(true);
+    await logoutFn();
   };
 
   return (
@@ -85,8 +88,8 @@ const ProfileMenu: React.FC = () => {
         >
           <div className="relative grid h-5 w-5 place-items-center">
             <>
-              {user?.firstName?.charAt(0)}
-              {user?.lastName?.charAt(0)}
+              {user?.first_name?.charAt(0)}
+              {user?.last_name?.charAt(0)}
             </>
           </div>
         </div>
@@ -96,36 +99,36 @@ const ProfileMenu: React.FC = () => {
         <div className="relative w-72">
           <div className="flex gap-4 border-b p-4">
             <div className="grid h-10 w-10 place-items-center rounded-full bg-orange-600 text-lg font-bold text-white">
-              {user?.firstName?.charAt(0)}
-              {user?.lastName?.charAt(0)}
+              {user?.first_name?.charAt(0)}
+              {user?.last_name?.charAt(0)}
             </div>
 
             <div className="flex flex-1 flex-col gap-2">
               <p className="font-bold uppercase text-orange-600">
-                {user?.firstName} {user?.lastName}
+                {user?.first_name} {user?.last_name}
               </p>
 
               <div className="flex flex-col gap-2">
-                <p className="text-xs text-neutral-600">{user?.assignedRole}</p>
-                  <Popover
-                    panelClassName="-translate-x-1/2"
-                    buttonRef={buttonChildRef}
-                    btn={
-                      <div className="flex items-center gap-1 text-xs text-yellow-600 transition-all ease-in-out hover:text-yellow-700">
-                        <MdChangeCircle className="h-4 w-4" />
-                        <p>Change Role</p>
-                      </div>
-                    }
-                    content={
-                      <div className="w-40">
-                        <Select
-                          name="role"
-                          onChangeEvent={onRoleChanged}
-                          options={roleOptions}
-                        />
-                      </div>
-                    }
-                  />
+                <p className="text-xs text-neutral-600">{user?.groups[0]}</p>
+                <Popover
+                  panelClassName="-translate-x-1/2"
+                  buttonRef={buttonChildRef}
+                  btn={
+                    <div className="flex items-center gap-1 text-xs text-yellow-600 transition-all ease-in-out hover:text-yellow-700">
+                      <MdChangeCircle className="h-4 w-4" />
+                      <p>Change Role</p>
+                    </div>
+                  }
+                  content={
+                    <div className="w-40">
+                      <Select
+                        name="role"
+                        // onChangeEvent={onRoleChanged}
+                        options={roleOptions}
+                      />
+                    </div>
+                  }
+                />
               </div>
             </div>
           </div>
@@ -166,7 +169,7 @@ const ProfileMenu: React.FC = () => {
                   variant="danger"
                   className="w-1/2"
                   loading={signoutButtonIsLoading}
-                  onClick={handleSignout}
+                  onClick={() => void handleSignout()}
                 >
                   Yes
                 </Button>
@@ -174,14 +177,14 @@ const ProfileMenu: React.FC = () => {
             </div>
           </Dialog>
 
-          {changeRoleIsLoading && (
+          {/* {changeRoleIsLoading && (
             <div className="absolute top-0 grid h-full w-full place-items-center rounded-md bg-white">
               <div className="flex flex-col items-center gap-2">
                 <RiLoader4Fill className="h-16 w-16 animate-spin text-orange-600" />
                 <h5>Changing your role,please wait...</h5>
               </div>
             </div>
-          )}
+          )} */}
         </div>
       }
     />

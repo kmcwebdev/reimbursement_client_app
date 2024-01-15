@@ -1,37 +1,30 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { zodResolver } from "@hookform/resolvers/zod";
 import { type ColumnDef, type PaginationState } from "@tanstack/react-table";
-import dayjs from "dayjs";
 import dynamic from "next/dynamic";
 import React, { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { AiOutlinePlusCircle } from "react-icons-all-files/ai/AiOutlinePlusCircle";
 import { Button } from "~/app/components/core/Button";
-import StatusBadge, {
-  type StatusType,
-} from "~/app/components/core/StatusBadge";
 import Table from "~/app/components/core/table";
-import { type FilterProps } from "~/app/components/core/table/filters/StatusFilter";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { appApiSlice } from "~/app/rtkQuery";
-import { setSelectedItems } from "~/features/page-state.slice";
-import {
-  useGetAllRequestsQuery,
-  useGetRequestQuery,
-} from "~/features/reimbursement-api-slice";
+import { useGetRequestQuery } from "~/features/api/reimbursement-api-slice";
+import { useMyRequestsQuery } from "~/features/api/user-api-slice";
 import {
   clearReimbursementForm,
   toggleCancelDialog,
   toggleFormDialog,
-} from "~/features/reimbursement-form-slice";
+} from "~/features/state/reimbursement-form-slice";
+import { setSelectedItems } from "~/features/state/table-state.slice";
 import { useDialogState } from "~/hooks/use-dialog-state";
 import {
   ReimbursementTypeSchema,
   type ReimbursementFormType,
 } from "~/schema/reimbursement-type.schema";
-import { type ReimbursementRequest } from "~/types/reimbursement.types";
-import { currencyFormat } from "~/utils/currencyFormat";
+import { type IReimbursementRequest } from "~/types/reimbursement.types";
 import SkeletonLoading from "../core/SkeletonLoading";
+import TableCell from "../core/table/TableCell";
 import MemberAnalytics from "./analytics/MemberAnalytics";
 import ReimburseForm from "./reimburse-form";
 
@@ -59,28 +52,29 @@ const MyReimbursements: React.FC = () => {
     cancelDialogIsOpen,
     reimbursementFormValues,
     activeStep,
-    activeParticularStep,
+    particularDetailsFormIsVisible,
+    selectedAttachmentMethod,
   } = useAppSelector((state) => state.reimbursementForm);
   const { selectedItems, filters } = useAppSelector(
     (state) => state.pageTableState,
   );
   const dispatch = useAppDispatch();
 
-  const setSelectedItemsState = (value: string[]) => {
+  const setSelectedItemsState = (value: number[]) => {
     dispatch(setSelectedItems(value));
   };
 
   const [focusedReimbursementId, setFocusedReimbursementId] =
-    useState<string>();
+    useState<number>();
 
-  const { isFetching, data } = useGetAllRequestsQuery(filters);
+  const { isFetching, data } = useMyRequestsQuery();
 
   const {
-    isFetching: reimbursementRequestDataIsLoading,
-    isError: reimbursementRequestDataIsError,
-    currentData: reimbursementRequestData,
+    isFetching: focusedReimbursementDataIsFetching,
+    isError: focusedReimbursementDataIsError,
+    currentData: focusedReimbursementData,
   } = useGetRequestQuery(
-    { reimbursement_request_id: focusedReimbursementId! },
+    { id: +focusedReimbursementId! },
     { skip: !focusedReimbursementId },
   );
 
@@ -91,109 +85,91 @@ const MyReimbursements: React.FC = () => {
     pageSize: 10,
   });
 
-  const columns = React.useMemo<ColumnDef<ReimbursementRequest>[]>(() => {
-    return [
+  const columns = React.useMemo<ColumnDef<IReimbursementRequest>[]>(() => {
+    const defaultColumns: ColumnDef<IReimbursementRequest, unknown>[] = [
       {
-        id: "finance_request_status",
-        accessorKey: "finance_request_status",
+        id: "request_status",
+        accessorKey: "request_status",
         header: "Status",
-        cell: (info) => (
-          <StatusBadge
-            status={(info.getValue() as string).toLowerCase() as StatusType}
-          />
-        ),
-        filterFn: (row, id, value: string) => {
-          return value.includes(row.getValue(id));
+        filterFn: (row, value: string) => {
+          return value.includes(row.original.request_status.name);
         },
-        enableColumnFilter: true,
         meta: {
-          filterComponent: (info: FilterProps) => <StatusFilter {...info} />,
+          filterComponent: StatusFilter,
         },
       },
       {
         id: "reference_no",
         accessorKey: "reference_no",
-        cell: (info) => info.getValue(),
-        header: "R-ID",
+        header: "ID",
       },
       {
         id: "request_type",
         accessorKey: "request_type",
-        cell: (info) => info.getValue(),
         header: "Type",
-        filterFn: (row, id, value: string) => {
-          return value.includes(row.getValue(id));
+        filterFn: (row, value: string) => {
+          return value.includes(row.original.request_type.name);
         },
         meta: {
-          filterComponent: (info: FilterProps) => (
-            <ReimbursementTypeFilter {...info} />
-          ),
+          filterComponent: ReimbursementTypeFilter,
         },
       },
       {
-        id: "expense_type",
-        accessorKey: "expense_type",
-        cell: (info) => info.getValue(),
+        id: "particulars",
+        accessorKey: "particulars",
         header: "Expense",
         filterFn: (row, id, value: string) => {
-          return value.includes(row.getValue(id));
+          return value.includes(row.original.particulars[0].expense_type.name);
         },
         meta: {
-          filterComponent: (info: FilterProps) => (
-            <ExpenseTypeFilter {...info} />
-          ),
+          filterComponent: ExpenseTypeFilter,
         },
+        size: 30,
       },
       {
         id: "created_at",
         accessorKey: "created_at",
-        cell: (info) => dayjs(info.getValue() as string).format("MMM D, YYYY"),
         header: "Filed",
         filterFn: (row, id, value: string) => {
           return value.includes(row.getValue(id));
         },
         meta: {
-          filterComponent: (info: FilterProps) => <DateFiledFilter {...info} />,
+          filterComponent: DateFiledFilter,
         },
       },
       {
-        id: "amount",
-        accessorKey: "amount",
-        cell: (info) => currencyFormat(info.getValue() as number),
+        id: "total_amount",
+        accessorKey: "total_amount",
         header: "Total",
       },
       {
         id: "actions",
-        accessorKey: "reimbursement_request_id",
-        cell: (info) => (
-          <Button
-            buttonType="text"
-            onClick={() => {
-              setFocusedReimbursementId(info.getValue() as string);
-              open();
-            }}
-          >
-            View
-          </Button>
-        ),
+        accessorKey: "id",
         header: "",
+        setFocusedReimbursementId: setFocusedReimbursementId,
+        openDrawer: open,
       },
     ];
+
+    defaultColumns.forEach((a) => {
+      a.cell = TableCell;
+    });
+
+    return defaultColumns;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
   //Form return for reimbursement type selection
-  const useReimbursementDetailsFormReturn = useForm<ReimbursementFormType>({
+  const useReimbursementTypeFormReturn = useForm<ReimbursementFormType>({
     resolver: useMemo(() => {
       if (activeStep === 0) {
         return zodResolver(ReimbursementTypeSchema);
       }
     }, [activeStep]),
     defaultValues: useMemo(() => {
-      if (reimbursementFormValues.reimbursement_request_type_id) {
+      if (reimbursementFormValues.request_type) {
         return {
-          reimbursement_request_type_id:
-            reimbursementFormValues.reimbursement_request_type_id,
+          request_type: reimbursementFormValues.request_type,
         };
       }
     }, [reimbursementFormValues]),
@@ -203,9 +179,7 @@ const MyReimbursements: React.FC = () => {
   /***Closes the form and open cancel dialog */
   const handleOpenCancelDialog = () => {
     const selectedReimbursementType =
-      useReimbursementDetailsFormReturn.getValues(
-        "reimbursement_request_type_id",
-      );
+      useReimbursementTypeFormReturn.getValues("request_type");
     dispatch(toggleFormDialog());
 
     if (selectedReimbursementType) {
@@ -216,7 +190,7 @@ const MyReimbursements: React.FC = () => {
   /**Continue reimbursement request cancellation */
   const handleConfirmCancellation = () => {
     dispatch(clearReimbursementForm());
-    useReimbursementDetailsFormReturn.reset();
+    useReimbursementTypeFormReturn.reset();
     dispatch(toggleCancelDialog());
   };
 
@@ -227,9 +201,7 @@ const MyReimbursements: React.FC = () => {
       appApiSlice.util.invalidateTags([
         {
           type: "ExpenseTypes",
-          id: useReimbursementDetailsFormReturn.getValues(
-            "reimbursement_request_type_id",
-          ),
+          id: useReimbursementTypeFormReturn.getValues("request_type"),
         },
       ]),
     );
@@ -269,9 +241,9 @@ const MyReimbursements: React.FC = () => {
         <Table
           type="reimbursements"
           loading={isFetching}
-          data={data}
+          data={data?.results}
           columns={columns}
-          handleMobileClick={(e: string) => {
+          handleMobileClick={(e: number) => {
             setFocusedReimbursementId(e);
             open();
           }}
@@ -291,27 +263,22 @@ const MyReimbursements: React.FC = () => {
         title={
           activeStep === 0
             ? "Reimbursement Type"
-            : activeStep === 1 && activeParticularStep === "particular-list"
+            : activeStep === 1 && !particularDetailsFormIsVisible
               ? "Add Particulars"
-              : activeStep === 1 && activeParticularStep === "details"
+              : activeStep === 1 && particularDetailsFormIsVisible
                 ? "Particular"
-                : activeStep === 1 &&
-                    activeParticularStep === "method-selection"
-                  ? "Select Attachment Method"
-                  : activeStep === 1 && activeParticularStep === "capture"
+                : activeStep === 2 && !selectedAttachmentMethod
+                  ? "File a Reimbursements"
+                  : activeStep === 2 && selectedAttachmentMethod === "capture"
                     ? "Take Photo"
-                    : activeStep === 1 && activeParticularStep === "upload"
-                      ? "Upload File"
-                      : activeStep === 2
-                        ? "File a Reimbursement"
-                        : "Upload Files"
+                    : "Upload Files"
         }
         isVisible={formDialogIsOpen}
         close={handleOpenCancelDialog}
         hideCloseIcon
       >
         <ReimburseForm
-          formReturn={useReimbursementDetailsFormReturn}
+          formReturn={useReimbursementTypeFormReturn}
           handleOpenCancelDialog={handleOpenCancelDialog}
         />
       </Dialog>
@@ -349,9 +316,9 @@ const MyReimbursements: React.FC = () => {
 
       <SideDrawer
         title={
-          !reimbursementRequestDataIsLoading && reimbursementRequestData
-            ? reimbursementRequestData.reference_no
-            : reimbursementRequestDataIsError
+          !focusedReimbursementDataIsFetching && focusedReimbursementData
+            ? focusedReimbursementData.reference_no
+            : focusedReimbursementDataIsError
               ? "Error"
               : "..."
         }
@@ -360,9 +327,9 @@ const MyReimbursements: React.FC = () => {
       >
         <ReimbursementsCardView
           closeDrawer={close}
-          isLoading={reimbursementRequestDataIsLoading}
-          isError={reimbursementRequestDataIsError}
-          data={reimbursementRequestData}
+          isLoading={focusedReimbursementDataIsFetching}
+          isError={focusedReimbursementDataIsError}
+          data={focusedReimbursementData}
           setFocusedReimbursementId={setFocusedReimbursementId}
         />
       </SideDrawer>

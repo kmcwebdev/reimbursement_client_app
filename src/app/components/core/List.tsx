@@ -1,4 +1,5 @@
 import React, { type PropsWithChildren } from "react";
+import { classNames } from "~/utils/classNames";
 
 interface ItemProps {
   label: string;
@@ -6,12 +7,17 @@ interface ItemProps {
 }
 
 const List: React.FC<PropsWithChildren> = ({ children }) => {
-  return <div className="flex w-full flex-col gap-4">{children}</div>;
+  return <div className="flex w-full flex-col gap-5">{children}</div>;
 };
 
 const Item: React.FC<ItemProps> = ({ label, value }) => {
   return (
-    <div className="grid grid-cols-2 items-center gap-4">
+    <div
+      className={classNames(
+        label !== "Expense" && "items-center",
+        "grid grid-cols-2 gap-4",
+      )}
+    >
       <span className="text-neutral-700">{label}</span>
 
       {/* Checks the value if JSX.Element */}

@@ -14,20 +14,20 @@ import StatusBadge, {
 import Table from "~/app/components/core/table";
 import { type FilterProps } from "~/app/components/core/table/filters/StatusFilter";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
-import { env } from "~/env.mjs";
-import { setSelectedItems } from "~/features/page-state.slice";
 import {
   useGetAllRequestsQuery,
   useGetRequestQuery,
-} from "~/features/reimbursement-api-slice";
+} from "~/features/api/reimbursement-api-slice";
+import { setSelectedItems } from "~/features/state/table-state.slice";
 import { useDebounce } from "~/hooks/use-debounce";
 import { useDialogState } from "~/hooks/use-dialog-state";
 import { useReportDownload } from "~/hooks/use-report-download";
 import {
+  type IReimbursementRequest,
   type IReimbursementsFilterQuery,
-  type ReimbursementRequest,
 } from "~/types/reimbursement.types";
 import { currencyFormat } from "~/utils/currencyFormat";
+import { env } from "../../../../env.mjs";
 import CollapseWidthAnimation from "../animation/CollapseWidth";
 import SkeletonLoading from "../core/SkeletonLoading";
 import { showToast } from "../core/Toast";
@@ -59,7 +59,7 @@ const MyReimbursements: React.FC = () => {
 
   const { isVisible, open, close } = useDialogState();
   const [focusedReimbursementId, setFocusedReimbursementId] =
-    useState<string>();
+    useState<number>();
 
   const { selectedItems, filters } = useAppSelector(
     (state) => state.pageTableState,
@@ -70,7 +70,7 @@ const MyReimbursements: React.FC = () => {
     isError: reimbursementRequestDataIsError,
     currentData: reimbursementRequestData,
   } = useGetRequestQuery(
-    { reimbursement_request_id: focusedReimbursementId! },
+    { id: focusedReimbursementId! },
     { skip: !focusedReimbursementId },
   );
 
@@ -105,7 +105,7 @@ const MyReimbursements: React.FC = () => {
     },
   });
 
-  const setSelectedItemsState = (value: string[]) => {
+  const setSelectedItemsState = (value: number[]) => {
     dispatch(setSelectedItems(value));
   };
 
@@ -120,9 +120,9 @@ const MyReimbursements: React.FC = () => {
     pageSize: 10,
   });
 
-  const columns = React.useMemo<ColumnDef<ReimbursementRequest>[]>(() => {
+  const columns = React.useMemo<ColumnDef<IReimbursementRequest>[]>(() => {
     //FINANCE COLUMNS
-    const defaultColumns: ColumnDef<ReimbursementRequest>[] = [
+    const defaultColumns: ColumnDef<IReimbursementRequest>[] = [
       {
         id: "select",
         header: ({ table }) => {
@@ -150,16 +150,16 @@ const MyReimbursements: React.FC = () => {
       },
       {
         id: `${
-          user?.assignedRole === "Finance"
+          user?.groups[0] === "REIMBURSEMENT_FINANCE"
             ? "finance_request_status"
-            : user?.assignedRole === "HRBP"
+            : user?.groups[0] === "REIMBURSEMENT_HRBP"
               ? "hrbp_request_status"
               : "requestor_request_status"
         }`,
         accessorKey: `${
-          user?.assignedRole === "Finance"
+          user?.groups[0] === "REIMBURSEMENT_FINANCE"
             ? "finance_request_status"
-            : user?.assignedRole === "HRBP"
+            : user?.groups[0] === "REIMBURSEMENT_HRBP"
               ? "hrbp_request_status"
               : "requestor_request_status"
         }`,
@@ -236,7 +236,9 @@ const MyReimbursements: React.FC = () => {
         id: "created_at",
         accessorKey: "created_at",
         cell: (info) => dayjs(info.getValue() as string).format("MMM D, YYYY"),
-        header: `${user?.assignedRole === "Finance" ? "Approved" : "Filed"}`,
+        header: `${
+          user?.groups[0] === "REIMBURSEMENT_FINANCE" ? "Approved" : "Filed"
+        }`,
 
         filterFn: (row, id, value: string) => {
           return value.includes(row.getValue(id));
@@ -258,7 +260,7 @@ const MyReimbursements: React.FC = () => {
           <Button
             buttonType="text"
             onClick={() => {
-              setFocusedReimbursementId(info.getValue() as string);
+              setFocusedReimbursementId(info.getValue() as number);
               open();
             }}
           >
@@ -269,18 +271,18 @@ const MyReimbursements: React.FC = () => {
       },
     ];
 
-    if (user?.assignedRole === "External Reimbursement Approver Manager") {
+    if (user?.groups[0] === "REIMBURSEMENT_MANAGER") {
       return defaultColumns.filter((a) => a.id !== "select");
     }
 
     return defaultColumns;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedItems, user?.assignedRole]);
+  }, [selectedItems, user?.groups[0]]);
 
   const downloadReport = async () => {
     setDownloadReportLoading(true);
 
-    if (user?.assignedRole === "Finance") {
+    if (user?.groups[0] === "REIMBURSEMENT_FINANCE") {
       await exportReport(
         `${
           env.NEXT_PUBLIC_BASEAPI_URL
@@ -290,7 +292,7 @@ const MyReimbursements: React.FC = () => {
       );
     }
 
-    if (user?.assignedRole === "HRBP") {
+    if (user?.groups[0] === "REIMBURSEMENT_HRBP") {
       await exportReport(
         `${
           env.NEXT_PUBLIC_BASEAPI_URL
@@ -327,8 +329,8 @@ const MyReimbursements: React.FC = () => {
               ) : (
                 <>
                   {user &&
-                    (user.assignedRole === "Finance" ||
-                      user.assignedRole === "HRBP") && (
+                    (user.groups[0] === "REIMBURSEMENT_FINANCE" ||
+                      user.groups[0] === "REIMBURSEMENT_HRBP") && (
                       <CollapseWidthAnimation
                         isVisible={data && data.length > 0 ? true : false}
                       >
@@ -360,8 +362,8 @@ const MyReimbursements: React.FC = () => {
               />
 
               {user &&
-                (user.assignedRole === "Finance" ||
-                  user.assignedRole === "HRBP") && (
+                (user.groups[0] === "REIMBURSEMENT_FINANCE" ||
+                  user.groups[0] === "REIMBURSEMENT_HRBP") && (
                   <CollapseWidthAnimation
                     isVisible={data && data.length > 0 ? true : false}
                   >
@@ -427,16 +429,14 @@ const MyReimbursements: React.FC = () => {
               Are you sure yo want to download{" "}
               <strong>
                 {
-                  data?.find(
-                    (a) => a.reimbursement_request_id === selectedItems[0],
-                  )?.full_name
-                }
-                ,{" "}
+                  data?.find((a) => a.id === selectedItems[0])?.reimb_requestor
+                    .first_name
+                }{" "}
                 {
-                  data?.find(
-                    (a) => a.reimbursement_request_id === selectedItems[0],
-                  )?.reference_no
+                  data?.find((a) => a.id === selectedItems[0])?.reimb_requestor
+                    .last_name
                 }
+                , {data?.find((a) => a.id === selectedItems[0])?.reference_no}
               </strong>{" "}
               reimbursement?
             </p>

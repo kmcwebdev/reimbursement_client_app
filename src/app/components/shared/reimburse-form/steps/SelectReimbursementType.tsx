@@ -10,16 +10,16 @@ import CardSelection, {
   type CardSelectionOption,
 } from "~/app/components/core/form/fields/CardSelection";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
-import { useRequestTypesQuery } from "~/features/reimbursement-api-slice";
+import { useRequestTypesQuery } from "~/features/api/references-api-slice";
 import {
-  setActiveParticularStep,
   setActiveStep,
   setReimbursementFormValues,
-} from "~/features/reimbursement-form-slice";
-import { type CreateReimbursementDTO } from "~/types/reimbursement.types";
+} from "~/features/state/reimbursement-form-slice";
+import { type ReimbursementFormType } from "~/schema/reimbursement-type.schema";
+import { type ReimbursementFormValues } from "~/types/reimbursement-form-values.type";
 
 interface SelectReimbursementTypeProps {
-  formReturn: UseFormReturn<Partial<CreateReimbursementDTO>>;
+  formReturn: UseFormReturn<ReimbursementFormType>;
   handleOpenCancelDialog: () => void;
 }
 
@@ -39,13 +39,12 @@ const SelectReimbursementType: React.FC<SelectReimbursementTypeProps> = ({
   const { isLoading: requestTypesIsLoading, data: requestTypes } =
     useRequestTypesQuery();
 
-  const onSubmit = (e: CreateReimbursementDTO) => {
+  const onSubmit = (e: ReimbursementFormValues) => {
     const values = {
       ...reimbursementFormValues,
       ...e,
     };
     dispatch(setReimbursementFormValues(values));
-    dispatch(setActiveParticularStep("particular-list"));
     dispatch(setActiveStep(activeStep + 1));
   };
 
@@ -62,16 +61,16 @@ const SelectReimbursementType: React.FC<SelectReimbursementTypeProps> = ({
     >
       <CardSelection
         label=""
-        name="reimbursement_request_type_id"
+        name="request_type"
         required
         handleChange={handleTypeChange}
         loading={requestTypesIsLoading}
         options={
           requestTypes?.map((item) => ({
-            label: item.request_type,
-            value: item.reimbursement_request_type_id,
+            label: item.name,
+            value: item.id.toString(),
             icon:
-              item.request_type === "Scheduled"
+              item.id === 0
                 ? (IoMdTimer as IconType)
                 : (MdAccessTime as IconType),
           })) ?? []

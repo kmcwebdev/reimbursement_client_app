@@ -2,14 +2,14 @@ import { type Column } from "@tanstack/react-table";
 import { useEffect, useState, type ChangeEvent } from "react";
 import { FaCaretDown } from "react-icons-all-files/fa/FaCaretDown";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
-import { setPageTableFilters } from "~/features/page-state.slice";
-import { useAllStatusesQuery } from "~/features/reimbursement-api-slice";
-import { type ReimbursementRequest } from "~/types/reimbursement.types";
+import { useAllStatusesQuery } from "~/features/api/references-api-slice";
+import { setPageTableFilters } from "~/features/state/table-state.slice";
+import { type IReimbursementRequest } from "~/types/reimbursement.types";
 import Popover from "../../Popover";
 import StatusBadge, { type StatusType } from "../../StatusBadge";
 import Checkbox from "../../form/fields/Checkbox";
 export interface FilterProps {
-  column: Column<ReimbursementRequest, unknown>;
+  column: Column<IReimbursementRequest, unknown>;
 }
 
 const StatusFilter: React.FC<FilterProps> = () => {
@@ -18,9 +18,9 @@ const StatusFilter: React.FC<FilterProps> = () => {
 
   const { data: allStatuses, isLoading: allStatusesIsLoading } =
     useAllStatusesQuery({});
-  const [checked, setChecked] = useState<string[]>([]);
+  const [checked, setChecked] = useState<number[]>([]);
 
-  const onChange = (e: ChangeEvent<HTMLInputElement>, value: string) => {
+  const onChange = (e: ChangeEvent<HTMLInputElement>, value: number) => {
     if (checked.includes(value)) {
       setChecked(checked.filter((a) => a !== value));
     } else {
@@ -57,19 +57,17 @@ const StatusFilter: React.FC<FilterProps> = () => {
                 allStatuses &&
                 allStatuses.map((option) => (
                   <Checkbox
-                    key={option.request_status_id}
+                    key={option.id}
                     label={
                       <StatusBadge
-                        status={
-                          option.request_status.toLowerCase() as StatusType
-                        }
+                        status={option.name.toLowerCase() as StatusType}
                       />
                     }
-                    name={option.request_status}
+                    name={option.name}
                     checked={filters.request_status_ids?.includes(
-                      option.request_status_id,
+                      option.id.toString(),
                     )}
-                    onChange={(e) => onChange(e, option.request_status_id)}
+                    onChange={(e) => onChange(e, option.id)}
                   />
                 ))}
             </div>

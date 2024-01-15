@@ -1,10 +1,10 @@
 import { configureStore } from "@reduxjs/toolkit";
 // import testReducer from "../features/test-slice";
-import { env } from "~/env.mjs";
-import layoutStateSlice from "~/features/layout-state-slice";
-import pageTableStateSlice from "~/features/page-state.slice";
-import reimbursementFormSlice from "~/features/reimbursement-form-slice";
-import userReducer from "../features/user-slice";
+import layoutStateSlice from "~/features/state/layout-state-slice";
+import reimbursementFormSlice from "~/features/state/reimbursement-form-slice";
+import pageTableStateSlice from "~/features/state/table-state.slice";
+import { env } from "../../env.mjs";
+import userReducer from "../features/state/user-state.slice";
 import { appApiSlice } from "./rtkQuery";
 
 const store = configureStore({
@@ -17,9 +17,8 @@ const store = configureStore({
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
-      serializableCheck: false
-    }
-    ).concat(appApiSlice.middleware),
+      serializableCheck: false,
+    }).concat(appApiSlice.middleware),
   devTools: env.NEXT_PUBLIC_ENVIRONMENT === "development",
 });
 

@@ -7,18 +7,15 @@ import {
   type FetchBaseQueryError,
   type FetchBaseQueryMeta,
 } from "@reduxjs/toolkit/query/react";
-import { env } from "~/env.mjs";
-import { clearAccessToken, setAccessToken } from "~/features/user-slice";
-import { propelauthUserInfo } from "~/utils/propelauthUserInfo";
+import { env } from "../../env.mjs";
 import { type RootState } from "./store";
 
 const appApiBaseQuery = fetchBaseQuery({
   baseUrl: env.NEXT_PUBLIC_BASEAPI_URL,
   prepareHeaders: (headers, { getState }) => {
-    const state = getState() as RootState;
-
-    if (state.session.accessToken) {
-      headers.set("authorization", `Bearer ${state.session.accessToken}`);
+    const token = (getState() as RootState).session.accessToken;
+    if (token) {
+      headers.set("authorization", `Bearer ${token}`);
     }
 
     return headers;
@@ -37,18 +34,18 @@ const appApiBaseQueryWithReauth: BaseQueryFn<
   if (result?.error?.status === 401) {
     // const rootState = api.getState() as RootState;
 
-    const propelauthRefreshTokenQuery = await propelauthUserInfo();
+    // const propelauthRefreshTokenQuery = await propelauthUserInfo();
 
-    if (propelauthRefreshTokenQuery?.accessToken) {
-      // const user = rootState.user;
-      const { accessToken } = propelauthRefreshTokenQuery;
+    // if (propelauthRefreshTokenQuery?.accessToken) {
+    //   // const user = rootState.user;
+    //   const { accessToken } = propelauthRefreshTokenQuery;
 
-      api.dispatch(setAccessToken(accessToken));
+    //   api.dispatch(setAccessToken(accessToken));
 
-      result = await appApiBaseQuery(args, api, extraOptions);
-    } else {
-      api.dispatch(clearAccessToken());
-    }
+    result = await appApiBaseQuery(args, api, extraOptions);
+    // } else {
+    //   api.dispatch(clearAccessToken());
+    // }
   }
 
   return result;
@@ -58,6 +55,8 @@ export const appApiSlice = createApi({
   reducerPath: "appApi",
   baseQuery: appApiBaseQueryWithReauth,
   tagTypes: [
+    "Me",
+    "MyRequests",
     "ReimbursementRequestList",
     "ReimbursementApprovalList",
     "ReimbursementRequest",
@@ -69,6 +68,9 @@ export const appApiSlice = createApi({
     "AllExpenseTypes",
     "AllStatuses",
     "AuditLogs",
+    "Users",
+    "Permissions",
+    "AssignPermissions",
   ],
   endpoints: (
     _builder: EndpointBuilder<

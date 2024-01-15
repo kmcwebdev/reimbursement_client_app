@@ -20,9 +20,8 @@ import {
 } from "@tanstack/react-table";
 
 import {
+  type IReimbursementRequest,
   type IReimbursementsFilterQuery,
-  type ReimbursementApproval,
-  type ReimbursementRequest,
 } from "~/types/reimbursement.types";
 import { classNames } from "~/utils/classNames";
 import FilterView from "./FilterView";
@@ -38,35 +37,35 @@ export type ITableState = {
 };
 
 export type ITableStateActions = {
-  setSelectedItems?: (value: string[]) => void;
+  setSelectedItems?: (value: number[]) => void;
   setPagination?: Dispatch<SetStateAction<PaginationState>>;
 };
 
 type ReimbursementTable = {
   type: "reimbursements";
-  data?: ReimbursementRequest[];
+  data?: IReimbursementRequest[];
 };
 
 type HistoryTable = {
   type: "history";
-  data?: ReimbursementRequest[];
+  data?: IReimbursementRequest[];
 };
 
 type ApprovalTable = {
   type: "approvals";
-  data?: ReimbursementApproval[];
+  data?: IReimbursementRequest[];
 };
 
 type FinanceTable = {
   type: "finance";
-  data?: ReimbursementApproval[];
+  data?: IReimbursementRequest[];
 };
 
 type TableProps = {
   loading?: boolean;
   tableState?: ITableState;
   tableStateActions?: ITableStateActions;
-  handleMobileClick?: (e: string) => void;
+  handleMobileClick?: (e: number) => void;
   columns: any;
 } & (ReimbursementTable | ApprovalTable | FinanceTable | HistoryTable);
 
@@ -87,13 +86,13 @@ const Table: React.FC<TableProps> = (props) => {
       props.tableState.selectedItems &&
       props.tableStateActions.setSelectedItems
     ) {
-      const selectedItems: string[] = [];
+      const selectedItems: number[] = [];
 
       Object.keys(rowSelection).forEach((key) => {
         if (props.data) {
-          selectedItems.push(
-            props.data[key as unknown as number].reimbursement_request_id,
-          );
+          if (props.type !== "finance" && props.type !== "approvals") {
+            selectedItems.push(props.data[key as unknown as number].id);
+          }
         }
       });
       props.tableStateActions?.setSelectedItems(selectedItems);
@@ -110,7 +109,7 @@ const Table: React.FC<TableProps> = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.tableState?.selectedItems]);
 
-  const table = useReactTable<ReimbursementRequest | ReimbursementApproval>({
+  const table = useReactTable<IReimbursementRequest>({
     data: props.data!,
     columns,
     state: {
@@ -210,7 +209,7 @@ const Table: React.FC<TableProps> = (props) => {
                       <MobileListItem
                         type={props.type}
                         row={row}
-                        onClick={(e: string) =>
+                        onClick={(e: number) =>
                           props.handleMobileClick
                             ? props.handleMobileClick(e)
                             : undefined
@@ -256,7 +255,6 @@ const Table: React.FC<TableProps> = (props) => {
               })}
           </tbody>
         </table>
-        {/* SKELETON LOADING */}
       </div>
       {/* <Pagination table={table} /> */}
     </div>

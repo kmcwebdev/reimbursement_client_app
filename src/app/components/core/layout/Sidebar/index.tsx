@@ -1,6 +1,6 @@
 import React from "react";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
-import { toggleSidebarCollapse } from "~/features/layout-state-slice";
+import { toggleSidebarCollapse } from "~/features/state/layout-state-slice";
 import { classNames } from "~/utils/classNames";
 import Navigation from "./Navigation";
 import SidebarHeader from "./SidebarHeader";

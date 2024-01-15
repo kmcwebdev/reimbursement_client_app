@@ -1,8 +1,8 @@
 import React, { useEffect, useState, type ChangeEvent } from "react";
 import { FaCaretDown } from "react-icons-all-files/fa/FaCaretDown";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
-import { setPageTableFilters } from "~/features/page-state.slice";
-import { useRequestTypesQuery } from "~/features/reimbursement-api-slice";
+import { useRequestTypesQuery } from "~/features/api/references-api-slice";
+import { setPageTableFilters } from "~/features/state/table-state.slice";
 import Popover from "../../Popover";
 import Checkbox from "../../form/fields/Checkbox";
 import { type FilterProps } from "./StatusFilter";
@@ -15,12 +15,12 @@ const ReimbursementTypeFilter: React.FC<FilterProps> = () => {
   const { isLoading: requestTypesIsLoading, data: requestTypes } =
     useRequestTypesQuery();
 
-  const onChange = (e: ChangeEvent<HTMLInputElement>, value: string) => {
-    if (checked.includes(value)) {
-      setChecked(checked.filter((a) => a !== value));
+  const onChange = (e: ChangeEvent<HTMLInputElement>, value: number) => {
+    if (checked.includes(value.toString())) {
+      setChecked(checked.filter((a) => a !== value.toString()));
     } else {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      setChecked([value]);
+      setChecked([value.toString()]);
     }
   };
 
@@ -30,7 +30,7 @@ const ReimbursementTypeFilter: React.FC<FilterProps> = () => {
     dispatch(
       setPageTableFilters({
         ...filters,
-        reimbursement_type_id,
+        reimbursement_type_id: +reimbursement_type_id!,
       }),
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -51,24 +51,21 @@ const ReimbursementTypeFilter: React.FC<FilterProps> = () => {
                 requestTypes.length > 0 &&
                 requestTypes.map((type) => (
                   <Checkbox
-                    key={type.request_type}
+                    key={type.id}
                     label={
                       <div className="flex items-center gap-2 capitalize">
-                        {type.request_type}
+                        {type.name}
                       </div>
                     }
                     checked={
                       filters.reimbursement_type_id &&
-                      filters.reimbursement_type_id ===
-                        type.reimbursement_request_type_id
+                      filters.reimbursement_type_id === type.id
                         ? true
                         : false
                     }
-                    value={type.reimbursement_request_type_id}
-                    name={type.reimbursement_request_type_id}
-                    onChange={(e) =>
-                      onChange(e, type.reimbursement_request_type_id)
-                    }
+                    value={type.id}
+                    name={type.name}
+                    onChange={(e) => onChange(e, type.id)}
                   />
                 ))}
             </div>

@@ -1,5 +1,8 @@
+import { useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { type IconType } from "react-icons-all-files";
+import { IoMdEye } from "react-icons-all-files/io/IoMdEye";
+import { IoMdEyeOff } from "react-icons-all-files/io/IoMdEyeOff";
 import { RiLoader4Fill } from "react-icons-all-files/ri/RiLoader4Fill";
 import { classNames } from "~/utils/classNames";
 
@@ -29,6 +32,19 @@ const Input = ({
 }: InputProps) => {
   const formContext = useFormContext();
 
+  const [inputType, setInputType] = useState<string>(type);
+  const [hidePassword, setHidePassword] = useState<boolean>(true);
+
+  const toggleHidePassword = () => {
+    setHidePassword(!hidePassword);
+
+    if (inputType === "password") {
+      setInputType("text");
+    } else {
+      setInputType("password");
+    }
+  };
+
   return (
     <div className="space-y-2">
       {label && (
@@ -37,7 +53,12 @@ const Input = ({
         </label>
       )}
 
-      <div className={classNames(Icon && "relative", "rounded-md")}>
+      <div
+        className={classNames(
+          Icon || (type === "password" && "relative"),
+          "rounded-md",
+        )}
+      >
         {loading && (
           <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
             <RiLoader4Fill
@@ -62,11 +83,21 @@ const Input = ({
           </div>
         )}
 
+        {type === "password" && (
+          <div
+            className="absolute inset-y-0 right-5 flex cursor-pointer items-center text-neutral-600 transition-all ease-in-out hover:text-orange-600"
+            onClick={toggleHidePassword}
+          >
+            {inputType === "password" && <IoMdEye className="h-5 w-5" />}
+            {inputType === "text" && <IoMdEyeOff className="h-5 w-5" />}
+          </div>
+        )}
+
         {formContext ? (
           <input
             {...formContext.register(name)}
             name={name}
-            type={type}
+            type={inputType}
             className={classNames(
               className,
               hasErrors || formContext.formState.errors[name]?.message
@@ -81,7 +112,7 @@ const Input = ({
           />
         ) : (
           <input
-            type={type}
+            type={inputType}
             className={classNames(
               className,
               hasErrors ? "input-error" : "input-default",

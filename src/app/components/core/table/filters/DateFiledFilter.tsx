@@ -5,7 +5,7 @@ import { useMemo, useState, type ChangeEvent } from "react";
 import { MdCalendarToday } from "react-icons-all-files/md/MdCalendarToday";
 import CollapseHeightAnimation from "~/app/components/animation/CollapseHeight";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
-import { setPageTableFilters } from "~/features/page-state.slice";
+import { setPageTableFilters } from "~/features/state/table-state.slice";
 import { Button } from "../../Button";
 import Popover from "../../Popover";
 import Input from "../../form/fields/Input";

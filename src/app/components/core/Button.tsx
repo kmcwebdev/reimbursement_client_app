@@ -66,6 +66,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       <button
         ref={ref}
         className={classNames(
+          "select-none",
           buttonVariants({ variant, buttonType, size, className, width }),
         )}
         {...rest}

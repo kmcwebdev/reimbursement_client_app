@@ -1,4 +1,4 @@
-import React, { SetStateAction, useCallback } from "react";
+import React, { useCallback, type SetStateAction } from "react";
 import {
   useDropzone,
   type DropzoneOptions,
@@ -13,7 +13,8 @@ export interface UploadProps extends DropzoneOptions {
   isUploaded?: boolean;
   uploadedFileUrl?: string;
   handleUpload: (file: File) => void;
-  setAttachedFile: React.Dispatch<SetStateAction<File | undefined>>;
+  files: File[];
+  setAttachedFiles: React.Dispatch<SetStateAction<File[]>>;
 }
 
 const Upload: React.FC<UploadProps> = ({
@@ -21,6 +22,12 @@ const Upload: React.FC<UploadProps> = ({
   accept = {
     "application/pdf": [".pdf"],
     "image/*": [".png", ".jpg", ".jpeg"],
+    "text/csv": [".csv"],
+    "application/vnd.ms-excel": [".xls"],
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [
+      ".xlsx",
+    ],
+
     // "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [
     //   ".docx",
     // ],
@@ -30,7 +37,8 @@ const Upload: React.FC<UploadProps> = ({
   // isUploaded = false,
   // uploadedFileUrl,
   handleUpload,
-  setAttachedFile,
+  setAttachedFiles,
+  files,
   ...rest
 }) => {
   // const dispatch = useDispatch();
@@ -38,10 +46,12 @@ const Upload: React.FC<UploadProps> = ({
 
   const handleDrop = useCallback(
     (e: FileWithPath) => {
-      setAttachedFile(e);
-      handleUpload(e);
+      const filesCopy = [...files];
+      filesCopy.push(e);
+      setAttachedFiles(filesCopy);
     },
-    [handleUpload, setAttachedFile],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [handleUpload],
   );
 
   const { getRootProps, getInputProps, fileRejections } = useDropzone({
@@ -165,7 +175,7 @@ const Upload: React.FC<UploadProps> = ({
 
             <p className="font-bold text-orange-600">Click/Drop to Upload</p>
 
-            <p className="text-neutral-600">PDF or Image</p>
+            <p className="text-neutral-600">PDF,Excel File or Image</p>
           </div>
 
           {/* <p className="flex items-center gap-2">
@@ -185,7 +195,7 @@ const Upload: React.FC<UploadProps> = ({
       {fileRejections.length > 0 && (
         <p className="mt-1 text-sm text-red-600">
           Selected file type is invalid! Only{" "}
-          <span className="font-semibold">PDF and Image</span> files are
+          <span className="font-semibold">PDF ,Excel or Image</span> files are
           accepted.
         </p>
       )}

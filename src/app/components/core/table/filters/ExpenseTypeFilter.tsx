@@ -1,8 +1,8 @@
 import { useEffect, useState, type ChangeEvent } from "react";
 import { FaCaretDown } from "react-icons-all-files/fa/FaCaretDown";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
-import { setPageTableFilters } from "~/features/page-state.slice";
-import { useAllExpenseTypesQuery } from "~/features/reimbursement-api-slice";
+import { useAllExpenseTypesQuery } from "~/features/api/references-api-slice";
+import { setPageTableFilters } from "~/features/state/table-state.slice";
 import Popover from "../../Popover";
 import Checkbox from "../../form/fields/Checkbox";
 import { type FilterProps } from "./StatusFilter";
@@ -14,12 +14,12 @@ const ExpenseTypeFilter: React.FC<FilterProps> = () => {
   const dispatch = useAppDispatch();
   const [checked, setChecked] = useState<string[]>([]);
 
-  const onChange = (e: ChangeEvent<HTMLInputElement>, value: string) => {
-    if (checked.includes(value)) {
-      setChecked(checked.filter((a) => a !== value));
+  const onChange = (e: ChangeEvent<HTMLInputElement>, value: number) => {
+    if (checked.includes(value.toString())) {
+      setChecked(checked.filter((a) => a !== value.toString()));
     } else {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      setChecked([...checked, value]);
+      setChecked([...checked, value.toString()]);
     }
   };
 
@@ -47,16 +47,16 @@ const ExpenseTypeFilter: React.FC<FilterProps> = () => {
               <div className="flex flex-1 flex-col gap-4">
                 {!allExpenseTypesIsLoading &&
                   allExpenseTypes &&
-                  allExpenseTypes.length > 0 &&
-                  allExpenseTypes.map((option) => (
+                  allExpenseTypes.results.length > 0 &&
+                  allExpenseTypes.results.map((option) => (
                     <Checkbox
-                      key={option.expense_type_id}
-                      label={option.expense_type}
-                      name={option.expense_type_id}
+                      key={option.id}
+                      label={option.name}
+                      name={option.name}
                       checked={filters.expense_type_ids
                         ?.split(",")
-                        .includes(option.expense_type_id)}
-                      onChange={(e) => onChange(e, option.expense_type_id)}
+                        .includes(option.id.toString())}
+                      onChange={(e) => onChange(e, option.id)}
                     />
                   ))}
               </div>

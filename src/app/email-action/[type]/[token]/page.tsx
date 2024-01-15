@@ -11,7 +11,7 @@ import CollapseHeightAnimation from "~/app/components/animation/CollapseHeight";
 import {
   useApproveReimbursementViaEmailMutation,
   useRejectReimbursementViaEmailMutation,
-} from "~/features/reimbursement-api-slice";
+} from "~/features/api/actions-api-slice";
 
 interface EmailActionProps {
   searchParams: { [key: string]: string | string[] | undefined };

@@ -14,11 +14,13 @@ const Home: NextPage = () => {
   const [loading, setLoading] = useState<boolean>(true);
 
   useMemo(() => {
-    const isInitialLogin = localStorage.getItem("alreadyLoggedIn");
-    if (isInitialLogin && JSON.parse(isInitialLogin)) {
-      void router.push("/dashboard");
-    } else {
-      setLoading(false);
+    if (typeof window !== "undefined") {
+      const isInitialLogin = localStorage.getItem("alreadyLoggedIn");
+      if (isInitialLogin && JSON.parse(isInitialLogin)) {
+        void router.push("/dashboard");
+      } else {
+        setLoading(false);
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -44,22 +46,3 @@ const Home: NextPage = () => {
 };
 
 export default Home;
-
-// export const getServerSideProps: GetServerSideProps = async (context) => {
-//   const user = await getUserFromServerSideProps(context);
-
-//   if (!user) {
-//     return {
-//       redirect: {
-//         destination: "/api/auth/login",
-//         permanent: false,
-//       },
-//     };
-//   }
-
-//   return {
-//     props: {
-//       userJson: JSON.stringify(user),
-//     },
-//   };
-// };

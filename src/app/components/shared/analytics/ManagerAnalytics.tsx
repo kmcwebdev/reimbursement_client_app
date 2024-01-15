@@ -2,13 +2,13 @@ import React from "react";
 import { MdAccessTimeFilled } from "react-icons-all-files/md/MdAccessTimeFilled";
 import { MdGavel } from "react-icons-all-files/md/MdGavel";
 import DashboardCard, {
-    DashboardCardSkeleton,
+  DashboardCardSkeleton,
 } from "~/app/components/core/DashboardCard";
-import { useGetManagerAnalyticsQuery } from "~/features/reimbursement-api-slice";
+import { useManagerAnalyticsQuery } from "~/features/api/analytics-api-slice";
 
 const ManagerAnalytics: React.FC = () => {
   const { isLoading: analyticsIsLoading, data: analytics } =
-    useGetManagerAnalyticsQuery();
+    useManagerAnalyticsQuery();
   return (
     <div className="flex gap-4 p-4 lg:mb-5 lg:p-0">
       {analyticsIsLoading && (

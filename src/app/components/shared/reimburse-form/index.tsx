@@ -1,8 +1,16 @@
-import React from "react";
-import { type UseFormReturn } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import React, { useMemo } from "react";
+import { useForm, type UseFormReturn } from "react-hook-form";
 import { useAppSelector } from "~/app/hook";
-import AddParticulars from "./steps/AddParticulars";
+import {
+  ParticularDetailsSchema,
+  type ParticularDetails,
+} from "~/schema/reimbursement-particulars.schema";
+
+import AddAttachments from "./steps/AddAttachments";
+import ParticularList from "./steps/ParticularList";
 import SelectReimbursementType from "./steps/SelectReimbursementType";
+import AddApprovers from "./steps/SetApprover";
 
 // const UploadAttachments = dynamic(() => import("./steps/UploadAttachments"));
 
@@ -16,7 +24,33 @@ const ReimburseForm: React.FC<ReimburseFormProps> = ({
   formReturn,
   handleOpenCancelDialog,
 }) => {
-  const { activeStep } = useAppSelector((state) => state.reimbursementForm);
+  const {
+    activeStep,
+    particularDetailsFormIsVisible,
+    activeParticularIndex,
+    reimbursementFormValues,
+  } = useAppSelector((state) => state.reimbursementForm);
+
+  const useParticularDetailsFormReturn = useForm<ParticularDetails>({
+    resolver: zodResolver(ParticularDetailsSchema),
+    mode: "onChange",
+    defaultValues: useMemo(() => {
+      if (
+        activeParticularIndex &&
+        particularDetailsFormIsVisible &&
+        reimbursementFormValues.particulars.length > 0 &&
+        reimbursementFormValues.particulars[+activeParticularIndex]
+      ) {
+        return {
+          ...reimbursementFormValues.particulars[+activeParticularIndex],
+        };
+      }
+    }, [
+      activeParticularIndex,
+      particularDetailsFormIsVisible,
+      reimbursementFormValues.particulars,
+    ]),
+  });
 
   return (
     <div>
@@ -27,7 +61,18 @@ const ReimburseForm: React.FC<ReimburseFormProps> = ({
         />
       )}
       {activeStep === 1 && (
-        <AddParticulars handleOpenCancelDialog={handleOpenCancelDialog} />
+        <ParticularList
+          handleOpenCancelDialog={handleOpenCancelDialog}
+          formReturn={useParticularDetailsFormReturn}
+        />
+      )}
+
+      {activeStep === 2 && (
+        <AddAttachments formReturn={useParticularDetailsFormReturn} />
+      )}
+
+      {activeStep === 3 && (
+        <AddApprovers formReturn={useParticularDetailsFormReturn} />
       )}
     </div>
   );

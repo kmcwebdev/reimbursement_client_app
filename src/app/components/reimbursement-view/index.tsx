@@ -13,16 +13,14 @@ import { Button } from "~/app/components/core/Button";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { appApiSlice } from "~/app/rtkQuery";
 import { AbilityContext } from "~/context/AbilityContext";
-import { env } from "~/env.mjs";
 import {
   useApproveReimbursementMutation,
-  useAuditLogsQuery,
   useCancelReimbursementMutation,
   useHoldReimbursementMutation,
   useRejectReimbursementMutation,
-} from "~/features/reimbursement-api-slice";
+} from "~/features/api/actions-api-slice";
+import { useAuditLogsQuery } from "~/features/api/reimbursement-api-slice";
 import { useDialogState } from "~/hooks/use-dialog-state";
-import { useReportDownload } from "~/hooks/use-report-download";
 import {
   OnholdReimbursementSchema,
   type OnholdReimbursementType,
@@ -31,7 +29,7 @@ import {
   RejectReimbursementSchema,
   type RejectReimbursementType,
 } from "~/schema/reimbursement-reject-form.schema";
-import { type ReimbursementRequest } from "~/types/reimbursement.types";
+import { type IReimbursementRequest } from "~/types/reimbursement.types";
 import { currencyFormat } from "~/utils/currencyFormat";
 import Dialog from "../core/Dialog";
 import EmptyState from "../core/EmptyState";
@@ -42,6 +40,7 @@ import Approvers from "./Approvers";
 import Attachments from "./Attachments";
 import Details from "./Details";
 import Notes from "./Notes";
+import Particulars from "./Particulars";
 import ReimbursementViewSkeleton from "./ReimbursementViewSkeleton";
 import ApproverButtons from "./action-buttons/ApproverButtons";
 import FinanceButtons from "./action-buttons/FinanceButtons";
@@ -51,10 +50,10 @@ export interface ReimbursementsCardViewProps extends PropsWithChildren {
   isLoading?: boolean;
   isApproverView?: boolean;
   isHistoryView?: boolean;
-  data?: ReimbursementRequest;
+  data?: IReimbursementRequest;
   closeDrawer: () => void;
   isError?: boolean;
-  setFocusedReimbursementId: Dispatch<SetStateAction<string | undefined>>;
+  setFocusedReimbursementId: Dispatch<SetStateAction<number | undefined>>;
 }
 
 const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
@@ -69,18 +68,18 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
   const ability = useContext(AbilityContext);
 
   const { user } = useAppSelector((state) => state.session);
-  const [reimbursementReqId, setReimbursementReqId] = useState<string>();
+  const [reimbursementReqId, setReimbursementReqId] = useState<number>();
   const [currentState, setCurrentState] = useState<string>("Reject");
 
   useMemo(() => {
     if (data) {
-      setReimbursementReqId(data.reimbursement_request_id);
+      setReimbursementReqId(data.id);
     }
   }, [data]);
 
-  const [downloadReportLoading, setDownloadReportLoading] = useState(false);
+  // const [downloadReportLoading, setDownloadReportLoading] = useState(false);
   const { data: auditLog, isFetching: auditLogIsFetching } = useAuditLogsQuery(
-    { reimbursement_request_id: reimbursementReqId! },
+    { reimbursement_request_id: reimbursementReqId?.toString()! },
     { skip: !reimbursementReqId },
   );
   const [approveReimbursement, { isLoading: isApproving }] =
@@ -131,31 +130,31 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
     mode: "onChange",
   });
 
-  const { download: exportReport } = useReportDownload({
-    onSuccess: () => {
-      dispatch(
-        appApiSlice.util.invalidateTags([
-          { type: "ReimbursementApprovalList" },
-        ]),
-      );
-      dispatch(appApiSlice.util.invalidateTags([{ type: "FinanceAnalytics" }]));
-      setDownloadReportLoading(false);
-      closeApproveDialog();
-    },
-    onError: () => {
-      showToast({
-        type: "error",
-        description: "Error downloading.Please try again.",
-      });
-      setDownloadReportLoading(false);
-      closeApproveDialog();
-    },
-  });
+  // const { download: exportReport } = useReportDownload({
+  //   onSuccess: () => {
+  //     dispatch(
+  //       appApiSlice.util.invalidateTags([
+  //         { type: "ReimbursementApprovalList" },
+  //       ]),
+  //     );
+  //     dispatch(appApiSlice.util.invalidateTags([{ type: "FinanceAnalytics" }]));
+  //     setDownloadReportLoading(false);
+  //     closeApproveDialog();
+  //   },
+  //   onError: () => {
+  //     showToast({
+  //       type: "error",
+  //       description: "Error downloading.Please try again.",
+  //     });
+  //     setDownloadReportLoading(false);
+  //     closeApproveDialog();
+  //   },
+  // });
 
   const handleConfirmCancellation = () => {
     if (data) {
       void cancelReimbursement({
-        reimbursement_request_id: data.reimbursement_request_id,
+        id: data.id,
       })
         .unwrap()
         .then(() => {
@@ -176,25 +175,24 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
     }
   };
 
-  const downloadReport = async () => {
-    setDownloadReportLoading(true);
+  // const downloadReport = async () => {
+  //   setDownloadReportLoading(true);
 
-    await exportReport(
-      `${
-        env.NEXT_PUBLIC_BASEAPI_URL
-      }/api/finance/reimbursements/requests/reports/finance?reimbursement_request_ids=${JSON.stringify(
-        [data?.reimbursement_request_id],
-      )}`,
-    );
+  //   await exportReport(
+  //     `${
+  //       env.NEXT_PUBLIC_BASEAPI_URL
+  //     }/api/finance/reimbursements/requests/reports/finance?reimbursement_request_ids=${JSON.stringify(
+  //       [data?.reimbursement_request_id],
+  //     )}`,
+  //   );
 
-    closeDrawer();
-  };
+  //   closeDrawer();
+  // };
 
   const handleApprove = () => {
     if (data) {
-      const payload = { approval_matrix_ids: [data.next_approval_matrix_id] };
-
-      void approveReimbursement(payload)
+      const { id } = data;
+      void approveReimbursement({ id })
         .unwrap()
         .then(() => {
           dispatch(
@@ -220,10 +218,7 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
     setCurrentState("On-Hold");
     if (data) {
       const payload = {
-        approval_matrix_id:
-          user && user.assignedRole === "Finance"
-            ? data.reimbursement_request_id
-            : data.next_approval_matrix_id,
+        id: data.id,
         rejection_reason: values.rejection_reason,
       };
 
@@ -248,11 +243,12 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
   };
 
   const handleConfirmHold = (values: OnholdReimbursementType) => {
+    console.log(values);
     setCurrentState("Reject");
     if (data) {
       const payload = {
-        reimbursement_request_id: data.reimbursement_request_id,
-        onhold_reason: values.onhold_reason,
+        id: data.id,
+        remarks: values.remarks,
       };
 
       void holdReimbursement(payload)
@@ -295,18 +291,17 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
           <div className="flex-1 p-5">
             <Details
               request_type={data.request_type}
-              requestor_request_status={data.requestor_request_status}
-              finance_request_status={data.finance_request_status}
-              expense_type={data.expense_type}
+              request_status={data.request_status}
+              // finance_request_status={data.finance_request_status}
               created_at={data.created_at}
-              amount={data.amount}
-              remarks={data.remarks}
-              user={user?.assignedRole}
+              amount={data.total_amount}
+              particulars={data.particulars}
+              reimb_requestor={data.reimb_requestor}
             />
 
-            {(data.finance_request_status === "On-hold" ||
-              data.finance_request_status === "Rejected" ||
-              data.finance_request_status === "Cancelled") && (
+            {(data.request_status.name === "On-hold" ||
+              data.request_status.name === "Rejected" ||
+              data.request_status.name === "Cancelled") && (
               <>
                 {!auditLogIsFetching && auditLog && auditLog.length > 0 && (
                   <Notes note={auditLog[0].description} />
@@ -314,18 +309,16 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
               </>
             )}
 
-            {data.approvers && data.approvers.length > 0 && (
+            {data.approver_matrix && data.approver_matrix.length > 0 && (
               <Approvers
-                approvers={data.approvers}
-                finance_request_status={data.finance_request_status}
-                hrbp_request_status={data.hrbp_request_status}
+                approvers={data.approver_matrix}
+                request_status={data.request_status}
               />
             )}
 
-            <Attachments
-              attachment={data.attachment}
-              attachment_mask_name={data.attachment_mask_name}
-            />
+            <Particulars particulars={data.particulars} />
+
+            <Attachments attachments={data.supporting_documents} />
           </div>
 
           <div className="absolute bottom-0 grid h-[72px] w-full grid-cols-2 items-center justify-center gap-2 border-t border-neutral-300 px-5">
@@ -345,10 +338,8 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
                 onClose={closeDrawer}
                 onCancel={openCancelDialog}
                 isCancellable={
-                  data.requestor_request_status !== "Cancelled" &&
-                  data.requestor_request_status === "Pending" &&
-                  data.finance_request_status === "Pending" &&
-                  data.hrbp_request_status === "Pending"
+                  data.request_status.name !== "Cancelled" &&
+                  data.request_status.name === "Pending"
                 }
               />
             )}
@@ -366,7 +357,7 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
               isApproverView &&
               ability.can("access", "REIMBURSEMENT_VIEW_DOWNLOAD_HOLD") && (
                 <FinanceButtons
-                  isOnHold={data.finance_request_status === "On-hold"}
+                  isOnHold={data.request_status.name === "On-hold"}
                   currentState={currentState}
                   onApprove={openApproveDialog}
                   onHold={openHoldDialog}
@@ -483,9 +474,12 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
             <>
               <p className="text-neutral-800">
                 Are you sure you want to{" "}
-                {user?.assignedRole === "Finance" ? "download" : "approve"}{" "}
+                {user?.groups[0] === "REIMBURSEMENT_FINANCE"
+                  ? "download"
+                  : "approve"}{" "}
                 reimbursement request <strong>{data.reference_no} </strong>with
-                total amount of <strong>{currencyFormat(+data.amount)}</strong>
+                total amount of{" "}
+                <strong>{currencyFormat(+data.total_amount)}</strong>
               </p>
 
               <div className="flex items-center gap-4">
@@ -498,8 +492,8 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
                   Cancel
                 </Button>
 
-                {user?.assignedRole !== "Finance" &&
-                  user?.assignedRole !== "Member" && (
+                {user?.groups[0] !== "REIMBURSEMENT_FINANCE" &&
+                  user?.groups[0] !== "REIMBURSEMENT_MEMBER" && (
                     <Button
                       className="w-1/2"
                       onClick={handleApprove}
@@ -510,13 +504,13 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
                     </Button>
                   )}
 
-                {user?.assignedRole === "Finance" && (
+                {user?.groups[0] === "REIMBURSEMENT_FINANCE" && (
                   <Button
                     className="w-1/2"
                     variant="success"
-                    onClick={() => void downloadReport()}
-                    disabled={downloadReportLoading}
-                    loading={downloadReportLoading}
+                    // onClick={() => void downloadReport()}
+                    // disabled={downloadReportLoading}
+                    // loading={downloadReportLoading}
                   >
                     Yes, Download
                   </Button>

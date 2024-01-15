@@ -8,27 +8,26 @@ import { type IconType } from "react-icons-all-files";
 import { AiOutlineSearch } from "react-icons-all-files/ai/AiOutlineSearch";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { appApiSlice } from "~/app/rtkQuery";
-import { env } from "~/env.mjs";
-import { setSelectedItems } from "~/features/page-state.slice";
 import {
   useGetAllApprovalQuery,
   useGetRequestQuery,
-} from "~/features/reimbursement-api-slice";
+} from "~/features/api/reimbursement-api-slice";
+import { setSelectedItems } from "~/features/state/table-state.slice";
 import { useDebounce } from "~/hooks/use-debounce";
 import { useDialogState } from "~/hooks/use-dialog-state";
 import { useReportDownload } from "~/hooks/use-report-download";
 import {
+  type IReimbursementRequest,
   type IReimbursementsFilterQuery,
-  type ReimbursementApproval,
 } from "~/types/reimbursement.types";
-import { currencyFormat } from "~/utils/currencyFormat";
+import { env } from "../../../../env.mjs";
 import CollapseWidthAnimation from "../animation/CollapseWidth";
 import { Button } from "../core/Button";
 import SkeletonLoading from "../core/SkeletonLoading";
-import StatusBadge, { type StatusType } from "../core/StatusBadge";
 import { showToast } from "../core/Toast";
 import Input from "../core/form/fields/Input";
 import Table from "../core/table";
+import TableCell from "../core/table/TableCell";
 import TableCheckbox from "../core/table/TableCheckbox";
 import { type FilterProps } from "../core/table/filters/StatusFilter";
 import FinanceAnalytics from "./analytics/FinanceAnalytics";
@@ -66,13 +65,13 @@ const Payables: React.FC = () => {
   const debouncedSearchText = useDebounce(searchParams.text_search, 500);
   const [isSearching, setIsSearching] = useState<boolean>(false);
   const [focusedReimbursementId, setFocusedReimbursementId] =
-    useState<string>();
+    useState<number>();
 
   const {
     isFetching: reimbursementRequestDataIsLoading,
     currentData: reimbursementRequestData,
   } = useGetRequestQuery(
-    { reimbursement_request_id: focusedReimbursementId! },
+    { id: focusedReimbursementId! },
     { skip: !focusedReimbursementId },
   );
 
@@ -124,7 +123,7 @@ const Payables: React.FC = () => {
 
   const dispatch = useAppDispatch();
 
-  const setSelectedItemsState = (value: string[]) => {
+  const setSelectedItemsState = (value: number[]) => {
     dispatch(setSelectedItems(value));
   };
 
@@ -138,7 +137,7 @@ const Payables: React.FC = () => {
     pageSize: 10,
   });
 
-  const columns = React.useMemo<ColumnDef<ReimbursementApproval>[]>(
+  const columns = React.useMemo<ColumnDef<IReimbursementRequest>[]>(
     () => [
       {
         id: "select",
@@ -169,11 +168,7 @@ const Payables: React.FC = () => {
         id: "finance_request_status",
         accessorKey: "finance_request_status",
         header: "Status",
-        cell: (info) => (
-          <StatusBadge
-            status={(info.getValue() as string).toLowerCase() as StatusType}
-          />
-        ),
+        cell: TableCell,
         filterFn: (row, id, value: string) => {
           return value.includes(row.getValue(id));
         },
@@ -185,53 +180,49 @@ const Payables: React.FC = () => {
       {
         id: "client_name",
         accessorKey: "client_name",
-        cell: (info) => info.getValue(),
+        cell: TableCell,
         header: "Client",
       },
       {
         id: "employee_id",
         accessorKey: "employee_id",
-        cell: (info) => info.getValue(),
+        cell: TableCell,
         header: "ID",
       },
       {
-        id: "full_name",
-        accessorKey: "full_name",
-        cell: (info) => info.getValue(),
+        id: "reimb_requestor",
+        accessorKey: "reimb_requestor",
+        cell: TableCell,
         header: "Name",
       },
       {
         id: "reference_no",
         accessorKey: "reference_no",
-        cell: (info) => info.getValue(),
+        cell: TableCell,
         header: "R-ID",
       },
       {
         id: "request_type",
         accessorKey: "request_type",
-        cell: (info) => info.getValue(),
+        cell: TableCell,
         header: "Type",
         filterFn: (row, id, value: string) => {
           return value.includes(row.getValue(id));
         },
         meta: {
-          filterComponent: (info: FilterProps) => (
-            <ReimbursementTypeFilter {...info} />
-          ),
+          filterComponent: ReimbursementTypeFilter,
         },
       },
       {
-        id: "expense_type",
-        accessorKey: "expense_type",
+        id: "particulars",
+        accessorKey: "particulars",
         cell: (info) => info.getValue(),
         header: "Expense",
         filterFn: (row, id, value: string) => {
           return value.includes(row.getValue(id));
         },
         meta: {
-          filterComponent: (info: FilterProps) => (
-            <ExpenseTypeFilter {...info} />
-          ),
+          filterComponent: ExpenseTypeFilter,
         },
       },
       {
@@ -243,30 +234,22 @@ const Payables: React.FC = () => {
           return value.includes(row.getValue(id));
         },
         meta: {
-          filterComponent: (info: FilterProps) => <DateFiledFilter {...info} />,
+          filterComponent: DateFiledFilter,
         },
       },
       {
-        id: "amount",
-        accessorKey: "amount",
-        cell: (info) => currencyFormat(info.getValue() as number),
+        id: "total_amount",
+        accessorKey: "total_amount",
         header: "Total",
+        cell: TableCell,
       },
       {
         id: "actions",
-        accessorKey: "reimbursement_request_id",
-        cell: (info) => (
-          <Button
-            buttonType="text"
-            onClick={() => {
-              setFocusedReimbursementId(info.getValue() as string);
-              openReimbursementView();
-            }}
-          >
-            View
-          </Button>
-        ),
+        accessorKey: "id",
         header: "",
+        cell: TableCell,
+        setFocusedReimbursementId: setFocusedReimbursementId,
+        openDrawer: openReimbursementView,
       },
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -326,7 +309,7 @@ const Payables: React.FC = () => {
               />
 
               <CollapseWidthAnimation
-                isVisible={data && data.length > 0 ? true : false}
+                isVisible={data && data.results.length > 0 ? true : false}
               >
                 <Button
                   variant="success"
@@ -343,7 +326,7 @@ const Payables: React.FC = () => {
         <Table
           type="approvals"
           loading={isFetching}
-          data={data}
+          data={data?.results}
           columns={columns}
           tableState={{
             pagination,
@@ -377,15 +360,17 @@ const Payables: React.FC = () => {
                 processing. Are you sure you want to download{" "}
                 <strong>
                   {
-                    data?.find(
-                      (a) => a.reimbursement_request_id === selectedItems[0],
-                    )?.full_name
+                    data?.results.find((a) => a.id === selectedItems[0])
+                      ?.reimb_requestor.first_name
+                  }{" "}
+                  {
+                    data?.results.find((a) => a.id === selectedItems[0])
+                      ?.reimb_requestor.last_name
                   }
                   ,{" "}
                   {
-                    data?.find(
-                      (a) => a.reimbursement_request_id === selectedItems[0],
-                    )?.reference_no
+                    data?.results.find((a) => a.id === selectedItems[0])
+                      ?.reference_no
                   }
                 </strong>{" "}
                 reimbursements?

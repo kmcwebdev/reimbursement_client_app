@@ -21,3 +21,9 @@ type G_EmailError = {
 export type EmailActionMutationError = Omit<MutationError, "data"> & {
   data: G_EmailError;
 };
+
+export type IResponsePagination = {
+  count: number;
+  next: string;
+  previous: string;
+};

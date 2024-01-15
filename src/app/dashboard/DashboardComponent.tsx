@@ -8,16 +8,19 @@ import MemberDashboard from "./Member";
 
 const DashboardComponent: React.FC = () => {
   const { user } = useAppSelector((state) => state.session);
+
   return (
     <div>
       {user && (
         <>
-          {user.assignedRole === "External Reimbursement Approver Manager" && (
+          {user.groups.includes("REIMBURSEMENT_MANAGER") && (
             <ManagerDashboard />
           )}
-          {user.assignedRole === "Member" && <MemberDashboard />}
-          {user.assignedRole === "HRBP" && <HrbpDashboard />}
-          {user.assignedRole === "Finance" && <FinanceDashboard />}
+          {user.groups.includes("REIMBURSEMENT_MEMBER") && <MemberDashboard />}
+          {user.groups.includes("REIMBURSEMENT_HRBP") && <HrbpDashboard />}
+          {user.groups.includes("REIMBURSEMENT_FINANCE") && (
+            <FinanceDashboard />
+          )}
         </>
       )}
     </div>

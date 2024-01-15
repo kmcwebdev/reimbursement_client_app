@@ -1,6 +1,17 @@
-import { type ReimbursementParticular } from "~/schema/reimbursement-particulars.schema";
+import { type ParticularDetails } from "~/schema/reimbursement-particulars.schema";
 
 export interface ReimbursementFormValues {
-  reimbursement_request_type_id: string | null;
-  particulars: ReimbursementParticular[];
+  request_type: number | null;
+  particulars: ParticularDetails[];
+  attachments: IFileStack[];
+  manager_approver_email?: string | null;
 }
+
+export type IFileStack = {
+  id: number;
+  file_name: string;
+  file_type: string;
+  file_source: string;
+  file_upload: string;
+  file_size: number;
+};

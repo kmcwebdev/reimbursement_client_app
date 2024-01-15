@@ -2,13 +2,13 @@ import React from "react";
 import { MdAccessTimeFilled } from "react-icons-all-files/md/MdAccessTimeFilled";
 import { MdGavel } from "react-icons-all-files/md/MdGavel";
 import DashboardCard, {
-    DashboardCardSkeleton,
+  DashboardCardSkeleton,
 } from "~/app/components/core/DashboardCard";
-import { useGetHRBPAnalyticsQuery } from "~/features/reimbursement-api-slice";
+import { useHrbpAnalyticsQuery } from "~/features/api/analytics-api-slice";
 
 const HRBPAnalytics: React.FC = () => {
   const { isLoading: analyticsIsLoading, data: analytics } =
-    useGetHRBPAnalyticsQuery();
+    useHrbpAnalyticsQuery();
   return (
     <div className="flex gap-4 p-4 lg:mb-5 lg:p-0">
       {analyticsIsLoading && (

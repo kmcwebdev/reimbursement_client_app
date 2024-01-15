@@ -3,13 +3,13 @@ import { AiOutlinePause } from "react-icons-all-files/ai/AiOutlinePause";
 import { MdAccessTimeFilled } from "react-icons-all-files/md/MdAccessTimeFilled";
 import { MdGavel } from "react-icons-all-files/md/MdGavel";
 import DashboardCard, {
-    DashboardCardSkeleton,
+  DashboardCardSkeleton,
 } from "~/app/components/core/DashboardCard";
-import { useGetFinanceAnalyticsQuery } from "~/features/reimbursement-api-slice";
+import { useFinanceAnalyticsQuery } from "~/features/api/analytics-api-slice";
 
 const FinanceAnalytics: React.FC = () => {
   const { isLoading: analyticsIsLoading, data: analytics } =
-    useGetFinanceAnalyticsQuery();
+    useFinanceAnalyticsQuery();
   return (
     <div className="mb-5 place-items-start gap-4 md:overflow-x-auto">
       {analyticsIsLoading && (

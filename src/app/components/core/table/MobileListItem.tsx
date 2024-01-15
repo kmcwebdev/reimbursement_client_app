@@ -1,40 +1,61 @@
 import { type Row } from "@tanstack/react-table";
 import React, { type ChangeEvent } from "react";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
-import { setSelectedItems } from "~/features/page-state.slice";
+import { setSelectedItems } from "~/features/state/table-state.slice";
 import useLongAndShortPress from "~/hooks/use-press";
-import {
-  type ReimbursementApproval,
-  type ReimbursementRequest,
-} from "~/types/reimbursement.types";
+import { type IReimbursementRequest } from "~/types/reimbursement.types";
 import { classNames } from "~/utils/classNames";
 import { currencyFormat } from "~/utils/currencyFormat";
 import { parseTimezone } from "~/utils/parse-timezone";
 import StatusBadge, { type StatusType } from "../StatusBadge";
 import Checkbox from "../form/fields/Checkbox";
+import ExpenseTypeCell from "./TableCell/ExpenseTypeCell";
 
-interface MobileListItemProps {
-  type: "approvals" | "reimbursements" | "finance" | "history";
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  row: Row<ReimbursementRequest | ReimbursementApproval>;
-  onClick?: (e: string) => void;
-}
+// type ReimbursementMobileList = {
+//   type: 'reimbursements' ;
+//   row: Row<IReimbursementRequest>
+// }
 
-const MobileListItem: React.FC<MobileListItemProps> = ({
-  type,
-  row,
-  onClick,
-}) => {
+// type HistoryMobileList = {
+//   type: 'history' ;
+//   row: Row<IReimbursementRequest>
+// }
+
+// type ReimbursementApprovalMobileList = {
+//   type: 'approvals' ;
+//   row: Row<ReimbursementApproval>
+// }
+
+// type FinanceApprovalMobileList = {
+//   type: 'finance' ;
+//   row: Row<ReimbursementApproval>
+// }
+
+// type MobileListItemProps = {
+//   onClick?: (e: string) => void;
+// } & (ReimbursementMobileList |ReimbursementApprovalMobileList |HistoryMobileList | FinanceApprovalMobileList)
+
+type MobileListItemProps = {
+  onClick?: (e: number) => void;
+  type: "reimbursements" | "history" | "finance" | "approvals";
+  row: Row<IReimbursementRequest>;
+};
+
+const MobileListItem: React.FC<MobileListItemProps> = (props) => {
   const { selectedItems } = useAppSelector((state) => state.pageTableState);
   const { user } = useAppSelector((state) => state.session);
 
   const pressHandler = useLongAndShortPress(
     () =>
-      type !== "reimbursements"
-        ? handleLongPress(row.original.reimbursement_request_id)
+      props.type !== "reimbursements" && props.type !== "history"
+        ? handleLongPress(props.row.original.id.toString())
         : undefined,
     () =>
-      onClick ? onClick(row.original.reimbursement_request_id) : undefined,
+      props.onClick &&
+      props.type !== "reimbursements" &&
+      props.type !== "history"
+        ? props.onClick(props.row.original.id)
+        : undefined,
   );
 
   const dispatch = useAppDispatch();
@@ -68,23 +89,23 @@ const MobileListItem: React.FC<MobileListItemProps> = ({
     <div>
       <div
         className={classNames(
-          selectedItems.includes(row.original.reimbursement_request_id) &&
+          selectedItems.includes(props.row.original.id.toString()) &&
             "bg-orange-50",
           "flex h-28 flex-col gap-4 rounded-md p-4",
         )}
       >
         <div className="flex">
-          {type !== "reimbursements" &&
-            type === "history" &&
+          {props.type !== "reimbursements" &&
+            props.type === "history" &&
             user &&
-            user.assignedRole !== "External Reimbursement Approver Manager" && (
+            user.groups[0] === "REIMBURSEMENT_MANAGER" && (
               <div className="w-6">
                 <Checkbox
                   name="checkbox"
-                  value={row.original.reimbursement_request_id}
+                  value={props.row.original.id}
                   onChange={handleCheckboxChange}
                   checked={selectedItems.includes(
-                    row.original.reimbursement_request_id,
+                    props.row.original.id.toString(),
                   )}
                 />
               </div>
@@ -94,37 +115,44 @@ const MobileListItem: React.FC<MobileListItemProps> = ({
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 divide-x">
                 <StatusBadge
-                  label={row.original.requestor_request_status}
+                  label={props.row.original.request_status.name}
                   status={
-                    row.original.requestor_request_status.toLowerCase() as StatusType
+                    props.row.original.request_status.name.toLowerCase() as StatusType
                   }
                 />
 
-                {type === "approvals" && (
+                {props.type === "approvals" && (
                   <p className="pl-2 text-sm text-neutral-800">
-                    {row.original.client_name}
+                    {props.row.original.reimb_requestor.profile.organization ||
+                      "ORGANIZATION"}
                   </p>
                 )}
               </div>
               <p className="text-sm text-neutral-800">
-                {parseTimezone(row.original.created_at).format("MMM DD,YYYY")}
+                {parseTimezone(props.row.original.created_at).format(
+                  "MMM DD,YYYY",
+                )}
               </p>
             </div>
 
             <div>
               <div className="flex items-center justify-between">
-                <p className="text-neutral-900">{row.original.full_name}</p>
-                <p className="text-neutral-900">{row.original.reference_no}</p>
+                <p className="text-neutral-900">
+                  {props.row.original.reimb_requestor.first_name}{" "}
+                  {props.row.original.reimb_requestor.last_name}
+                </p>
+                <p className="text-neutral-900">
+                  {props.row.original.reference_no}
+                </p>
               </div>
             </div>
 
             <div className="mt-2 grid grid-cols-3 divide-x text-sm text-neutral-800">
-              <p>{row.original.request_type}</p>
-              <p className="w-24 truncate px-2 text-center">
-                {row.original.expense_type}
-              </p>
+              <p>{props.row.original.request_type.name}</p>
+
+              <ExpenseTypeCell value={props.row.original.particulars} />
               <p className="text-right">
-                {currencyFormat(+row.original.amount)}
+                {currencyFormat(+props.row.original.total_amount)}
               </p>
             </div>
           </div>

@@ -1,4 +1,10 @@
-export interface ReimbursementExpenseType {
-  expense_type_id: string;
-  expense_type: string;
+import { type IResponsePagination } from "./global-types";
+
+export interface IExpenseType {
+  id: number;
+  name: string;
 }
+
+export type IExpenseTypeResponse = {
+  results: IExpenseType[];
+} & IResponsePagination;

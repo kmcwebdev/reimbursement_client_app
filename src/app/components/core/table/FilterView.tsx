@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 import dayjs from "dayjs";
 import React, { useMemo, useState } from "react";
@@ -7,12 +8,12 @@ import { MdAccessTimeFilled } from "react-icons-all-files/md/MdAccessTimeFilled"
 import { MdCalendarToday } from "react-icons-all-files/md/MdCalendarToday";
 import { MdLabel } from "react-icons-all-files/md/MdLabel";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
-import { resetPageTableState } from "~/features/page-state.slice";
 import {
   useAllExpenseTypesQuery,
   useAllStatusesQuery,
   useRequestTypesQuery,
-} from "~/features/reimbursement-api-slice";
+} from "~/features/api/references-api-slice";
+import { resetPageTableState } from "~/features/state/table-state.slice";
 import { classNames } from "~/utils/classNames";
 import { Button } from "../Button";
 import StatusBadge, { type StatusType } from "../StatusBadge";
@@ -78,7 +79,7 @@ const FilterView: React.FC<FilterViewProps> = ({ colSpan }) => {
         if (key === "reimbursement_type_id") {
           if (filters.reimbursement_type_id) {
             transformedFilters.reimbursement_type_id =
-              filters.reimbursement_type_id.split(",");
+              filters.reimbursement_type_id.toString().split(",");
           }
         }
       });
@@ -152,11 +153,8 @@ const FilterView: React.FC<FilterViewProps> = ({ colSpan }) => {
                                           key={value}
                                           status={
                                             allStatuses
-                                              ?.find(
-                                                (a) =>
-                                                  a.request_status_id === value,
-                                              )
-                                              ?.request_status.toLowerCase() as StatusType
+                                              ?.find((a) => a.id === +value)
+                                              ?.name.toLowerCase() as StatusType
                                           }
                                         />
                                       )}
@@ -173,9 +171,9 @@ const FilterView: React.FC<FilterViewProps> = ({ colSpan }) => {
                                     >
                                       {allExpenseTypesIsLoading
                                         ? "..."
-                                        : allExpenseTypes?.find(
-                                            (a) => a.expense_type_id === value,
-                                          )?.expense_type}
+                                        : allExpenseTypes?.results.find(
+                                            (a) => a.id === +value,
+                                          )?.name}
                                     </p>
                                   )}
 
@@ -187,10 +185,8 @@ const FilterView: React.FC<FilterViewProps> = ({ colSpan }) => {
                                       {requestTypesIsLoading
                                         ? "..."
                                         : requestTypes?.find(
-                                            (a) =>
-                                              a.reimbursement_request_type_id ===
-                                              value,
-                                          )?.request_type}
+                                            (a) => a.id === +value,
+                                          )?.name}
                                     </p>
                                   )}
 

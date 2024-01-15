@@ -2,13 +2,13 @@ import React from "react";
 import { MdAccessTimeFilled } from "react-icons-all-files/md/MdAccessTimeFilled";
 import { MdCreditCard } from "react-icons-all-files/md/MdCreditCard";
 import DashboardCard, {
-    DashboardCardSkeleton,
+  DashboardCardSkeleton,
 } from "~/app/components/core/DashboardCard";
-import { useGetMemberAnalyticsQuery } from "~/features/reimbursement-api-slice";
+import { useMemberAnalyticsQuery } from "~/features/api/analytics-api-slice";
 
 const MemberAnalytics: React.FC = () => {
   const { isFetching: analyticsIsLoading, data: analytics } =
-    useGetMemberAnalyticsQuery();
+    useMemberAnalyticsQuery();
   return (
     <div className="grid grid-cols-2 place-items-start gap-4 p-4 md:flex md:overflow-x-auto lg:mb-5 lg:p-0">
       {analyticsIsLoading && (

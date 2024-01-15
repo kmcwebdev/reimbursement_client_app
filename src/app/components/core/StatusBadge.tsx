@@ -18,7 +18,7 @@ type StatusBadgeProps = {
 };
 
 const statusVariant = cva(
-  "h-6 max-w-[77px] rounded text-sm border border-opacity-10 grid place-items-center px-2",
+  "h-6 max-w-[92px] rounded text-sm border border-opacity-20 px-2 flex items-center justify-center select-none",
   {
     variants: {
       status: {
@@ -29,7 +29,7 @@ const statusVariant = cva(
         cancelled: "bg-red-50 text-red-600 border-red-600",
         "on-hold": "bg-neutral-50 text-neutral-900 border-neutral-600",
         credited: "bg-blue-50 text-blue-600 border-blue-600",
-        default: "bg-neutral-50 text-neutral-600 border-neutral-600",
+        default: "bg-neutral-50 text-neutral-900 border-neutral-900",
       },
     },
   },
@@ -40,10 +40,23 @@ const StatusBadge: React.FC<StatusBadgeProps> = ({ status, label }) => {
     <div
       className={classNames(
         "text-xs capitalize md:text-sm",
+        status === "default" &&
+          label &&
+          label.length >= 33 &&
+          "block min-w-[150px]",
         statusVariant({ status }),
       )}
     >
-      {label ? label : status}
+      <p
+        className={classNames(
+          status === "default" &&
+            label &&
+            label.length >= 33 &&
+            "block truncate",
+        )}
+      >
+        {label ? label : status}
+      </p>
     </div>
   );
 };

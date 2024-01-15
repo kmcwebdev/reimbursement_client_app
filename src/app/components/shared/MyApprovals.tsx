@@ -16,12 +16,13 @@ import { type FilterProps } from "~/app/components/core/table/filters/StatusFilt
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { appApiSlice } from "~/app/rtkQuery";
 import { Can } from "~/context/AbilityContext";
-import { setSelectedItems } from "~/features/page-state.slice";
+
+import { useApproveReimbursementMutation } from "~/features/api/actions-api-slice";
 import {
-  useApproveReimbursementMutation,
   useGetAllApprovalQuery,
   useGetRequestQuery,
-} from "~/features/reimbursement-api-slice";
+} from "~/features/api/reimbursement-api-slice";
+import { setSelectedItems } from "~/features/state/table-state.slice";
 import { useDebounce } from "~/hooks/use-debounce";
 import { useDialogState } from "~/hooks/use-dialog-state";
 import {
@@ -75,7 +76,7 @@ const MyApprovals: React.FC = () => {
   const [isSearching, setIsSearching] = useState<boolean>(false);
 
   const [focusedReimbursementId, setFocusedReimbursementId] =
-    useState<string>();
+    useState<number>();
 
   const [approveReimbursement, { isLoading: isSubmitting }] =
     useApproveReimbursementMutation();
@@ -84,7 +85,7 @@ const MyApprovals: React.FC = () => {
     isFetching: reimbursementRequestDataIsLoading,
     currentData: reimbursementRequestData,
   } = useGetRequestQuery(
-    { reimbursement_request_id: focusedReimbursementId! },
+    { id: focusedReimbursementId! },
     { skip: !focusedReimbursementId },
   );
 
@@ -110,7 +111,7 @@ const MyApprovals: React.FC = () => {
     pageSize: 10,
   });
 
-  const setSelectedItemsState = (value: string[]) => {
+  const setSelectedItemsState = (value: number[]) => {
     dispatch(setSelectedItems(value));
   };
 
@@ -242,7 +243,7 @@ const MyApprovals: React.FC = () => {
           <Button
             buttonType="text"
             onClick={() => {
-              setFocusedReimbursementId(info.getValue() as string);
+              setFocusedReimbursementId(info.getValue() as number);
               openReimbursementView();
             }}
           >
@@ -253,7 +254,7 @@ const MyApprovals: React.FC = () => {
       },
     ];
 
-    if (user?.assignedRole === "External Reimbursement Approver Manager") {
+    if (user?.groups[0] === "REIMBURSEMENT_MANAGER") {
       return defaultColumns.filter((a) => a.id !== "client_name");
     }
 
@@ -268,20 +269,18 @@ const MyApprovals: React.FC = () => {
 
   const handleConfirmBulkApprove = () => {
     if (data && selectedItems) {
-      const matrixIds: string[] = [];
+      const matrixIds: number[] = [];
 
       selectedItems.forEach((a) => {
-        const reimbursement = data.find(
-          (b) => a === b.reimbursement_request_id,
-        );
+        const reimbursement = data.results.find((b) => +a === b.id);
         if (reimbursement) {
-          matrixIds.push(reimbursement.approval_matrix_id);
+          matrixIds.push(reimbursement.id);
         }
       });
 
       if (matrixIds) {
         const payload = {
-          approval_matrix_ids: matrixIds,
+          id: matrixIds[0],
         };
 
         void approveReimbursement(payload)
@@ -320,7 +319,7 @@ const MyApprovals: React.FC = () => {
   return (
     <>
       <div className="grid bg-neutral-50 md:gap-y-4 md:p-5">
-        {user && user.assignedRole === "HRBP" ? (
+        {user && user.groups[0] === "REIMBURSEMENT_HRBP" ? (
           <HRBPAnalytics />
         ) : (
           <ManagerAnalytics />
@@ -367,7 +366,7 @@ const MyApprovals: React.FC = () => {
         <Table
           type="approvals"
           loading={isLoading}
-          data={data}
+          data={data?.results}
           columns={columns}
           tableState={{
             filters,
@@ -417,16 +416,14 @@ const MyApprovals: React.FC = () => {
                   <>
                     Are you sure you want to approve reimbursement request{" "}
                     {
-                      data.find(
-                        (a) => a.reimbursement_request_id === selectedItems[0],
-                      )?.reference_no
+                      data.results.find((a) => a.id === selectedItems[0])
+                        ?.reference_no
                     }{" "}
                     with total amount of{" "}
                     {currencyFormat(
                       // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
-                      +data.find(
-                        (a) => a.reimbursement_request_id === selectedItems[0],
-                      )?.amount!,
+                      +data.results.find((a) => a.id === selectedItems[0])
+                        ?.total_amount!,
                     )}
                     ?
                   </>

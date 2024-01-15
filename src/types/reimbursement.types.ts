@@ -1,4 +1,66 @@
-import { type ReimbursementParticular } from "~/schema/reimbursement-particulars.schema";
+import { type IUser } from "~/features/state/user-state.slice";
+import { type ParticularDetails } from "~/schema/reimbursement-particulars.schema";
+import { type IResponsePagination } from "./global-types";
+import { type IFileStack } from "./reimbursement-form-values.type";
+import { type IExpenseType } from "./reimbursement.expense-type";
+import { type ReimbursementRequestType } from "./reimbursement.request-type";
+
+//NEW CHANGES
+
+export interface IParticularDetails
+  extends Omit<ParticularDetails, "expense_type"> {
+  id: number;
+  created_at: string;
+  updated_at: string;
+  expense_type: IExpenseType;
+}
+
+export type IMyRequestResponseType = {
+  results: IReimbursementRequest[];
+} & IResponsePagination;
+
+export type IReimbursementRequest = {
+  id: number;
+  reference_no: string;
+  total_amount: string;
+  request_type: ReimbursementRequestType;
+  request_status: IStatus;
+  reimb_requestor: IUser;
+  next_approver: string;
+  fully_approved: boolean;
+  particulars: IParticularDetails[];
+  approver_matrix: IApproverMatrix[];
+  supporting_documents: IFileStack[];
+  payroll_date: string;
+  created_at: string;
+  updated_at: string;
+};
+
+export type IApproverMatrix = {
+  id: number;
+  approver: IUser;
+  approval_order: number;
+  display_name: string;
+  approver_deligation: string;
+  is_approved: boolean;
+  is_rejected: boolean;
+  acknowledge_datetime: string;
+  remarks: string;
+};
+
+export type IStatus = {
+  id: number;
+  name: StatusType;
+};
+
+export type StatusType =
+  | "Pending"
+  | "Approved"
+  | "Processing"
+  | "Credited"
+  | "On-hold"
+  | "Rejected"
+  | "Cancelled";
 
 export type ReimbursementDetailsDTO = {
   reimbursement_request_type_id: string;
@@ -6,16 +68,6 @@ export type ReimbursementDetailsDTO = {
   remarks?: string;
   amount: number;
   approvers?: { email: string }[];
-};
-
-export type CreateReimbursementDTO = {
-  reimbursement_request_type_id: string;
-  particulars: ReimbursementParticular[];
-  approvers?: { email: string }[];
-};
-
-export type ReimbursementAttachmentsDTO = {
-  files: string[];
 };
 
 export type AuditLog = {
@@ -38,34 +90,6 @@ export type Approvers = {
   is_group_of_approvers: boolean;
   table_reference: string;
   updated_at: string;
-};
-
-export type ReimbursementRequest = {
-  approval_matrix_id: string;
-  reimbursement_request_id: string;
-  reference_no: string;
-  request_type: string;
-  expense_type: string;
-  request_status: string;
-  requestor_request_status: string;
-  hrbp_request_status: string;
-  finance_request_status: string;
-  remarks: string;
-  created_at: string;
-  amount: string;
-  attachment: string;
-  attachment_mask_name: string;
-  hrbp_approver_email: string;
-  full_name: string | null;
-  email: string;
-  employee_id: string;
-  date_approve: string | null;
-  cursor_id: string;
-  rank?: number;
-  next_approval_matrix_id: string;
-  next_approver_order: number;
-  approvers: Approvers[];
-  client_name: string;
 };
 
 export type ReimbursementApproval = {
@@ -102,13 +126,8 @@ export type IReimbursementsFilterQuery = {
   text_search?: string;
   expense_type_ids?: string;
   request_status_ids?: string;
-  reimbursement_type_id?: string;
+  reimbursement_type_id?: number;
   from?: string;
   to?: string;
   history?: boolean;
-};
-
-export type IStatus = {
-  request_status_id: string;
-  request_status: string;
 };

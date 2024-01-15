@@ -1,12 +1,9 @@
 import { z } from "zod";
 
 export const ReimbursementTypeSchema = z.object({
-  reimbursement_request_type_id: z
-    .string({ required_error: "Please choose a reimbursement type!" })
-    .uuid({
-      message: "Reimbursement type is must be a uuid!",
-    })
-    .nonempty(),
+  request_type: z.coerce
+    .number({ required_error: "Please select request type!" })
+    .min(1, "Please select request type!"),
 });
 
 export type ReimbursementFormType = z.infer<typeof ReimbursementTypeSchema>;

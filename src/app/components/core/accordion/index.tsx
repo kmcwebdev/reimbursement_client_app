@@ -5,6 +5,7 @@ import { currencyFormat } from "~/utils/currencyFormat";
 import CollapseHeightAnimation from "../../animation/CollapseHeight";
 
 interface AccordionItem {
+  id: number;
   label: string;
   description: string;
   amount: number;
@@ -12,26 +13,25 @@ interface AccordionItem {
 
 interface AccordionProps {
   items: AccordionItem[];
+  label?: string;
 }
 
-const Accordion: React.FC<AccordionProps> = ({ items }) => {
-  const [activeItem, setActiveItem] = useState<string>();
+const Accordion: React.FC<AccordionProps> = ({ items, label }) => {
+  const [activeItem, setActiveItem] = useState<number>();
   return (
-    <div className="w-full bg-white px-4 py-16">
+    <div className="flex w-full flex-col gap-4 py-4">
+      {label && <h6 className="text-base font-semibold">{label}</h6>}
       <div className="mx-auto w-full max-w-md space-y-2">
         {items.length > 0 &&
           items.map((item) => (
-            <div
-              key={item.label}
-              className="rounded-md border border-neutral-200"
-            >
+            <div key={item.id} className="rounded-md border border-opacity-20">
               <button
-                className="flex w-full justify-between gap-2 p-4 text-left text-sm"
+                className="flex w-full items-center justify-between gap-2 p-3 text-left text-sm"
                 onClick={() => {
-                  if (activeItem === item.label) {
+                  if (activeItem === item.id) {
                     setActiveItem(undefined);
                   } else {
-                    setActiveItem(item.label);
+                    setActiveItem(item.id);
                   }
                 }}
               >
@@ -42,15 +42,15 @@ const Accordion: React.FC<AccordionProps> = ({ items }) => {
                   </span>
                   <HiOutlineChevronDown
                     className={`${
-                      activeItem === item.label
+                      activeItem === item.id
                         ? "-rotate-180 transform text-neutral-900"
-                        : "text-blue-600"
-                    } h-5 w-5 transition-all ease-in-out`}
+                        : "text-neutral-600"
+                    } h-4 w-4 transition-all ease-in-out`}
                   />
                 </div>
               </button>
 
-              <CollapseHeightAnimation isVisible={activeItem === item.label}>
+              <CollapseHeightAnimation isVisible={activeItem === item.id}>
                 <div className="flex flex-col gap-4 p-4 text-sm text-neutral-800">
                   <div>{item.description}</div>
                   <div>{currencyFormat(item.amount)}</div>
