@@ -48,7 +48,7 @@ const MobileListItem: React.FC<MobileListItemProps> = (props) => {
   const pressHandler = useLongAndShortPress(
     () =>
       props.type !== "reimbursements" && props.type !== "history"
-        ? handleLongPress(props.row.original.id.toString())
+        ? handleLongPress(props.row.original.id)
         : undefined,
     () =>
       props.onClick &&
@@ -62,7 +62,7 @@ const MobileListItem: React.FC<MobileListItemProps> = (props) => {
 
   const handleCheckboxChange = (e: ChangeEvent<HTMLInputElement>) => {
     const checked = e.target.checked;
-    const value = e.target.value;
+    const value = +e.target.value;
 
     if (checked) {
       if (!selectedItems.includes(value)) {
@@ -76,7 +76,7 @@ const MobileListItem: React.FC<MobileListItemProps> = (props) => {
     }
   };
 
-  const handleLongPress = (e: string) => {
+  const handleLongPress = (e: number) => {
     if (selectedItems.includes(e)) {
       const updated = selectedItems.filter((item) => item !== e);
       dispatch(setSelectedItems([...updated]));
@@ -89,8 +89,7 @@ const MobileListItem: React.FC<MobileListItemProps> = (props) => {
     <div>
       <div
         className={classNames(
-          selectedItems.includes(props.row.original.id.toString()) &&
-            "bg-orange-50",
+          selectedItems.includes(props.row.original.id) && "bg-orange-50",
           "flex h-28 flex-col gap-4 rounded-md p-4",
         )}
       >
@@ -104,9 +103,7 @@ const MobileListItem: React.FC<MobileListItemProps> = (props) => {
                   name="checkbox"
                   value={props.row.original.id}
                   onChange={handleCheckboxChange}
-                  checked={selectedItems.includes(
-                    props.row.original.id.toString(),
-                  )}
+                  checked={selectedItems.includes(props.row.original.id)}
                 />
               </div>
             )}
