@@ -66,7 +66,7 @@ const SelectReimbursementType: React.FC<SelectReimbursementTypeProps> = ({
         handleChange={handleTypeChange}
         loading={requestTypesIsLoading}
         options={
-          requestTypes?.map((item) => ({
+          requestTypes?.results.map((item) => ({
             label: item.name,
             value: item.id.toString(),
             icon:
