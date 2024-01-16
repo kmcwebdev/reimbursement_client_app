@@ -7,22 +7,14 @@ import ManagerDashboard from "./Manager";
 import MemberDashboard from "./Member";
 
 const DashboardComponent: React.FC = () => {
-  const { user } = useAppSelector((state) => state.session);
+  const { assignedRole } = useAppSelector((state) => state.session);
 
   return (
     <div>
-      {user && (
-        <>
-          {user.groups.includes("REIMBURSEMENT_MANAGER") && (
-            <ManagerDashboard />
-          )}
-          {user.groups.includes("REIMBURSEMENT_MEMBER") && <MemberDashboard />}
-          {user.groups.includes("REIMBURSEMENT_HRBP") && <HrbpDashboard />}
-          {user.groups.includes("REIMBURSEMENT_FINANCE") && (
-            <FinanceDashboard />
-          )}
-        </>
-      )}
+      {assignedRole === "REIMBURSEMENT_MANAGER" && <ManagerDashboard />}
+      {assignedRole === "REIMBURSEMENT_USER" && <MemberDashboard />}
+      {assignedRole === "REIMBURSEMENT_HRBP" && <HrbpDashboard />}
+      {assignedRole === "REIMBURSEMENT_FINANCE" && <FinanceDashboard />}
     </div>
   );
 };
