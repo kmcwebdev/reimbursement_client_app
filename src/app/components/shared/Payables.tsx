@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import React, { useEffect, useState, type ChangeEvent } from "react";
 
@@ -54,7 +55,7 @@ const Payables: React.FC = () => {
   );
 
   const [searchParams, setSearchParams] = useState<IReimbursementsFilterQuery>({
-    text_search: undefined,
+    search: undefined,
     expense_type_ids: undefined,
     reimbursement_type_id: undefined,
     from: undefined,
@@ -62,7 +63,7 @@ const Payables: React.FC = () => {
   });
 
   const [downloadReportLoading, setDownloadReportLoading] = useState(false);
-  const debouncedSearchText = useDebounce(searchParams.text_search, 500);
+  const debouncedSearchText = useDebounce(searchParams.search, 500);
   const [isSearching, setIsSearching] = useState<boolean>(false);
   const [focusedReimbursementId, setFocusedReimbursementId] =
     useState<number>();
@@ -129,7 +130,7 @@ const Payables: React.FC = () => {
 
   const { isFetching, data } = useGetAllApprovalQuery({
     ...filters,
-    text_search: debouncedSearchText,
+    search: debouncedSearchText,
   });
 
   const [pagination, setPagination] = useState<PaginationState>({
@@ -259,7 +260,7 @@ const Payables: React.FC = () => {
   const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
     setIsSearching(true);
     const searchValue = e.target.value;
-    setSearchParams({ ...searchParams, text_search: searchValue });
+    setSearchParams({ ...searchParams, search: searchValue });
   };
 
   useEffect(() => {
@@ -336,6 +337,11 @@ const Payables: React.FC = () => {
           tableStateActions={{
             setSelectedItems: setSelectedItemsState,
             setPagination,
+          }}
+          pagination={{
+            count: data?.count!,
+            next: data?.next!,
+            previous: data?.previous!,
           }}
         />
 
