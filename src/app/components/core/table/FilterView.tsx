@@ -152,8 +152,8 @@ const FilterView: React.FC<FilterViewProps> = ({ colSpan }) => {
                                         <StatusBadge
                                           key={value}
                                           status={
-                                            allStatuses
-                                              ?.find((a) => a.id === +value)
+                                            allStatuses?.results
+                                              .find((a) => a.id === +value)
                                               ?.name.toLowerCase() as StatusType
                                           }
                                         />
@@ -184,7 +184,7 @@ const FilterView: React.FC<FilterViewProps> = ({ colSpan }) => {
                                     >
                                       {requestTypesIsLoading
                                         ? "..."
-                                        : requestTypes?.find(
+                                        : requestTypes?.results.find(
                                             (a) => a.id === +value,
                                           )?.name}
                                     </p>
