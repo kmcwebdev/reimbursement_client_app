@@ -58,9 +58,8 @@ const Payables: React.FC = () => {
     search: undefined,
     expense_type__name: undefined,
     request_type__name: undefined,
-    from: undefined,
-    to: undefined,
-    page: 1,
+    created_at_before: undefined,
+    created_at_after: undefined,
   });
 
   const [downloadReportLoading, setDownloadReportLoading] = useState(false);

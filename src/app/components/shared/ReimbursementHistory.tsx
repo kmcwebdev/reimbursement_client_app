@@ -75,9 +75,8 @@ const MyReimbursements: React.FC = () => {
   const [searchParams, setSearchParams] = useState<IReimbursementsFilterQuery>({
     search: undefined,
     expense_type__name: undefined,
-    from: undefined,
-    to: undefined,
-    page: 1,
+    created_at_before: undefined,
+    created_at_after: undefined,
   });
 
   const {

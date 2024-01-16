@@ -68,8 +68,8 @@ const MyApprovals: React.FC = () => {
     search: undefined,
     expense_type__name: undefined,
     request_type__name: undefined,
-    from: undefined,
-    to: undefined,
+    created_at_before: undefined,
+    created_at_after: undefined,
   });
   const debouncedSearchText = useDebounce(searchParams.search, 500);
   const [isSearching, setIsSearching] = useState<boolean>(false);
