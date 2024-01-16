@@ -1,5 +1,4 @@
 import { signOut } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import React, { useRef, useState } from "react";
 import { AiOutlineLogout } from "react-icons-all-files/ai/AiOutlineLogout";
 import { MdChangeCircle } from "react-icons-all-files/md/MdChangeCircle";
@@ -21,7 +20,6 @@ const ProfileMenu: React.FC = () => {
   const buttonChildRef = useRef<HTMLButtonElement>(null);
   const dispatch = useAppDispatch();
 
-  const router = useRouter();
   const { user, assignedRole } = useAppSelector((state) => state.session);
   const [signoutButtonIsLoading, setSignoutButtonIsLoading] =
     useState<boolean>(false);
@@ -44,7 +42,6 @@ const ProfileMenu: React.FC = () => {
     dispatch(setAssignedRole(selectedOption.value as IGroupType));
     buttonChildRef.current?.click();
     buttonRef.current?.click();
-    void router.refresh();
   };
 
   const handleSignout = async () => {

@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { zodResolver } from "@hookform/resolvers/zod";
-import { type ColumnDef, type PaginationState } from "@tanstack/react-table";
+import { type ColumnDef } from "@tanstack/react-table";
 import dynamic from "next/dynamic";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { AiOutlinePlusCircle } from "react-icons-all-files/ai/AiOutlinePlusCircle";
 import { Button } from "~/app/components/core/Button";
@@ -23,7 +23,10 @@ import {
   ReimbursementTypeSchema,
   type ReimbursementFormType,
 } from "~/schema/reimbursement-type.schema";
-import { type IReimbursementRequest } from "~/types/reimbursement.types";
+import {
+  type IReimbursementRequest,
+  type IReimbursementsFilterQuery,
+} from "~/types/reimbursement.types";
 import SkeletonLoading from "../core/SkeletonLoading";
 import TableCell from "../core/table/TableCell";
 import MemberAnalytics from "./analytics/MemberAnalytics";
@@ -59,6 +62,8 @@ const MyReimbursements: React.FC = () => {
   const { selectedItems, filters } = useAppSelector(
     (state) => state.pageTableState,
   );
+
+  const [pageFilters, setPageFilters] = useState<IReimbursementsFilterQuery>();
   const dispatch = useAppDispatch();
 
   const setSelectedItemsState = (value: number[]) => {
@@ -68,7 +73,13 @@ const MyReimbursements: React.FC = () => {
   const [focusedReimbursementId, setFocusedReimbursementId] =
     useState<number>();
 
-  const { isFetching, data } = useMyRequestsQuery();
+  useEffect(() => {
+    setPageFilters(filters);
+  }, [filters]);
+
+  const { isFetching, data } = useMyRequestsQuery({
+    ...pageFilters,
+  });
 
   const {
     isFetching: focusedReimbursementDataIsFetching,
@@ -80,11 +91,6 @@ const MyReimbursements: React.FC = () => {
   );
 
   const { isVisible, open, close } = useDialogState();
-
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 10,
-  });
 
   const columns = React.useMemo<ColumnDef<IReimbursementRequest>[]>(() => {
     const defaultColumns: ColumnDef<IReimbursementRequest, unknown>[] = [
@@ -102,7 +108,7 @@ const MyReimbursements: React.FC = () => {
       {
         id: "reference_no",
         accessorKey: "reference_no",
-        header: "ID",
+        header: "R-ID",
       },
       {
         id: "request_type",
@@ -250,12 +256,10 @@ const MyReimbursements: React.FC = () => {
           }}
           tableState={{
             filters,
-            pagination,
             selectedItems,
           }}
           tableStateActions={{
             setSelectedItems: setSelectedItemsState,
-            setPagination,
           }}
           pagination={{
             count: data?.count!,

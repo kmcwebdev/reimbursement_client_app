@@ -6,6 +6,7 @@ import { MdCalendarToday } from "react-icons-all-files/md/MdCalendarToday";
 import CollapseHeightAnimation from "~/app/components/animation/CollapseHeight";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { setPageTableFilters } from "~/features/state/table-state.slice";
+import { parseTimezone } from "~/utils/parse-timezone";
 import { Button } from "../../Button";
 import Popover from "../../Popover";
 import Input from "../../form/fields/Input";
@@ -22,18 +23,18 @@ const DateFiledFilter: React.FC<FilterProps> = () => {
   const [error, setError] = useState<string>();
 
   useMemo(() => {
-    if (filters.from) {
-      setDateFrom(dayjs(filters.from).format("YYYY-MM-DD"));
+    if (filters.created_at_before) {
+      setDateFrom(dayjs(filters.created_at_before).format("YYYY-MM-DD"));
     } else {
       setDateFrom(undefined);
     }
 
-    if (filters.to) {
-      setDateTo(dayjs(filters.to).format("YYYY-MM-DD"));
+    if (filters.created_at_after) {
+      setDateTo(dayjs(filters.created_at_after).format("YYYY-MM-DD"));
     } else {
       setDateTo(undefined);
     }
-  }, [filters.from, filters.to]);
+  }, [filters.created_at_before, filters.created_at_after]);
 
   const clearDates = () => {
     setDateFrom(undefined);
@@ -41,8 +42,8 @@ const DateFiledFilter: React.FC<FilterProps> = () => {
     dispatch(
       setPageTableFilters({
         ...filters,
-        from: undefined,
-        to: undefined,
+        created_at_before: undefined,
+        created_at_after: undefined,
       }),
     );
   };
@@ -70,16 +71,16 @@ const DateFiledFilter: React.FC<FilterProps> = () => {
       dispatch(
         setPageTableFilters({
           ...filters,
-          from: dateFrom && dayjs.utc(dateFrom).toISOString(),
-          to: dateTo && dayjs.utc(dateTo).toISOString(),
+          created_at_before: dateFrom && parseTimezone(dateFrom).toISOString(),
+          created_at_after: dateTo && parseTimezone(dateTo).toISOString(),
         }),
       );
     } else {
       dispatch(
         setPageTableFilters({
           ...filters,
-          from: dateFrom && dayjs.utc(dateFrom).toISOString(),
-          to: dateTo && dayjs.utc(dateTo).toISOString(),
+          created_at_before: dateFrom && parseTimezone(dateFrom).toISOString(),
+          created_at_after: dateTo && parseTimezone(dateTo).toISOString(),
         }),
       );
     }

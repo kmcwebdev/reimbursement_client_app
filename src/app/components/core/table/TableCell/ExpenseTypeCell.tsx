@@ -20,7 +20,6 @@ const ExpenseTypeCell: React.FC<ExpenseTypeCellProps> = ({ value }) => {
       if (totalChars + a.expense_type.name.length <= 33) {
         items.push(a.expense_type.name);
         totalChars += a.expense_type.name.length;
-        console.log(a.expense_type.name, a.expense_type.name.length);
       } else {
         remainingItems = remainingItems + 1;
       }

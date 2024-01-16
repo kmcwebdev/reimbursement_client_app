@@ -1,20 +1,14 @@
+/* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import React, {
-  useEffect,
-  useState,
-  type Dispatch,
-  type SetStateAction,
-} from "react";
+import React, { useEffect, useState } from "react";
 
 import {
   flexRender,
   getCoreRowModel,
   getFacetedUniqueValues,
-  getPaginationRowModel,
   useReactTable,
   type FilterMeta,
-  type PaginationState,
   type RowSelectionState,
   type Table,
 } from "@tanstack/react-table";
@@ -27,7 +21,7 @@ import {
 import { classNames } from "~/utils/classNames";
 import FilterView from "./FilterView";
 import MobileListItem from "./MobileListItem";
-import Pagination from "./Pagination";
+import Pagination, { PaginationSkeletonLoading } from "./Pagination";
 import TableEmptyState from "./TableEmptyState";
 import TableSkeleton from "./TableSkeleton";
 
@@ -35,12 +29,10 @@ export type ITableState = {
   filters: IReimbursementsFilterQuery;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   selectedItems?: any;
-  pagination?: PaginationState;
 };
 
 export type ITableStateActions = {
   setSelectedItems?: (value: number[]) => void;
-  setPagination?: Dispatch<SetStateAction<PaginationState>>;
 };
 
 type ReimbursementTable = {
@@ -118,12 +110,8 @@ const Table: React.FC<TableProps> = (props) => {
       rowSelection: props.tableState?.selectedItems ? rowSelection : undefined,
     },
     onRowSelectionChange: setRowSelection,
-    onPaginationChange: props.tableStateActions?.setPagination,
     getFacetedUniqueValues: getFacetedUniqueValues(),
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: props.tableState?.pagination
-      ? getPaginationRowModel()
-      : undefined,
     enableRowSelection: props.tableStateActions?.setSelectedItems
       ? true
       : false,
@@ -269,7 +257,17 @@ const Table: React.FC<TableProps> = (props) => {
           </tbody>
         </table>
       </div>
-      <Pagination data={props.pagination} />
+
+      {!props.loading && props.data && props.data.length > 0 && (
+        <Pagination
+          data={props.pagination}
+          currentPageLength={props.data.length}
+        />
+      )}
+
+      {props.loading && props.data && props.data.length > 0 && (
+        <PaginationSkeletonLoading />
+      )}
     </div>
   );
 };

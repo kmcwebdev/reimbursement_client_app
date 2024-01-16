@@ -8,6 +8,7 @@ import { MdAccessTimeFilled } from "react-icons-all-files/md/MdAccessTimeFilled"
 import { MdCalendarToday } from "react-icons-all-files/md/MdCalendarToday";
 import { MdLabel } from "react-icons-all-files/md/MdLabel";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
+import { appApiSlice } from "~/app/rtkQuery";
 import {
   useAllExpenseTypesQuery,
   useAllStatusesQuery,
@@ -23,10 +24,9 @@ interface FilterViewProps {
 }
 
 interface IFilters {
-  request_status_ids: string[];
-  request_types_ids: string[];
-  expense_type_ids: string[];
-  reimbursement_type_id: string[];
+  request_status__name: string[];
+  request_type__name: string[];
+  expense_type__name: string[];
   date: string[];
 }
 
@@ -46,50 +46,55 @@ const FilterView: React.FC<FilterViewProps> = ({ colSpan }) => {
 
   useMemo(() => {
     const transformedFilters: IFilters = {
-      request_status_ids: [],
-      request_types_ids: [],
-      expense_type_ids: [],
-      reimbursement_type_id: [],
+      request_status__name: [],
+      expense_type__name: [],
+      request_type__name: [],
       date: [],
     };
 
     if (Object.keys(filters).length > 0) {
       Object.keys(filters).map((key) => {
-        if (key === "from") {
-          transformedFilters.date[0] = dayjs(filters.from).format("MM/DD/YYYY");
+        if (key === "created_at_before") {
+          transformedFilters.date[0] = dayjs(filters.created_at_before).format(
+            "MM/DD/YYYY",
+          );
         }
 
-        if (key === "to") {
-          transformedFilters.date[1] = dayjs(filters.to).format("MM/DD/YYYY");
+        if (key === "created_at_after") {
+          transformedFilters.date[1] = dayjs(filters.created_at_after).format(
+            "MM/DD/YYYY",
+          );
         }
-        if (key === "expense_type_ids") {
-          if (filters.expense_type_ids) {
-            transformedFilters.expense_type_ids =
-              filters.expense_type_ids.split(",");
+        if (key === "expense_type__name") {
+          if (filters.expense_type__name) {
+            transformedFilters.expense_type__name =
+              filters.expense_type__name.split(",");
           }
         }
 
-        if (key === "request_status_ids") {
-          if (filters.request_status_ids) {
-            transformedFilters.request_status_ids =
-              filters.request_status_ids.split(",");
+        if (key === "request_status__name") {
+          if (filters.request_status__name) {
+            transformedFilters.request_status__name =
+              filters.request_status__name.split(",");
           }
         }
 
-        if (key === "reimbursement_type_id") {
-          if (filters.reimbursement_type_id) {
-            transformedFilters.reimbursement_type_id =
-              filters.reimbursement_type_id.toString().split(",");
+        if (key === "request_type__name") {
+          if (filters.request_type__name) {
+            transformedFilters.request_type__name = filters.request_type__name
+              .toString()
+              .split(",");
           }
         }
       });
+      setFilterViewState(transformedFilters);
     }
-
-    setFilterViewState(transformedFilters);
   }, [filters]);
 
   const handleClear = () => {
+    setFilterViewState(undefined);
     dispatch(resetPageTableState());
+    dispatch(appApiSlice.util.invalidateTags(["MyRequests"]));
   };
 
   return (
@@ -97,7 +102,7 @@ const FilterView: React.FC<FilterViewProps> = ({ colSpan }) => {
       <th
         colSpan={colSpan}
         className={classNames(
-          Object.keys(filters).length > 0
+          Object.keys(filters).filter((a) => a !== "page").length > 0
             ? "h-16 px-4 opacity-100 first:px-0"
             : "h-0 p-0 opacity-0",
           "overflow-hidden",
@@ -105,7 +110,7 @@ const FilterView: React.FC<FilterViewProps> = ({ colSpan }) => {
       >
         <div
           className={classNames(
-            Object.keys(filters).length > 0
+            Object.keys(filters).filter((a) => a !== "page").length > 0
               ? "h-16 px-4 opacity-100 first:px-0"
               : "h-0 p-0 opacity-0",
             "relative flex items-center justify-between gap-4 overflow-hidden transition-all ease-in-out",
@@ -114,24 +119,24 @@ const FilterView: React.FC<FilterViewProps> = ({ colSpan }) => {
           <div className="flex items-center gap-2 px-4">
             <span className="font-bold text-neutral-900">Filters: </span>
             <div className="flex items-center gap-4 overflow-x-auto">
-              {Object.keys(filters).length > 0 &&
+              {Object.keys(filters).filter((a) => a !== "page").length > 0 &&
                 filterViewState &&
                 Object.keys(filterViewState).map((key) => (
                   <div key={key}>
                     {filterViewState[key as keyof IFilters].length > 0 && (
                       <div key={key} className="flex items-center gap-2">
-                        {key === "request_status_ids" &&
-                          filterViewState.request_status_ids.length > 0 && (
+                        {key === "request_status__name" &&
+                          filterViewState.request_status__name.length > 0 && (
                             <MdLabel className="h-4 w-4 text-neutral-900" />
                           )}
 
-                        {key === "reimbursement_type_id" &&
-                          filterViewState.reimbursement_type_id.length > 0 && (
+                        {key === "request_type__name" &&
+                          filterViewState.request_type__name.length > 0 && (
                             <MdAccessTimeFilled className="h-4 w-4 text-neutral-900" />
                           )}
 
-                        {key === "expense_type_ids" &&
-                          filterViewState.expense_type_ids.length > 0 && (
+                        {key === "expense_type__name" &&
+                          filterViewState.expense_type__name.length > 0 && (
                             <HiCurrencyDollar className="h-4 w-4 text-neutral-900" />
                           )}
 
@@ -144,7 +149,7 @@ const FilterView: React.FC<FilterViewProps> = ({ colSpan }) => {
                             {filterViewState[key as keyof IFilters].map(
                               (value, i) => (
                                 <span key={key + "-" + value}>
-                                  {key === "request_status_ids" && (
+                                  {key === "request_status__name" && (
                                     <span className="ml-4 first:ml-0">
                                       {allStatusesIsLoading ? (
                                         "..."
@@ -161,7 +166,7 @@ const FilterView: React.FC<FilterViewProps> = ({ colSpan }) => {
                                     </span>
                                   )}
 
-                                  {key === "expense_type_ids" && (
+                                  {key === "expense_type__name" && (
                                     <p
                                       key={value}
                                       className={classNames(
@@ -177,7 +182,7 @@ const FilterView: React.FC<FilterViewProps> = ({ colSpan }) => {
                                     </p>
                                   )}
 
-                                  {key === "reimbursement_type_id" && (
+                                  {key === "request_type__name" && (
                                     <p
                                       key={value}
                                       className="pl-2 text-sm text-neutral-800"

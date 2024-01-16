@@ -243,7 +243,6 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
   };
 
   const handleConfirmHold = (values: OnholdReimbursementType) => {
-    console.log(values);
     setCurrentState("Reject");
     if (data) {
       const payload = {

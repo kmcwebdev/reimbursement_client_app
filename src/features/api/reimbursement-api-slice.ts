@@ -12,14 +12,13 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
     // GET
     getAllRequests: builder.query<
       IReimbursementRequest[],
-      IReimbursementsFilterQuery
+      Partial<IReimbursementsFilterQuery>
     >({
       query: (query) => {
         const searchParams = createSearchParams(query);
         return {
           url: "/api/finance/reimbursements/requests",
-          params:
-            searchParams && searchParams.size ? searchParams.toString() : {},
+          data: searchParams,
         };
       },
       providesTags: (_result, _fetchBaseQuery, query) => [

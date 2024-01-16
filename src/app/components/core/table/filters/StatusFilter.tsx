@@ -1,5 +1,5 @@
 import { type Column } from "@tanstack/react-table";
-import { useEffect, useState, type ChangeEvent } from "react";
+import { type ChangeEvent } from "react";
 import { FaCaretDown } from "react-icons-all-files/fa/FaCaretDown";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { useAllStatusesQuery } from "~/features/api/references-api-slice";
@@ -18,30 +18,36 @@ const StatusFilter: React.FC<FilterProps> = () => {
 
   const { data: allStatuses, isLoading: allStatusesIsLoading } =
     useAllStatusesQuery({});
-  const [checked, setChecked] = useState<number[]>([]);
 
   const onChange = (e: ChangeEvent<HTMLInputElement>, value: number) => {
-    if (checked.includes(value)) {
-      setChecked(checked.filter((a) => a !== value));
-    } else {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      setChecked([...checked, value]);
-    }
-  };
+    let request_status__name: string | undefined = "";
+    const currentStatusFilters = filters.request_status__name;
 
-  useEffect(() => {
-    const request_status_ids =
-      checked.length > 0 ? checked.join(",") : undefined;
+    if (currentStatusFilters) {
+      if (currentStatusFilters.split(",").includes(value.toString())) {
+        const filtered = currentStatusFilters
+          .split(",")
+          .filter((a) => a !== value.toString());
+
+        if (filtered.length === 0) {
+          request_status__name = undefined;
+        } else {
+          request_status__name = filtered.join(",");
+        }
+      } else {
+        request_status__name = currentStatusFilters + "," + value.toString();
+      }
+    } else {
+      request_status__name = value.toString();
+    }
 
     dispatch(
       setPageTableFilters({
         ...filters,
-        request_status_ids,
+        request_status__name,
       }),
     );
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [checked]);
+  };
 
   return (
     <Popover
@@ -65,9 +71,9 @@ const StatusFilter: React.FC<FilterProps> = () => {
                       />
                     }
                     name={option.name}
-                    checked={filters.request_status_ids?.includes(
-                      option.id.toString(),
-                    )}
+                    checked={filters.request_status__name
+                      ?.split(",")
+                      .includes(option.id.toString())}
                     onChange={(e) => onChange(e, option.id)}
                   />
                 ))}

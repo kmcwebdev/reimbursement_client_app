@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 "use client";
-import { type ColumnDef, type PaginationState } from "@tanstack/react-table";
+import { type ColumnDef } from "@tanstack/react-table";
 import dynamic from "next/dynamic";
 import React, { useEffect, useState, type ChangeEvent } from "react";
 import { MdSearch } from "react-icons-all-files/md/MdSearch";
@@ -15,7 +15,6 @@ import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { appApiSlice } from "~/app/rtkQuery";
 import { Can } from "~/context/AbilityContext";
 
-import { useRouter } from "next/navigation";
 import { useApproveReimbursementMutation } from "~/features/api/actions-api-slice";
 import {
   useGetAllApprovalQuery,
@@ -59,17 +58,16 @@ const DateFiledFilter = dynamic(
 );
 
 const MyApprovals: React.FC = () => {
-  const router = useRouter();
   const dispatch = useAppDispatch();
-  const { user, assignedRole } = useAppSelector((state) => state.session);
+  const { user } = useAppSelector((state) => state.session);
   const { selectedItems, filters } = useAppSelector(
     (state) => state.pageTableState,
   );
 
   const [searchParams, setSearchParams] = useState<IReimbursementsFilterQuery>({
     search: undefined,
-    expense_type_ids: undefined,
-    reimbursement_type_id: undefined,
+    expense_type__name: undefined,
+    request_type__name: undefined,
     from: undefined,
     to: undefined,
   });
@@ -106,11 +104,6 @@ const MyApprovals: React.FC = () => {
     open: openBulkApproveDialog,
     close: closeBulkApproveDialog,
   } = useDialogState();
-
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 10,
-  });
 
   const setSelectedItemsState = (value: number[]) => {
     dispatch(setSelectedItems(value));
@@ -299,13 +292,6 @@ const MyApprovals: React.FC = () => {
   }, [isLoading]);
 
   /**HANDLE REDIRECTION */
-  if (
-    assignedRole === "REIMBURSEMENT_USER" ||
-    assignedRole === "REIMBURSEMENT_HRBP"
-  ) {
-    void router.push("/dashboard");
-  }
-
   return (
     <>
       <div className="grid bg-neutral-50 md:gap-y-4 md:p-5">
@@ -360,12 +346,10 @@ const MyApprovals: React.FC = () => {
           columns={columns}
           tableState={{
             filters,
-            pagination,
             selectedItems,
           }}
           tableStateActions={{
             setSelectedItems: setSelectedItemsState,
-            setPagination,
           }}
           pagination={{
             count: data?.count!,

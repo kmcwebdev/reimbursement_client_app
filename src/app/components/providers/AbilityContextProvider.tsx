@@ -71,9 +71,11 @@ export const AbilityContextProvider: React.FC<PropsWithChildren> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nextAuthSession]);
 
-  useEffect(() => {
+  useMemo(() => {
     if (me && !meIsLoading) {
-      dispatch(setAssignedRole(me.groups[0]));
+      if (!assignedRole) {
+        dispatch(setAssignedRole(me.groups[0]));
+      }
       setPermissions(me.permissions);
       dispatch(setUser(me));
     }

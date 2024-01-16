@@ -1,5 +1,9 @@
 import { appApiSlice } from "~/app/rtkQuery";
-import { type IRequestListResponse } from "~/types/reimbursement.types";
+import {
+  type IReimbursementsFilterQuery,
+  type IRequestListResponse,
+} from "~/types/reimbursement.types";
+import { createSearchParams } from "~/utils/create-search-params";
 import { type IUser } from "../state/user-state.slice";
 
 /**
@@ -20,16 +24,20 @@ export const userApiSlice = appApiSlice.injectEndpoints({
         { type: "Me", id: JSON.stringify(query) },
       ],
     }),
-    myRequests: builder.query<IRequestListResponse, void>({
-      query: () => {
-        return {
-          url: "/reimbursements/request",
-        };
+    myRequests: builder.query<IRequestListResponse, IReimbursementsFilterQuery>(
+      {
+        query: (query) => {
+          const searchParams = createSearchParams(query);
+          return {
+            url: "/reimbursements/request",
+            params: searchParams ? searchParams : undefined,
+          };
+        },
+        providesTags: (_result, _fetchBaseQuery, query) => [
+          { type: "MyRequests", id: JSON.stringify(query) },
+        ],
       },
-      providesTags: (_result, _fetchBaseQuery, query) => [
-        { type: "MyRequests", id: JSON.stringify(query) },
-      ],
-    }),
+    ),
 
     //PATCH REQUESTS
     assignGroup: builder.mutation<

@@ -128,10 +128,11 @@ export type ReimbursementApproval = {
 
 export type IReimbursementsFilterQuery = {
   search?: string;
-  reimbursement_type_id?: number;
-  expense_type_ids?: string;
-  request_status_ids?: string;
-  from?: string;
-  to?: string;
+  request_type__name?: string;
+  expense_type__name?: string;
+  request_status__name?: string;
+  page?: number;
+  created_at_before?: string;
+  created_at_after?: string;
   history?: boolean;
 };

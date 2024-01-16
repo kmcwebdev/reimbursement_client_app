@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import React, { useEffect, useState, type ChangeEvent } from "react";
 
-import { type ColumnDef, type PaginationState } from "@tanstack/react-table";
+import { type ColumnDef } from "@tanstack/react-table";
 import dayjs from "dayjs";
 import dynamic from "next/dynamic";
 import { type IconType } from "react-icons-all-files";
@@ -56,10 +56,11 @@ const Payables: React.FC = () => {
 
   const [searchParams, setSearchParams] = useState<IReimbursementsFilterQuery>({
     search: undefined,
-    expense_type_ids: undefined,
-    reimbursement_type_id: undefined,
+    expense_type__name: undefined,
+    request_type__name: undefined,
     from: undefined,
     to: undefined,
+    page: 1,
   });
 
   const [downloadReportLoading, setDownloadReportLoading] = useState(false);
@@ -131,11 +132,6 @@ const Payables: React.FC = () => {
   const { isFetching, data } = useGetAllApprovalQuery({
     ...filters,
     search: debouncedSearchText,
-  });
-
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 10,
   });
 
   const columns = React.useMemo<ColumnDef<IReimbursementRequest>[]>(
@@ -330,13 +326,11 @@ const Payables: React.FC = () => {
           data={data?.results}
           columns={columns}
           tableState={{
-            pagination,
             selectedItems,
             filters,
           }}
           tableStateActions={{
             setSelectedItems: setSelectedItemsState,
-            setPagination,
           }}
           pagination={{
             count: data?.count!,

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, type ChangeEvent } from "react";
+import React, { type ChangeEvent } from "react";
 import { FaCaretDown } from "react-icons-all-files/fa/FaCaretDown";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { useRequestTypesQuery } from "~/features/api/references-api-slice";
@@ -11,30 +11,22 @@ const ReimbursementTypeFilter: React.FC<FilterProps> = () => {
   const { filters } = useAppSelector((state) => state.pageTableState);
   const dispatch = useAppDispatch();
 
-  const [checked, setChecked] = useState<string[]>([]);
   const { isLoading: requestTypesIsLoading, data: requestTypes } =
     useRequestTypesQuery();
 
   const onChange = (e: ChangeEvent<HTMLInputElement>, value: number) => {
-    if (checked.includes(value.toString())) {
-      setChecked(checked.filter((a) => a !== value.toString()));
-    } else {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      setChecked([value.toString()]);
+    let request_type__name: string | undefined = value.toString();
+    if (filters.request_type__name === request_type__name) {
+      request_type__name = undefined;
     }
-  };
 
-  useEffect(() => {
-    const reimbursement_type_id =
-      checked.length > 0 ? checked.join(",") : undefined;
     dispatch(
       setPageTableFilters({
         ...filters,
-        reimbursement_type_id: +reimbursement_type_id!,
+        request_type__name,
       }),
     );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [checked]);
+  };
 
   return (
     <Popover
@@ -58,8 +50,8 @@ const ReimbursementTypeFilter: React.FC<FilterProps> = () => {
                       </div>
                     }
                     checked={
-                      filters.reimbursement_type_id &&
-                      filters.reimbursement_type_id === type.id
+                      filters.request_type__name &&
+                      filters.request_type__name === type.id.toString()
                         ? true
                         : false
                     }

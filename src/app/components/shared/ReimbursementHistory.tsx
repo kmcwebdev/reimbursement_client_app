@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 "use client";
-import { type ColumnDef, type PaginationState } from "@tanstack/react-table";
+import { type ColumnDef } from "@tanstack/react-table";
 import dynamic from "next/dynamic";
 import React, { useEffect, useState, type ChangeEvent } from "react";
 import { type IconType } from "react-icons-all-files";
@@ -74,9 +74,10 @@ const MyReimbursements: React.FC = () => {
 
   const [searchParams, setSearchParams] = useState<IReimbursementsFilterQuery>({
     search: undefined,
-    expense_type_ids: undefined,
+    expense_type__name: undefined,
     from: undefined,
     to: undefined,
+    page: 1,
   });
 
   const {
@@ -110,11 +111,6 @@ const MyReimbursements: React.FC = () => {
   const { isFetching, data } = useGetRequestsHistoryQuery({
     ...filters,
     search: debouncedSearchText,
-  });
-
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 10,
   });
 
   const columns = React.useMemo<ColumnDef<IReimbursementRequest>[]>(() => {
@@ -351,12 +347,10 @@ const MyReimbursements: React.FC = () => {
           columns={columns}
           tableState={{
             filters,
-            pagination,
             selectedItems,
           }}
           tableStateActions={{
             setSelectedItems: setSelectedItemsState,
-            setPagination,
           }}
           pagination={{
             count: data?.count!,

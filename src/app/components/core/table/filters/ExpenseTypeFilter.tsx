@@ -1,4 +1,4 @@
-import { useEffect, useState, type ChangeEvent } from "react";
+import { type ChangeEvent } from "react";
 import { FaCaretDown } from "react-icons-all-files/fa/FaCaretDown";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { useAllExpenseTypesQuery } from "~/features/api/references-api-slice";
@@ -12,27 +12,36 @@ const ExpenseTypeFilter: React.FC<FilterProps> = () => {
   const { data: allExpenseTypes, isLoading: allExpenseTypesIsLoading } =
     useAllExpenseTypesQuery({});
   const dispatch = useAppDispatch();
-  const [checked, setChecked] = useState<string[]>([]);
 
   const onChange = (e: ChangeEvent<HTMLInputElement>, value: number) => {
-    if (checked.includes(value.toString())) {
-      setChecked(checked.filter((a) => a !== value.toString()));
-    } else {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      setChecked([...checked, value.toString()]);
-    }
-  };
+    let expense_type__name: string | undefined = "";
+    const currentExpenseFilters = filters.expense_type__name;
 
-  useEffect(() => {
-    const expense_type_ids = checked.length ? checked.join(",") : undefined;
+    if (currentExpenseFilters) {
+      if (currentExpenseFilters.split(",").includes(value.toString())) {
+        const filtered = currentExpenseFilters
+          .split(",")
+          .filter((a) => a !== value.toString());
+
+        if (filtered.length === 0) {
+          expense_type__name = undefined;
+        } else {
+          expense_type__name = filtered.join(",");
+        }
+      } else {
+        expense_type__name = currentExpenseFilters + "," + value.toString();
+      }
+    } else {
+      expense_type__name = value.toString();
+    }
+
     dispatch(
       setPageTableFilters({
         ...filters,
-        expense_type_ids,
+        expense_type__name,
       }),
     );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [checked]);
+  };
 
   return (
     <Popover
@@ -42,9 +51,9 @@ const ExpenseTypeFilter: React.FC<FilterProps> = () => {
           <div className="flex h-10 items-center border-b px-4 text-orange-600">
             Pick Expense Types
           </div>
-          <div className="h-60 w-72 space-y-4 overflow-y-scroll bg-neutral-50 p-4">
-            <div className="flex h-auto gap-2 capitalize">
-              <div className="flex flex-1 flex-col gap-4">
+          <div className="relative h-60 w-72 space-y-4 overflow-y-hidden bg-neutral-50">
+            <div className="flex h-60 gap-2 overflow-y-auto capitalize">
+              <div className="flex flex-1 flex-col gap-4 p-4">
                 {!allExpenseTypesIsLoading &&
                   allExpenseTypes &&
                   allExpenseTypes.results.length > 0 &&
@@ -53,7 +62,7 @@ const ExpenseTypeFilter: React.FC<FilterProps> = () => {
                       key={option.id}
                       label={option.name}
                       name={option.name}
-                      checked={filters.expense_type_ids
+                      checked={filters.expense_type__name
                         ?.split(",")
                         .includes(option.id.toString())}
                       onChange={(e) => onChange(e, option.id)}
