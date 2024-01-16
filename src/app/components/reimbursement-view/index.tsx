@@ -67,7 +67,7 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
 }) => {
   const ability = useContext(AbilityContext);
 
-  const { user } = useAppSelector((state) => state.session);
+  const { assignedRole } = useAppSelector((state) => state.session);
   const [reimbursementReqId, setReimbursementReqId] = useState<number>();
   const [currentState, setCurrentState] = useState<string>("Reject");
 
@@ -474,7 +474,7 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
             <>
               <p className="text-neutral-800">
                 Are you sure you want to{" "}
-                {user?.groups[0] === "REIMBURSEMENT_FINANCE"
+                {assignedRole === "REIMBURSEMENT_FINANCE"
                   ? "download"
                   : "approve"}{" "}
                 reimbursement request <strong>{data.reference_no} </strong>with
@@ -492,8 +492,8 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
                   Cancel
                 </Button>
 
-                {user?.groups[0] !== "REIMBURSEMENT_FINANCE" &&
-                  user?.groups[0] !== "REIMBURSEMENT_MEMBER" && (
+                {assignedRole !== "REIMBURSEMENT_FINANCE" &&
+                  assignedRole !== "REIMBURSEMENT_USER" && (
                     <Button
                       className="w-1/2"
                       onClick={handleApprove}
@@ -504,7 +504,7 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
                     </Button>
                   )}
 
-                {user?.groups[0] === "REIMBURSEMENT_FINANCE" && (
+                {assignedRole === "REIMBURSEMENT_FINANCE" && (
                   <Button
                     className="w-1/2"
                     variant="success"
