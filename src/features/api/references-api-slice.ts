@@ -4,8 +4,8 @@ import {
   type ReimbursementFormType,
 } from "~/schema/reimbursement-type.schema";
 import { type IExpenseTypeResponse } from "~/types/reimbursement.expense-type";
-import { type ReimbursementRequestType } from "~/types/reimbursement.request-type";
-import { type IStatus } from "~/types/reimbursement.types";
+import { type IRequestTypeResponse } from "~/types/reimbursement.request-type";
+import { type IStatusResponse } from "~/types/reimbursement.types";
 
 /**
  * REFERENCES API SLICE
@@ -15,7 +15,7 @@ import { type IStatus } from "~/types/reimbursement.types";
 
 export const referencesApiSlice = appApiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    requestTypes: builder.query<ReimbursementRequestType[], void>({
+    requestTypes: builder.query<IRequestTypeResponse, void>({
       query: () => "/reimbursements/request/request-types",
     }),
     expenseTypes: builder.query<IExpenseTypeResponse, ReimbursementFormType>({
@@ -37,7 +37,7 @@ export const referencesApiSlice = appApiSlice.injectEndpoints({
         { type: "ExpenseTypes", id: query.request_type },
       ],
     }),
-    allStatuses: builder.query<IStatus[], unknown>({
+    allStatuses: builder.query<IStatusResponse, unknown>({
       query: () => {
         return {
           url: "/reimbursements/request/request-status",

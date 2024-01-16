@@ -19,6 +19,7 @@ import {
   type Table,
 } from "@tanstack/react-table";
 
+import { type IResponsePagination } from "~/types/global-types";
 import {
   type IReimbursementRequest,
   type IReimbursementsFilterQuery,
@@ -26,6 +27,7 @@ import {
 import { classNames } from "~/utils/classNames";
 import FilterView from "./FilterView";
 import MobileListItem from "./MobileListItem";
+import Pagination from "./Pagination";
 import TableEmptyState from "./TableEmptyState";
 import TableSkeleton from "./TableSkeleton";
 
@@ -66,6 +68,7 @@ type TableProps = {
   tableState?: ITableState;
   tableStateActions?: ITableStateActions;
   handleMobileClick?: (e: number) => void;
+  pagination: IResponsePagination;
   columns: any;
 } & (ReimbursementTable | ApprovalTable | FinanceTable | HistoryTable);
 
@@ -90,9 +93,7 @@ const Table: React.FC<TableProps> = (props) => {
 
       Object.keys(rowSelection).forEach((key) => {
         if (props.data) {
-          if (props.type !== "finance" && props.type !== "approvals") {
-            selectedItems.push(props.data[key as unknown as number].id);
-          }
+          selectedItems.push(props.data[key as unknown as number].id);
         }
       });
       props.tableStateActions?.setSelectedItems(selectedItems);
@@ -135,8 +136,20 @@ const Table: React.FC<TableProps> = (props) => {
   });
 
   return (
-    <div className="flex h-[31.5rem] flex-col gap-4 overflow-x-auto overflow-y-hidden">
-      <div className="h-full w-full  overflow-y-auto">
+    <div
+      className={classNames(
+        "flex h-[31.5rem] flex-col",
+        props.loading ? "overflow-hidden" : "overflow-x-auto overflow-y-hidden",
+      )}
+    >
+      <div
+        className={classNames(
+          "relative h-full w-full",
+          props.loading
+            ? " overflow-x-hidden overflow-y-hidden"
+            : "overflow-y-auto",
+        )}
+      >
         {/* TABLE HEADER */}
         <table className="relative w-full whitespace-nowrap">
           <thead className="sticky top-0 z-[5] hidden h-12 rounded-t-sm bg-white text-xs shadow-sm  md:table-header-group">
@@ -256,7 +269,7 @@ const Table: React.FC<TableProps> = (props) => {
           </tbody>
         </table>
       </div>
-      {/* <Pagination table={table} /> */}
+      <Pagination data={props.pagination} />
     </div>
   );
 };

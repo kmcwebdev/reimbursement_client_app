@@ -3,6 +3,7 @@
 import { type CellContext } from "@tanstack/react-table";
 import dayjs from "dayjs";
 import React from "react";
+import { type IUser } from "~/features/state/user-state.slice";
 import { type ReimbursementRequestType } from "~/types/reimbursement.request-type";
 import {
   type IParticularDetails,
@@ -24,6 +25,9 @@ const TableCell: React.FC<CellContext<IReimbursementRequest, unknown>> = (
     "Total",
     "Filed",
     "Approved",
+    "Name",
+    "ID",
+    "Client",
   ];
 
   return (
@@ -39,6 +43,18 @@ const TableCell: React.FC<CellContext<IReimbursementRequest, unknown>> = (
             (props.getValue() as IStatus).name.toLowerCase() as StatusType
           }
         />
+      )}
+
+      {props.column.columnDef.header === "Client" &&
+        (props.getValue() as IUser).profile.organization}
+
+      {props.column.columnDef.header === "ID" && (props.getValue() as IUser).id}
+
+      {props.column.columnDef.header === "Name" && (
+        <>
+          {(props.getValue() as IUser).first_name}{" "}
+          {(props.getValue() as IUser).last_name}
+        </>
       )}
       {/* EXPENSE TYPE */}
       {props.column.columnDef.header === "Expense" && (

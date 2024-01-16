@@ -1,15 +1,13 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 "use client";
 import { type ColumnDef, type PaginationState } from "@tanstack/react-table";
-import dayjs from "dayjs";
 import dynamic from "next/dynamic";
 import React, { useEffect, useState, type ChangeEvent } from "react";
 import { MdSearch } from "react-icons-all-files/md/MdSearch";
 import { Button } from "~/app/components/core/Button";
-import StatusBadge, {
-  type StatusType,
-} from "~/app/components/core/StatusBadge";
 import Table from "~/app/components/core/table";
 import TableCheckbox from "~/app/components/core/table/TableCheckbox";
 import { type FilterProps } from "~/app/components/core/table/filters/StatusFilter";
@@ -17,6 +15,7 @@ import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { appApiSlice } from "~/app/rtkQuery";
 import { Can } from "~/context/AbilityContext";
 
+import { useRouter } from "next/navigation";
 import { useApproveReimbursementMutation } from "~/features/api/actions-api-slice";
 import {
   useGetAllApprovalQuery,
@@ -26,8 +25,8 @@ import { setSelectedItems } from "~/features/state/table-state.slice";
 import { useDebounce } from "~/hooks/use-debounce";
 import { useDialogState } from "~/hooks/use-dialog-state";
 import {
+  type IReimbursementRequest,
   type IReimbursementsFilterQuery,
-  type ReimbursementApproval,
 } from "~/types/reimbursement.types";
 import { classNames } from "~/utils/classNames";
 import { currencyFormat } from "~/utils/currencyFormat";
@@ -35,6 +34,7 @@ import CollapseWidthAnimation from "../animation/CollapseWidth";
 import SkeletonLoading from "../core/SkeletonLoading";
 import { showToast } from "../core/Toast";
 import Input from "../core/form/fields/Input";
+import TableCell from "../core/table/TableCell";
 import HRBPAnalytics from "./analytics/HRBPAnalytics";
 import ManagerAnalytics from "./analytics/ManagerAnalytics";
 
@@ -59,20 +59,21 @@ const DateFiledFilter = dynamic(
 );
 
 const MyApprovals: React.FC = () => {
+  const router = useRouter();
   const dispatch = useAppDispatch();
-  const { user } = useAppSelector((state) => state.session);
+  const { user, assignedRole } = useAppSelector((state) => state.session);
   const { selectedItems, filters } = useAppSelector(
     (state) => state.pageTableState,
   );
 
   const [searchParams, setSearchParams] = useState<IReimbursementsFilterQuery>({
-    text_search: undefined,
+    search: undefined,
     expense_type_ids: undefined,
     reimbursement_type_id: undefined,
     from: undefined,
     to: undefined,
   });
-  const debouncedSearchText = useDebounce(searchParams.text_search, 500);
+  const debouncedSearchText = useDebounce(searchParams.search, 500);
   const [isSearching, setIsSearching] = useState<boolean>(false);
 
   const [focusedReimbursementId, setFocusedReimbursementId] =
@@ -91,7 +92,7 @@ const MyApprovals: React.FC = () => {
 
   const { isFetching: isLoading, data } = useGetAllApprovalQuery({
     ...filters,
-    text_search: debouncedSearchText,
+    search: debouncedSearchText,
   });
 
   const {
@@ -118,12 +119,11 @@ const MyApprovals: React.FC = () => {
   const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
     setIsSearching(true);
     const searchValue = e.target.value;
-    setSearchParams({ ...searchParams, text_search: searchValue });
+    setSearchParams({ ...searchParams, search: searchValue });
   };
 
-  const columns = React.useMemo<ColumnDef<ReimbursementApproval>[]>(() => {
-    //HRBP COLUMNS
-    const defaultColumns: ColumnDef<ReimbursementApproval>[] = [
+  const columns = React.useMemo<ColumnDef<IReimbursementRequest>[]>(() => {
+    const defaultColumns: ColumnDef<IReimbursementRequest>[] = [
       {
         id: "select",
         header: ({ table }) => {
@@ -150,50 +150,40 @@ const MyApprovals: React.FC = () => {
         ),
       },
       {
-        id: "hrbp_request_status",
-        accessorKey: "hrbp_request_status",
+        id: "request_status",
+        accessorKey: "request_status",
         header: "Status",
-        cell: (info) => (
-          <StatusBadge
-            status={(info.getValue() as string).toLowerCase() as StatusType}
-          />
-        ),
         filterFn: (row, id, value: string) => {
           return value.includes(row.getValue(id));
         },
         enableColumnFilter: true,
         meta: {
-          filterComponent: (info: FilterProps) => <StatusFilter {...info} />,
+          filterComponent: StatusFilter,
         },
       },
       {
-        id: "client_name",
-        accessorKey: "client_name",
+        id: "reimb_requestor",
+        accessorKey: "reimb_requestor",
         header: "Client",
-        cell: (info) => info.getValue(),
       },
       {
-        id: "employee_id",
-        accessorKey: "employee_id",
+        id: "reimb_requestor",
+        accessorKey: "reimb_requestor",
         header: "ID",
-        cell: (info) => info.getValue(),
       },
       {
-        id: "full_name",
-        accessorKey: "full_name",
-        cell: (info) => info.getValue(),
+        id: "reimb_requestor",
+        accessorKey: "reimb_requestor",
         header: "Name",
       },
       {
         id: "reference_no",
         accessorKey: "reference_no",
-        cell: (info) => info.getValue(),
         header: "R-ID",
       },
       {
         id: "request_type",
         accessorKey: "request_type",
-        cell: (info) => info.getValue(),
         header: "Type",
         filterFn: (row, id, value: string) => {
           return value.includes(row.getValue(id));
@@ -205,9 +195,8 @@ const MyApprovals: React.FC = () => {
         },
       },
       {
-        id: "expense_type",
-        accessorKey: "expense_type",
-        cell: (info) => info.getValue(),
+        id: "particulars",
+        accessorKey: "particulars",
         header: "Expense",
         filterFn: (row, id, value: string) => {
           return value.includes(row.getValue(id));
@@ -221,7 +210,6 @@ const MyApprovals: React.FC = () => {
       {
         id: "created_at",
         accessorKey: "created_at",
-        cell: (info) => dayjs(info.getValue() as string).format("MMM D, YYYY"),
         header: "Filed",
         filterFn: (row, id, value: string) => {
           return value.includes(row.getValue(id));
@@ -231,37 +219,31 @@ const MyApprovals: React.FC = () => {
         },
       },
       {
-        id: "amount",
-        accessorKey: "amount",
-        cell: (info) => currencyFormat(info.getValue() as number),
-        header: "Amount",
+        id: "total_amount",
+        accessorKey: "total_amount",
+        header: "Total",
       },
       {
         id: "actions",
-        accessorKey: "reimbursement_request_id",
-        cell: (info) => (
-          <Button
-            buttonType="text"
-            onClick={() => {
-              setFocusedReimbursementId(info.getValue() as number);
-              openReimbursementView();
-            }}
-          >
-            View
-          </Button>
-        ),
+        accessorKey: "id",
         header: "",
+        setFocusedReimbursementId: setFocusedReimbursementId,
+        openDrawer: openReimbursementView,
       },
     ];
 
-    if (user?.groups[0] === "REIMBURSEMENT_MANAGER") {
-      return defaultColumns.filter((a) => a.id !== "client_name");
-    }
+    defaultColumns.forEach((a) => {
+      a.cell = a.id === "select" ? a.cell : TableCell;
+    });
+
+    // if (user?.groups[0] === "REIMBURSEMENT_MANAGER") {
+    //   return defaultColumns.filter((a) => a.id !== "client_name");
+    // }
 
     return defaultColumns;
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedItems, data]);
+  }, [data]);
 
   const handleBulkApprove = () => {
     openBulkApproveDialog();
@@ -316,6 +298,14 @@ const MyApprovals: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoading]);
 
+  /**HANDLE REDIRECTION */
+  if (
+    assignedRole === "REIMBURSEMENT_USER" ||
+    assignedRole === "REIMBURSEMENT_HRBP"
+  ) {
+    void router.push("/dashboard");
+  }
+
   return (
     <>
       <div className="grid bg-neutral-50 md:gap-y-4 md:p-5">
@@ -342,7 +332,7 @@ const MyApprovals: React.FC = () => {
                 loading={isLoading && isSearching}
                 className="w-full md:w-64"
                 icon={MdSearch}
-                defaultValue={filters.text_search}
+                defaultValue={filters.search}
                 onChange={handleSearch}
               />
 
@@ -376,6 +366,11 @@ const MyApprovals: React.FC = () => {
           tableStateActions={{
             setSelectedItems: setSelectedItemsState,
             setPagination,
+          }}
+          pagination={{
+            count: data?.count!,
+            next: data?.next!,
+            previous: data?.previous!,
           }}
         />
       </div>

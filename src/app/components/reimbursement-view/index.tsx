@@ -285,10 +285,10 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
   };
 
   return (
-    <div className="relative flex h-full w-full flex-col">
+    <div className="relative flex h-full w-full flex-col overflow-hidden">
       {!isLoading && !isError && data && (
         <>
-          <div className="flex-1 p-5">
+          <div className="flex-1 overflow-y-auto p-5 pb-[75px]">
             <Details
               request_type={data.request_type}
               request_status={data.request_status}
@@ -321,7 +321,7 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
             <Attachments attachments={data.supporting_documents} />
           </div>
 
-          <div className="absolute bottom-0 grid h-[72px] w-full grid-cols-2 items-center justify-center gap-2 border-t border-neutral-300 px-5">
+          <div className="absolute bottom-0 grid h-[72px] w-full grid-cols-2 items-center justify-center gap-2 border-t border-neutral-300 bg-white px-5">
             {isHistoryView && (
               <Button
                 onClick={closeDrawer}

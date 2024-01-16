@@ -48,8 +48,8 @@ const ReimbursementTypeFilter: React.FC<FilterProps> = () => {
             <div className="flex flex-col gap-2 capitalize">
               {!requestTypesIsLoading &&
                 requestTypes &&
-                requestTypes.length > 0 &&
-                requestTypes.map((type) => (
+                requestTypes.results.length > 0 &&
+                requestTypes.results.map((type) => (
                   <Checkbox
                     key={type.id}
                     label={

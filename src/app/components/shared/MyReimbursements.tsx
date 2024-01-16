@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { zodResolver } from "@hookform/resolvers/zod";
 import { type ColumnDef, type PaginationState } from "@tanstack/react-table";
@@ -74,7 +75,7 @@ const MyReimbursements: React.FC = () => {
     isError: focusedReimbursementDataIsError,
     currentData: focusedReimbursementData,
   } = useGetRequestQuery(
-    { id: +focusedReimbursementId! },
+    { id: focusedReimbursementId! },
     { skip: !focusedReimbursementId },
   );
 
@@ -255,6 +256,11 @@ const MyReimbursements: React.FC = () => {
           tableStateActions={{
             setSelectedItems: setSelectedItemsState,
             setPagination,
+          }}
+          pagination={{
+            count: data?.count!,
+            next: data?.next!,
+            previous: data?.previous!,
           }}
         />
       </div>

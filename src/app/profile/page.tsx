@@ -5,17 +5,16 @@ import { Fragment } from "react";
 import { type IconType } from "react-icons-all-files";
 import { FaUserTie } from "react-icons-all-files/fa/FaUserTie";
 import { HiBriefcase } from "react-icons-all-files/hi/HiBriefcase";
-import { MdConstruction } from "react-icons-all-files/md/MdConstruction";
 import { MdMail } from "react-icons-all-files/md/MdMail";
-import EmptyState from "~/app/components/core/EmptyState";
-import { useAppSelector } from "~/app/hook";
-
-// interface DashboardSSRProps {
-//   userJson: string;
-// }
+import { MdOutlineList } from "react-icons-all-files/md/MdOutlineList";
+import { useAppDispatch, useAppSelector } from "~/app/hook";
+import { setAssignedRole } from "~/features/state/user-state.slice";
+import { classNames } from "~/utils/classNames";
+import EmptyState from "../components/core/EmptyState";
 
 const Profile: NextPage = () => {
-  const { user } = useAppSelector((state) => state.session);
+  const dispatch = useAppDispatch();
+  const { user, assignedRole } = useAppSelector((state) => state.session);
   return (
     <Fragment>
       <Head>
@@ -46,7 +45,7 @@ const Profile: NextPage = () => {
               </div>
               <div className="flex items-center gap-2 text-neutral-700">
                 <FaUserTie className="h-5 w-5" />
-                <p className="mt-0.5">{user && user.groups[0]}</p>
+                <p className="mt-0.5">{assignedRole}</p>
               </div>
 
               <div className="flex items-center gap-2 text-neutral-700">
@@ -57,13 +56,55 @@ const Profile: NextPage = () => {
           </div>
         </div>
 
-        <div className="bg-white p-4">
-          <div className="grid h-[50vh] place-items-center bg-neutral-100">
-            <EmptyState
-              icon={MdConstruction as IconType}
-              title="Ongoing Development"
-              description="This section is still under development."
-            />
+        <div className="grid h-[50vh] grid-cols-2 gap-4">
+          <div className="flex flex-col gap-4 rounded-md bg-white p-4 shadow-sm">
+            <h4>Assigned Groups</h4>
+
+            {user &&
+              user.groups.length &&
+              user.groups.map((group) => (
+                <div
+                  key={group}
+                  className={classNames(
+                    "flex items-center gap-2 rounded-md border p-4 font-bold transition-all ease-in-out",
+                    assignedRole === group
+                      ? "pointer-events-none border-orange-600"
+                      : "cursor-pointer border-transparent bg-neutral-200 hover:border-orange-600 hover:bg-orange-50 ",
+                  )}
+                  onClick={() => {
+                    dispatch(setAssignedRole(group));
+                  }}
+                >
+                  {group}
+                </div>
+              ))}
+          </div>
+
+          <div className="flex flex-col gap-4 rounded-md bg-white p-4 shadow-sm">
+            <h4>Permissions</h4>
+
+            {user && user.permissions.length === 0 && (
+              <div className="grid h-full w-full place-items-center rounded-md bg-neutral-100">
+                <EmptyState
+                  icon={MdOutlineList as IconType}
+                  title="No Permissions assigned"
+                  description=""
+                />
+              </div>
+            )}
+
+            {user &&
+              user.permissions.length > 0 &&
+              user?.permissions.map((permission) => (
+                <div
+                  key={permission}
+                  className={classNames(
+                    "flex cursor-pointer items-center gap-2 rounded-md border border-transparent bg-neutral-200 p-4 font-bold transition-all ease-in-out hover:border-orange-600 hover:bg-orange-50 ",
+                  )}
+                >
+                  {permission}
+                </div>
+              ))}
           </div>
         </div>
       </div>
@@ -72,22 +113,3 @@ const Profile: NextPage = () => {
 };
 
 export default Profile;
-
-// export const getServerSideProps: GetServerSideProps = async (context) => {
-//   const user = await getUserFromServerSideProps(context);
-
-//   if (!user) {
-//     return {
-//       redirect: {
-//         destination: "/api/auth/login",
-//         permanent: false,
-//       },
-//     };
-//   }
-
-//   return {
-//     props: {
-//       userJson: JSON.stringify(user),
-//     },
-//   };
-// };

@@ -1,22 +1,20 @@
+/* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
+/* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 "use client";
 import { type ColumnDef, type PaginationState } from "@tanstack/react-table";
-import dayjs from "dayjs";
 import dynamic from "next/dynamic";
 import React, { useEffect, useState, type ChangeEvent } from "react";
 import { type IconType } from "react-icons-all-files";
 import { AiOutlineSearch } from "react-icons-all-files/ai/AiOutlineSearch";
 import { MdDownload } from "react-icons-all-files/md/MdDownload";
 import { Button } from "~/app/components/core/Button";
-import StatusBadge, {
-  type StatusType,
-} from "~/app/components/core/StatusBadge";
 import Table from "~/app/components/core/table";
 import { type FilterProps } from "~/app/components/core/table/filters/StatusFilter";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import {
-  useGetAllRequestsQuery,
   useGetRequestQuery,
+  useGetRequestsHistoryQuery,
 } from "~/features/api/reimbursement-api-slice";
 import { setSelectedItems } from "~/features/state/table-state.slice";
 import { useDebounce } from "~/hooks/use-debounce";
@@ -26,12 +24,12 @@ import {
   type IReimbursementRequest,
   type IReimbursementsFilterQuery,
 } from "~/types/reimbursement.types";
-import { currencyFormat } from "~/utils/currencyFormat";
 import { env } from "../../../../env.mjs";
 import CollapseWidthAnimation from "../animation/CollapseWidth";
 import SkeletonLoading from "../core/SkeletonLoading";
 import { showToast } from "../core/Toast";
 import Input from "../core/form/fields/Input";
+import TableCell from "../core/table/TableCell";
 import TableCheckbox from "../core/table/TableCheckbox";
 import ReimbursementsCardView from "../reimbursement-view";
 
@@ -75,7 +73,7 @@ const MyReimbursements: React.FC = () => {
   );
 
   const [searchParams, setSearchParams] = useState<IReimbursementsFilterQuery>({
-    text_search: undefined,
+    search: undefined,
     expense_type_ids: undefined,
     from: undefined,
     to: undefined,
@@ -87,7 +85,7 @@ const MyReimbursements: React.FC = () => {
     close: closeDownloadConfirmation,
   } = useDialogState();
 
-  const debouncedSearchText = useDebounce(searchParams.text_search, 500);
+  const debouncedSearchText = useDebounce(searchParams.search, 500);
   const [isSearching, setIsSearching] = useState<boolean>(false);
   const { download: exportReport } = useReportDownload({
     onSuccess: () => {
@@ -109,10 +107,9 @@ const MyReimbursements: React.FC = () => {
     dispatch(setSelectedItems(value));
   };
 
-  const { isFetching, data } = useGetAllRequestsQuery({
+  const { isFetching, data } = useGetRequestsHistoryQuery({
     ...filters,
-    text_search: debouncedSearchText,
-    history: true,
+    search: debouncedSearchText,
   });
 
   const [pagination, setPagination] = useState<PaginationState>({
@@ -149,65 +146,40 @@ const MyReimbursements: React.FC = () => {
         ),
       },
       {
-        id: `${
-          user?.groups[0] === "REIMBURSEMENT_FINANCE"
-            ? "finance_request_status"
-            : user?.groups[0] === "REIMBURSEMENT_HRBP"
-              ? "hrbp_request_status"
-              : "requestor_request_status"
-        }`,
-        accessorKey: `${
-          user?.groups[0] === "REIMBURSEMENT_FINANCE"
-            ? "finance_request_status"
-            : user?.groups[0] === "REIMBURSEMENT_HRBP"
-              ? "hrbp_request_status"
-              : "requestor_request_status"
-        }`,
+        id: "request_status",
+        accessorKey: "request_status",
         header: "Status",
-
-        cell: (info) => (
-          <StatusBadge
-            status={(info.getValue() as string).toLowerCase() as StatusType}
-          />
-        ),
         filterFn: (row, id, value: string) => {
           return value.includes(row.getValue(id));
         },
-        enableColumnFilter: true,
         meta: {
           filterComponent: (info: FilterProps) => <StatusFilter {...info} />,
         },
       },
       {
-        id: "client_name",
-        accessorKey: "client_name",
-        cell: (info) => info.getValue(),
+        id: "reimb_requestor",
+        accessorKey: "reimb_requestor",
         header: "Client",
       },
       {
-        id: "employee_id",
-        accessorKey: "employee_id",
-        cell: (info) => info.getValue(),
+        id: "reimb_requestor",
+        accessorKey: "reimb_requestor",
         header: "ID",
       },
       {
-        id: "full_name",
-        accessorKey: "full_name",
-        cell: (info) => info.getValue(),
+        id: "reimb_requestor",
+        accessorKey: "reimb_requestor",
         header: "Name",
       },
       {
         id: "reference_no",
         accessorKey: "reference_no",
-        cell: (info) => info.getValue(),
         header: "R-ID",
       },
       {
         id: "request_type",
         accessorKey: "request_type",
-        cell: (info) => info.getValue(),
         header: "Type",
-
         filterFn: (row, id, value: string) => {
           return value.includes(row.getValue(id));
         },
@@ -218,11 +190,9 @@ const MyReimbursements: React.FC = () => {
         },
       },
       {
-        id: "expense_type",
-        accessorKey: "expense_type",
-        cell: (info) => info.getValue(),
+        id: "particulars",
+        accessorKey: "particulars",
         header: "Expense",
-
         filterFn: (row, id, value: string) => {
           return value.includes(row.getValue(id));
         },
@@ -235,11 +205,9 @@ const MyReimbursements: React.FC = () => {
       {
         id: "created_at",
         accessorKey: "created_at",
-        cell: (info) => dayjs(info.getValue() as string).format("MMM D, YYYY"),
         header: `${
           user?.groups[0] === "REIMBURSEMENT_FINANCE" ? "Approved" : "Filed"
         }`,
-
         filterFn: (row, id, value: string) => {
           return value.includes(row.getValue(id));
         },
@@ -248,28 +216,22 @@ const MyReimbursements: React.FC = () => {
         },
       },
       {
-        id: "amount",
-        accessorKey: "amount",
-        cell: (info) => currencyFormat(info.getValue() as number),
+        id: "total_amount",
+        accessorKey: "total_amount",
         header: "Total",
       },
       {
         id: "actions",
         accessorKey: "reimbursement_request_id",
-        cell: (info) => (
-          <Button
-            buttonType="text"
-            onClick={() => {
-              setFocusedReimbursementId(info.getValue() as number);
-              open();
-            }}
-          >
-            View
-          </Button>
-        ),
         header: "",
+        setFocusedReimbursementId: setFocusedReimbursementId,
+        openDrawer: open,
       },
     ];
+
+    defaultColumns.forEach((a) => {
+      a.cell = a.id === "select" ? a.cell : TableCell;
+    });
 
     if (user?.groups[0] === "REIMBURSEMENT_MANAGER") {
       return defaultColumns.filter((a) => a.id !== "select");
@@ -306,7 +268,7 @@ const MyReimbursements: React.FC = () => {
   const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
     setIsSearching(true);
     const searchValue = e.target.value;
-    setSearchParams({ ...searchParams, text_search: searchValue });
+    setSearchParams({ ...searchParams, search: searchValue });
   };
 
   useEffect(() => {
@@ -332,7 +294,9 @@ const MyReimbursements: React.FC = () => {
                     (user.groups[0] === "REIMBURSEMENT_FINANCE" ||
                       user.groups[0] === "REIMBURSEMENT_HRBP") && (
                       <CollapseWidthAnimation
-                        isVisible={data && data.length > 0 ? true : false}
+                        isVisible={
+                          data && data.results.length > 0 ? true : false
+                        }
                       >
                         <MdDownload
                           onClick={openDownloadConfirmation}
@@ -365,7 +329,7 @@ const MyReimbursements: React.FC = () => {
                 (user.groups[0] === "REIMBURSEMENT_FINANCE" ||
                   user.groups[0] === "REIMBURSEMENT_HRBP") && (
                   <CollapseWidthAnimation
-                    isVisible={data && data.length > 0 ? true : false}
+                    isVisible={data && data.results.length > 0 ? true : false}
                   >
                     <Button
                       variant="success"
@@ -383,7 +347,7 @@ const MyReimbursements: React.FC = () => {
         <Table
           type="history"
           loading={isFetching}
-          data={data}
+          data={data?.results!}
           columns={columns}
           tableState={{
             filters,
@@ -393,6 +357,11 @@ const MyReimbursements: React.FC = () => {
           tableStateActions={{
             setSelectedItems: setSelectedItemsState,
             setPagination,
+          }}
+          pagination={{
+            count: data?.count!,
+            next: data?.next!,
+            previous: data?.previous!,
           }}
         />
       </div>
@@ -429,14 +398,18 @@ const MyReimbursements: React.FC = () => {
               Are you sure yo want to download{" "}
               <strong>
                 {
-                  data?.find((a) => a.id === selectedItems[0])?.reimb_requestor
-                    .first_name
+                  data?.results.find((a) => a.id === selectedItems[0])
+                    ?.reimb_requestor.first_name
                 }{" "}
                 {
-                  data?.find((a) => a.id === selectedItems[0])?.reimb_requestor
-                    .last_name
+                  data?.results.find((a) => a.id === selectedItems[0])
+                    ?.reimb_requestor.last_name
                 }
-                , {data?.find((a) => a.id === selectedItems[0])?.reference_no}
+                ,{" "}
+                {
+                  data?.results.find((a) => a.id === selectedItems[0])
+                    ?.reference_no
+                }
               </strong>{" "}
               reimbursement?
             </p>

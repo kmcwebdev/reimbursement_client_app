@@ -21,12 +21,14 @@ interface IUserProfile {
 
 interface IUserSession {
   user: IUser | null;
+  assignedRole: IGroupType | null;
   accessToken: string | null;
   refreshToken: string | null;
 }
 
 export const initialState: IUserSession = {
   user: null,
+  assignedRole: null,
   accessToken: null,
   refreshToken: null,
 };
@@ -37,6 +39,9 @@ const userSlice = createSlice({
   reducers: {
     setUser(state, action: PayloadAction<IUser | null>) {
       state.user = action.payload;
+    },
+    setAssignedRole(state, action: PayloadAction<IGroupType | null>) {
+      state.assignedRole = action.payload;
     },
     setAccessToken(state, action: PayloadAction<string | null>) {
       state.accessToken = action.payload;
@@ -52,7 +57,12 @@ const userSlice = createSlice({
   },
 });
 
-export const { setUser, setAccessToken, setRefreshToken, clearUserSession } =
-  userSlice.actions;
+export const {
+  setUser,
+  setAssignedRole,
+  setAccessToken,
+  setRefreshToken,
+  clearUserSession,
+} = userSlice.actions;
 
 export default userSlice.reducer;

@@ -1,9 +1,9 @@
 import { appApiSlice } from "~/app/rtkQuery";
 import {
   type AuditLog,
-  type IMyRequestResponseType,
   type IReimbursementRequest,
   type IReimbursementsFilterQuery,
+  type IRequestListResponse,
 } from "~/types/reimbursement.types";
 import { createSearchParams } from "~/utils/create-search-params";
 
@@ -27,7 +27,7 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
       ],
     }),
     getAllApproval: builder.query<
-      IMyRequestResponseType,
+      IRequestListResponse,
       IReimbursementsFilterQuery
     >({
       query: (query) => {
@@ -40,6 +40,22 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
       },
       providesTags: (_result, _fetchBaseQuery, query) => [
         { type: "ReimbursementApprovalList", id: JSON.stringify(query) },
+      ],
+    }),
+    getRequestsHistory: builder.query<
+      IRequestListResponse,
+      IReimbursementsFilterQuery
+    >({
+      query: (query) => {
+        const searchParams = createSearchParams(query);
+        return {
+          url: "/reimbursements/request/history",
+          params:
+            searchParams && searchParams.size ? searchParams.toString() : {},
+        };
+      },
+      providesTags: (_result, _fetchBaseQuery, query) => [
+        { type: "ReimbursementHistoryList", id: JSON.stringify(query) },
       ],
     }),
     getRequest: builder.query<
@@ -79,6 +95,7 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
 export const {
   useGetAllRequestsQuery,
   useGetAllApprovalQuery,
+  useGetRequestsHistoryQuery,
   useGetRequestQuery,
   useAuditLogsQuery,
 } = reimbursementApiSlice;

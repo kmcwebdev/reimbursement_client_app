@@ -1,36 +1,38 @@
-import { type Table } from "@tanstack/react-table";
 import React from "react";
-import { type IReimbursementRequest } from "~/types/reimbursement.types";
+import { type IResponsePagination } from "~/types/global-types";
 import { Button } from "../Button";
 
 interface PaginationProps {
-  table: Table<IReimbursementRequest>;
+  data: IResponsePagination;
 }
 
-const Pagination: React.FC<PaginationProps> = ({ table }) => {
+const Pagination: React.FC<PaginationProps> = ({ data }) => {
   return (
-    <div className="flex items-center justify-between gap-2 border-t border-neutral-300 p-2">
-      <div className="flex items-center gap-2 text-neutral-800">
-        Showing Page {table.getState().pagination.pageIndex + 1} to{" "}
-        {table.getState().pagination.pageIndex + 1 * 10} of{" "}
-        {table.getPageCount() * 10} results
-      </div>
-      <div className="flex items-center gap-2">
-        <Button
-          buttonType="outlined"
-          variant="neutral"
-          disabled={!table.getCanPreviousPage()}
-        >
-          Previous
-        </Button>
-        <Button
-          buttonType="outlined"
-          variant="neutral"
-          disabled={!table.getCanNextPage()}
-        >
-          Next
-        </Button>
-      </div>
+    <div className="flex items-center justify-between gap-2 border-t border-neutral-300 bg-white px-2 py-4 lg:px-0 lg:pb-0 lg:pt-5">
+      {data && (
+        <>
+          <div className="flex items-center gap-2 text-neutral-800">
+            Showing Page 1 to {data.count < 10 ? data.count : 10} of{" "}
+            {data.count} results
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              buttonType="outlined"
+              variant="neutral"
+              disabled={!data.previous}
+            >
+              Previous
+            </Button>
+            <Button
+              buttonType="outlined"
+              variant="neutral"
+              disabled={!data.next}
+            >
+              Next
+            </Button>
+          </div>
+        </>
+      )}
     </div>
   );
 };

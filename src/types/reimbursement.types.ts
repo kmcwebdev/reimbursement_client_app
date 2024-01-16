@@ -15,7 +15,7 @@ export interface IParticularDetails
   expense_type: IExpenseType;
 }
 
-export type IMyRequestResponseType = {
+export type IRequestListResponse = {
   results: IReimbursementRequest[];
 } & IResponsePagination;
 
@@ -47,6 +47,10 @@ export type IApproverMatrix = {
   acknowledge_datetime: string;
   remarks: string;
 };
+
+export type IStatusResponse = {
+  results: IStatus[];
+} & IResponsePagination;
 
 export type IStatus = {
   id: number;
@@ -123,10 +127,10 @@ export type ReimbursementApproval = {
 };
 
 export type IReimbursementsFilterQuery = {
-  text_search?: string;
+  search?: string;
+  reimbursement_type_id?: number;
   expense_type_ids?: string;
   request_status_ids?: string;
-  reimbursement_type_id?: number;
   from?: string;
   to?: string;
   history?: boolean;

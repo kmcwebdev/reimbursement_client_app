@@ -1,5 +1,5 @@
 import { appApiSlice } from "~/app/rtkQuery";
-import { type IMyRequestResponseType } from "~/types/reimbursement.types";
+import { type IRequestListResponse } from "~/types/reimbursement.types";
 import { type IUser } from "../state/user-state.slice";
 
 /**
@@ -20,7 +20,7 @@ export const userApiSlice = appApiSlice.injectEndpoints({
         { type: "Me", id: JSON.stringify(query) },
       ],
     }),
-    myRequests: builder.query<IMyRequestResponseType, void>({
+    myRequests: builder.query<IRequestListResponse, void>({
       query: () => {
         return {
           url: "/reimbursements/request",
@@ -32,23 +32,23 @@ export const userApiSlice = appApiSlice.injectEndpoints({
     }),
 
     //PATCH REQUESTS
-    changeRole: builder.mutation<
+    assignGroup: builder.mutation<
       unknown,
       {
-        org_id: string;
-        role: string;
+        id: string;
+        group_id: number;
       }
     >({
       query: (data) => {
         return {
-          url: "/api/auth/user/change-user-role-access-in-propelauth",
+          url: `/management/users/group/${data.id}/assign`,
           method: "PATCH",
-          body: data,
+          body: { group_id: data.group_id },
         };
       },
     }),
   }),
 });
 
-export const { useGetMeQuery, useMyRequestsQuery, useChangeRoleMutation } =
+export const { useGetMeQuery, useMyRequestsQuery, useAssignGroupMutation } =
   userApiSlice;

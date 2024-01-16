@@ -13,10 +13,10 @@ import { AbilityContext } from "~/context/AbilityContext";
 import { useGetMeQuery } from "~/features/api/user-api-slice";
 import {
   setAccessToken,
+  setAssignedRole,
   setRefreshToken,
   setUser,
 } from "~/features/state/user-state.slice";
-import { type IGroupType } from "~/types/group.type";
 import { type AppClaims } from "~/types/permission-types";
 import { defineAbility } from "~/utils/define-ability";
 
@@ -27,7 +27,9 @@ export const AbilityContextProvider: React.FC<PropsWithChildren> = ({
 }) => {
   const nextAuthSession = useSession();
   const pathname = usePathname();
-  const { accessToken } = useAppSelector((state) => state.session);
+  const { accessToken, assignedRole } = useAppSelector(
+    (state) => state.session,
+  );
 
   const router = useRouter();
 
@@ -36,7 +38,6 @@ export const AbilityContextProvider: React.FC<PropsWithChildren> = ({
   });
   const dispatch = useAppDispatch();
   const [permissions, setPermissions] = useState<AppClaims[]>();
-  const [assignedRole, setAssignedRole] = useState<IGroupType>();
 
   /**
    * LOGIN PAGE REDIRECTION
@@ -72,9 +73,8 @@ export const AbilityContextProvider: React.FC<PropsWithChildren> = ({
 
   useEffect(() => {
     if (me && !meIsLoading) {
-      setAssignedRole(me.groups[0]);
+      dispatch(setAssignedRole(me.groups[0]));
       setPermissions(me.permissions);
-
       dispatch(setUser(me));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

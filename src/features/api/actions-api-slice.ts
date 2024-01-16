@@ -70,7 +70,7 @@ export const actionsApiSlice = appApiSlice.injectEndpoints({
     >({
       query: (data) => {
         return {
-          url: `/reimbursement/request/${data.id}/cancel`,
+          url: `/reimbursements/request/${data.id}/cancel`,
           method: "POST",
         };
       },
@@ -90,7 +90,7 @@ export const actionsApiSlice = appApiSlice.injectEndpoints({
     >({
       query: (data) => {
         return {
-          url: `/reimbursement/request/${data.id}/onhold`,
+          url: `/reimbursements/request/${data.id}/onhold`,
           method: "POST",
           body: data,
         };

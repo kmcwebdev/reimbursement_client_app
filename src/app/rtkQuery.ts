@@ -59,6 +59,7 @@ export const appApiSlice = createApi({
     "MyRequests",
     "ReimbursementRequestList",
     "ReimbursementApprovalList",
+    "ReimbursementHistoryList",
     "ReimbursementRequest",
     "MemberAnalytics",
     "HRBPAnalytics",

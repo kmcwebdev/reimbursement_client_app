@@ -55,7 +55,8 @@ const StatusFilter: React.FC<FilterProps> = () => {
             <div className="flex flex-col gap-2 capitalize">
               {!allStatusesIsLoading &&
                 allStatuses &&
-                allStatuses.map((option) => (
+                allStatuses.results.length > 0 &&
+                allStatuses.results.map((option) => (
                   <Checkbox
                     key={option.id}
                     label={

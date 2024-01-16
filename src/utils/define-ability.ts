@@ -4,7 +4,7 @@ import { type IGroupType } from "~/types/group.type";
 import { type AppAbility, type AppClaims } from "~/types/permission-types";
 
 export const defineAbility = (
-  assignedRole?: IGroupType,
+  assignedRole?: IGroupType | null,
   claims?: AppClaims[],
 ) => {
   return CASLdefineAbility<AppAbility>((can) => {
@@ -20,6 +20,7 @@ export const defineAbility = (
         can("access", "NAV_ITEM_APPROVAL");
         can("access", "NAV_ITEM_HISTORY");
         can("access", "REIMBURSEMENT_VIEW_APPROVAL");
+        can("access", "CAN_BULK_APPROVE_REIMBURSEMENT");
       }
 
       //HRBP Permissions

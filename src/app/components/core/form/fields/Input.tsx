@@ -55,7 +55,7 @@ const Input = ({
 
       <div
         className={classNames(
-          Icon || (type === "password" && "relative"),
+          (Icon || type === "password") && "relative",
           "rounded-md",
         )}
       >

@@ -1,41 +1,28 @@
 import { signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import React, { useRef, useState } from "react";
 import { AiOutlineLogout } from "react-icons-all-files/ai/AiOutlineLogout";
 import { MdChangeCircle } from "react-icons-all-files/md/MdChangeCircle";
+import { type PropsValue } from "react-select";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
-import { clearUserSession } from "~/features/state/user-state.slice";
+import {
+  clearUserSession,
+  setAssignedRole,
+} from "~/features/state/user-state.slice";
 import { useDialogState } from "~/hooks/use-dialog-state";
+import { type IGroupType } from "~/types/group.type";
 import { Button } from "../../Button";
 import Dialog from "../../Dialog";
 import Popover from "../../Popover";
-import Select from "../../form/fields/Select";
-
-const roleOptions = [
-  {
-    value: "HRBP",
-    label: "HRBP",
-  },
-  {
-    label: "Manager",
-    value: "External Reimbursement Approver Manager",
-  },
-
-  {
-    value: "Finance",
-    label: "Finance",
-  },
-
-  {
-    value: "Member",
-    label: "Member",
-  },
-];
+import Select, { type OptionData } from "../../form/fields/Select";
 
 const ProfileMenu: React.FC = () => {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const buttonChildRef = useRef<HTMLButtonElement>(null);
   const dispatch = useAppDispatch();
-  const user = useAppSelector((state) => state.session.user);
+
+  const router = useRouter();
+  const { user, assignedRole } = useAppSelector((state) => state.session);
   const [signoutButtonIsLoading, setSignoutButtonIsLoading] =
     useState<boolean>(false);
 
@@ -45,9 +32,6 @@ const ProfileMenu: React.FC = () => {
     close: closeSignoutDialog,
   } = useDialogState();
 
-  // const [changeRole, { isLoading: changeRoleIsLoading }] =
-  //   useChangeRoleMutation();
-
   const logoutFn = async () => {
     await signOut({ redirect: false }).then(() => {
       dispatch(clearUserSession);
@@ -55,23 +39,13 @@ const ProfileMenu: React.FC = () => {
     });
   };
 
-  // const onRoleChanged = (selected: PropsValue<OptionData>) => {
-  //   const selectedOption = selected as OptionData;
-
-  //   if (user && user.orgId) {
-  //     buttonChildRef.current?.click();
-  //     const payload = {
-  //       org_id: user.orgId,
-  //       role: selectedOption.value,
-  //     };
-  //     void changeRole(payload)
-  //       .unwrap()
-  //       .then(() => {
-  //         window.location.reload();
-  //         buttonRef.current?.click();
-  //       });
-  //   }
-  // };
+  const onRoleChanged = (selected: PropsValue<OptionData>) => {
+    const selectedOption = selected as OptionData;
+    dispatch(setAssignedRole(selectedOption.value as IGroupType));
+    buttonChildRef.current?.click();
+    buttonRef.current?.click();
+    void router.refresh();
+  };
 
   const handleSignout = async () => {
     setSignoutButtonIsLoading(true);
@@ -109,7 +83,7 @@ const ProfileMenu: React.FC = () => {
               </p>
 
               <div className="flex flex-col gap-2">
-                <p className="text-xs text-neutral-600">{user?.groups[0]}</p>
+                <p className="text-xs text-neutral-600">{assignedRole}</p>
                 <Popover
                   panelClassName="-translate-x-1/2"
                   buttonRef={buttonChildRef}
@@ -123,8 +97,15 @@ const ProfileMenu: React.FC = () => {
                     <div className="w-40">
                       <Select
                         name="role"
-                        // onChangeEvent={onRoleChanged}
-                        options={roleOptions}
+                        onChangeEvent={onRoleChanged}
+                        options={
+                          user?.groups
+                            .filter((a) => a !== assignedRole)
+                            .map((group) => ({
+                              value: group,
+                              label: group.split("_")[1],
+                            })) || []
+                        }
                       />
                     </div>
                   }
@@ -176,8 +157,8 @@ const ProfileMenu: React.FC = () => {
               </div>
             </div>
           </Dialog>
-
-          {/* {changeRoleIsLoading && (
+          {/* 
+          {changeRoleIsLoading && (
             <div className="absolute top-0 grid h-full w-full place-items-center rounded-md bg-white">
               <div className="flex flex-col items-center gap-2">
                 <RiLoader4Fill className="h-16 w-16 animate-spin text-orange-600" />
