@@ -50,7 +50,7 @@ export const AbilityContextProvider: React.FC<PropsWithChildren> = ({
     }
 
     if (
-      pathname.includes("/auth") &&
+      pathname && pathname.includes("/auth") &&
       nextAuthSession.status === "authenticated"
     ) {
       router.back();
