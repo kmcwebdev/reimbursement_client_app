@@ -18,8 +18,7 @@ interface EmailActionProps {
 }
 
 const EmailAction: React.FC<EmailActionProps> = ({ searchParams }) => {
-  const { type, token }: { token: string; type: "approve" | "reject" } =
-    useParams();
+  const { type, token } = useParams() as { token: string; type: "approve" | "reject" };
   const [loading, setLoading] = useState<boolean>(true);
   const [
     approveRequest,
