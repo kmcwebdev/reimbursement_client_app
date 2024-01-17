@@ -33,7 +33,7 @@ const Layout: React.FC<PropsWithChildren> = ({ children }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
-  if (pathname.includes("/auth")) {
+  if (pathname && pathname.includes("/auth")) {
     return (
       <main
         className={classNames(
@@ -47,7 +47,7 @@ const Layout: React.FC<PropsWithChildren> = ({ children }) => {
 
   return (
     <div className="flex min-h-screen">
-      {!pathname.includes("email-action") && <Sidebar />}
+      {pathname && !pathname.includes("email-action") && <Sidebar />}
 
       <main
         className={classNames(
@@ -70,7 +70,7 @@ const Layout: React.FC<PropsWithChildren> = ({ children }) => {
               <Link href="/dashboard">
                 <MdDashboard
                   className={classNames(
-                    pathname.includes("dashboard")
+                    pathname && pathname.includes("dashboard")
                       ? "h-5 w-5 text-orange-600"
                       : "h-3 w-3 text-neutral-600",
                     "transition-all ease-in-out",
@@ -88,7 +88,7 @@ const Layout: React.FC<PropsWithChildren> = ({ children }) => {
               >
                 <MdGavel
                   className={classNames(
-                    pathname.includes("approval")
+                    pathname && pathname.includes("approval")
                       ? "h-5 w-5 text-orange-600"
                       : "h-3 w-3 text-neutral-600",
                     "transition-all ease-in-out",
@@ -107,7 +107,7 @@ const Layout: React.FC<PropsWithChildren> = ({ children }) => {
                 >
                   <MdReceipt
                     className={classNames(
-                      pathname.includes("history")
+                      pathname && pathname.includes("history")
                         ? "h-5 w-5 text-orange-600"
                         : "h-3 w-3 text-neutral-600",
                       "transition-all ease-in-out",
@@ -123,7 +123,7 @@ const Layout: React.FC<PropsWithChildren> = ({ children }) => {
             >
               <MdPerson
                 className={classNames(
-                  pathname.includes("profile")
+                  pathname && pathname.includes("profile")
                     ? "h-5 w-5 text-orange-600"
                     : "h-3 w-3 text-neutral-600",
                   "transition-all ease-in-out",
