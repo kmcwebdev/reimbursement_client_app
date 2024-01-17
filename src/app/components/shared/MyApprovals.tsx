@@ -17,7 +17,7 @@ import { Can } from "~/context/AbilityContext";
 
 import { useApproveReimbursementMutation } from "~/features/api/actions-api-slice";
 import {
-  useGetAllApprovalQuery,
+  useGetApprovalListQuery,
   useGetRequestQuery,
 } from "~/features/api/reimbursement-api-slice";
 import { setSelectedItems } from "~/features/state/table-state.slice";
@@ -59,7 +59,7 @@ const DateFiledFilter = dynamic(
 
 const MyApprovals: React.FC = () => {
   const dispatch = useAppDispatch();
-  const { user } = useAppSelector((state) => state.session);
+  const { user, assignedRole } = useAppSelector((state) => state.session);
   const { selectedItems, filters } = useAppSelector(
     (state) => state.pageTableState,
   );
@@ -88,10 +88,16 @@ const MyApprovals: React.FC = () => {
     { skip: !focusedReimbursementId },
   );
 
-  const { isFetching: isLoading, data } = useGetAllApprovalQuery({
-    ...filters,
-    search: debouncedSearchText,
-  });
+  const { isFetching: isLoading, data } = useGetApprovalListQuery(
+    {
+      ...filters,
+      search: debouncedSearchText,
+      type: assignedRole?.split("_")[1].toLowerCase()!,
+    },
+    {
+      skip: !assignedRole,
+    },
+  );
 
   const {
     isVisible,

@@ -19,7 +19,7 @@ const Navigation: React.FC<NavigationProps> = ({ collapsed }) => {
       <NavigationItem
         label="Dashboard"
         icon={MdDashboard as IconType}
-        active={pathname ? pathname.includes("dashboard") : false}
+        active={pathname ? pathname === "/dashboard" : false}
         href="/dashboard"
         collapsed={collapsed}
       />
@@ -28,7 +28,7 @@ const Navigation: React.FC<NavigationProps> = ({ collapsed }) => {
         <NavigationItem
           label="Approval"
           icon={MdGavel as IconType}
-          active={pathname ? pathname.includes("approval") : false}
+          active={pathname ? pathname === "/approval" : false}
           href="/approval"
           collapsed={collapsed}
         />
@@ -38,7 +38,7 @@ const Navigation: React.FC<NavigationProps> = ({ collapsed }) => {
         <NavigationItem
           label="History"
           icon={MdReceipt as IconType}
-          active={pathname ? pathname.includes("history") : false}
+          active={pathname ? pathname === "/history" : false}
           href="/history"
           collapsed={collapsed}
         />
@@ -47,7 +47,7 @@ const Navigation: React.FC<NavigationProps> = ({ collapsed }) => {
       <NavigationItem
         label="Profile"
         icon={MdPerson as IconType}
-        active={pathname ? pathname.includes("profile") : false}
+        active={pathname ? pathname === "/profile" : false}
         href="/profile"
         collapsed={collapsed}
       />

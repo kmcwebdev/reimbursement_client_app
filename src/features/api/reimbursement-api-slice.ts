@@ -9,30 +9,16 @@ import { createSearchParams } from "~/utils/create-search-params";
 
 export const reimbursementApiSlice = appApiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    // GET
-    getAllRequests: builder.query<
-      IReimbursementRequest[],
-      Partial<IReimbursementsFilterQuery>
-    >({
-      query: (query) => {
-        const searchParams = createSearchParams(query);
-        return {
-          url: "/api/finance/reimbursements/requests",
-          data: searchParams,
-        };
-      },
-      providesTags: (_result, _fetchBaseQuery, query) => [
-        { type: "ReimbursementRequestList", id: JSON.stringify(query) },
-      ],
-    }),
-    getAllApproval: builder.query<
+    getApprovalList: builder.query<
       IRequestListResponse,
-      IReimbursementsFilterQuery
+      IReimbursementsFilterQuery & { type: string }
     >({
       query: (query) => {
         const searchParams = createSearchParams(query);
+
+        searchParams?.delete("type");
         return {
-          url: "/reimbursements/request/manager",
+          url: `/reimbursements/request/${query.type}`,
           params:
             searchParams && searchParams.size ? searchParams.toString() : {},
         };
@@ -92,8 +78,7 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
 });
 
 export const {
-  useGetAllRequestsQuery,
-  useGetAllApprovalQuery,
+  useGetApprovalListQuery,
   useGetRequestsHistoryQuery,
   useGetRequestQuery,
   useAuditLogsQuery,

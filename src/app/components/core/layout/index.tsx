@@ -33,7 +33,12 @@ const Layout: React.FC<PropsWithChildren> = ({ children }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
-  if (pathname && pathname.includes("/auth")) {
+  if (
+    pathname &&
+    (pathname.includes("/auth") ||
+      pathname.includes("/page-not-found") ||
+      pathname.includes("/forbidden"))
+  ) {
     return (
       <main
         className={classNames(

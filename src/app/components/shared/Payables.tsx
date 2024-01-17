@@ -10,7 +10,7 @@ import { AiOutlineSearch } from "react-icons-all-files/ai/AiOutlineSearch";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { appApiSlice } from "~/app/rtkQuery";
 import {
-  useGetAllApprovalQuery,
+  useGetApprovalListQuery,
   useGetRequestQuery,
 } from "~/features/api/reimbursement-api-slice";
 import { setSelectedItems } from "~/features/state/table-state.slice";
@@ -50,6 +50,7 @@ const DateFiledFilter = dynamic(
 );
 
 const Payables: React.FC = () => {
+  const { assignedRole } = useAppSelector((state) => state.session);
   const { selectedItems, filters } = useAppSelector(
     (state) => state.pageTableState,
   );
@@ -128,10 +129,16 @@ const Payables: React.FC = () => {
     dispatch(setSelectedItems(value));
   };
 
-  const { isFetching, data } = useGetAllApprovalQuery({
-    ...filters,
-    search: debouncedSearchText,
-  });
+  const { isFetching, data } = useGetApprovalListQuery(
+    {
+      ...filters,
+      search: debouncedSearchText,
+      type: assignedRole?.split("_")[1].toLowerCase()!,
+    },
+    {
+      skip: !assignedRole,
+    },
+  );
 
   const columns = React.useMemo<ColumnDef<IReimbursementRequest>[]>(
     () => [
