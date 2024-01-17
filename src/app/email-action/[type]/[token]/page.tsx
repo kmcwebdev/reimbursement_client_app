@@ -18,7 +18,11 @@ interface EmailActionProps {
 }
 
 const EmailAction: React.FC<EmailActionProps> = ({ searchParams }) => {
-  const { type, token } = useParams();
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+  const { type, token } = useParams() as {
+    token: string;
+    type: "approve" | "reject";
+  };
   const [loading, setLoading] = useState<boolean>(true);
   const [
     approveRequest,
