@@ -1,7 +1,7 @@
 "use client";
 import { useSession } from "next-auth/react";
 import dynamic from "next/dynamic";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import React, {
   useEffect,
   useMemo,
@@ -26,7 +26,6 @@ export const AbilityContextProvider: React.FC<PropsWithChildren> = ({
   children,
 }) => {
   const nextAuthSession = useSession();
-  const pathname = usePathname();
   const { accessToken, assignedRole } = useAppSelector(
     (state) => state.session,
   );
@@ -45,15 +44,16 @@ export const AbilityContextProvider: React.FC<PropsWithChildren> = ({
    * Redirects the user to the login page if unauthorized
    */
   useMemo(() => {
-    if (nextAuthSession.status === "unauthenticated") {
-      router.push("/auth/login");
-    }
+  // Ensure this code runs only on the client side
+    if (typeof window !== 'undefined') {
+      // Now it's safe to use location
+      const { pathname } = window.location;
 
-    if (
-      pathname && pathname.includes("/auth") &&
-      nextAuthSession.status === "authenticated"
-    ) {
-      router.back();
+      // You can now safely use pathname in your logic
+      // For example, if you need to redirect:
+      if (!pathname.includes('/auth') && nextAuthSession.status === 'unauthenticated') {
+        router.push('/auth/login');
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nextAuthSession.status, router]);
