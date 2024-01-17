@@ -7,9 +7,9 @@ const Template = ({ children }: { children: ReactNode }) => {
   const pathname = usePathname();
 
   if (
-    pathname.includes("forbidden") ||
-    pathname.includes("page-not-found") ||
-    pathname.includes("email-action")
+    pathname?.includes("forbidden") ||
+    pathname?.includes("page-not-found") ||
+    pathname?.includes("email-action")
   ) {
     return <>{children}</>;
   }
