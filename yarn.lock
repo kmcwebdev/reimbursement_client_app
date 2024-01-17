@@ -711,17 +711,17 @@
   dependencies:
     tslib "^2.4.0"
 
-"@t3-oss/env-core@0.7.1":
-  version "0.7.1"
-  resolved "https://registry.yarnpkg.com/@t3-oss/env-core/-/env-core-0.7.1.tgz#5e0568203d539bb2a35c96f02d33b6e204a194e5"
-  integrity sha512-3+SQt39OlmSaRLqYVFv8uRm1BpFepM5TIiMytRqO9cjH+wB77o6BIJdeyM5h5U4qLBMEzOJWCY4MBaU/rLwbYw==
+"@t3-oss/env-core@0.7.3":
+  version "0.7.3"
+  resolved "https://registry.yarnpkg.com/@t3-oss/env-core/-/env-core-0.7.3.tgz#b81b4a123bd840c1c11943b0a57d02cd32d5a6c2"
+  integrity sha512-hhtj59TKC6TKVdwJ0CcbKsvkr9R8Pc/SNKd4IgGUIC9T9X6moB8EZZ3FTJdABA/h9UABCK4J+KsF8gzmvMvHPg==
 
-"@t3-oss/env-nextjs@^0.7.0":
-  version "0.7.1"
-  resolved "https://registry.yarnpkg.com/@t3-oss/env-nextjs/-/env-nextjs-0.7.1.tgz#556a49382d22c190e5f9900e703679107cac483e"
-  integrity sha512-tQDbNLGCOvKGi+JoGuJ/CJInJI7/kLWJqtgGppAKS7ZFLdVOqZYR/uRjxlXOWPnxmUKF8VswOAsq7fXUpNZDhA==
+"@t3-oss/env-nextjs@^0.7.3":
+  version "0.7.3"
+  resolved "https://registry.yarnpkg.com/@t3-oss/env-nextjs/-/env-nextjs-0.7.3.tgz#b5813a2bbe932fd0a868a2c4d7d816a60bdb4f92"
+  integrity sha512-90TNffS17vjkQwfYyMUb4Zw9yqHwFV40f78qFug4JiQa5+N6DydTdlLOpzOcj8Cna/qpAVDwMSypofF/TVQDuA==
   dependencies:
-    "@t3-oss/env-core" "0.7.1"
+    "@t3-oss/env-core" "0.7.3"
 
 "@tailwindcss/forms@^0.5.4":
   version "0.5.7"
@@ -2002,7 +2002,7 @@ escape-string-regexp@^4.0.0:
   resolved "https://registry.yarnpkg.com/escape-string-regexp/-/escape-string-regexp-4.0.0.tgz#14ba83a5d373e3d311e5afca29cf5bfad965bf34"
   integrity sha512-TtpcNJ3XAzx3Gq8sWRzJaVajRs0uVxA2YAkdb1jm2YkPz4G6egUFAyA3n5vtEIZefPk5Wa4UXbKuS5fKkJWdgA==
 
-eslint-config-next@^14.0.3:
+eslint-config-next@^14.0.4:
   version "14.0.4"
   resolved "https://registry.yarnpkg.com/eslint-config-next/-/eslint-config-next-14.0.4.tgz#7cd2c0a3b310203d41cf0dbf9d31f9b0a6235b4a"
   integrity sha512-9/xbOHEQOmQtqvQ1UsTQZpnA7SlDMBtuKJ//S4JnoyK3oGLhILKXdBgu/UO7lQo/2xOykQULS1qQ6p2+EpHgAQ==
@@ -3404,7 +3404,7 @@ next-auth@^5.0.0-beta.4:
   dependencies:
     "@auth/core" "0.18.4"
 
-next@^14.0.3:
+next@^14.0.4:
   version "14.0.4"
   resolved "https://registry.yarnpkg.com/next/-/next-14.0.4.tgz#bf00b6f835b20d10a5057838fa2dfced1d0d84dc"
   integrity sha512-qbwypnM7327SadwFtxXnQdGiKpkuhaRLE2uq62/nRul9cj9KhQ5LhHmlziTNqUidZotw/Q1I9OjirBROdUJNgA==
