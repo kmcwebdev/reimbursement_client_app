@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
 import { zodResolver } from "@hookform/resolvers/zod";
-import { type ColumnDef, type PaginationState } from "@tanstack/react-table";
+import { type ColumnDef } from "@tanstack/react-table";
 import dynamic from "next/dynamic";
 import React, { useMemo, useState, type ChangeEvent } from "react";
 import { useForm } from "react-hook-form";
@@ -54,7 +55,7 @@ const DateFiledFilter = dynamic(
   () => import("~/app/components/core/table/filters/DateFiledFilter"),
 );
 
-const MyReimbursements: React.FC = () => {
+const MyAdmin: React.FC = () => {
   const {
     formDialogIsOpen,
     cancelDialogIsOpen,
@@ -63,8 +64,6 @@ const MyReimbursements: React.FC = () => {
     particularDetailsFormIsVisible,
     selectedAttachmentMethod,
   } = useAppSelector((state) => state.reimbursementForm);
-
-
   const { selectedItems, filters } = useAppSelector(
     (state) => state.pageTableState,
   );
@@ -79,6 +78,18 @@ const MyReimbursements: React.FC = () => {
 
   const [downloadReportLoading, setDownloadReportLoading] = useState(false);
 
+  const {
+    isFetching: focusedReimbursementDataIsFetching,
+    isError: focusedReimbursementDataIsError,
+    currentData: focusedReimbursementData,
+  } = useGetRequestQuery(
+    { id: +focusedReimbursementId! },
+    { skip: !focusedReimbursementId },
+  );
+
+  const { isVisible, open, close } = useDialogState();
+  const [isSearching, setIsSearching] = useState<boolean>(false);
+
   const [searchParams, setSearchParams] = useState<IReimbursementsFilterQuery>({
     search: undefined,
     expense_type__name: undefined,
@@ -92,23 +103,6 @@ const MyReimbursements: React.FC = () => {
   const { isFetching, data } = useMyRequestsQuery({
     ...filters,
     search: debouncedSearchText,
-  });
-
-  const {
-    isFetching: focusedReimbursementDataIsFetching,
-    isError: focusedReimbursementDataIsError,
-    currentData: focusedReimbursementData,
-  } = useGetRequestQuery(
-    { id: +focusedReimbursementId! },
-    { skip: !focusedReimbursementId },
-  );
-
-  const { isVisible, open, close } = useDialogState();
-  const [isSearching, setIsSearching] = useState<boolean>(false);
-
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 10,
   });
 
   const columns = React.useMemo<ColumnDef<IReimbursementRequest>[]>(() => {
@@ -259,6 +253,8 @@ const MyReimbursements: React.FC = () => {
   };
   
 
+
+
   const {
     isVisible: confirmReportDownloadIsOpen,
     open: openReportConfirmDialog,
@@ -303,7 +299,6 @@ const MyReimbursements: React.FC = () => {
     <>
       <div className="grid bg-neutral-50 md:gap-y-4 lg:p-5">
         <AdminAnalytics />
-
         <div className="flex flex-col justify-between gap-2 p-4 md:flex-row lg:p-0">
           <h4>Reimbursements</h4>
 
@@ -345,12 +340,15 @@ const MyReimbursements: React.FC = () => {
           }}
           tableState={{
             filters,
-            pagination,
             selectedItems,
           }}
           tableStateActions={{
             setSelectedItems: setSelectedItemsState,
-            setPagination,
+          }}
+          pagination={{
+            count: data?.count!,
+            next: data?.next!,
+            previous: data?.previous!,
           }}
         />
       </div>
@@ -501,4 +499,4 @@ const MyReimbursements: React.FC = () => {
   );
 };
 
-export default MyReimbursements;
+export default MyAdmin;
