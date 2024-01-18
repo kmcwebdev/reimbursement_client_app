@@ -255,7 +255,7 @@ const MyReimbursements: React.FC = () => {
   const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
     setIsSearching(true);
     const searchValue = e.target.value;
-    setSearchParams({ ...searchParams, text_search: searchValue });
+    setSearchParams({ ...searchParams, search: searchValue });
   };
   
 
