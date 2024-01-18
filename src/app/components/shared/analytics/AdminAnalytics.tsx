@@ -27,7 +27,7 @@ const AdminAnalytics: React.FC = () => {
           <DashboardCard
             icon={<FaThList className="h-4 w-4 text-orange-600 sm:h-5 sm:w-5" />}
             label="All Reimbursements"
-            count='100'
+            count={100}
           />
           
           <DashboardCard
@@ -35,7 +35,7 @@ const AdminAnalytics: React.FC = () => {
               <MdGavel className="h-4 w-4 text-yellow-600 sm:h-5 sm:w-5" />
             }
             label="On-Hold"
-            count='16'
+            count={16}
           />
           
           <DashboardCard
@@ -43,8 +43,8 @@ const AdminAnalytics: React.FC = () => {
             <MdAccessTimeFilled className="h-4 w-4 text-blue-600 sm:h-5 sm:w-5" />
           }
           label="Scheduled/Unscheduled"
-          count='50'
-          totalCount='20'
+          count={50}
+          totalCount={20}
         />
         </div>
       {/* )} */}
