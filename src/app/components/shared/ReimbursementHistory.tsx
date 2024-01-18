@@ -10,7 +10,6 @@ import { AiOutlineSearch } from "react-icons-all-files/ai/AiOutlineSearch";
 import { MdDownload } from "react-icons-all-files/md/MdDownload";
 import { Button } from "~/app/components/core/Button";
 import Table from "~/app/components/core/table";
-import { type FilterProps } from "~/app/components/core/table/filters/StatusFilter";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import {
   useGetRequestQuery,
@@ -148,7 +147,7 @@ const MyReimbursements: React.FC = () => {
           return value.includes(row.getValue(id));
         },
         meta: {
-          filterComponent: (info: FilterProps) => <StatusFilter {...info} />,
+          filterComponent: StatusFilter,
         },
       },
       {
@@ -179,9 +178,7 @@ const MyReimbursements: React.FC = () => {
           return value.includes(row.getValue(id));
         },
         meta: {
-          filterComponent: (info: FilterProps) => (
-            <ReimbursementTypeFilter {...info} />
-          ),
+          filterComponent: ReimbursementTypeFilter,
         },
       },
       {
@@ -192,9 +189,7 @@ const MyReimbursements: React.FC = () => {
           return value.includes(row.getValue(id));
         },
         meta: {
-          filterComponent: (info: FilterProps) => (
-            <ExpenseTypeFilter {...info} />
-          ),
+          filterComponent: ExpenseTypeFilter,
         },
       },
       {
@@ -207,7 +202,7 @@ const MyReimbursements: React.FC = () => {
           return value.includes(row.getValue(id));
         },
         meta: {
-          filterComponent: (info: FilterProps) => <DateFiledFilter {...info} />,
+          filterComponent: DateFiledFilter,
         },
       },
       {

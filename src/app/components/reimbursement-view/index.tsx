@@ -219,7 +219,7 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
     if (data) {
       const payload = {
         id: data.id,
-        rejection_reason: values.rejection_reason,
+        remarks: values.remarks,
       };
 
       void rejectReimbursement(payload)
@@ -390,11 +390,7 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
           onSubmit={handleConfirmReject}
         >
           <div className="flex flex-col gap-8 pt-8">
-            <TextArea
-              name="rejection_reason"
-              label="Reasons for Rejection"
-              required
-            />
+            <TextArea name="remarks" label="Reasons for Rejection" required />
 
             <div className="flex items-center gap-4">
               <Button

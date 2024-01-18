@@ -32,7 +32,7 @@ export const reimbursementFormApiSlice = appApiSlice.injectEndpoints({
       },
       invalidatesTags: [
         { type: "ReimbursementRequestList" },
-        { type: "MemberAnalytics" },
+        { type: "MyAnalytics" },
       ],
     }),
   }),

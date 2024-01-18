@@ -26,19 +26,6 @@ const Particulars: React.FC<ParticularsProps> = ({
   const { data: allExpenseTypes, isLoading: allExpenseTypesIsLoading } =
     useAllExpenseTypesQuery({});
 
-  // console.log(reimbursementFormValues.particulars[selectedParticularIndex]);
-
-  //Initially display the particular form if first entry
-  // useMemo(() => {
-  //   if (
-  //     (reimbursementFormValues && !reimbursementFormValues.particulars) ||
-  //     (reimbursementFormValues.particulars &&
-  //       reimbursementFormValues.particulars?.length === 0)
-  //   ) {
-  //     setParticularFormIsActive(true);
-  //   }
-  // }, [reimbursementFormValues]);
-
   const handleNext = () => {
     dispatch(setActiveStep(activeStep + 1));
   };

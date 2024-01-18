@@ -11,30 +11,6 @@ import StatusBadge, { type StatusType } from "../StatusBadge";
 import Checkbox from "../form/fields/Checkbox";
 import ExpenseTypeCell from "./TableCell/ExpenseTypeCell";
 
-// type ReimbursementMobileList = {
-//   type: 'reimbursements' ;
-//   row: Row<IReimbursementRequest>
-// }
-
-// type HistoryMobileList = {
-//   type: 'history' ;
-//   row: Row<IReimbursementRequest>
-// }
-
-// type ReimbursementApprovalMobileList = {
-//   type: 'approvals' ;
-//   row: Row<ReimbursementApproval>
-// }
-
-// type FinanceApprovalMobileList = {
-//   type: 'finance' ;
-//   row: Row<ReimbursementApproval>
-// }
-
-// type MobileListItemProps = {
-//   onClick?: (e: string) => void;
-// } & (ReimbursementMobileList |ReimbursementApprovalMobileList |HistoryMobileList | FinanceApprovalMobileList)
-
 type MobileListItemProps = {
   onClick?: (e: number) => void;
   type: "reimbursements" | "history" | "finance" | "approvals";

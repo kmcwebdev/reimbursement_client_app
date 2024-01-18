@@ -34,8 +34,8 @@ export const actionsApiSlice = appApiSlice.injectEndpoints({
     >({
       query: (data) => {
         return {
-          url: `/reimbursement/request/${data.id}/reject`,
-          method: "POST",
+          url: `/reimbursements/request/${data.id}/reject`,
+          method: "PATCH",
           body: data,
         };
       },
@@ -57,7 +57,7 @@ export const actionsApiSlice = appApiSlice.injectEndpoints({
     ),
     rejectReimbursementViaEmail: builder.mutation<{ message: string }, string>({
       query: (hash) => ({
-        method: "POST",
+        method: "PATCH",
         url: "/api/finance/reimbursement/requests/email-approval/reject",
         body: { hash },
       }),
@@ -76,7 +76,7 @@ export const actionsApiSlice = appApiSlice.injectEndpoints({
       },
       invalidatesTags: [
         { type: "ReimbursementRequestList" },
-        { type: "MemberAnalytics" },
+        { type: "MyAnalytics" },
         { type: "ManagerAnalytics" },
         { type: "HRBPAnalytics" },
         { type: "FinanceAnalytics" },
@@ -97,7 +97,7 @@ export const actionsApiSlice = appApiSlice.injectEndpoints({
       },
       invalidatesTags: [
         { type: "ReimbursementApprovalList" },
-        { type: "MemberAnalytics" },
+        { type: "MyAnalytics" },
         { type: "ManagerAnalytics" },
         { type: "HRBPAnalytics" },
         { type: "FinanceAnalytics" },

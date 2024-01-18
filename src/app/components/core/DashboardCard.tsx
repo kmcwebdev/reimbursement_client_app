@@ -4,8 +4,8 @@ import SkeletonLoading from "./SkeletonLoading";
 interface DashboardCardProps {
   icon: JSX.Element;
   label: string;
-  count?: string;
-  totalCount?: string;
+  count?: number;
+  totalCount?: number;
 }
 
 const DashboardCard: React.FC<DashboardCardProps> = ({

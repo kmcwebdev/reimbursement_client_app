@@ -1,5 +1,10 @@
+import { type Metadata } from "next";
 import React from "react";
 import EmptyState from "~/app/components/core/EmptyState";
+
+export const metadata: Metadata = {
+  title: "Page not found",
+};
 
 const NotFoundPage: React.FC = () => {
   return (

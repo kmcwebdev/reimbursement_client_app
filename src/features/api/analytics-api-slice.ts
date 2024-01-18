@@ -1,10 +1,5 @@
 import { appApiSlice } from "~/app/rtkQuery";
-import {
-  type IFinanceAnalytics,
-  type IHRBPAnalytics,
-  type IManagerAnalytics,
-  type IMemberAnalytics,
-} from "~/types/dashboard-analytics.type";
+import { type IMyAnalytics } from "~/types/dashboard-analytics.type";
 
 /**
  * ANALYTICS API SLICE
@@ -14,52 +9,28 @@ import {
 
 export const analyticsApiSlice = appApiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    memberAnalytics: builder.query<IMemberAnalytics, void>({
+    myAnalytics: builder.query<IMyAnalytics, void>({
       query: () => {
         return {
-          url: "/api/finance/reimbursements/requests/dashboard/analytics/members",
+          url: "/reimbursements/request/my-analytics",
         };
       },
       providesTags: (_result, _fetchBaseQuery, query) => [
-        { type: "MemberAnalytics", id: JSON.stringify(query) },
+        { type: "MyAnalytics", id: JSON.stringify(query) },
       ],
     }),
-    hrbpAnalytics: builder.query<IHRBPAnalytics, void>({
-      query: () => {
+    approvalAnalytics: builder.query<IMyAnalytics, { type: string }>({
+      query: (query) => {
         return {
-          url: "/api/finance/reimbursements/requests/dashboard/analytics/hrbp",
-        };
-      },
-      providesTags: (_result, _fetchBaseQuery, query) => [
-        { type: "HRBPAnalytics", id: JSON.stringify(query) },
-      ],
-    }),
-    managerAnalytics: builder.query<IManagerAnalytics, void>({
-      query: () => {
-        return {
-          url: "/api/finance/reimbursements/requests/dashboard/analytics/managers",
+          url: `/reimbursements/request/${query.type}/analytics`,
         };
       },
       providesTags: (_result, _fetchBaseQuery, query) => [
         { type: "ManagerAnalytics", id: JSON.stringify(query) },
       ],
     }),
-    financeAnalytics: builder.query<IFinanceAnalytics, void>({
-      query: () => {
-        return {
-          url: "/api/finance/reimbursements/requests/dashboard/analytics/finance",
-        };
-      },
-      providesTags: (_result, _fetchBaseQuery, query) => [
-        { type: "FinanceAnalytics", id: JSON.stringify(query) },
-      ],
-    }),
   }),
 });
 
-export const {
-  useMemberAnalyticsQuery,
-  useHrbpAnalyticsQuery,
-  useManagerAnalyticsQuery,
-  useFinanceAnalyticsQuery,
-} = analyticsApiSlice;
+export const { useMyAnalyticsQuery, useApprovalAnalyticsQuery } =
+  analyticsApiSlice;

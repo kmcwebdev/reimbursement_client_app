@@ -16,6 +16,7 @@ import { appApiSlice } from "~/app/rtkQuery";
 import { Can } from "~/context/AbilityContext";
 
 import { useApproveReimbursementMutation } from "~/features/api/actions-api-slice";
+import { useApprovalAnalyticsQuery } from "~/features/api/analytics-api-slice";
 import {
   useGetApprovalListQuery,
   useGetRequestQuery,
@@ -34,8 +35,7 @@ import SkeletonLoading from "../core/SkeletonLoading";
 import { showToast } from "../core/Toast";
 import Input from "../core/form/fields/Input";
 import TableCell from "../core/table/TableCell";
-import HRBPAnalytics from "./analytics/HRBPAnalytics";
-import ManagerAnalytics from "./analytics/ManagerAnalytics";
+import ApprovalTableAnalytics from "./analytics/ApprovalTableAnalytics";
 
 const ReimbursementsCardView = dynamic(
   () => import("~/app/components/reimbursement-view"),
@@ -59,7 +59,7 @@ const DateFiledFilter = dynamic(
 
 const MyApprovals: React.FC = () => {
   const dispatch = useAppDispatch();
-  const { user, assignedRole } = useAppSelector((state) => state.session);
+  const { assignedRole } = useAppSelector((state) => state.session);
   const { selectedItems, filters } = useAppSelector(
     (state) => state.pageTableState,
   );
@@ -79,6 +79,14 @@ const MyApprovals: React.FC = () => {
 
   const [approveReimbursement, { isLoading: isSubmitting }] =
     useApproveReimbursementMutation();
+
+  const { isFetching: analyticsIsLoading, data: analytics } =
+    useApprovalAnalyticsQuery(
+      {
+        type: assignedRole?.split("_")[1].toLowerCase()!,
+      },
+      { skip: !assignedRole },
+    );
 
   const {
     isFetching: reimbursementRequestDataIsLoading,
@@ -188,9 +196,7 @@ const MyApprovals: React.FC = () => {
           return value.includes(row.getValue(id));
         },
         meta: {
-          filterComponent: (info: FilterProps) => (
-            <ReimbursementTypeFilter {...info} />
-          ),
+          filterComponent: ReimbursementTypeFilter,
         },
       },
       {
@@ -201,9 +207,7 @@ const MyApprovals: React.FC = () => {
           return value.includes(row.getValue(id));
         },
         meta: {
-          filterComponent: (info: FilterProps) => (
-            <ExpenseTypeFilter {...info} />
-          ),
+          filterComponent: ExpenseTypeFilter,
         },
       },
       {
@@ -235,9 +239,9 @@ const MyApprovals: React.FC = () => {
       a.cell = a.id === "select" ? a.cell : TableCell;
     });
 
-    // if (user?.groups[0] === "REIMBURSEMENT_MANAGER") {
-    //   return defaultColumns.filter((a) => a.id !== "client_name");
-    // }
+    if (assignedRole === "REIMBURSEMENT_MANAGER") {
+      return defaultColumns.filter((a) => a.header !== "Client");
+    }
 
     return defaultColumns;
 
@@ -297,19 +301,19 @@ const MyApprovals: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoading]);
 
-  /**HANDLE REDIRECTION */
   return (
     <>
       <div className="grid bg-neutral-50 md:gap-y-4 md:p-5">
-        {user && user.groups[0] === "REIMBURSEMENT_HRBP" ? (
-          <HRBPAnalytics />
-        ) : (
-          <ManagerAnalytics />
+        {assignedRole && (
+          <ApprovalTableAnalytics
+            type={assignedRole.split("_")[1].toLowerCase()}
+            isLoading={analyticsIsLoading}
+            data={analytics!}
+          />
         )}
 
         <div className="flex flex-col p-4 md:flex-row md:justify-between lg:p-0">
           <h4>For Approval</h4>
-
           {!isSearching && isLoading ? (
             <SkeletonLoading className="h-10 w-full rounded-sm md:w-64" />
           ) : (

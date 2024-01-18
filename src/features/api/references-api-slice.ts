@@ -3,6 +3,7 @@ import {
   ReimbursementTypeSchema,
   type ReimbursementFormType,
 } from "~/schema/reimbursement-type.schema";
+import { type IGroupsResponse } from "~/types/group.type";
 import { type IExpenseTypeResponse } from "~/types/reimbursement.expense-type";
 import { type IRequestTypeResponse } from "~/types/reimbursement.request-type";
 import { type IStatusResponse } from "~/types/reimbursement.types";
@@ -57,6 +58,16 @@ export const referencesApiSlice = appApiSlice.injectEndpoints({
         { type: "AllExpenseTypes", id: "/all" },
       ],
     }),
+    allGroups: builder.query<IGroupsResponse, unknown>({
+      query: () => {
+        return {
+          url: "/management/users/groups",
+        };
+      },
+      providesTags: (_result, _fetchBaseQuery, _query) => [
+        { type: "AllGroups", id: "/all" },
+      ],
+    }),
   }),
 });
 
@@ -65,4 +76,5 @@ export const {
   useExpenseTypesQuery,
   useAllStatusesQuery,
   useAllExpenseTypesQuery,
+  useAllGroupsQuery,
 } = referencesApiSlice;

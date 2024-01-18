@@ -2,8 +2,11 @@ import { signOut } from "next-auth/react";
 import React, { useRef, useState } from "react";
 import { AiOutlineLogout } from "react-icons-all-files/ai/AiOutlineLogout";
 import { MdChangeCircle } from "react-icons-all-files/md/MdChangeCircle";
+import { RiLoader4Fill } from "react-icons-all-files/ri/RiLoader4Fill";
 import { type PropsValue } from "react-select";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
+import { useAllGroupsQuery } from "~/features/api/references-api-slice";
+import { useAssignGroupMutation } from "~/features/api/user-api-slice";
 import {
   clearUserSession,
   setAssignedRole,
@@ -37,11 +40,22 @@ const ProfileMenu: React.FC = () => {
     });
   };
 
+  const [assignGroup, { isLoading: isSubmitting }] = useAssignGroupMutation();
+
+  const { isFetching, data } = useAllGroupsQuery({}, { skip: !assignedRole });
+
   const onRoleChanged = (selected: PropsValue<OptionData>) => {
-    const selectedOption = selected as OptionData;
-    dispatch(setAssignedRole(selectedOption.value as IGroupType));
-    buttonChildRef.current?.click();
-    buttonRef.current?.click();
+    if (user) {
+      const selectedOption = selected as OptionData;
+
+      void assignGroup({ id: user.id, group_id: +selectedOption.value })
+        .unwrap()
+        .then(() => {
+          dispatch(setAssignedRole(selectedOption.label as IGroupType));
+          buttonChildRef.current?.click();
+          buttonRef.current?.click();
+        });
+    }
   };
 
   const handleSignout = async () => {
@@ -91,16 +105,17 @@ const ProfileMenu: React.FC = () => {
                     </div>
                   }
                   content={
-                    <div className="w-40">
+                    <div className="w-60">
                       <Select
                         name="role"
                         onChangeEvent={onRoleChanged}
+                        isLoading={isFetching}
                         options={
-                          user?.groups
-                            .filter((a) => a !== assignedRole)
+                          data?.results
+                            .filter((a) => a.name !== assignedRole)
                             .map((group) => ({
-                              value: group,
-                              label: group.split("_")[1],
+                              value: group.id,
+                              label: group.name,
                             })) || []
                         }
                       />
@@ -154,15 +169,15 @@ const ProfileMenu: React.FC = () => {
               </div>
             </div>
           </Dialog>
-          {/* 
-          {changeRoleIsLoading && (
+
+          {isSubmitting && (
             <div className="absolute top-0 grid h-full w-full place-items-center rounded-md bg-white">
               <div className="flex flex-col items-center gap-2">
                 <RiLoader4Fill className="h-16 w-16 animate-spin text-orange-600" />
                 <h5>Changing your role,please wait...</h5>
               </div>
             </div>
-          )} */}
+          )}
         </div>
       }
     />

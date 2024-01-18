@@ -2,7 +2,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useMemo } from "react";
 import { useForm, type UseFormReturn } from "react-hook-form";
 import { type IconType } from "react-icons-all-files";
-import { HiOutlineMinusCircle } from "react-icons-all-files/hi/HiOutlineMinusCircle";
 import { MdMail } from "react-icons-all-files/md/MdMail";
 import { Button } from "~/app/components/core/Button";
 import { showToast } from "~/app/components/core/Toast";
@@ -96,12 +95,6 @@ const SetApprover: React.FC<SetApproverProps> = ({ formReturn }) => {
           name="manager_approver_email"
           placeholder="Add an Approver"
         />
-
-        <div className="absolute bottom-2.5 right-2.5">
-          <Button buttonType="text" variant="danger">
-            <HiOutlineMinusCircle className="h-5 w-5" />
-          </Button>
-        </div>
       </div>
 
       <div className="grid grid-cols-2 items-center gap-2 pt-4">

@@ -49,9 +49,9 @@ export const userApiSlice = appApiSlice.injectEndpoints({
     >({
       query: (data) => {
         return {
-          url: `/management/users/group/${data.id}/assign`,
+          url: `/management/users/${data.id}/group/assign`,
           method: "PATCH",
-          body: { group_id: data.group_id },
+          body: { group_id: data.group_id, replace_all: true },
         };
       },
     }),

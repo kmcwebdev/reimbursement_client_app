@@ -27,8 +27,6 @@ const SelectReimbursementType: React.FC<SelectReimbursementTypeProps> = ({
   formReturn,
   handleOpenCancelDialog,
 }) => {
-  // const { user } = useAppSelector((state) => state.session);
-
   const { activeStep, reimbursementFormValues } = useAppSelector(
     (state) => state.reimbursementForm,
   );

@@ -36,6 +36,7 @@ const TableCell: React.FC<CellContext<IReimbursementRequest, unknown>> = (
       {props.column.columnDef.header &&
         !nonPlainTextCells.includes(props.column.columnDef.header.toString()) &&
         props.getValue()}
+
       {/* STATUS */}
       {props.column.columnDef.header === "Status" && (
         <StatusBadge
@@ -45,11 +46,14 @@ const TableCell: React.FC<CellContext<IReimbursementRequest, unknown>> = (
         />
       )}
 
+      {/* CLIENT NAME */}
       {props.column.columnDef.header === "Client" &&
         (props.getValue() as IUser).profile.organization}
 
+      {/* REQUESTOR ID */}
       {props.column.columnDef.header === "ID" && (props.getValue() as IUser).id}
 
+      {/* REQUESTOR NAME*/}
       {props.column.columnDef.header === "Name" && (
         <>
           {(props.getValue() as IUser).first_name}{" "}

@@ -3,12 +3,12 @@
 import React, { useEffect, useState, type ChangeEvent } from "react";
 
 import { type ColumnDef } from "@tanstack/react-table";
-import dayjs from "dayjs";
 import dynamic from "next/dynamic";
 import { type IconType } from "react-icons-all-files";
 import { AiOutlineSearch } from "react-icons-all-files/ai/AiOutlineSearch";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { appApiSlice } from "~/app/rtkQuery";
+import { useApprovalAnalyticsQuery } from "~/features/api/analytics-api-slice";
 import {
   useGetApprovalListQuery,
   useGetRequestQuery,
@@ -30,8 +30,7 @@ import Input from "../core/form/fields/Input";
 import Table from "../core/table";
 import TableCell from "../core/table/TableCell";
 import TableCheckbox from "../core/table/TableCheckbox";
-import { type FilterProps } from "../core/table/filters/StatusFilter";
-import FinanceAnalytics from "./analytics/FinanceAnalytics";
+import ApprovalTableAnalytics from "./analytics/ApprovalTableAnalytics";
 
 const ReimbursementsCardView = dynamic(() => import("../reimbursement-view"));
 const SideDrawer = dynamic(() => import("../core/SideDrawer"));
@@ -140,121 +139,127 @@ const Payables: React.FC = () => {
     },
   );
 
-  const columns = React.useMemo<ColumnDef<IReimbursementRequest>[]>(
-    () => [
+  const { isFetching: analyticsIsLoading, data: analytics } =
+    useApprovalAnalyticsQuery(
       {
-        id: "select",
-        header: ({ table }) => {
-          if (table.getRowModel().rows.length > 0) {
-            return (
-              <TableCheckbox
-                checked={table.getIsAllRowsSelected()}
-                indeterminate={table.getIsSomeRowsSelected()}
-                onChange={table.getToggleAllRowsSelectedHandler()}
-                showOnHover={false}
-              />
-            );
-          }
+        type: assignedRole?.split("_")[1].toLowerCase()!,
+      },
+      { skip: !assignedRole },
+    );
+
+  const columns = React.useMemo<ColumnDef<IReimbursementRequest>[]>(
+    () => {
+      const defaultColumns: ColumnDef<IReimbursementRequest>[] = [
+        {
+          id: "select",
+          header: ({ table }) => {
+            if (table.getRowModel().rows.length > 0) {
+              return (
+                <TableCheckbox
+                  checked={table.getIsAllRowsSelected()}
+                  indeterminate={table.getIsSomeRowsSelected()}
+                  onChange={table.getToggleAllRowsSelectedHandler()}
+                  showOnHover={false}
+                />
+              );
+            }
+          },
+
+          cell: ({ row }) => (
+            <TableCheckbox
+              checked={row.getIsSelected()}
+              tableHasChecked={selectedItems.length > 0}
+              disabled={!row.getCanSelect()}
+              indeterminate={row.getIsSomeSelected()}
+              onChange={row.getToggleSelectedHandler()}
+            />
+          ),
+        },
+        {
+          id: "request_status",
+          accessorKey: "request_status",
+          header: "Status",
+          filterFn: (row, id, value: string) => {
+            return value.includes(row.getValue(id));
+          },
+          enableColumnFilter: true,
+          meta: {
+            filterComponent: StatusFilter,
+          },
+        },
+        {
+          id: "reimb_requestor",
+          accessorKey: "reimb_requestor",
+          header: "Client",
+        },
+        {
+          id: "reimb_requestor",
+          accessorKey: "reimb_requestor",
+          header: "ID",
+        },
+        {
+          id: "reimb_requestor",
+          accessorKey: "reimb_requestor",
+          header: "Name",
+        },
+        {
+          id: "reference_no",
+          accessorKey: "reference_no",
+          header: "R-ID",
+        },
+        {
+          id: "request_type",
+          accessorKey: "request_type",
+          header: "Type",
+          filterFn: (row, id, value: string) => {
+            return value.includes(row.getValue(id));
+          },
+          meta: {
+            filterComponent: ReimbursementTypeFilter,
+          },
+        },
+        {
+          id: "particulars",
+          accessorKey: "particulars",
+          header: "Expense",
+          filterFn: (row, id, value: string) => {
+            return value.includes(row.getValue(id));
+          },
+          meta: {
+            filterComponent: ExpenseTypeFilter,
+          },
+        },
+        {
+          id: "created_at",
+          accessorKey: "created_at",
+          header: "Approved",
+          filterFn: (row, id, value: string) => {
+            return value.includes(row.getValue(id));
+          },
+          meta: {
+            filterComponent: DateFiledFilter,
+          },
+        },
+        {
+          id: "total_amount",
+          accessorKey: "total_amount",
+          header: "Total",
         },
 
-        cell: ({ row }) => (
-          <TableCheckbox
-            checked={row.getIsSelected()}
-            tableHasChecked={selectedItems.length > 0}
-            disabled={!row.getCanSelect()}
-            indeterminate={row.getIsSomeSelected()}
-            onChange={row.getToggleSelectedHandler()}
-          />
-        ),
-      },
-      {
-        id: "finance_request_status",
-        accessorKey: "finance_request_status",
-        header: "Status",
-        cell: TableCell,
-        filterFn: (row, id, value: string) => {
-          return value.includes(row.getValue(id));
+        {
+          id: "actions",
+          accessorKey: "id",
+          header: "",
+          setFocusedReimbursementId: setFocusedReimbursementId,
+          openDrawer: openReimbursementView,
         },
-        enableColumnFilter: true,
-        meta: {
-          filterComponent: (info: FilterProps) => <StatusFilter {...info} />,
-        },
-      },
-      {
-        id: "client_name",
-        accessorKey: "client_name",
-        cell: TableCell,
-        header: "Client",
-      },
-      {
-        id: "employee_id",
-        accessorKey: "employee_id",
-        cell: TableCell,
-        header: "ID",
-      },
-      {
-        id: "reimb_requestor",
-        accessorKey: "reimb_requestor",
-        cell: TableCell,
-        header: "Name",
-      },
-      {
-        id: "reference_no",
-        accessorKey: "reference_no",
-        cell: TableCell,
-        header: "R-ID",
-      },
-      {
-        id: "request_type",
-        accessorKey: "request_type",
-        cell: TableCell,
-        header: "Type",
-        filterFn: (row, id, value: string) => {
-          return value.includes(row.getValue(id));
-        },
-        meta: {
-          filterComponent: ReimbursementTypeFilter,
-        },
-      },
-      {
-        id: "particulars",
-        accessorKey: "particulars",
-        cell: (info) => info.getValue(),
-        header: "Expense",
-        filterFn: (row, id, value: string) => {
-          return value.includes(row.getValue(id));
-        },
-        meta: {
-          filterComponent: ExpenseTypeFilter,
-        },
-      },
-      {
-        id: "created_at",
-        accessorKey: "created_at",
-        cell: (info) => dayjs(info.getValue() as string).format("MMM D, YYYY"),
-        header: "Approved",
-        filterFn: (row, id, value: string) => {
-          return value.includes(row.getValue(id));
-        },
-        meta: {
-          filterComponent: DateFiledFilter,
-        },
-      },
-      {
-        id: "total_amount",
-        accessorKey: "total_amount",
-        header: "Total",
-        cell: TableCell,
-      },
-      {
-        id: "actions",
-        accessorKey: "id",
-        header: "",
-        cell: TableCell,
-        setFocusedReimbursementId: setFocusedReimbursementId,
-        openDrawer: openReimbursementView,
-      },
-    ],
+      ];
+      defaultColumns.forEach((a) => {
+        a.cell = a.id === "select" ? a.cell : TableCell;
+      });
+
+      return defaultColumns;
+    },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [data, selectedItems],
   );
@@ -275,7 +280,11 @@ const Payables: React.FC = () => {
   return (
     <>
       <div className="grid bg-neutral-50 md:gap-y-4 lg:p-5">
-        <FinanceAnalytics />
+        <ApprovalTableAnalytics
+          type="finance"
+          data={analytics!}
+          isLoading={analyticsIsLoading}
+        />
 
         <SideDrawer
           title={

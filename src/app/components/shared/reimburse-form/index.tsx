@@ -12,8 +12,6 @@ import ParticularList from "./steps/ParticularList";
 import SelectReimbursementType from "./steps/SelectReimbursementType";
 import AddApprovers from "./steps/SetApprover";
 
-// const UploadAttachments = dynamic(() => import("./steps/UploadAttachments"));
-
 interface ReimburseFormProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   formReturn: UseFormReturn<any>;

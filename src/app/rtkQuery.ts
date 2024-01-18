@@ -7,8 +7,13 @@ import {
   type FetchBaseQueryError,
   type FetchBaseQueryMeta,
 } from "@reduxjs/toolkit/query/react";
+import { setAccessToken } from "~/features/state/user-state.slice";
 import { env } from "../../env.mjs";
 import { type RootState } from "./store";
+
+type RefreshTokenResponse = {
+  access: string;
+};
 
 const appApiBaseQuery = fetchBaseQuery({
   baseUrl: env.NEXT_PUBLIC_BASEAPI_URL,
@@ -22,6 +27,37 @@ const appApiBaseQuery = fetchBaseQuery({
   },
 });
 
+export const refreshAccessToken = async (
+  accessToken: string,
+  refreshToken: string,
+) => {
+  try {
+    const url = `${env.NEXT_PUBLIC_BASEAPI_URL}/token/refresh`;
+
+    const body = new URLSearchParams({
+      refresh: refreshToken,
+    });
+
+    const response = await fetch(url, {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        Authorization: `Bearer ${accessToken}`,
+      },
+      method: "POST",
+      body,
+    });
+
+    const refreshedTokens = (await response.json()) as RefreshTokenResponse;
+    if (!response.ok) {
+      throw refreshedTokens;
+    }
+
+    return refreshedTokens;
+  } catch (error) {
+    console.log("Refresh token error");
+  }
+};
+
 const appApiBaseQueryWithReauth: BaseQueryFn<
   string | FetchArgs,
   unknown,
@@ -32,20 +68,19 @@ const appApiBaseQueryWithReauth: BaseQueryFn<
   let result = await appApiBaseQuery(args, api, extraOptions);
 
   if (result?.error?.status === 401) {
-    // const rootState = api.getState() as RootState;
+    const rootState = api.getState() as RootState;
+    const refreshToken = rootState.session.refreshToken!;
+    const accessToken = rootState.session.accessToken!;
+    const newAccessToken = await refreshAccessToken(accessToken, refreshToken);
 
-    // const propelauthRefreshTokenQuery = await propelauthUserInfo();
+    if (newAccessToken?.access) {
+      const { access } = newAccessToken;
+      api.dispatch(setAccessToken(access));
 
-    // if (propelauthRefreshTokenQuery?.accessToken) {
-    //   // const user = rootState.user;
-    //   const { accessToken } = propelauthRefreshTokenQuery;
-
-    //   api.dispatch(setAccessToken(accessToken));
-
-    result = await appApiBaseQuery(args, api, extraOptions);
-    // } else {
-    //   api.dispatch(clearAccessToken());
-    // }
+      result = await appApiBaseQuery(args, api, extraOptions);
+    } else {
+      api.dispatch(setAccessToken(null));
+    }
   }
 
   return result;
@@ -61,12 +96,13 @@ export const appApiSlice = createApi({
     "ReimbursementApprovalList",
     "ReimbursementHistoryList",
     "ReimbursementRequest",
-    "MemberAnalytics",
+    "MyAnalytics",
     "HRBPAnalytics",
     "ManagerAnalytics",
     "FinanceAnalytics",
     "ExpenseTypes",
     "AllExpenseTypes",
+    "AllGroups",
     "AllStatuses",
     "AuditLogs",
     "Users",
