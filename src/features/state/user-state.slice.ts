@@ -7,6 +7,7 @@ export interface IUser {
   email: string;
   first_name: string;
   last_name: string;
+  is_superuser: boolean;
   groups: IGroupType[];
   profile: IUserProfile;
   permissions: AppClaims[];

@@ -13,7 +13,7 @@ import ExpenseTypeCell from "./TableCell/ExpenseTypeCell";
 
 type MobileListItemProps = {
   onClick?: (e: number) => void;
-  type: "reimbursements" | "history" | "finance" | "approvals";
+  type: "reimbursements" | "history" | "finance" | "approvals" | "admin";
   row: Row<IReimbursementRequest>;
 };
 

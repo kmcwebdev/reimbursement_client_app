@@ -5,16 +5,26 @@ import FinanceDashboard from "./Finance";
 import HrbpDashboard from "./Hrbp";
 import ManagerDashboard from "./Manager";
 import MemberDashboard from "./Member";
+import AdminDashboard from "./Admin";
 
 const DashboardComponent: React.FC = () => {
-  const { assignedRole } = useAppSelector((state) => state.session);
-
+  const { user, assignedRole } = useAppSelector((state) => state.session);
   return (
     <div>
-      {assignedRole === "REIMBURSEMENT_MANAGER" && <ManagerDashboard />}
-      {assignedRole === "REIMBURSEMENT_USER" && <MemberDashboard />}
-      {assignedRole === "REIMBURSEMENT_HRBP" && <HrbpDashboard />}
-      {assignedRole === "REIMBURSEMENT_FINANCE" && <FinanceDashboard />}
+      {user && (
+        <>
+        {user.is_superuser ? (
+          <AdminDashboard />
+        ) : (
+          <>
+            {assignedRole === "REIMBURSEMENT_MANAGER" && !user?.is_superuser && <ManagerDashboard />}
+            {assignedRole === "REIMBURSEMENT_USER" && !user?.is_superuser  && <MemberDashboard />}
+            {assignedRole === "REIMBURSEMENT_HRBP" && !user?.is_superuser  && <HrbpDashboard />}
+            {assignedRole === "REIMBURSEMENT_FINANCE" && !user?.is_superuser  && <FinanceDashboard />}
+          </>
+        )}
+        </>
+      )}
     </div>
   );
 };

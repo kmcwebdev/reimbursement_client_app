@@ -55,6 +55,11 @@ type FinanceTable = {
   data?: IReimbursementRequest[];
 };
 
+type AdminTable = {
+  type: "admin";
+  data?: IReimbursementRequest[];
+};
+
 type TableProps = {
   loading?: boolean;
   tableState?: ITableState;
@@ -62,7 +67,7 @@ type TableProps = {
   handleMobileClick?: (e: number) => void;
   pagination: IResponsePagination;
   columns: any;
-} & (ReimbursementTable | ApprovalTable | FinanceTable | HistoryTable);
+} & (ReimbursementTable | ApprovalTable | FinanceTable | HistoryTable | AdminTable);
 
 interface CustomFilterMeta extends FilterMeta {
   filterComponent: () => JSX.Element;
