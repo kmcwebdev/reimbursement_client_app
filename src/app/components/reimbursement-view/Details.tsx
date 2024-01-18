@@ -53,11 +53,13 @@ const Details: React.FC<DetailsProps> = ({
         label="Expense"
         value={
           <div className="inline-flex flex-wrap gap-1">
-            {particulars.map((particular) => (
+            {[
+              ...new Set(particulars.map((item) => item.expense_type.name)),
+            ].map((particular) => (
               <StatusBadge
-                key={particular.id}
+                key={particular}
                 status="default"
-                label={particular.expense_type.name}
+                label={particular}
               />
             ))}
           </div>

@@ -23,6 +23,7 @@ const ReimbursementTypeFilter: React.FC<FilterProps> = () => {
     dispatch(
       setPageTableFilters({
         ...filters,
+        page: undefined,
         request_type__name,
       }),
     );

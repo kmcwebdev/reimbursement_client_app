@@ -28,6 +28,7 @@ export const userApiSlice = appApiSlice.injectEndpoints({
       {
         query: (query) => {
           const searchParams = createSearchParams(query);
+          searchParams?.append("ordering", "-created_at");
           return {
             url: "/reimbursements/request",
             params: searchParams ? searchParams : undefined,

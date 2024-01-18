@@ -5,11 +5,13 @@ import { removeUndefinedValues } from "~/utils/remove-undefined-values";
 interface TableState {
   selectedItems: number[];
   filters: IReimbursementsFilterQuery;
+  page: number | null;
 }
 
 const initialState: TableState = {
   selectedItems: [],
   filters: {},
+  page: null,
 };
 
 const TableStateSlice = createSlice({

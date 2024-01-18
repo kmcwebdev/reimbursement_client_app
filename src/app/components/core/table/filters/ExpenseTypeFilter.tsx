@@ -38,6 +38,7 @@ const ExpenseTypeFilter: React.FC<FilterProps> = () => {
     dispatch(
       setPageTableFilters({
         ...filters,
+        page: undefined,
         expense_type__name,
       }),
     );

@@ -3,9 +3,10 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { type ColumnDef } from "@tanstack/react-table";
 import dynamic from "next/dynamic";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, type ChangeEvent } from "react";
 import { useForm } from "react-hook-form";
 import { AiOutlinePlusCircle } from "react-icons-all-files/ai/AiOutlinePlusCircle";
+import { MdSearch } from "react-icons-all-files/md/MdSearch";
 import { Button } from "~/app/components/core/Button";
 import Table from "~/app/components/core/table";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
@@ -18,6 +19,7 @@ import {
   toggleFormDialog,
 } from "~/features/state/reimbursement-form-slice";
 import { setSelectedItems } from "~/features/state/table-state.slice";
+import { useDebounce } from "~/hooks/use-debounce";
 import { useDialogState } from "~/hooks/use-dialog-state";
 import {
   ReimbursementTypeSchema,
@@ -27,7 +29,9 @@ import {
   type IReimbursementRequest,
   type IReimbursementsFilterQuery,
 } from "~/types/reimbursement.types";
+import { classNames } from "~/utils/classNames";
 import SkeletonLoading from "../core/SkeletonLoading";
+import Input from "../core/form/fields/Input";
 import TableCell from "../core/table/TableCell";
 import MemberAnalytics from "./analytics/MemberAnalytics";
 import ReimburseForm from "./reimburse-form";
@@ -63,7 +67,17 @@ const MyReimbursements: React.FC = () => {
     (state) => state.pageTableState,
   );
 
-  const [pageFilters, setPageFilters] = useState<IReimbursementsFilterQuery>();
+  const [searchParams, setSearchParams] = useState<IReimbursementsFilterQuery>({
+    search: undefined,
+    expense_type__name: undefined,
+    request_type__name: undefined,
+    created_at_before: undefined,
+    created_at_after: undefined,
+  });
+
+  const debouncedSearchText = useDebounce(searchParams.search, 500);
+  const [isSearching, setIsSearching] = useState<boolean>(false);
+
   const dispatch = useAppDispatch();
 
   const setSelectedItemsState = (value: number[]) => {
@@ -73,12 +87,9 @@ const MyReimbursements: React.FC = () => {
   const [focusedReimbursementId, setFocusedReimbursementId] =
     useState<number>();
 
-  useEffect(() => {
-    setPageFilters(filters);
-  }, [filters]);
-
   const { isFetching, data } = useMyRequestsQuery({
-    ...pageFilters,
+    ...filters,
+    search: debouncedSearchText,
   });
 
   const {
@@ -215,6 +226,19 @@ const MyReimbursements: React.FC = () => {
     dispatch(toggleFormDialog());
   };
 
+  const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
+    setIsSearching(true);
+    const searchValue = e.target.value;
+    setSearchParams({ ...searchParams, search: searchValue });
+  };
+
+  useEffect(() => {
+    if (isSearching && !isFetching) {
+      setIsSearching(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isFetching]);
+
   return (
     <>
       <div className="grid bg-neutral-50 md:gap-y-4 lg:p-5">
@@ -222,25 +246,40 @@ const MyReimbursements: React.FC = () => {
 
         <div className="flex items-center justify-between p-4 lg:p-0">
           <h4>Reimbursements</h4>
-          {isFetching && (
+          {!isSearching && isFetching ? (
             <SkeletonLoading className="h-5 w-5 rounded-full md:h-10 md:w-[5rem] md:rounded" />
-          )}
-          {!isFetching && (
+          ) : (
             <>
-              <Button
-                className="hidden md:block"
-                onClick={() => dispatch(toggleFormDialog())}
+              <div
+                className={classNames(
+                  "flex flex-col gap-2 md:flex-row md:items-center",
+                )}
               >
-                Reimburse
-              </Button>
+                <Input
+                  name="searchFilter"
+                  placeholder="Find anything..."
+                  loading={isFetching && isSearching}
+                  className="w-full md:w-64"
+                  icon={MdSearch}
+                  defaultValue={filters.search}
+                  onChange={handleSearch}
+                />
 
-              <Button
-                buttonType="text"
-                className="block md:hidden"
-                onClick={() => dispatch(toggleFormDialog())}
-              >
-                <AiOutlinePlusCircle className="h-5 w-5" />
-              </Button>
+                <Button
+                  className="hidden md:block"
+                  onClick={() => dispatch(toggleFormDialog())}
+                >
+                  Reimburse
+                </Button>
+
+                <Button
+                  buttonType="text"
+                  className="block md:hidden"
+                  onClick={() => dispatch(toggleFormDialog())}
+                >
+                  <AiOutlinePlusCircle className="h-5 w-5" />
+                </Button>
+              </div>
             </>
           )}
         </div>

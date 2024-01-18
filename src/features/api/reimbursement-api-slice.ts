@@ -15,12 +15,11 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
     >({
       query: (query) => {
         const searchParams = createSearchParams(query);
-
         searchParams?.delete("type");
+        searchParams?.append("ordering", "-created_at");
         return {
           url: `/reimbursements/request/${query.type}`,
-          params:
-            searchParams && searchParams.size ? searchParams.toString() : {},
+          params: searchParams ? searchParams : {},
         };
       },
       providesTags: (_result, _fetchBaseQuery, query) => [
@@ -33,6 +32,7 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
     >({
       query: (query) => {
         const searchParams = createSearchParams(query);
+        searchParams?.append("ordering", "-created_at");
         return {
           url: "/reimbursements/request/history",
           params:

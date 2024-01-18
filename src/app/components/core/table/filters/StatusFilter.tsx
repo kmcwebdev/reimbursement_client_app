@@ -44,6 +44,7 @@ const StatusFilter: React.FC<FilterProps> = () => {
     dispatch(
       setPageTableFilters({
         ...filters,
+        page: undefined,
         request_status__name,
       }),
     );

@@ -16,10 +16,10 @@ const ExpenseTypeCell: React.FC<ExpenseTypeCellProps> = ({ value }) => {
     setLoading(true);
     const items: string[] = [];
 
-    value.forEach((a) => {
-      if (totalChars + a.expense_type.name.length <= 33) {
-        items.push(a.expense_type.name);
-        totalChars += a.expense_type.name.length;
+    [...new Set(value.map((item) => item.expense_type.name))].forEach((a) => {
+      if (totalChars + a.length <= 33) {
+        items.push(a);
+        totalChars += a.length;
       } else {
         remainingItems = remainingItems + 1;
       }
@@ -36,7 +36,7 @@ const ExpenseTypeCell: React.FC<ExpenseTypeCellProps> = ({ value }) => {
         <div className="flex h-full select-none items-center gap-1">
           {itemsToDisplay &&
             itemsToDisplay.length > 0 &&
-            itemsToDisplay.map((a) => (
+            [...new Set(itemsToDisplay.map((item) => item))].map((a) => (
               <div
                 key={a}
                 className="grid h-6 place-items-center rounded border border-neutral-900 border-opacity-20 bg-neutral-50 px-2 text-sm text-neutral-900"

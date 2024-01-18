@@ -18,15 +18,6 @@ interface ApproversProps {
 const Approvers: React.FC<ApproversProps> = ({ approvers, request_status }) => {
   const [lastApproverRejected] = useState<IApproverMatrix>();
 
-  // useMemo(() => {
-  //   const approversWhoRejected = approvers.filter((a) => a.has_rejected);
-
-  //   if (approversWhoRejected && approversWhoRejected.length > 0) {
-  //     setLastApproverRejected(
-  //       approversWhoRejected[approversWhoRejected.length - 1],
-  //     );
-  //   }
-  // }, [approvers]);
   return (
     <>
       <div className="flex flex-col gap-4 py-4">
@@ -35,7 +26,7 @@ const Approvers: React.FC<ApproversProps> = ({ approvers, request_status }) => {
         {approvers.map((approver) => (
           <div key={approver.id} className="flex flex-col gap-4">
             <div className="flex gap-4">
-              {!approver.is_approved && !lastApproverRejected && (
+              {!approver.is_approved && !approver.is_rejected && (
                 <MdAccessTimeFilled className="mt-0.1 h-4 w-4 text-yellow-600" />
               )}
 

@@ -42,6 +42,7 @@ const DateFiledFilter: React.FC<FilterProps> = () => {
     dispatch(
       setPageTableFilters({
         ...filters,
+        page: undefined,
         created_at_before: undefined,
         created_at_after: undefined,
       }),
@@ -71,16 +72,20 @@ const DateFiledFilter: React.FC<FilterProps> = () => {
       dispatch(
         setPageTableFilters({
           ...filters,
-          created_at_before: dateFrom && parseTimezone(dateFrom).toISOString(),
-          created_at_after: dateTo && parseTimezone(dateTo).toISOString(),
+          created_at_after:
+            dateFrom && parseTimezone(dateFrom).format("YYYY-MM-DD"),
+          created_at_before:
+            dateTo && parseTimezone(dateTo).format("YYYY-MM-DD"),
         }),
       );
     } else {
       dispatch(
         setPageTableFilters({
           ...filters,
-          created_at_before: dateFrom && parseTimezone(dateFrom).toISOString(),
-          created_at_after: dateTo && parseTimezone(dateTo).toISOString(),
+          created_at_after:
+            dateFrom && parseTimezone(dateFrom).format("YYYY-MM-DD"),
+          created_at_before:
+            dateTo && parseTimezone(dateTo).format("YYYY-MM-DD"),
         }),
       );
     }
