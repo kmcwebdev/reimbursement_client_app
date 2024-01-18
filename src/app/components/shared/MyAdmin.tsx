@@ -34,6 +34,7 @@ import CollapseWidthAnimation from "../animation/CollapseWidth";
 import { useReportDownload } from "~/hooks/use-report-download";
 import { showToast } from "../core/Toast";
 import { env } from "../../../../env.mjs";
+import { useDebounce } from "~/hooks/use-debounce";
 
 const ReimbursementsCardView = dynamic(
   () => import("~/app/components/reimbursement-view"),
@@ -62,6 +63,8 @@ const MyReimbursements: React.FC = () => {
     particularDetailsFormIsVisible,
     selectedAttachmentMethod,
   } = useAppSelector((state) => state.reimbursementForm);
+
+
   const { selectedItems, filters } = useAppSelector(
     (state) => state.pageTableState,
   );
@@ -76,7 +79,20 @@ const MyReimbursements: React.FC = () => {
 
   const [downloadReportLoading, setDownloadReportLoading] = useState(false);
 
-  const { isFetching, data } = useMyRequestsQuery();
+  const [searchParams, setSearchParams] = useState<IReimbursementsFilterQuery>({
+    search: undefined,
+    expense_type__name: undefined,
+    request_type__name: undefined,
+    created_at_before: undefined,
+    created_at_after: undefined,
+  });
+
+  const debouncedSearchText = useDebounce(searchParams.search, 500);
+
+  const { isFetching, data } = useMyRequestsQuery({
+    ...filters,
+    search: debouncedSearchText,
+  });
 
   const {
     isFetching: focusedReimbursementDataIsFetching,
@@ -242,13 +258,6 @@ const MyReimbursements: React.FC = () => {
     setSearchParams({ ...searchParams, text_search: searchValue });
   };
   
-  const [searchParams, setSearchParams] = useState<IReimbursementsFilterQuery>({
-    text_search: undefined,
-    expense_type_ids: undefined,
-    reimbursement_type_id: undefined,
-    from: undefined,
-    to: undefined,
-  });
 
   const {
     isVisible: confirmReportDownloadIsOpen,
@@ -294,7 +303,7 @@ const MyReimbursements: React.FC = () => {
     <>
       <div className="grid bg-neutral-50 md:gap-y-4 lg:p-5">
         <AdminAnalytics />
-        
+
         <div className="flex flex-col justify-between gap-2 p-4 md:flex-row lg:p-0">
           <h4>Reimbursements</h4>
 
