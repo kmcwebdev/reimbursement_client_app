@@ -119,7 +119,9 @@ const ProfileMenu: React.FC = () => {
               <p className="text-xs text-neutral-600">{assignedRole}</p>
               {typeof window !== "undefined" &&
                 (window.location.origin.includes("http://localhost") ||
-                  window.location.origin.includes("http://localhost")) && (
+                  window.location.origin.includes(
+                    "https://reimbursement-client-app-staging.vercel.app/",
+                  )) && (
                   <div className="flex flex-col gap-2">
                     {user && !user.is_superuser ? (
                       <div className="flex flex-col gap-8">

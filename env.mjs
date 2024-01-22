@@ -18,6 +18,7 @@ export const env = createEnv({
     AZURE_AD_CLIENT_ID: z.string().min(1),
     AZURE_AD_TENANT_ID: z.string().min(1),
     AZURE_AD_CLIENT_SECRET: z.string().min(1),
+    NEXT_PUBLIC_BASEAPI_URL: z.string().url(),
   },
   client: {
     NEXT_PUBLIC_APP_URL: z.string().url(),
