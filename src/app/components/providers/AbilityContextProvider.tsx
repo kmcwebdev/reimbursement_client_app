@@ -17,13 +17,12 @@ import {
 } from "~/features/state/user-state.slice";
 import { type AppClaims } from "~/types/permission-types";
 import { defineAbility } from "~/utils/define-ability";
-import AuthLoader from "../loaders/AuthLoader";
 
 export const AbilityContextProvider: React.FC<PropsWithChildren> = ({
   children,
 }) => {
   const nextAuthSession = useSession();
-  const { accessToken, assignedRole, user } = useAppSelector(
+  const { accessToken, assignedRole } = useAppSelector(
     (state) => state.session,
   );
 
@@ -36,8 +35,6 @@ export const AbilityContextProvider: React.FC<PropsWithChildren> = ({
   });
   const dispatch = useAppDispatch();
   const [permissions, setPermissions] = useState<AppClaims[]>();
-
-  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   /**
    * LOGIN PAGE REDIRECTION
@@ -57,10 +54,6 @@ export const AbilityContextProvider: React.FC<PropsWithChildren> = ({
         nextAuthSession.status === "unauthenticated"
       ) {
         window.location.replace("/auth/login");
-      }
-
-      if (pathname.includes("/auth")) {
-        setIsLoading(false);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -88,7 +81,6 @@ export const AbilityContextProvider: React.FC<PropsWithChildren> = ({
         setPermissions(me.permissions);
         dispatch(setUser(me));
       }, 0);
-      setIsLoading(false);
     }
 
     if (meIsError) {
@@ -96,10 +88,6 @@ export const AbilityContextProvider: React.FC<PropsWithChildren> = ({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [me, meIsLoading]);
-
-  if (isLoading && !user) {
-    return <AuthLoader />;
-  }
 
   return (
     <AbilityContext.Provider value={defineAbility(assignedRole, permissions)}>
