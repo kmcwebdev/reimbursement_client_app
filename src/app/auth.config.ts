@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/require-await */
 
-import type { DefaultSession, NextAuthConfig } from "next-auth";
+import type { NextAuthConfig } from "next-auth";
 
 export const authConfig: NextAuthConfig = {
   session: {
@@ -25,7 +25,7 @@ export const authConfig: NextAuthConfig = {
         session.accessToken = token.accessToken;
         session.refreshToken = token.refreshToken;
       }
-      return session as DefaultSession;
+      return session;
     },
   },
 } satisfies NextAuthConfig;
