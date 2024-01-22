@@ -36,6 +36,7 @@ export const AbilityContextProvider: React.FC<PropsWithChildren> = ({
   });
   const dispatch = useAppDispatch();
   const [permissions, setPermissions] = useState<AppClaims[]>();
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   /**
    * LOGIN PAGE REDIRECTION
@@ -59,6 +60,12 @@ export const AbilityContextProvider: React.FC<PropsWithChildren> = ({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nextAuthSession.status]);
+
+  useMemo(() => {
+    if (assignedRole && permissions) {
+      setIsLoading(false);
+    }
+  }, [assignedRole, permissions]);
 
   useEffect(() => {
     if (
@@ -87,10 +94,11 @@ export const AbilityContextProvider: React.FC<PropsWithChildren> = ({
     if (meIsError) {
       await signOut();
     }
+    setIsLoading(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [me, meIsLoading]);
 
-  if (meIsLoading) {
+  if (isLoading) {
     return <AuthLoader />;
   }
 
