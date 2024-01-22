@@ -65,6 +65,13 @@ COPY --from=deps /app/node_modules ./node_modules
 # Copy the application code to the working directory
 COPY . .
 
+# Create a .env.production file from environment variables
+RUN echo "NODE_ENV=${NODE_ENV}" > .env.production && \
+    echo "NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL}" >> .env.production && \
+    echo "NEXT_PUBLIC_ENVIRONMENT=${NEXT_PUBLIC_ENVIRONMENT}" >> .env.production && \
+    echo "NEXT_PUBLIC_PUSHER_APP_KEY=${NEXT_PUBLIC_PUSHER_APP_KEY}" >> .env.production && \
+    echo "NEXT_PUBLIC_BASEAPI_URL=${NEXT_PUBLIC_BASEAPI_URL}" >> .env.production
+
 # Build the application
 RUN \
   if [ -f yarn.lock ]; then SKIP_ENV_VALIDATION=1 yarn build; \
