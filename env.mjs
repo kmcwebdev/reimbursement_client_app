@@ -18,7 +18,6 @@ export const env = createEnv({
     AZURE_AD_CLIENT_ID: z.string().min(1),
     AZURE_AD_TENANT_ID: z.string().min(1),
     AZURE_AD_CLIENT_SECRET: z.string().min(1),
-    AUTH_SECRET: z.string().min(1)
   },
   client: {
     NEXT_PUBLIC_APP_URL: z.string().url(),
@@ -34,7 +33,6 @@ export const env = createEnv({
     PUSHER_APP_CLUSTER: process.env.PUSHER_APP_CLUSTER,
     RESEND_API_KEY: process.env.RESEND_API_KEY,
     NEXT_AUTH_SECRET: process.env.NEXT_AUTH_SECRET,
-    AUTH_SECRET: process.env.AUTH_SECRET,
     AZURE_AD_CLIENT_ID: process.env.AZURE_AD_CLIENT_ID,
     AZURE_AD_TENANT_ID: process.env.AZURE_AD_TENANT_ID,
     AZURE_AD_CLIENT_SECRET: process.env.AZURE_AD_CLIENT_SECRET,
