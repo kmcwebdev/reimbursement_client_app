@@ -58,7 +58,8 @@ ENV PUSHER_APP_ID=$PUSHER_APP_ID \
     NEXT_AUTH_SECRET=$NEXT_AUTH_SECRET \
     AUTH_SECRET=$AUTH_SECRET
 
-RUN for var in \
+RUN set -eu; \
+    env_vars=" \
     PUSHER_APP_ID \
     PUSHER_APP_KEY \
     PUSHER_APP_SECRET \
@@ -72,12 +73,14 @@ RUN for var in \
     NEXT_PUBLIC_PUSHER_APP_KEY \
     NEXT_PUBLIC_BASEAPI_URL \
     NEXT_AUTH_SECRET \
-    AUTH_SECRET; \
-  do \
-    if [ -z "${!var}" ]; then \
-      echo "Environment variable $var is not set. Build cannot proceed." && exit 1; \
-    fi; \
-  done
+    AUTH_SECRET \
+    "; \
+    for var in $env_vars; do \
+      if [ -z "${!var+x}" ]; then \
+        echo "Environment variable $var is not set. Build cannot proceed." >&2; \
+        exit 1; \
+      fi; \
+    done
   
 # Set the working directory to /app
 WORKDIR /app
