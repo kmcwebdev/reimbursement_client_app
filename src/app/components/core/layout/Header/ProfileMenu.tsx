@@ -120,7 +120,7 @@ const ProfileMenu: React.FC = () => {
               {typeof window !== "undefined" &&
                 (window.location.origin.includes("http://localhost") ||
                   window.location.origin.includes(
-                    "https://reimbursement-client-app-staging.vercel.app/",
+                    "https://reimbursement-client-app-staging.vercel.app",
                   )) && (
                   <div className="flex flex-col gap-2">
                     {user && !user.is_superuser ? (

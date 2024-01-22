@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { type Metadata } from "next";
 import Image from "next/image";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -12,9 +13,11 @@ import Input from "~/app/components/core/form/fields/Input";
 import { CredentialsSchema, type Credentials } from "~/schema/auth.schema";
 import { handleAzureAdLogin, handleCredentialsLogin } from "./login";
 
-interface pageProps {}
+export const metadata: Metadata = {
+  title: "Login",
+};
 
-const Login: React.FC<pageProps> = () => {
+const Login: React.FC = () => {
   const [loading, setIsLoading] = useState<boolean>(false);
   const [loginError, setLoginIsError] = useState<boolean>(false);
   const useCredentialsForm = useForm<Credential>({
