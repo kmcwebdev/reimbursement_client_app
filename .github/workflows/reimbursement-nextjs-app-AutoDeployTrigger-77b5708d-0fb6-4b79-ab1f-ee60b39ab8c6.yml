@@ -1,0 +1,43 @@
+name: Trigger auto deployment for reimbursement-nextjs-app
+
+# When this action will be executed
+on:
+  # Automatically trigger it when detected changes in repo
+  push:
+    branches: 
+      [ dev-jyzr/adopt-app-dir ]
+    paths:
+    - '**'
+    - '.github/workflows/reimbursement-nextjs-app-AutoDeployTrigger-77b5708d-0fb6-4b79-ab1f-ee60b39ab8c6.yml'
+
+  # Allow manual trigger 
+  workflow_dispatch:
+      
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout to the branch
+        uses: actions/checkout@v2
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.REIMBURSEMENTNEXTJSAPP_AZURE_CREDENTIALS }}
+
+      - name: Build and push container image to registry
+        uses: azure/container-apps-deploy-action@v2
+        with:
+          appSourcePath: ${{ github.workspace }} 
+          registryUrl: kmccontainerhub.azurecr.io
+          registryUsername: ${{ secrets.REIMBURSEMENTNEXTJSAPP_REGISTRY_USERNAME }}
+          registryPassword: ${{ secrets.REIMBURSEMENTNEXTJSAPP_REGISTRY_PASSWORD }}
+          containerAppName: reimbursement-nextjs-app
+          resourceGroup: ERP_CONTAINER_APP
+          imageToBuild: kmccontainerhub.azurecr.io/reimbursement-nextjs-app:${{ github.sha }}
+          
+            
+
+     
+
