@@ -8,6 +8,7 @@ export const env = createEnv({
     process.env.SKIP_ENV_VALIDATION !== "0",
   isServer: typeof window === "undefined",
   server: {
+    NODE_ENV: z.enum(["development", "production"]),
     PUSHER_APP_ID: z.string().min(1),
     PUSHER_APP_KEY: z.string().min(1),
     PUSHER_APP_SECRET: z.string().min(1),
@@ -26,6 +27,7 @@ export const env = createEnv({
     NEXT_PUBLIC_BASEAPI_URL: z.string().url(),
   },
   runtimeEnv: {
+    NODE_ENV: process.env.NODE_ENV,
     PUSHER_APP_ID: process.env.PUSHER_APP_ID,
     PUSHER_APP_KEY: process.env.PUSHER_APP_KEY,
     PUSHER_APP_SECRET: process.env.PUSHER_APP_SECRET,
