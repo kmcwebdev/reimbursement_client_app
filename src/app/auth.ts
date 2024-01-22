@@ -44,9 +44,9 @@ export const {
       },
     }),
     AzureAdProvider({
-      clientId: `${env.NEXT_PUBLIC_AZURE_AD_CLIENT_ID}`,
-      clientSecret: `${env.NEXT_PUBLIC_AZURE_AD_CLIENT_SECRET}`,
-      tenantId: `${env.NEXT_PUBLIC_AZURE_AD_TENANT_ID}`,
+      clientId: `${env.AZURE_AD_CLIENT_ID}`,
+      clientSecret: `${env.AZURE_AD_CLIENT_SECRET}`,
+      tenantId: `${env.AZURE_AD_TENANT_ID}`,
       authorization: {
         params: { scope: "openid email profile User.Read  offline_access" },
       },
