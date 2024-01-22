@@ -18,7 +18,7 @@ declare module "next-auth" {
   }
 
   interface User {
-    access: any & DefaultSession["user"];
+    access: any;
     refresh: any & DefaultSession["user"];
   }
 }

@@ -1,7 +1,7 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/require-await */
 
-import type { NextAuthConfig } from "next-auth";
+import type { NextAuthConfig, Session, User } from "next-auth";
+import type { JWT } from "next-auth/jwt";
 
 export const authConfig: NextAuthConfig = {
   providers: [],
@@ -18,12 +18,19 @@ export const authConfig: NextAuthConfig = {
       return token;
       // return refreshAccessToken(token);
     },
-    async session(params) {
-      if (params.session && params.token) {
-        params.session.accessToken = params.token.accessToken as string;
-        params.session.refreshToken = params.token.refreshToken as string;
+    async session({
+      session,
+      token,
+    }: {
+      session: Session;
+      token?: JWT;
+      user: User;
+    }) {
+      if (session && token) {
+        session.accessToken = token.accessToken;
+        session.refreshToken = token.refreshToken as string;
       }
-      return params.session;
+      return session;
     },
   },
 } satisfies NextAuthConfig;
