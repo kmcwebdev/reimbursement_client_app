@@ -15,9 +15,9 @@ declare module "next-auth" {
     refreshToken?: string;
   }
 
-  interface User extends DefaultSession["user"] {
+  interface User {
     access: string;
-    refresh: string;
+    refresh: string & DefaultSession["user"];
   }
 }
 
