@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { type DefaultSession } from "next-auth";
 
 declare module "next-auth" {
@@ -14,9 +15,9 @@ declare module "next-auth" {
     refreshToken?: string;
   }
 
-  interface User {
+  interface User extends DefaultSession["user"] {
     access: string;
-    refresh: string & DefaultSession["user"];
+    refresh: string;
   }
 }
 
@@ -32,7 +33,7 @@ declare module "@auth/core/jwt" {
 
 declare module "@tanstack/react-table" {
   interface ColumnDefBase {
-    setFocusedReimbursementId?: number;
-    openDrawer?: unknown;
+    setFocusedReimbursementId?: any;
+    openDrawer?: any;
   }
 }
