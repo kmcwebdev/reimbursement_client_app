@@ -65,11 +65,12 @@ COPY --from=deps /app/node_modules ./node_modules
 # Copy the application code to the working directory
 COPY . .
 
-RUN echo "NODE_ENV=production" > .env.production && \
-    echo "NEXT_PUBLIC_APP_URL=https://reimbursement-nextjs-app.purplebay-4a7d71fd.southeastasia.azurecontainerapps.io" >> .env.production && \
-    echo "NEXT_PUBLIC_ENVIRONMENT=production" >> .env.production && \
-    echo "NEXT_PUBLIC_PUSHER_APP_KEY=affa5695ab0f6d72e6b5" >> .env.production && \
-    echo "NEXT_PUBLIC_BASEAPI_URL=https://django-rest-yj32w.ondigitalocean.app" >> .env.production
+# Create a .env.production file from environment variables
+RUN echo "NODE_ENV=\${NODE_ENV}" > .env.production && \
+    echo "NEXT_PUBLIC_APP_URL=\${NEXT_PUBLIC_APP_URL}" >> .env.production && \
+    echo "NEXT_PUBLIC_ENVIRONMENT=\${NEXT_PUBLIC_ENVIRONMENT}" >> .env.production && \
+    echo "NEXT_PUBLIC_PUSHER_APP_KEY=\${NEXT_PUBLIC_PUSHER_APP_KEY}" >> .env.production && \
+    echo "NEXT_PUBLIC_BASEAPI_URL=\${NEXT_PUBLIC_BASEAPI_URL}" >> .env.production
 
 # Build the application
 RUN \
