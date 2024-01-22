@@ -43,7 +43,26 @@ ARG NEXT_PUBLIC_PUSHER_APP_KEY
 ARG NEXT_PUBLIC_BASEAPI_URL
 ARG NEXT_AUTH_SECRET
 ARG AUTH_SECRET
-  
+
+# Ensure all required environment variables are set
+RUN if [ -z "$NODE_ENV" ] || \
+        [ -z "$PUSHER_APP_ID" ] || \
+        [ -z "$PUSHER_APP_KEY" ] || \
+        [ -z "$PUSHER_APP_SECRET" ] || \
+        [ -z "$PUSHER_APP_CLUSTER" ] || \
+        [ -z "$RESEND_API_KEY" ] || \
+        [ -z "$NEXT_PUBLIC_AZURE_AD_CLIENT_ID" ] || \
+        [ -z "$NEXT_PUBLIC_AZURE_AD_TENANT_ID" ] || \
+        [ -z "$NEXT_PUBLIC_AZURE_AD_CLIENT_SECRET" ] || \
+        [ -z "$NEXT_PUBLIC_APP_URL" ] || \
+        [ -z "$NEXT_PUBLIC_ENVIRONMENT" ] || \
+        [ -z "$NEXT_PUBLIC_PUSHER_APP_KEY" ] || \
+        [ -z "$NEXT_PUBLIC_BASEAPI_URL" ] || \
+        [ -z "$NEXT_AUTH_SECRET" ] || \
+        [ -z "$AUTH_SECRET" ]; then \
+    echo "One or more environment variables are undefined. Exiting..." && exit 1; \
+    fi
+
 # Set the working directory to /app
 WORKDIR /app
 
