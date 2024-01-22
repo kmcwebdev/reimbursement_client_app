@@ -73,7 +73,7 @@ export const actionsApiSlice = appApiSlice.injectEndpoints({
       query: (data) => {
         return {
           url: `/reimbursements/request/${data.id}/cancel`,
-          method: "POST",
+          method: "PATCH",
         };
       },
       invalidatesTags: [
