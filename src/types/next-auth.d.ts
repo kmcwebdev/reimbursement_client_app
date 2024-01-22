@@ -6,7 +6,7 @@ declare module "next-auth" {
    * Returned by `useSession`, `getSession` and received as a prop on the `SessionProvider` React Context
    */
   interface Session {
-    user: DefaultSession["user"] & {
+    user?: DefaultSession["user"] & {
       id: unknown;
       groups: unknown;
       username: unknown;
@@ -21,7 +21,7 @@ declare module "next-auth" {
   }
 }
 
-declare module "@auth/core" {
+declare module "next-auth/jwt" {
   /** Returned by the `jwt` callback and `getToken`, when using JWT sessions */
   interface JWT {
     id_token?: string;

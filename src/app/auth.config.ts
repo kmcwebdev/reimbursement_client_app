@@ -2,10 +2,23 @@
 
 import type { NextAuthConfig } from "next-auth";
 
+declare module "@auth/core/jwt" {
+  /** Returned by the `jwt` callback and `getToken`, when using JWT sessions */
+  interface JWT {
+    id_token?: string;
+    provider?: string;
+    accessToken?: string;
+    refreshToken?: string;
+  }
+}
+
 export const authConfig: NextAuthConfig = {
+  session: {
+    strategy: "jwt",
+  },
   providers: [],
   pages: {
-    signIn: "/login",
+    signIn: "login",
   },
   callbacks: {
     async jwt({ token, user }) {
@@ -19,8 +32,9 @@ export const authConfig: NextAuthConfig = {
     },
     async session({ session, token }) {
       if (session && token) {
-        session.accessToken = token.accessToken;
-        session.refreshToken = token.refreshToken;
+        console.log(token);
+        session.accessToken = token.accessToken as string;
+        session.refreshToken = token.refreshToken as string;
       }
       return session;
     },
