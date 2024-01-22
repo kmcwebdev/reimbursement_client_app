@@ -7,7 +7,7 @@ import { env } from "../../env.mjs";
 
 export default {
   pages: {
-    signIn: "/login",
+    signIn: "/auth/login",
   },
   providers: [
     CredentialsProvider({
