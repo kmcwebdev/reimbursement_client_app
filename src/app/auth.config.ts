@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/require-await */
-import { JWT } from "@auth/core/jwt";
+import { type JWT } from "@auth/core/jwt";
 import type { NextAuthConfig, Session } from "next-auth";
 import AzureAdProvider from "next-auth/providers/azure-ad";
 import CredentialsProvider from "next-auth/providers/credentials";
@@ -8,7 +7,7 @@ import { env } from "../../env.mjs";
 
 export default {
   pages: {
-    signIn: "login",
+    signIn: "/login",
   },
   providers: [
     CredentialsProvider({
