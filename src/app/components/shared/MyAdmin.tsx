@@ -6,6 +6,8 @@ import dynamic from "next/dynamic";
 import React, { useMemo, useState, type ChangeEvent } from "react";
 import { useForm } from "react-hook-form";
 // import { AiOutlinePlusCircle } from "react-icons-all-files/ai/AiOutlinePlusCircle";
+import { type IconType } from "react-icons-all-files";
+import { AiOutlineSearch } from "react-icons-all-files/ai/AiOutlineSearch";
 import { Button } from "~/app/components/core/Button";
 import Table from "~/app/components/core/table";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
@@ -18,24 +20,25 @@ import {
   toggleFormDialog,
 } from "~/features/state/reimbursement-form-slice";
 import { setSelectedItems } from "~/features/state/table-state.slice";
+import { useDebounce } from "~/hooks/use-debounce";
 import { useDialogState } from "~/hooks/use-dialog-state";
+import { useReportDownload } from "~/hooks/use-report-download";
 import {
   ReimbursementTypeSchema,
   type ReimbursementFormType,
 } from "~/schema/reimbursement-type.schema";
-import { type IReimbursementRequest, type IReimbursementsFilterQuery } from "~/types/reimbursement.types";
+import {
+  type IReimbursementRequest,
+  type IReimbursementsFilterQuery,
+} from "~/types/reimbursement.types";
+import { env } from "../../../../env.mjs";
+import CollapseWidthAnimation from "../animation/CollapseWidth";
 import SkeletonLoading from "../core/SkeletonLoading";
+import { showToast } from "../core/Toast";
+import Input from "../core/form/fields/Input";
 import TableCell from "../core/table/TableCell";
 import AdminAnalytics from "./analytics/AdminAnalytics";
 import ReimburseForm from "./reimburse-form";
-import Input from "../core/form/fields/Input";
-import { type IconType } from "react-icons-all-files";
-import { AiOutlineSearch } from "react-icons-all-files/ai/AiOutlineSearch";
-import CollapseWidthAnimation from "../animation/CollapseWidth";
-import { useReportDownload } from "~/hooks/use-report-download";
-import { showToast } from "../core/Toast";
-import { env } from "../../../../env.mjs";
-import { useDebounce } from "~/hooks/use-debounce";
 
 const ReimbursementsCardView = dynamic(
   () => import("~/app/components/reimbursement-view"),
@@ -92,8 +95,8 @@ const MyAdmin: React.FC = () => {
 
   const [searchParams, setSearchParams] = useState<IReimbursementsFilterQuery>({
     search: undefined,
-    expense_type__name: undefined,
-    request_type__name: undefined,
+    expense_type__id: undefined,
+    request_type__id: undefined,
     created_at_before: undefined,
     created_at_after: undefined,
   });
@@ -251,9 +254,6 @@ const MyAdmin: React.FC = () => {
     const searchValue = e.target.value;
     setSearchParams({ ...searchParams, search: searchValue });
   };
-  
-
-
 
   const {
     isVisible: confirmReportDownloadIsOpen,
@@ -429,72 +429,72 @@ const MyAdmin: React.FC = () => {
       </SideDrawer>
 
       <Dialog
-          title="Download Report"
-          isVisible={confirmReportDownloadIsOpen}
-          close={closeReportConfirmDialog}
-          hideCloseIcon
-        >
-          <div className="flex flex-col gap-8 pt-8">
-            {selectedItems.length === 0 && (
-              <p className="text-neutral-800">
-                Downloading the report will change the reimbursements status to
-                processing. Are you sure you want to download{" "}
-                <strong>all</strong> reimbursements?
-              </p>
-            )}
+        title="Download Report"
+        isVisible={confirmReportDownloadIsOpen}
+        close={closeReportConfirmDialog}
+        hideCloseIcon
+      >
+        <div className="flex flex-col gap-8 pt-8">
+          {selectedItems.length === 0 && (
+            <p className="text-neutral-800">
+              Downloading the report will change the reimbursements status to
+              processing. Are you sure you want to download <strong>all</strong>{" "}
+              reimbursements?
+            </p>
+          )}
 
-            {selectedItems.length === 1 && (
-              <p className="text-neutral-800">
-                Downloading the report will change the reimbursements status to
-                processing. Are you sure you want to download{" "}
-                <strong>
-                  {
-                    data?.results.find((a) => a.id === selectedItems[0])
-                      ?.reimb_requestor.first_name
-                  }{" "}
-                  {
-                    data?.results.find((a) => a.id === selectedItems[0])
-                      ?.reimb_requestor.last_name
-                  }
-                  ,{" "}
-                  {
-                    data?.results.find((a) => a.id === selectedItems[0])
-                      ?.reference_no
-                  }
-                </strong>{" "}
-                reimbursements?
-              </p>
-            )}
+          {selectedItems.length === 1 && (
+            <p className="text-neutral-800">
+              Downloading the report will change the reimbursements status to
+              processing. Are you sure you want to download{" "}
+              <strong>
+                {
+                  data?.results.find((a) => a.id === selectedItems[0])
+                    ?.reimb_requestor.first_name
+                }{" "}
+                {
+                  data?.results.find((a) => a.id === selectedItems[0])
+                    ?.reimb_requestor.last_name
+                }
+                ,{" "}
+                {
+                  data?.results.find((a) => a.id === selectedItems[0])
+                    ?.reference_no
+                }
+              </strong>{" "}
+              reimbursements?
+            </p>
+          )}
 
-            {selectedItems.length > 1 && (
-              <p className="text-neutral-800">
-                Downloading the report will change the reimbursements status to
-                processing. Are you sure you want to download{" "}
-                <strong>{selectedItems.length}</strong> reimbursements?
-              </p>
-            )}
+          {selectedItems.length > 1 && (
+            <p className="text-neutral-800">
+              Downloading the report will change the reimbursements status to
+              processing. Are you sure you want to download{" "}
+              <strong>{selectedItems.length}</strong> reimbursements?
+            </p>
+          )}
 
-            <div className="flex items-center gap-4">
-              <Button
-                variant="neutral"
-                buttonType="outlined"
-                className="w-1/2"
-                onClick={closeReportConfirmDialog}
-              >
-                No
-              </Button>
-              <Button
-                loading={downloadReportLoading}
-                disabled={downloadReportLoading}
-                variant="success"
-                className="w-1/2"
-                onClick={() => void downloadReport()}
-              >
-                Yes, Download
-              </Button>
-            </div>
+          <div className="flex items-center gap-4">
+            <Button
+              variant="neutral"
+              buttonType="outlined"
+              className="w-1/2"
+              onClick={closeReportConfirmDialog}
+            >
+              No
+            </Button>
+            <Button
+              loading={downloadReportLoading}
+              disabled={downloadReportLoading}
+              variant="success"
+              className="w-1/2"
+              onClick={() => void downloadReport()}
+            >
+              Yes, Download
+            </Button>
           </div>
-        </Dialog>
+        </div>
+      </Dialog>
     </>
   );
 };

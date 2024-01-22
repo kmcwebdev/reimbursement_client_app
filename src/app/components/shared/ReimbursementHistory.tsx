@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
-/* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+
 "use client";
 import { type ColumnDef } from "@tanstack/react-table";
 import dynamic from "next/dynamic";
@@ -73,7 +72,7 @@ const MyReimbursements: React.FC = () => {
 
   const [searchParams, setSearchParams] = useState<IReimbursementsFilterQuery>({
     search: undefined,
-    expense_type__name: undefined,
+    expense_type__id: undefined,
     created_at_before: undefined,
     created_at_after: undefined,
   });
@@ -337,7 +336,7 @@ const MyReimbursements: React.FC = () => {
         <Table
           type="history"
           loading={isFetching}
-          data={data?.results!}
+          data={data?.results}
           columns={columns}
           tableState={{
             filters,

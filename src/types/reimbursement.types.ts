@@ -128,9 +128,9 @@ export type ReimbursementApproval = {
 
 export type IReimbursementsFilterQuery = {
   search?: string;
-  request_type__name?: string;
-  expense_type__name?: string;
-  request_status__name?: string;
+  request_type__id?: string;
+  expense_type__id?: string;
+  request_status__id?: string;
   page?: number;
   created_at_before?: string;
   created_at_after?: string;

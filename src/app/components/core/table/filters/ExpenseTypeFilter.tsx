@@ -14,8 +14,8 @@ const ExpenseTypeFilter: React.FC<FilterProps> = () => {
   const dispatch = useAppDispatch();
 
   const onChange = (e: ChangeEvent<HTMLInputElement>, value: number) => {
-    let expense_type__name: string | undefined = "";
-    const currentExpenseFilters = filters.expense_type__name;
+    let expense_type__id: string | undefined = "";
+    const currentExpenseFilters = filters.expense_type__id;
 
     if (currentExpenseFilters) {
       if (currentExpenseFilters.split(",").includes(value.toString())) {
@@ -24,22 +24,22 @@ const ExpenseTypeFilter: React.FC<FilterProps> = () => {
           .filter((a) => a !== value.toString());
 
         if (filtered.length === 0) {
-          expense_type__name = undefined;
+          expense_type__id = undefined;
         } else {
-          expense_type__name = filtered.join(",");
+          expense_type__id = filtered.join(",");
         }
       } else {
-        expense_type__name = currentExpenseFilters + "," + value.toString();
+        expense_type__id = currentExpenseFilters + "," + value.toString();
       }
     } else {
-      expense_type__name = value.toString();
+      expense_type__id = value.toString();
     }
 
     dispatch(
       setPageTableFilters({
         ...filters,
         page: undefined,
-        expense_type__name,
+        expense_type__id,
       }),
     );
   };
@@ -63,7 +63,7 @@ const ExpenseTypeFilter: React.FC<FilterProps> = () => {
                       key={option.id}
                       label={option.name}
                       name={option.name}
-                      checked={filters.expense_type__name
+                      checked={filters.expense_type__id
                         ?.split(",")
                         .includes(option.id.toString())}
                       onChange={(e) => onChange(e, option.id)}

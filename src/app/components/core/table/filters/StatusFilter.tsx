@@ -20,8 +20,8 @@ const StatusFilter: React.FC<FilterProps> = () => {
     useAllStatusesQuery({});
 
   const onChange = (e: ChangeEvent<HTMLInputElement>, value: number) => {
-    let request_status__name: string | undefined = "";
-    const currentStatusFilters = filters.request_status__name;
+    let request_status__id: string | undefined = "";
+    const currentStatusFilters = filters.request_status__id;
 
     if (currentStatusFilters) {
       if (currentStatusFilters.split(",").includes(value.toString())) {
@@ -30,22 +30,22 @@ const StatusFilter: React.FC<FilterProps> = () => {
           .filter((a) => a !== value.toString());
 
         if (filtered.length === 0) {
-          request_status__name = undefined;
+          request_status__id = undefined;
         } else {
-          request_status__name = filtered.join(",");
+          request_status__id = filtered.join(",");
         }
       } else {
-        request_status__name = currentStatusFilters + "," + value.toString();
+        request_status__id = currentStatusFilters + "," + value.toString();
       }
     } else {
-      request_status__name = value.toString();
+      request_status__id = value.toString();
     }
 
     dispatch(
       setPageTableFilters({
         ...filters,
         page: undefined,
-        request_status__name,
+        request_status__id,
       }),
     );
   };
@@ -72,7 +72,7 @@ const StatusFilter: React.FC<FilterProps> = () => {
                       />
                     }
                     name={option.name}
-                    checked={filters.request_status__name
+                    checked={filters.request_status__id
                       ?.split(",")
                       .includes(option.id.toString())}
                     onChange={(e) => onChange(e, option.id)}

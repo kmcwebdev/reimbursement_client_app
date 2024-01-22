@@ -15,16 +15,16 @@ const ReimbursementTypeFilter: React.FC<FilterProps> = () => {
     useRequestTypesQuery();
 
   const onChange = (e: ChangeEvent<HTMLInputElement>, value: number) => {
-    let request_type__name: string | undefined = value.toString();
-    if (filters.request_type__name === request_type__name) {
-      request_type__name = undefined;
+    let request_type__id: string | undefined = value.toString();
+    if (filters.request_type__id === request_type__id) {
+      request_type__id = undefined;
     }
 
     dispatch(
       setPageTableFilters({
         ...filters,
         page: undefined,
-        request_type__name,
+        request_type__id,
       }),
     );
   };
@@ -51,8 +51,8 @@ const ReimbursementTypeFilter: React.FC<FilterProps> = () => {
                       </div>
                     }
                     checked={
-                      filters.request_type__name &&
-                      filters.request_type__name === type.id.toString()
+                      filters.request_type__id &&
+                      filters.request_type__id === type.id.toString()
                         ? true
                         : false
                     }

@@ -24,9 +24,9 @@ interface FilterViewProps {
 }
 
 interface IFilters {
-  request_status__name: string[];
-  request_type__name: string[];
-  expense_type__name: string[];
+  request_status__id: string[];
+  request_type__id: string[];
+  expense_type__id: string[];
   date: string[];
 }
 
@@ -46,9 +46,9 @@ const FilterView: React.FC<FilterViewProps> = ({ colSpan }) => {
 
   useMemo(() => {
     const transformedFilters: IFilters = {
-      request_status__name: [],
-      expense_type__name: [],
-      request_type__name: [],
+      request_status__id: [],
+      expense_type__id: [],
+      request_type__id: [],
       date: [],
     };
 
@@ -65,23 +65,23 @@ const FilterView: React.FC<FilterViewProps> = ({ colSpan }) => {
             "MM/DD/YYYY",
           );
         }
-        if (key === "expense_type__name") {
-          if (filters.expense_type__name) {
-            transformedFilters.expense_type__name =
-              filters.expense_type__name.split(",");
+        if (key === "expense_type__id") {
+          if (filters.expense_type__id) {
+            transformedFilters.expense_type__id =
+              filters.expense_type__id.split(",");
           }
         }
 
-        if (key === "request_status__name") {
-          if (filters.request_status__name) {
-            transformedFilters.request_status__name =
-              filters.request_status__name.split(",");
+        if (key === "request_status__id") {
+          if (filters.request_status__id) {
+            transformedFilters.request_status__id =
+              filters.request_status__id.split(",");
           }
         }
 
-        if (key === "request_type__name") {
-          if (filters.request_type__name) {
-            transformedFilters.request_type__name = filters.request_type__name
+        if (key === "request_type__id") {
+          if (filters.request_type__id) {
+            transformedFilters.request_type__id = filters.request_type__id
               .toString()
               .split(",");
           }
@@ -125,18 +125,18 @@ const FilterView: React.FC<FilterViewProps> = ({ colSpan }) => {
                   <div key={key}>
                     {filterViewState[key as keyof IFilters].length > 0 && (
                       <div key={key} className="flex items-center gap-2">
-                        {key === "request_status__name" &&
-                          filterViewState.request_status__name.length > 0 && (
+                        {key === "request_status__id" &&
+                          filterViewState.request_status__id.length > 0 && (
                             <MdLabel className="h-4 w-4 text-neutral-900" />
                           )}
 
-                        {key === "request_type__name" &&
-                          filterViewState.request_type__name.length > 0 && (
+                        {key === "request_type__id" &&
+                          filterViewState.request_type__id.length > 0 && (
                             <MdAccessTimeFilled className="h-4 w-4 text-neutral-900" />
                           )}
 
-                        {key === "expense_type__name" &&
-                          filterViewState.expense_type__name.length > 0 && (
+                        {key === "expense_type__id" &&
+                          filterViewState.expense_type__id.length > 0 && (
                             <HiCurrencyDollar className="h-4 w-4 text-neutral-900" />
                           )}
 
@@ -149,7 +149,7 @@ const FilterView: React.FC<FilterViewProps> = ({ colSpan }) => {
                             {filterViewState[key as keyof IFilters].map(
                               (value, i) => (
                                 <span key={key + "-" + value}>
-                                  {key === "request_status__name" && (
+                                  {key === "request_status__id" && (
                                     <span className="ml-4 first:ml-0">
                                       {allStatusesIsLoading ? (
                                         "..."
@@ -166,7 +166,7 @@ const FilterView: React.FC<FilterViewProps> = ({ colSpan }) => {
                                     </span>
                                   )}
 
-                                  {key === "expense_type__name" && (
+                                  {key === "expense_type__id" && (
                                     <p
                                       key={value}
                                       className={classNames(
@@ -182,7 +182,7 @@ const FilterView: React.FC<FilterViewProps> = ({ colSpan }) => {
                                     </p>
                                   )}
 
-                                  {key === "request_type__name" && (
+                                  {key === "request_type__id" && (
                                     <p
                                       key={value}
                                       className="pl-2 text-sm text-neutral-800"
