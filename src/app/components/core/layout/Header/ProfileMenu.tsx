@@ -1,7 +1,9 @@
 import { signOut } from "next-auth/react";
-import React, { useRef, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import { AiOutlineLogout } from "react-icons-all-files/ai/AiOutlineLogout";
 import { MdChangeCircle } from "react-icons-all-files/md/MdChangeCircle";
+import { MdCheckCircle } from "react-icons-all-files/md/MdCheckCircle";
+import { MdClose } from "react-icons-all-files/md/MdClose";
 import { RiLoader4Fill } from "react-icons-all-files/ri/RiLoader4Fill";
 import { type PropsValue } from "react-select";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
@@ -40,9 +42,31 @@ const ProfileMenu: React.FC = () => {
     });
   };
 
+  const [groupOptions, setGroupOptions] = useState<OptionData[]>();
+
   const [assignGroup, { isLoading: isSubmitting }] = useAssignGroupMutation();
 
   const { isFetching, data } = useAllGroupsQuery({}, { skip: !assignedRole });
+
+  useMemo(() => {
+    if (data?.results) {
+      const options: OptionData[] = [];
+
+      data.results.forEach((res) => {
+        options.push({
+          value: res.id,
+          label: res.name,
+        });
+      });
+
+      options.push({
+        value: 100,
+        label: "Grant Admin Privileges",
+      });
+
+      setGroupOptions(options);
+    }
+  }, [data]);
 
   const onRoleChanged = (selected: PropsValue<OptionData>) => {
     if (user) {
@@ -92,37 +116,59 @@ const ProfileMenu: React.FC = () => {
               <p className="font-bold uppercase text-orange-600">
                 {user?.first_name} {user?.last_name}
               </p>
-
-              <div className="flex flex-col gap-2">
-                <p className="text-xs text-neutral-600">{assignedRole}</p>
-                <Popover
-                  panelClassName="-translate-x-1/2"
-                  buttonRef={buttonChildRef}
-                  btn={
-                    <div className="flex items-center gap-1 text-xs text-yellow-600 transition-all ease-in-out hover:text-yellow-700">
-                      <MdChangeCircle className="h-4 w-4" />
-                      <p>Change Role</p>
-                    </div>
-                  }
-                  content={
-                    <div className="w-60">
-                      <Select
-                        name="role"
-                        onChangeEvent={onRoleChanged}
-                        isLoading={isFetching}
-                        options={
-                          data?.results
-                            .filter((a) => a.name !== assignedRole)
-                            .map((group) => ({
-                              value: group.id,
-                              label: group.name,
-                            })) || []
-                        }
-                      />
-                    </div>
-                  }
-                />
-              </div>
+              <p className="text-xs text-neutral-600">{assignedRole}</p>
+              {typeof window !== "undefined" &&
+                (window.location.origin.includes("http://localhost") ||
+                  window.location.origin.includes("http://localhost")) && (
+                  <div className="flex flex-col gap-2">
+                    {user && !user.is_superuser ? (
+                      <div className="flex flex-col gap-8">
+                        <Popover
+                          panelClassName="-translate-x-1/2"
+                          buttonRef={buttonChildRef}
+                          btn={
+                            <div className="flex items-center gap-1 text-xs text-yellow-600 transition-all ease-in-out hover:text-yellow-700">
+                              <MdChangeCircle className="h-4 w-4" />
+                              <p>Change Role</p>
+                            </div>
+                          }
+                          content={
+                            <div className="flex w-60 flex-col gap-4">
+                              <Select
+                                name="role"
+                                onChangeEvent={onRoleChanged}
+                                isLoading={isFetching}
+                                options={
+                                  groupOptions
+                                    ?.filter((a) => a.label !== assignedRole)
+                                    .map((group) => ({
+                                      value: group.value,
+                                      label: group.label,
+                                    })) || []
+                                }
+                              />
+                              <div className="px-4 pb-4">
+                                <Button buttonType="text" variant="success">
+                                  <div className="flex items-center gap-1">
+                                    <MdCheckCircle className="h-4 w-4" /> Grant
+                                    Admin Privileges.
+                                  </div>
+                                </Button>
+                              </div>
+                            </div>
+                          }
+                        />
+                      </div>
+                    ) : (
+                      <Button buttonType="text" variant="danger">
+                        <div className="flex items-center gap-1">
+                          <MdClose className="h-4 w-4" /> Revoke Admin
+                          Privileges.
+                        </div>
+                      </Button>
+                    )}
+                  </div>
+                )}
             </div>
           </div>
 

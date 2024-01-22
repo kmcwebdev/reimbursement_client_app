@@ -429,7 +429,7 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
         >
           <div className="flex flex-col gap-8 pt-8">
             <TextArea
-              name="onhold_reason"
+              name="remarks"
               label="Reasons for putting on hold"
               required
             />
@@ -474,7 +474,7 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
                   : "approve"}{" "}
                 reimbursement request <strong>{data.reference_no} </strong>with
                 total amount of{" "}
-                <strong>{currencyFormat(+data.total_amount)}</strong>
+                <strong>{currencyFormat(+data.total_amount)}</strong>?
               </p>
 
               <div className="flex items-center gap-4">

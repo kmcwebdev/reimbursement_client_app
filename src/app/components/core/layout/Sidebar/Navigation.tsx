@@ -5,6 +5,7 @@ import { MdDashboard } from "react-icons-all-files/md/MdDashboard";
 import { MdGavel } from "react-icons-all-files/md/MdGavel";
 import { MdPerson } from "react-icons-all-files/md/MdPerson";
 import { MdReceipt } from "react-icons-all-files/md/MdReceipt";
+import { useAppSelector } from "~/app/hook";
 import { Can } from "~/context/AbilityContext";
 import NavigationItem from "./NavigationItem";
 
@@ -12,6 +13,7 @@ interface NavigationProps {
   collapsed: boolean;
 }
 const Navigation: React.FC<NavigationProps> = ({ collapsed }) => {
+  const { user } = useAppSelector((state) => state.session);
   const pathname = usePathname();
 
   return (
@@ -24,25 +26,29 @@ const Navigation: React.FC<NavigationProps> = ({ collapsed }) => {
         collapsed={collapsed}
       />
 
-      <Can I="access" a="NAV_ITEM_APPROVAL">
-        <NavigationItem
-          label="Approval"
-          icon={MdGavel as IconType}
-          active={pathname ? pathname === "/approval" : false}
-          href="/approval"
-          collapsed={collapsed}
-        />
-      </Can>
+      {user && !user.is_superuser && (
+        <>
+          <Can I="access" a="NAV_ITEM_APPROVAL">
+            <NavigationItem
+              label="Approval"
+              icon={MdGavel as IconType}
+              active={pathname ? pathname === "/approval" : false}
+              href="/approval"
+              collapsed={collapsed}
+            />
+          </Can>
 
-      <Can I="access" a="NAV_ITEM_HISTORY">
-        <NavigationItem
-          label="History"
-          icon={MdReceipt as IconType}
-          active={pathname ? pathname === "/history" : false}
-          href="/history"
-          collapsed={collapsed}
-        />
-      </Can>
+          <Can I="access" a="NAV_ITEM_HISTORY">
+            <NavigationItem
+              label="History"
+              icon={MdReceipt as IconType}
+              active={pathname ? pathname === "/history" : false}
+              href="/history"
+              collapsed={collapsed}
+            />
+          </Can>
+        </>
+      )}
 
       <NavigationItem
         label="Profile"

@@ -1,7 +1,5 @@
 "use client";
-import { useSession } from "next-auth/react";
-import dynamic from "next/dynamic";
-import { useRouter } from "next/navigation";
+import { signOut, useSession } from "next-auth/react";
 import React, {
   useEffect,
   useMemo,
@@ -19,24 +17,27 @@ import {
 } from "~/features/state/user-state.slice";
 import { type AppClaims } from "~/types/permission-types";
 import { defineAbility } from "~/utils/define-ability";
-
-const AuthLoader = dynamic(() => import("~/app/components/loaders/AuthLoader"));
+import AuthLoader from "../loaders/AuthLoader";
 
 export const AbilityContextProvider: React.FC<PropsWithChildren> = ({
   children,
 }) => {
   const nextAuthSession = useSession();
-  const { accessToken, assignedRole } = useAppSelector(
+  const { accessToken, assignedRole, user } = useAppSelector(
     (state) => state.session,
   );
 
-  const router = useRouter();
-
-  const { data: me, isLoading: meIsLoading } = useGetMeQuery(null, {
+  const {
+    data: me,
+    isLoading: meIsLoading,
+    isError: meIsError,
+  } = useGetMeQuery(null, {
     skip: !accessToken,
   });
   const dispatch = useAppDispatch();
   const [permissions, setPermissions] = useState<AppClaims[]>();
+
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   /**
    * LOGIN PAGE REDIRECTION
@@ -55,11 +56,15 @@ export const AbilityContextProvider: React.FC<PropsWithChildren> = ({
         !pathname.includes("/auth") &&
         nextAuthSession.status === "unauthenticated"
       ) {
-        router.push("/auth/login");
+        window.location.replace("/auth/login");
+      }
+
+      if (pathname.includes("/auth")) {
+        setIsLoading(false);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [nextAuthSession.status, router]);
+  }, [nextAuthSession.status]);
 
   useEffect(() => {
     if (
@@ -74,20 +79,25 @@ export const AbilityContextProvider: React.FC<PropsWithChildren> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nextAuthSession]);
 
-  useMemo(() => {
+  void useMemo(async () => {
     if (me && !meIsLoading) {
       setTimeout(() => {
-        if (!assignedRole) {
+        if (!assignedRole && me.groups.length > 0) {
           dispatch(setAssignedRole(me.groups[0]));
         }
         setPermissions(me.permissions);
         dispatch(setUser(me));
       }, 0);
+      setIsLoading(false);
+    }
+
+    if (meIsError) {
+      await signOut();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [me, meIsLoading]);
 
-  if (meIsLoading) {
+  if (isLoading && !user) {
     return <AuthLoader />;
   }
 

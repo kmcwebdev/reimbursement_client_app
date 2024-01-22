@@ -16,10 +16,9 @@ import Header from "./Header";
 import Sidebar from "./Sidebar";
 
 const Layout: React.FC<PropsWithChildren> = ({ children }) => {
-  const { user } = useAppSelector((state) => state.session);
+  const { assignedRole } = useAppSelector((state) => state.session);
   const { push } = useRouter();
   const pathname = usePathname();
-
   const dispatch = useAppDispatch();
 
   /**
@@ -36,6 +35,7 @@ const Layout: React.FC<PropsWithChildren> = ({ children }) => {
   if (
     pathname &&
     (pathname.includes("/auth") ||
+      pathname === "/" ||
       pathname.includes("/page-not-found") ||
       pathname.includes("/forbidden"))
   ) {
@@ -51,10 +51,10 @@ const Layout: React.FC<PropsWithChildren> = ({ children }) => {
   }
 
   return (
-    <div className="flex min-h-screen">
+    <main className="flex min-h-screen">
       {pathname && !pathname.includes("email-action") && <Sidebar />}
 
-      <main
+      <div
         className={classNames(
           `${karla.variable} ${barlow_Condensed.variable} w-full flex-1 overflow-y-auto bg-neutral-100 font-karla`,
         )}
@@ -75,7 +75,7 @@ const Layout: React.FC<PropsWithChildren> = ({ children }) => {
               <Link href="/dashboard">
                 <MdDashboard
                   className={classNames(
-                    pathname && pathname.includes("dashboard")
+                    pathname && pathname === "dashboard"
                       ? "h-5 w-5 text-orange-600"
                       : "h-3 w-3 text-neutral-600",
                     "transition-all ease-in-out",
@@ -86,14 +86,14 @@ const Layout: React.FC<PropsWithChildren> = ({ children }) => {
               </Link>
             </div>
 
-            {user && user.groups[0] === "REIMBURSEMENT_MANAGER" && (
+            {assignedRole === "REIMBURSEMENT_MANAGER" && (
               <div
                 className="flex flex-col items-center justify-center gap-1"
                 onClick={() => void push("/approval")}
               >
                 <MdGavel
                   className={classNames(
-                    pathname && pathname.includes("approval")
+                    pathname && pathname === "/approval"
                       ? "h-5 w-5 text-orange-600"
                       : "h-3 w-3 text-neutral-600",
                     "transition-all ease-in-out",
@@ -102,25 +102,24 @@ const Layout: React.FC<PropsWithChildren> = ({ children }) => {
                 <p className="text-[10px] text-white">Approval</p>
               </div>
             )}
-            {user &&
-              (user.groups[0] === "REIMBURSEMENT_FINANCE" ||
-                user.groups[0] === "REIMBURSEMENT_HRBP" ||
-                user.groups[0] === "REIMBURSEMENT_MANAGER") && (
-                <div
-                  className="flex flex-col items-center justify-center gap-1"
-                  onClick={() => void push("/history")}
-                >
-                  <MdReceipt
-                    className={classNames(
-                      pathname && pathname.includes("history")
-                        ? "h-5 w-5 text-orange-600"
-                        : "h-3 w-3 text-neutral-600",
-                      "transition-all ease-in-out",
-                    )}
-                  />
-                  <p className="text-[10px] text-white">History</p>
-                </div>
-              )}
+            {(assignedRole === "REIMBURSEMENT_FINANCE" ||
+              assignedRole === "REIMBURSEMENT_HRBP" ||
+              assignedRole === "REIMBURSEMENT_MANAGER") && (
+              <div
+                className="flex flex-col items-center justify-center gap-1"
+                onClick={() => void push("/history")}
+              >
+                <MdReceipt
+                  className={classNames(
+                    pathname && pathname.includes("history")
+                      ? "h-5 w-5 text-orange-600"
+                      : "h-3 w-3 text-neutral-600",
+                    "transition-all ease-in-out",
+                  )}
+                />
+                <p className="text-[10px] text-white">History</p>
+              </div>
+            )}
 
             <div
               className="flex flex-col items-center justify-center gap-1"
@@ -128,7 +127,7 @@ const Layout: React.FC<PropsWithChildren> = ({ children }) => {
             >
               <MdPerson
                 className={classNames(
-                  pathname && pathname.includes("profile")
+                  pathname && pathname === "/profile"
                     ? "h-5 w-5 text-orange-600"
                     : "h-3 w-3 text-neutral-600",
                   "transition-all ease-in-out",
@@ -138,8 +137,8 @@ const Layout: React.FC<PropsWithChildren> = ({ children }) => {
             </div>
           </div>
         </div>
-      </main>
-    </div>
+      </div>
+    </main>
   );
 };
 

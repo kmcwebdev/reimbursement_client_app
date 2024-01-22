@@ -1,8 +1,8 @@
 "use client";
 
 import { type NextPage } from "next";
-import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
 import { Button } from "~/app/components/core/Button";
 
 // interface SSRProps {
@@ -10,38 +10,43 @@ import { Button } from "~/app/components/core/Button";
 // }
 
 const Home: NextPage = () => {
-  const router = useRouter();
   const [loading, setLoading] = useState<boolean>(true);
 
-  useMemo(() => {
+  const nextAuthSession = useSession();
+
+  useEffect(() => {
     if (typeof window !== "undefined") {
       const isInitialLogin = localStorage.getItem("alreadyLoggedIn");
-      if (isInitialLogin && JSON.parse(isInitialLogin)) {
-        void router.push("/dashboard");
+
+      if (nextAuthSession.status === "authenticated") {
+        if (isInitialLogin && JSON.parse(isInitialLogin)) {
+          window.location.replace("/dashboard");
+        } else {
+          setLoading(false);
+        }
       } else {
-        setLoading(false);
+        window.location.replace("/auth/login");
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [nextAuthSession.status]);
 
   const handleClick = () => {
     localStorage.setItem("alreadyLoggedIn", "true");
-    void router.push("/dashboard");
+    if (typeof window !== "undefined") {
+      void window.location.replace("/dashboard");
+    }
   };
 
   return (
-    <>
+    <section className="grid h-full w-full place-items-center">
       {!loading && (
-        <section className="grid h-full w-full place-items-center">
-          <div className="flex flex-col items-center gap-4">
-            <h1>Welcome!</h1>
-            <p>File your reimbursements in one place!</p>
-            <Button onClick={handleClick}>File a Reimbursement</Button>
-          </div>
-        </section>
+        <div className="flex flex-col items-center gap-4">
+          <h1>Welcome!</h1>
+          <p>File your reimbursements in one place!</p>
+          <Button onClick={handleClick}>File a Reimbursement</Button>
+        </div>
       )}
-    </>
+    </section>
   );
 };
 

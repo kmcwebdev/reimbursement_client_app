@@ -36,7 +36,9 @@ export const actionsApiSlice = appApiSlice.injectEndpoints({
         return {
           url: `/reimbursements/request/${data.id}/reject`,
           method: "PATCH",
-          body: data,
+          body: {
+            remarks: data.remarks,
+          },
         };
       },
       invalidatesTags: [
@@ -90,9 +92,9 @@ export const actionsApiSlice = appApiSlice.injectEndpoints({
     >({
       query: (data) => {
         return {
-          url: `/reimbursements/request/${data.id}/onhold`,
-          method: "POST",
-          body: data,
+          url: `/reimbursements/request/${data.id}/on-hold`,
+          method: "PATCH",
+          body: { remarks: data.remarks },
         };
       },
       invalidatesTags: [

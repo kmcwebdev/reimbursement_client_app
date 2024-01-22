@@ -48,7 +48,7 @@ const TableCell: React.FC<CellContext<IReimbursementRequest, unknown>> = (
 
       {/* CLIENT NAME */}
       {props.column.columnDef.header === "Client" &&
-        (props.getValue() as IUser).profile.organization}
+        (props.getValue() as IUser)?.profile.organization}
 
       {/* REQUESTOR ID */}
       {props.column.columnDef.header === "ID" && (props.getValue() as IUser).id}
@@ -56,8 +56,8 @@ const TableCell: React.FC<CellContext<IReimbursementRequest, unknown>> = (
       {/* REQUESTOR NAME*/}
       {props.column.columnDef.header === "Name" && (
         <>
-          {(props.getValue() as IUser).first_name}{" "}
-          {(props.getValue() as IUser).last_name}
+          {(props.getValue() as IUser)?.first_name}{" "}
+          {(props.getValue() as IUser)?.last_name}
         </>
       )}
       {/* EXPENSE TYPE */}

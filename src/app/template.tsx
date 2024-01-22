@@ -13,6 +13,7 @@ const Template = ({ children }: { children: ReactNode }) => {
   ) {
     return <>{children}</>;
   }
+
   return <PageAnimation>{children}</PageAnimation>;
 };
 
