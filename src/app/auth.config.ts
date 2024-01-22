@@ -7,7 +7,7 @@ import { env } from "../../env.mjs";
 
 export default {
   pages: {
-    signIn: "/auth/login",
+    signIn: "/login",
   },
   secret: process.env.NEXTAUTH_SECRET,
   providers: [
