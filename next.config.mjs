@@ -6,7 +6,7 @@ await import("./env.mjs");
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: "standalone",
+  output: process.env.DOCKER_MODE === "1" ? "standalone" : undefined,
   reactStrictMode: true,
   swcMinify: true,
   images: {
