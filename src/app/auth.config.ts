@@ -18,12 +18,12 @@ export const authConfig: NextAuthConfig = {
       return token;
       // return refreshAccessToken(token);
     },
-    async session({ session, token }) {
-      if (session && token) {
-        session.accessToken = token.accessToken as string;
-        session.refreshToken = token.refreshToken as string;
+    async session(params) {
+      if (params.session && params.token) {
+        params.session.accessToken = params.token.accessToken as string;
+        params.session.refreshToken = params.token.refreshToken as string;
       }
-      return session;
+      return params.session;
     },
   },
 } satisfies NextAuthConfig;
