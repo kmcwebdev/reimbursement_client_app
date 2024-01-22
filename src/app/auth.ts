@@ -15,6 +15,7 @@ export const {
     strategy: "jwt",
   },
   ...authConfig,
+  trustHost: true,
   providers: [
     CredentialsProvider({
       async authorize(credentials) {

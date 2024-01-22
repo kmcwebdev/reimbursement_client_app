@@ -28,6 +28,7 @@ RUN \
 # Use the official Node.js 18 Alpine image as the base image for the "builder" stage
 FROM --platform=linux/amd64 node:18-alpine3.17 AS builder
 
+ARG NODE_ENV
 ARG PUSHER_APP_ID
 ARG PUSHER_APP_KEY
 ARG PUSHER_APP_SECRET
