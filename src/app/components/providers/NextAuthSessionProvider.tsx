@@ -8,6 +8,7 @@ const NextAuthSessionProvider = async ({
   children: ReactNode;
 }) => {
   const session = await auth();
+
   return <SessionProvider session={session}>{children}</SessionProvider>;
 };
 
