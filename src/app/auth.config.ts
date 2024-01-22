@@ -9,6 +9,7 @@ export default {
   pages: {
     signIn: "/auth/login",
   },
+  secret: process.env.NEXT_AUTH_SECRET,
   providers: [
     CredentialsProvider({
       async authorize(credentials) {

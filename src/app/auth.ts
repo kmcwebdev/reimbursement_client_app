@@ -9,7 +9,6 @@ export const {
   signIn,
   signOut,
 } = NextAuth({
-  adapter: undefined,
   session: {
     strategy: "jwt",
   },
