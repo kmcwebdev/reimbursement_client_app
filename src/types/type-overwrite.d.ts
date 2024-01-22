@@ -23,21 +23,11 @@ declare module "next-auth" {
   }
 }
 
-declare module "next-auth/jwt" {
-  /** Returned by the `jwt` callback and `getToken`, when using JWT sessions */
-  interface JWT {
-    /** OpenID ID Token */
-    access_token?: string;
-  }
-}
-
-declare module "next-auth/jwt" {
-  interface JWT {
-    id_token?: string;
-    provider?: string;
-    accessToken?: string;
-    refreshToken?: string;
-  }
+interface JWT {
+  id_token?: string;
+  provider?: string;
+  accessToken?: string;
+  refreshToken?: string;
 }
 
 declare module "@tanstack/react-table" {
