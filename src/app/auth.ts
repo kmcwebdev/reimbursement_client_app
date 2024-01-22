@@ -11,9 +11,6 @@ export const {
   signIn,
   signOut,
 } = NextAuth({
-  session: {
-    strategy: "jwt",
-  },
   ...authConfig,
   trustHost: true,
   providers: [

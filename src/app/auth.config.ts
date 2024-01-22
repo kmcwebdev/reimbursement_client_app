@@ -1,9 +1,13 @@
 /* eslint-disable @typescript-eslint/require-await */
 
-import type { NextAuthConfig, Session, User } from "next-auth";
-import type { JWT } from "next-auth/jwt";
+import { type JWT } from "@auth/core/jwt";
+import type { DefaultSession, NextAuthConfig } from "next-auth";
+import { type Session } from "next-auth/types";
 
 export const authConfig: NextAuthConfig = {
+  session: {
+    strategy: "jwt",
+  },
   providers: [],
   pages: {
     signIn: "login",
@@ -18,19 +22,12 @@ export const authConfig: NextAuthConfig = {
       return token;
       // return refreshAccessToken(token);
     },
-    async session({
-      session,
-      token,
-    }: {
-      session: Session;
-      token?: JWT;
-      user: User;
-    }) {
+    async session({ session, token }: { session: Session; token: JWT }) {
       if (session && token) {
         session.accessToken = token.accessToken;
         session.refreshToken = token.refreshToken as string;
       }
-      return session;
+      return session as DefaultSession;
     },
   },
 } satisfies NextAuthConfig;
