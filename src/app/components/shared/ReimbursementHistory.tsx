@@ -50,7 +50,7 @@ const SideDrawer = dynamic(() => import("~/app/components/core/SideDrawer"));
 
 const MyReimbursements: React.FC = () => {
   const dispatch = useAppDispatch();
-  const { user } = useAppSelector((state) => state.session);
+  const { user, assignedRole } = useAppSelector((state) => state.session);
   const [downloadReportLoading, setDownloadReportLoading] = useState(false);
 
   const { isVisible, open, close } = useDialogState();
@@ -108,6 +108,7 @@ const MyReimbursements: React.FC = () => {
   const { isFetching, data } = useGetRequestsHistoryQuery({
     ...filters,
     search: debouncedSearchText,
+    type: assignedRole?.split("_")[1].toLowerCase()!,
   });
 
   const columns = React.useMemo<ColumnDef<IReimbursementRequest>[]>(() => {

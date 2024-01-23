@@ -46,13 +46,14 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
     }),
     getRequestsHistory: builder.query<
       IRequestListResponse,
-      IReimbursementsFilterQuery
+      IReimbursementsFilterQuery & { type: string }
     >({
       query: (query) => {
         const searchParams = createSearchParams(query);
+        searchParams?.delete("type");
         searchParams?.append("ordering", "-created_at");
         return {
-          url: "/reimbursements/request/history",
+          url: `/reimbursements/request/${query.type}/history`,
           params:
             searchParams && searchParams.size ? searchParams.toString() : {},
         };
