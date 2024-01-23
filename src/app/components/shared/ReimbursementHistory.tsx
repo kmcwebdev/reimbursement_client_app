@@ -234,23 +234,21 @@ const MyReimbursements: React.FC = () => {
   const downloadReport = async () => {
     setDownloadReportLoading(true);
 
-    if (user?.groups[0] === "REIMBURSEMENT_FINANCE") {
+    if (assignedRole === "REIMBURSEMENT_FINANCE") {
       await exportReport(
-        `${
-          env.NEXT_PUBLIC_BASEAPI_URL
-        }/api/finance/reimbursements/requests/reports/finance?reimbursement_request_ids=${JSON.stringify(
-          selectedItems,
-        )}`,
+        `${env.NEXT_PUBLIC_BASEAPI_URL}/reimbursements/request/finance/download-reports`,
       );
     }
 
-    if (user?.groups[0] === "REIMBURSEMENT_HRBP") {
+    if (assignedRole === "REIMBURSEMENT_HRBP") {
       await exportReport(
-        `${
-          env.NEXT_PUBLIC_BASEAPI_URL
-        }/api/finance/reimbursements/requests/reports/hrbp?reimbursement_request_ids=${JSON.stringify(
-          selectedItems,
-        )}`,
+        `${env.NEXT_PUBLIC_BASEAPI_URL}/reimbursements/request/hrbp/download-reports`,
+      );
+    }
+
+    if (assignedRole === "REIMBURSEMENT_MANAGER") {
+      await exportReport(
+        `${env.NEXT_PUBLIC_BASEAPI_URL}/reimbursements/request/manager/download-reports`,
       );
     }
   };

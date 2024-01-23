@@ -78,8 +78,6 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
         },
       ],
     }),
-
-    //POST
   }),
 });
 
