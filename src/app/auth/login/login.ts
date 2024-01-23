@@ -8,7 +8,7 @@ export const handleCredentialsLogin = async (credentials: Credentials) => {
 
   await signIn("credentials", {
     ...credentials,
-    redirectTo: "/dashboard",
+    redirectTo: "/",
   });
 };
 
@@ -17,7 +17,7 @@ export const handleAzureAdLogin = async () => {
   await signIn(
     "azure-ad",
     {
-      redirectTo: "/dashboard",
+      redirectTo: "/",
     },
     {
       prompt: "login",

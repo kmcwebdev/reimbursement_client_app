@@ -1,5 +1,6 @@
 "use client";
-import { signOut, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
+import { usePathname, useRouter } from "next/navigation";
 import React, {
   useEffect,
   useMemo,
@@ -23,64 +24,100 @@ export const AbilityContextProvider: React.FC<PropsWithChildren> = ({
   children,
 }) => {
   const nextAuthSession = useSession();
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const pathname = usePathname();
+  const router = useRouter();
+
+  const [loggedIn, setLoggedIn] = useState<boolean>(false);
+
+  useMemo(() => {
+    if (typeof window !== "undefined") {
+      const isInitialLogin = localStorage.getItem("alreadyLoggedIn");
+
+      if (isInitialLogin) {
+        const parsedValue = JSON.parse(isInitialLogin) as boolean;
+        setLoggedIn(parsedValue);
+      }
+    }
+  }, []);
+
   const { accessToken, assignedRole } = useAppSelector(
     (state) => state.session,
   );
-
-  const {
-    data: me,
-    isLoading: meIsLoading,
-    isError: meIsError,
-  } = useGetMeQuery(null, {
+  const { data: me, isLoading: meIsLoading } = useGetMeQuery(null, {
     skip: !accessToken,
   });
   const dispatch = useAppDispatch();
   const [permissions, setPermissions] = useState<AppClaims[]>();
-  const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  /**
-   * LOGIN PAGE REDIRECTION
-   *
-   * Redirects the user to the login page if unauthorized
-   */
-  useMemo(() => {
-    // Ensure this code runs only on the client side
-    if (typeof window !== "undefined") {
-      // Now it's safe to use location
-      const { pathname } = window.location;
+  const dispatchTokens = (access: string, refresh: string) => {
+    dispatch(setAccessToken(access));
+    dispatch(setRefreshToken(refresh));
+  };
 
-      // You can now safely use pathname in your logic
-      // For example, if you need to redirect:
+  useEffect(() => {
+    if (pathname) {
+      if (
+        !pathname.includes("/auth") &&
+        nextAuthSession.status === "authenticated"
+      ) {
+        setIsLoading(false);
+      }
+
       if (
         !pathname.includes("/auth") &&
         nextAuthSession.status === "unauthenticated"
       ) {
-        window.location.replace("/auth/login");
+        router.push("/auth/login");
+      }
+
+      if (
+        pathname.includes("/auth") &&
+        nextAuthSession.status === "unauthenticated"
+      ) {
+        setIsLoading(false);
+      }
+
+      if (
+        pathname.includes("/auth") &&
+        nextAuthSession.status === "authenticated"
+      ) {
+        router.push("/");
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [nextAuthSession.status]);
-
-  useMemo(() => {
-    if (assignedRole && permissions) {
-      setIsLoading(false);
-    }
-  }, [assignedRole, permissions]);
+  }, [nextAuthSession.status, pathname, router]);
 
   useEffect(() => {
     if (
+      pathname === "/" &&
       nextAuthSession.status === "authenticated" &&
+      loggedIn
+    ) {
+      setIsLoading(true);
+      router.push("/dashboard");
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loggedIn, router]);
+
+  /**STORES TOKEN IN REDUX */
+  useEffect(() => {
+    if (
+      nextAuthSession &&
       nextAuthSession.data &&
       nextAuthSession.data.accessToken &&
       nextAuthSession.data.refreshToken
     ) {
-      dispatch(setAccessToken(nextAuthSession.data.accessToken));
-      dispatch(setRefreshToken(nextAuthSession.data.refreshToken));
+      dispatchTokens(
+        nextAuthSession.data.accessToken,
+        nextAuthSession.data.refreshToken,
+      );
     }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nextAuthSession]);
 
-  void useMemo(async () => {
+  useMemo(() => {
     if (me && !meIsLoading) {
       setTimeout(() => {
         if (!assignedRole && me.groups.length > 0) {
@@ -90,11 +127,6 @@ export const AbilityContextProvider: React.FC<PropsWithChildren> = ({
         dispatch(setUser(me));
       }, 0);
     }
-
-    if (meIsError) {
-      await signOut();
-    }
-    setIsLoading(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [me, meIsLoading]);
 

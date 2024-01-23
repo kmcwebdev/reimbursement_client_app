@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 "use client";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { redirect, usePathname, useRouter } from "next/navigation";
 import React, { useEffect, type PropsWithChildren } from "react";
 import { MdDashboard } from "react-icons-all-files/md/MdDashboard";
 import { MdGavel } from "react-icons-all-files/md/MdGavel";
@@ -18,6 +19,7 @@ import Sidebar from "./Sidebar";
 const Layout: React.FC<PropsWithChildren> = ({ children }) => {
   const { assignedRole } = useAppSelector((state) => state.session);
   const { push } = useRouter();
+  const nextAuthSession = useSession();
   const pathname = usePathname();
   const dispatch = useAppDispatch();
 
@@ -28,6 +30,12 @@ const Layout: React.FC<PropsWithChildren> = ({ children }) => {
   useEffect(() => {
     if (pathname) {
       dispatch(resetPageTableState());
+    }
+    if (
+      nextAuthSession.status === "unauthenticated" &&
+      !pathname.includes("/auth")
+    ) {
+      redirect("/auth/login");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
@@ -40,18 +48,18 @@ const Layout: React.FC<PropsWithChildren> = ({ children }) => {
       pathname.includes("/forbidden"))
   ) {
     return (
-      <main
+      <div
         className={classNames(
           `${karla.variable} ${barlow_Condensed.variable} h-screen w-screen flex-1 overflow-y-auto bg-neutral-200 font-karla`,
         )}
       >
         <div className="grid h-full w-full place-items-center">{children}</div>
-      </main>
+      </div>
     );
   }
 
   return (
-    <main className="flex min-h-screen">
+    <div className="flex min-h-screen">
       {pathname && !pathname.includes("email-action") && <Sidebar />}
 
       <div
@@ -138,7 +146,7 @@ const Layout: React.FC<PropsWithChildren> = ({ children }) => {
           </div>
         </div>
       </div>
-    </main>
+    </div>
   );
 };
 
