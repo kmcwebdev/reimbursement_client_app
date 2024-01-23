@@ -80,7 +80,6 @@ const ParticularDetailsForm: React.FC<ParticularDetailsProps> = ({
         reimbursementFormValues.particulars[+activeParticularIndex].amount,
       );
 
-      console.log(formReturn.getValues());
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reimbursementFormValues, activeParticularIndex]);
