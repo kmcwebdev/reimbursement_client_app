@@ -2,7 +2,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   useContext,
-  useMemo,
   useState,
   type Dispatch,
   type PropsWithChildren,
@@ -19,7 +18,6 @@ import {
   useHoldReimbursementMutation,
   useRejectReimbursementMutation,
 } from "~/features/api/actions-api-slice";
-import { useAuditLogsQuery } from "~/features/api/reimbursement-api-slice";
 import { useDialogState } from "~/hooks/use-dialog-state";
 import {
   OnholdReimbursementSchema,
@@ -68,20 +66,8 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
   const ability = useContext(AbilityContext);
 
   const { assignedRole } = useAppSelector((state) => state.session);
-  const [reimbursementReqId, setReimbursementReqId] = useState<number>();
   const [currentState, setCurrentState] = useState<string>("Reject");
 
-  useMemo(() => {
-    if (data) {
-      setReimbursementReqId(data.id);
-    }
-  }, [data]);
-
-  // const [downloadReportLoading, setDownloadReportLoading] = useState(false);
-  const { data: auditLog, isFetching: auditLogIsFetching } = useAuditLogsQuery(
-    { reimbursement_request_id: reimbursementReqId?.toString()! },
-    { skip: !reimbursementReqId },
-  );
   const [approveReimbursement, { isLoading: isApproving }] =
     useApproveReimbursementMutation();
 
@@ -298,15 +284,12 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
               reimb_requestor={data.reimb_requestor}
             />
 
-            {(data.request_status.name === "On-hold" ||
-              data.request_status.name === "Rejected" ||
-              data.request_status.name === "Cancelled") && (
-              <>
-                {!auditLogIsFetching && auditLog && auditLog.length > 0 && (
-                  <Notes note={auditLog[0].description} />
-                )}
-              </>
-            )}
+            {data.remarks &&
+              (data.request_status.name === "On-hold" ||
+                data.request_status.name === "Rejected" ||
+                data.request_status.name === "Cancelled") && (
+                <Notes note="Remarks is missing" />
+              )}
 
             {data.approver_matrix && data.approver_matrix.length > 0 && (
               <Approvers

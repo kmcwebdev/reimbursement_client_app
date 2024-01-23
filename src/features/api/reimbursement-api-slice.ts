@@ -1,6 +1,5 @@
 import { appApiSlice } from "~/app/rtkQuery";
 import {
-  type AuditLog,
   type IReimbursementRequest,
   type IReimbursementsFilterQuery,
   type IRequestListResponse,
@@ -80,18 +79,6 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
       ],
     }),
 
-    auditLogs: builder.query<AuditLog[], { reimbursement_request_id: string }>({
-      query: (query) => {
-        return {
-          url: "/api/finance/reimbursements/requests/auditlogs",
-          params: query,
-        };
-      },
-      providesTags: (_result, _fetchBaseQuery, query) => [
-        { type: "AuditLogs", id: query.reimbursement_request_id },
-      ],
-    }),
-
     //POST
   }),
 });
@@ -101,5 +88,4 @@ export const {
   useGetAdminListQuery,
   useGetRequestsHistoryQuery,
   useGetRequestQuery,
-  useAuditLogsQuery,
 } = reimbursementApiSlice;

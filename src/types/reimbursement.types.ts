@@ -34,6 +34,7 @@ export type IReimbursementRequest = {
   payroll_date: string;
   created_at: string;
   updated_at: string;
+  remarks: string;
 };
 
 export type IApproverMatrix = {

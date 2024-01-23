@@ -105,7 +105,7 @@ const MyReimbursements: React.FC = () => {
     dispatch(setSelectedItems(value));
   };
 
-  const { isFetching, data } = useGetRequestsHistoryQuery({
+  const { isFetching, currentData: data } = useGetRequestsHistoryQuery({
     ...filters,
     search: debouncedSearchText,
     type: assignedRole?.split("_")[1].toLowerCase()!,
