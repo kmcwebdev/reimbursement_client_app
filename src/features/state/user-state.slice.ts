@@ -8,6 +8,7 @@ export interface IUser {
   first_name: string;
   last_name: string;
   is_superuser: boolean;
+  is_staff: boolean;
   groups: IGroupType[];
   profile: IUserProfile;
   permissions: AppClaims[];

@@ -26,6 +26,24 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
         { type: "ReimbursementApprovalList", id: JSON.stringify(query) },
       ],
     }),
+
+    getAdminList: builder.query<
+      IRequestListResponse,
+      IReimbursementsFilterQuery
+    >({
+      query: (query) => {
+        const searchParams = createSearchParams(query);
+        searchParams?.delete("type");
+        searchParams?.append("ordering", "-created_at");
+        return {
+          url: `/reimbursements/request/administrator/all`,
+          params: searchParams ? searchParams : {},
+        };
+      },
+      providesTags: (_result, _fetchBaseQuery, query) => [
+        { type: "ReimbursementAdminList", id: JSON.stringify(query) },
+      ],
+    }),
     getRequestsHistory: builder.query<
       IRequestListResponse,
       IReimbursementsFilterQuery
@@ -79,6 +97,7 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
 
 export const {
   useGetApprovalListQuery,
+  useGetAdminListQuery,
   useGetRequestsHistoryQuery,
   useGetRequestQuery,
   useAuditLogsQuery,

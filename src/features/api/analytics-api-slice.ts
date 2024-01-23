@@ -1,5 +1,5 @@
 import { appApiSlice } from "~/app/rtkQuery";
-import { type IMyAnalytics } from "~/types/dashboard-analytics.type";
+import { type IAnalytics } from "~/types/dashboard-analytics.type";
 
 /**
  * ANALYTICS API SLICE
@@ -9,7 +9,7 @@ import { type IMyAnalytics } from "~/types/dashboard-analytics.type";
 
 export const analyticsApiSlice = appApiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    myAnalytics: builder.query<IMyAnalytics, void>({
+    myAnalytics: builder.query<IAnalytics, void>({
       query: () => {
         return {
           url: "/reimbursements/request/my-analytics",
@@ -19,7 +19,7 @@ export const analyticsApiSlice = appApiSlice.injectEndpoints({
         { type: "MyAnalytics", id: JSON.stringify(query) },
       ],
     }),
-    approvalAnalytics: builder.query<IMyAnalytics, { type: string }>({
+    approvalAnalytics: builder.query<IAnalytics, { type: string }>({
       query: (query) => {
         return {
           url: `/reimbursements/request/${query.type}/analytics`,

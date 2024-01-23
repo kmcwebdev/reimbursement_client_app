@@ -12,8 +12,10 @@ import { Button } from "~/app/components/core/Button";
 import Table from "~/app/components/core/table";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { appApiSlice } from "~/app/rtkQuery";
-import { useGetRequestQuery } from "~/features/api/reimbursement-api-slice";
-import { useMyRequestsQuery } from "~/features/api/user-api-slice";
+import {
+  useGetAdminListQuery,
+  useGetRequestQuery,
+} from "~/features/api/reimbursement-api-slice";
 import {
   clearReimbursementForm,
   toggleCancelDialog,
@@ -103,7 +105,7 @@ const MyAdmin: React.FC = () => {
 
   const debouncedSearchText = useDebounce(searchParams.search, 500);
 
-  const { isFetching, data } = useMyRequestsQuery({
+  const { isFetching, data } = useGetAdminListQuery({
     ...filters,
     search: debouncedSearchText,
   });

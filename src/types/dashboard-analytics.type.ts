@@ -1,24 +1,14 @@
-export type IFinanceAnalytics = {
-  onhold: IAnalytics;
-  pendingApproval: IAnalytics;
-  scheduled: IAnalytics;
-  unscheduled: IAnalytics;
-};
-
-export type IHRBPAnalytics = Omit<IFinanceAnalytics, "onhold">;
-export type IManagerAnalytics = Omit<IFinanceAnalytics, "onhold">;
-
-export interface IMemberAnalytics
-  extends Omit<IFinanceAnalytics, "scheduled" & "unscheduled" & "onhold"> {
-  overall: IAnalytics;
-}
-
-interface IAnalytics {
-  count: string;
-}
-
-export type IMyAnalytics = {
+export type IAnalytics = {
   pending_request_count: number;
   scheduled_request_count: number;
   unscheduled_request_count: number;
+
+  pending_for_approval_count: number;
+  scheduled_for_approval_request_count: number;
+  unscheduled_for_approval_request_count: number;
+  credited_request_count: number;
+  cancelled_request_count: number;
+  rejected_request_count: number;
+  onhold_request_count: number;
+  administrator_analytics: number;
 };

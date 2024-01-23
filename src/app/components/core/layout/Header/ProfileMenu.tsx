@@ -49,7 +49,7 @@ const ProfileMenu: React.FC = () => {
 
   const [assignGroup, { isLoading: isSubmitting }] = useAssignGroupMutation();
 
-  const { isFetching, data } = useAllGroupsQuery({}, { skip: !assignedRole });
+  const { isFetching, data } = useAllGroupsQuery({}, { skip: !user?.is_staff });
 
   useMemo(() => {
     if (data?.results) {
@@ -88,6 +88,14 @@ const ProfileMenu: React.FC = () => {
   const handleSignout = async () => {
     setSignoutButtonIsLoading(true);
     await logoutFn();
+  };
+
+  const handleGrant = () => {
+    localStorage.setItem("adminView", "true");
+  };
+
+  const handleRevoke = () => {
+    localStorage.setItem("adminView", "false");
   };
 
   return (
@@ -153,7 +161,11 @@ const ProfileMenu: React.FC = () => {
                                 }
                               />
                               <div className="px-4 pb-4">
-                                <Button buttonType="text" variant="success">
+                                <Button
+                                  buttonType="text"
+                                  variant="success"
+                                  onClick={handleGrant}
+                                >
                                   <div className="flex items-center gap-1">
                                     <MdCheckCircle className="h-4 w-4" /> Grant
                                     Admin Privileges.
@@ -165,7 +177,11 @@ const ProfileMenu: React.FC = () => {
                         />
                       </div>
                     ) : (
-                      <Button buttonType="text" variant="danger">
+                      <Button
+                        buttonType="text"
+                        variant="danger"
+                        onClick={handleRevoke}
+                      >
                         <div className="flex items-center gap-1">
                           <MdClose className="h-4 w-4" /> Revoke Admin
                           Privileges.

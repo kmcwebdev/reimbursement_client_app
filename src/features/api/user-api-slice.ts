@@ -56,8 +56,28 @@ export const userApiSlice = appApiSlice.injectEndpoints({
         };
       },
     }),
+
+    toggleAdminPrivilege: builder.mutation<
+      unknown,
+      {
+        id: string;
+        is_superuser: number;
+      }
+    >({
+      query: (data) => {
+        return {
+          url: `/management/users/${data.id}/super-user-status`,
+          method: "PATCH",
+          body: { is_superuser: data.is_superuser },
+        };
+      },
+    }),
   }),
 });
 
-export const { useGetMeQuery, useMyRequestsQuery, useAssignGroupMutation } =
-  userApiSlice;
+export const {
+  useGetMeQuery,
+  useMyRequestsQuery,
+  useAssignGroupMutation,
+  useToggleAdminPrivilegeMutation,
+} = userApiSlice;

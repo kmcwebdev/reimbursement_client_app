@@ -9,6 +9,7 @@ import MemberDashboard from "./Member";
 
 const DashboardComponent: React.FC = () => {
   const { user, assignedRole } = useAppSelector((state) => state.session);
+
   return (
     <div>
       {user && (
