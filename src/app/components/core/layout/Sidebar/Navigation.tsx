@@ -1,6 +1,7 @@
 import { usePathname } from "next/navigation";
 import React from "react";
 import { type IconType } from "react-icons-all-files";
+import { MdAdminPanelSettings } from "react-icons-all-files/md/MdAdminPanelSettings";
 import { MdDashboard } from "react-icons-all-files/md/MdDashboard";
 import { MdGavel } from "react-icons-all-files/md/MdGavel";
 import { MdPerson } from "react-icons-all-files/md/MdPerson";
@@ -18,6 +19,15 @@ const Navigation: React.FC<NavigationProps> = ({ collapsed }) => {
 
   return (
     <div className="flex flex-col gap-2">
+      {user && user.is_superuser && (
+        <NavigationItem
+          label="Admin Dashboard"
+          icon={MdAdminPanelSettings as IconType}
+          active={pathname ? pathname === "/admin" : false}
+          href="/admin"
+          collapsed={collapsed}
+        />
+      )}
       <NavigationItem
         label="Dashboard"
         icon={MdDashboard as IconType}
@@ -26,29 +36,25 @@ const Navigation: React.FC<NavigationProps> = ({ collapsed }) => {
         collapsed={collapsed}
       />
 
-      {user && !user.is_superuser && (
-        <>
-          <Can I="access" a="NAV_ITEM_APPROVAL">
-            <NavigationItem
-              label="Approval"
-              icon={MdGavel as IconType}
-              active={pathname ? pathname === "/approval" : false}
-              href="/approval"
-              collapsed={collapsed}
-            />
-          </Can>
+      <Can I="access" a="NAV_ITEM_APPROVAL">
+        <NavigationItem
+          label="Approval"
+          icon={MdGavel as IconType}
+          active={pathname ? pathname === "/approval" : false}
+          href="/approval"
+          collapsed={collapsed}
+        />
+      </Can>
 
-          <Can I="access" a="NAV_ITEM_HISTORY">
-            <NavigationItem
-              label="History"
-              icon={MdReceipt as IconType}
-              active={pathname ? pathname === "/history" : false}
-              href="/history"
-              collapsed={collapsed}
-            />
-          </Can>
-        </>
-      )}
+      <Can I="access" a="NAV_ITEM_HISTORY">
+        <NavigationItem
+          label="History"
+          icon={MdReceipt as IconType}
+          active={pathname ? pathname === "/history" : false}
+          href="/history"
+          collapsed={collapsed}
+        />
+      </Can>
 
       <NavigationItem
         label="Profile"

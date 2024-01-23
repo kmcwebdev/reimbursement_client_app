@@ -1,7 +1,6 @@
 "use client";
 import React from "react";
 import { useAppSelector } from "~/app/hook";
-import AdminDashboard from "./Admin";
 import FinanceDashboard from "./Finance";
 import HrbpDashboard from "./Hrbp";
 import ManagerDashboard from "./Manager";
@@ -14,16 +13,10 @@ const DashboardComponent: React.FC = () => {
     <div>
       {user && (
         <>
-          {user.is_superuser ? (
-            <AdminDashboard />
-          ) : (
-            <>
-              {assignedRole === "REIMBURSEMENT_MANAGER" && <ManagerDashboard />}
-              {assignedRole === "REIMBURSEMENT_USER" && <MemberDashboard />}
-              {assignedRole === "REIMBURSEMENT_HRBP" && <HrbpDashboard />}
-              {assignedRole === "REIMBURSEMENT_FINANCE" && <FinanceDashboard />}
-            </>
-          )}
+          {assignedRole === "REIMBURSEMENT_MANAGER" && <ManagerDashboard />}
+          {assignedRole === "REIMBURSEMENT_USER" && <MemberDashboard />}
+          {assignedRole === "REIMBURSEMENT_HRBP" && <HrbpDashboard />}
+          {assignedRole === "REIMBURSEMENT_FINANCE" && <FinanceDashboard />}
         </>
       )}
     </div>
