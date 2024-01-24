@@ -27,23 +27,22 @@ const Upload: React.FC<UploadProps> = ({
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [
       ".xlsx",
     ],
-
-    // "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [
-    //   ".docx",
-    // ],
-    // "application/msword": [".doc"],
   },
-  // isUploading = false,
-  // isUploaded = false,
-  // uploadedFileUrl,
   handleUpload,
   setAttachedFiles,
   files,
   ...rest
 }) => {
-  // const dispatch = useDispatch();
-  // const [file, setFile] = useState<FileWithPath | null>();
+  const fileValidator = (file: File) => {
+    if (file.size > 50000000) {
+      return {
+        code: "size-too-large",
+        message: `file is larger than 50MB`,
+      };
+    }
 
+    return null;
+  };
   const handleDrop = useCallback(
     (e: FileWithPath) => {
       const filesCopy = [...files];
@@ -61,100 +60,10 @@ const Upload: React.FC<UploadProps> = ({
         handleDrop(e[0]);
       }
     },
+    validator: fileValidator,
     accept,
-    // disabled: !!(rest.maxFiles && files.length === rest.maxFiles),
     ...rest,
   });
-
-  // const deleteFile = useCallback(
-  //   () => {
-  //     setFile(null);
-  //     dispatch(setFileSelected(null));
-  //     dispatch(setUploadedFileUrl(null));
-  //   },
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  //   [file],
-  // );
-
-  /*
-   const acceptedFileItem = useMemo(() => {
-    if (file) {
-      const isPDF = file.type === "application/pdf";
-      const isImage = file.type === "image/*";
-      const isWord =
-        file.type === "application/msword" ||
-        file.type ===
-          "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
-      const isSpreadsheet =
-        file.type === "text/csv" ||
-        file.type === "application/vnd.ms-excel" ||
-        file.type ===
-          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-      return (
-        <li
-          className={classNames(
-            isUploading || uploadedFileUrl
-              ? "justify-normal"
-              : "justify-between",
-            "flex gap-4 rounded border border-neutral-300 p-2",
-          )}
-        >
-          <div className="flex flex-1 items-center gap-2 truncate">
-            <span className="relative flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border border-neutral-300">
-               {isPDF && <MdPictureAsPdf className="h-5 w-5 text-navy" />}
-              {isImage && <BiSpreadsheet className="h-5 w-5 text-navy" />} 
-              <MdFileCopy className="h-5 w-5 text-navy" />
-            </span>
-
-            <span
-              className={classNames(
-                isUploading || uploadedFileUrl ? "w-full" : "w-52",
-                "relative flex w-full flex-col justify-center gap-2",
-              )}
-            >
-              <span className="truncate">{file.name}</span>
-
-              {isUploading && <IndeterminateProgressBar />}
-
-              {isUploaded && uploadedFileUrl && (
-                <span className="truncate text-xs text-neutral-600">
-                  {uploadedFileUrl}
-                </span>
-              )}
-            </span>
-          </div>
-          {!isUploading && !uploadedFileUrl && (
-            <div className="flex items-center gap-2 pr-2">
-              <div {...getRootProps({ className: "dropzone" })}>
-                <input {...getInputProps()} />
-                <Button type="button" buttonType="text">
-                  Replace
-                </Button>
-              </div>
-
-              <Button
-                type="button"
-                buttonType="text"
-                variant="danger"
-                onClick={deleteFile}
-              >
-                <MdOutlineDelete className="h-5 w-5" />
-              </Button>
-            </div>
-          )}
-        </li>
-      );
-    }
-  }, [
-    file,
-    isUploading,
-    isUploaded,
-    uploadedFileUrl,
-    getRootProps,
-    getInputProps,
-    deleteFile,
-  ]);
- */
 
   return (
     <section className="container p-0">
@@ -177,28 +86,29 @@ const Upload: React.FC<UploadProps> = ({
 
             <p className="font-bold text-orange-600">Click/Drop to Upload</p>
 
-            <p className="text-neutral-600">PDF,Excel File or Image</p>
+            <div className="flex flex-col gap-1">
+              <p className="text-neutral-600">PDF,Excel File or Image</p>
+              <p className="text-xs text-neutral-600">File size limit: 50MB </p>
+            </div>
           </div>
-
-          {/* <p className="flex items-center gap-2">
-            <HiInformationCircle className="h-4 w-4 text-blue-600" />
-            You can only upload 1 PDF or Word file.
-          </p> */}
         </div>
       </CollapseHeightAnimation>
 
-      {/* <CollapseHeightAnimation isVisible={!!acceptedFileItem}>
-        <aside className="space-y-4 py-4">
-          <p className="text-xs font-medium text-neutral-900">Uploaded Files</p>
-          <ul className="mt-2 space-y-2">{acceptedFileItem}</ul>
-        </aside>
-      </CollapseHeightAnimation> */}
-
       {fileRejections.length > 0 && (
         <p className="mt-1 text-sm text-red-600">
-          Selected file type is invalid! Only{" "}
-          <span className="font-semibold">PDF ,Excel or Image</span> files are
-          accepted.
+          {fileRejections[0].errors[0].code === "size-too-large" && (
+            <>
+              File size exceeds the maximum limit. Please reduce the file size
+              and try again.
+            </>
+          )}
+          {fileRejections[0].errors[0].code === "file-invalid-type" && (
+            <>
+              Selected file type is invalid! Only{" "}
+              <span className="font-semibold">PDF ,Excel or Image</span> files
+              are accepted.
+            </>
+          )}
         </p>
       )}
     </section>
