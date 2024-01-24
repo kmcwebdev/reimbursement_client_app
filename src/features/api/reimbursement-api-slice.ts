@@ -48,16 +48,11 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
       IReimbursementsFilterQuery & { type: string }
     >({
       query: (query) => {
-        let queries = query;
-        if (queries.type === "finance" && !queries.request_status__id) {
-          queries = { ...queries, request_status__id: "2,6" };
-        }
-        const searchParams = createSearchParams(queries);
-
+        const searchParams = createSearchParams(query);
         searchParams?.delete("type");
         searchParams?.append("ordering", "-created_at");
         return {
-          url: `/reimbursements/request/${queries.type}/history`,
+          url: `/reimbursements/request/${query.type}/history`,
           params:
             searchParams && searchParams.size ? searchParams.toString() : {},
         };
