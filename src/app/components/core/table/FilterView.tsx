@@ -103,7 +103,7 @@ const FilterView: React.FC<FilterViewProps> = ({ colSpan }) => {
         colSpan={colSpan}
         className={classNames(
           Object.keys(filters).filter((a) => a !== "page").length > 0
-            ? "h-16 px-4 opacity-100 first:px-0"
+            ? "h-16 border-t px-4 opacity-100 first:px-0"
             : "h-0 p-0 opacity-0",
           "overflow-hidden",
         )}

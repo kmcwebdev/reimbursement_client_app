@@ -4,7 +4,13 @@ import { MdBrowserNotSupported } from "react-icons-all-files/md/MdBrowserNotSupp
 import EmptyState from "../EmptyState";
 
 interface TableEmptyStateProps {
-  type: "finance" | "approvals" | "reimbursements" | "no-results" | "history" | "admin";
+  type:
+    | "finance"
+    | "approvals"
+    | "reimbursements"
+    | "no-results"
+    | "history"
+    | "admin";
   colSpan: number;
 }
 
@@ -13,7 +19,7 @@ const TableEmptyState: React.FC<TableEmptyStateProps> = ({ type, colSpan }) => {
     <>
       {type !== "no-results" && (
         <tr>
-          <td colSpan={colSpan} className="px-4 pt-4 md:px-0">
+          <td colSpan={colSpan} className="px-4 pb-4 md:px-0">
             <div>
               <div className="grid h-[40vh] place-items-center rounded-md bg-neutral-100 py-10">
                 {type === "approvals" && (

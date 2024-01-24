@@ -13,6 +13,7 @@ import {
   type Table,
 } from "@tanstack/react-table";
 
+import { FaSpinner } from "react-icons-all-files/fa/FaSpinner";
 import { type IResponsePagination } from "~/types/global-types";
 import {
   type IReimbursementRequest,
@@ -67,7 +68,13 @@ type TableProps = {
   handleMobileClick?: (e: number) => void;
   pagination: IResponsePagination;
   columns: any;
-} & (ReimbursementTable | ApprovalTable | FinanceTable | HistoryTable | AdminTable);
+} & (
+  | ReimbursementTable
+  | ApprovalTable
+  | FinanceTable
+  | HistoryTable
+  | AdminTable
+);
 
 interface CustomFilterMeta extends FilterMeta {
   filterComponent: () => JSX.Element;
@@ -139,14 +146,26 @@ const Table: React.FC<TableProps> = (props) => {
         className={classNames(
           "relative h-full w-full",
           props.loading
-            ? " overflow-x-hidden overflow-y-hidden"
+            ? "overflow-x-hidden overflow-y-hidden"
             : "overflow-y-auto",
         )}
       >
         {/* TABLE HEADER */}
         <table className="relative w-full whitespace-nowrap">
-          <thead className="sticky top-0 z-[5] hidden h-12 rounded-t-sm bg-white text-xs shadow-sm  md:table-header-group">
-            {props.data &&
+          <thead className="sticky top-0 z-[5] hidden h-12 rounded-t-sm bg-white text-xs md:table-header-group">
+            {props.loading && (
+              <tr>
+                <th colSpan={42} className="h-12 border-b">
+                  <div className="flex gap-4 px-4 text-neutral-600">
+                    <FaSpinner className="h-4 w-4 animate-spin" />
+                    <p>Fetching table data...</p>
+                  </div>
+                </th>
+              </tr>
+            )}
+
+            {!props.loading &&
+              props.data &&
               table.getHeaderGroups().map((headerGroup, i) => (
                 <tr key={i} className="h-12">
                   {headerGroup.headers.map((header, index) => {
@@ -181,7 +200,12 @@ const Table: React.FC<TableProps> = (props) => {
               ))}
           </thead>
 
-          <tbody className="relative h-full w-full rounded-b-sm bg-white p-4 shadow-sm">
+          <tbody
+            className={classNames(
+              !props.loading && "shadow-sm",
+              "relative h-full w-full rounded-b-sm bg-white p-4",
+            )}
+          >
             <FilterView colSpan={table.getAllColumns().length} />
             {props.loading && (
               <TableSkeleton length={table.getAllFlatColumns().length} />
@@ -263,15 +287,13 @@ const Table: React.FC<TableProps> = (props) => {
         </table>
       </div>
 
+      {props.loading && <PaginationSkeletonLoading />}
+
       {!props.loading && props.data && props.data.length > 0 && (
         <Pagination
           data={props.pagination}
           currentPageLength={props.data.length}
         />
-      )}
-
-      {props.loading && props.data && props.data.length > 0 && (
-        <PaginationSkeletonLoading />
       )}
     </div>
   );
