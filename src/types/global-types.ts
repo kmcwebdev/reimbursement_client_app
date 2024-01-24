@@ -13,6 +13,10 @@ type G_IError = {
   path: string[];
 };
 
+export type IError = {
+  detail: string;
+};
+
 type G_EmailError = {
   statusCode: number;
   message: string;

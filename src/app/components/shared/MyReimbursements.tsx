@@ -309,19 +309,23 @@ const MyReimbursements: React.FC = () => {
       </div>
 
       <Dialog
-        title={
-          activeStep === 0
-            ? "Reimbursement Type"
-            : activeStep === 1 && !particularDetailsFormIsVisible
-              ? "Add Particulars"
-              : activeStep === 1 && particularDetailsFormIsVisible
-                ? "Particular"
-                : activeStep === 2 && !selectedAttachmentMethod
-                  ? "File a Reimbursements"
-                  : activeStep === 2 && selectedAttachmentMethod === "capture"
-                    ? "Take Photo"
-                    : "Upload Files"
-        }
+        title={classNames(
+          activeStep == 0 && "Reimbursement Type",
+          activeStep === 1 &&
+          !particularDetailsFormIsVisible &&
+          "Add Particulars",
+          activeStep === 1 && particularDetailsFormIsVisible && "Particular",
+          activeStep === 2 &&
+          !selectedAttachmentMethod &&
+          "Select Attachment Method",
+          activeStep === 2 &&
+          selectedAttachmentMethod === "capture" &&
+          "Take Photo",
+          activeStep === 2 &&
+          selectedAttachmentMethod === "upload" &&
+          "Upload Files",
+          activeStep === 3 && "Set Approver",
+        )}
         isVisible={formDialogIsOpen}
         close={handleOpenCancelDialog}
         hideCloseIcon

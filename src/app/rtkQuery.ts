@@ -109,6 +109,7 @@ export const appApiSlice = createApi({
     "Users",
     "Permissions",
     "AssignPermissions",
+    "DownloadReports",
   ],
   endpoints: (
     _builder: EndpointBuilder<

@@ -101,10 +101,12 @@ const Payables: React.FC = () => {
       setDownloadReportLoading(false);
       closeReportConfirmDialog();
     },
-    onError: () => {
+    onError: (data) => {
       showToast({
         type: "error",
-        description: "Error downloading.Please try again.",
+        description: data
+          ? (data as string)
+          : "Error downloading.Please try again.",
       });
       setDownloadReportLoading(false);
       closeReportConfirmDialog();
@@ -113,13 +115,32 @@ const Payables: React.FC = () => {
 
   const downloadReport = async () => {
     setDownloadReportLoading(true);
-    await exportReport(
-      `${
-        env.NEXT_PUBLIC_BASEAPI_URL
-      }/api/finance/reimbursements/requests/reports/finance?reimbursement_request_ids=${JSON.stringify(
-        selectedItems,
-      )}`,
-    );
+
+    const reference_nos: string[] = [];
+    selectedItems.forEach((a) => {
+      const reimbursement = data?.results.find((b) => +a === b.id);
+      if (reimbursement) {
+        reference_nos.push(reimbursement.reference_no);
+      }
+    });
+
+    let filename: string = "FINANCE_REIMBURSEMENT_REPORT";
+
+    if (reference_nos.length === 1) {
+      const requestor = data?.results.find(
+        (b) => reference_nos[0] === b.reference_no,
+      )?.reimb_requestor;
+
+      filename = `${filename} (${requestor?.first_name.toUpperCase()} ${requestor?.last_name.toUpperCase()}-${reference_nos[0]})`;
+    }
+
+    if (reference_nos.length > 1) {
+      filename = `${filename} - ${reference_nos.join(",")}`;
+    }
+
+    const url = `${env.NEXT_PUBLIC_BASEAPI_URL}/reimbursements/request/finance/download-reports${reference_nos.length > 0 ? `?multi_reference_no=${reference_nos.join(",")}` : ""}`;
+
+    await exportReport(url, filename);
   };
 
   const dispatch = useAppDispatch();
@@ -195,7 +216,7 @@ const Payables: React.FC = () => {
         {
           id: "reimb_requestor",
           accessorKey: "reimb_requestor",
-          header: "ID",
+          header: "E-ID",
         },
         {
           id: "reimb_requestor",

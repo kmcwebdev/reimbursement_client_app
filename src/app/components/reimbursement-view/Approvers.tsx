@@ -45,9 +45,9 @@ const Approvers: React.FC<ApproversProps> = ({ approvers, request_status }) => {
 
               <div className="flex flex-1 flex-col gap-1">
                 <span className="text-sm text-neutral-900">
-                  {approver.display_name
-                    ? approver.display_name
-                    : `Approver ID: ${approver.id}`}
+                  {approver.approver
+                    ? approver.approver.email
+                    : approver.display_name}
                 </span>
 
                 {approver.acknowledge_datetime ? (

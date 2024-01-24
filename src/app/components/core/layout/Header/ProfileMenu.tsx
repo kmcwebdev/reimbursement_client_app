@@ -74,6 +74,9 @@ const ProfileMenu: React.FC = () => {
           dispatch(setAssignedRole(selectedOption.label as IGroupType));
           buttonChildRef.current?.click();
           buttonRef.current?.click();
+          if (typeof window !== "undefined") {
+            window.location.reload();
+          }
         });
     }
   };

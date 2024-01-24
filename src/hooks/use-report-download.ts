@@ -1,11 +1,12 @@
 import { useAppSelector } from "~/app/hook";
+import { type IError } from "~/types/global-types";
 
 export const useReportDownload = ({
   onSuccess,
   onError,
 }: {
   onSuccess: () => void;
-  onError: () => void;
+  onError: (desc?: unknown) => void;
 }) => {
   const { accessToken } = useAppSelector((state) => state.session);
 
@@ -17,7 +18,7 @@ export const useReportDownload = ({
     },
   };
 
-  const download = async (downloadUrl: string) => {
+  const download = async (downloadUrl: string, filename: string) => {
     try {
       const response = await fetch(downloadUrl, options);
 
@@ -27,20 +28,23 @@ export const useReportDownload = ({
             new Blob([blob], { type: "csv" }),
           );
 
+          console.log(response);
+
           const link = document.createElement("a");
           link.href = url;
-          link.setAttribute("download", `filename.csv`);
+          link.setAttribute("download", `${filename}.csv`);
           document.body.appendChild(link);
           link.click();
           document.body.removeChild(link);
           onSuccess();
         });
       } else {
-        onError();
+        const error: IError = (await response.json()) as IError;
+        onError(error.detail);
       }
     } catch (error) {
       if (error) {
-        onError();
+        onError(error);
       }
     }
   };

@@ -39,6 +39,7 @@ import SkeletonLoading from "../core/SkeletonLoading";
 import { showToast } from "../core/Toast";
 import Input from "../core/form/fields/Input";
 import TableCell from "../core/table/TableCell";
+import TableCheckbox from "../core/table/TableCheckbox";
 import AdminAnalytics from "./analytics/AdminAnalytics";
 import ReimburseForm from "./reimburse-form";
 
@@ -113,6 +114,30 @@ const MyAdmin: React.FC = () => {
   const columns = React.useMemo<ColumnDef<IReimbursementRequest>[]>(() => {
     const defaultColumns: ColumnDef<IReimbursementRequest, unknown>[] = [
       {
+        id: "select",
+        header: ({ table }) => {
+          if (table.getRowModel().rows.length > 0) {
+            return (
+              <TableCheckbox
+                checked={table.getIsAllRowsSelected()}
+                indeterminate={table.getIsSomeRowsSelected()}
+                onChange={table.getToggleAllRowsSelectedHandler()}
+                showOnHover={false}
+              />
+            );
+          }
+        },
+        cell: ({ row }) => (
+          <TableCheckbox
+            checked={row.getIsSelected()}
+            tableHasChecked={selectedItems.length > 0}
+            disabled={!row.getCanSelect()}
+            indeterminate={row.getIsSomeSelected()}
+            onChange={row.getToggleSelectedHandler()}
+          />
+        ),
+      },
+      {
         id: "request_status",
         accessorKey: "request_status",
         header: "Status",
@@ -124,34 +149,31 @@ const MyAdmin: React.FC = () => {
         },
       },
       {
-        id: "client_name",
-        accessorKey: "client_name",
+        id: "reimb_requestor",
+        accessorKey: "reimb_requestor",
         header: "Client",
-        cell: (info) => info.getValue(),
       },
       {
-        id: "reference_no",
-        accessorKey: "reference_no",
-        header: "ID",
+        id: "reimb_requestor",
+        accessorKey: "reimb_requestor",
+        header: "E-ID",
       },
       {
-        id: "full_name",
-        accessorKey: "full_name",
-        cell: (info) => info.getValue(),
+        id: "reimb_requestor",
+        accessorKey: "reimb_requestor",
         header: "Name",
       },
       {
         id: "reference_no",
         accessorKey: "reference_no",
-        cell: (info) => info.getValue(),
         header: "R-ID",
       },
       {
         id: "request_type",
         accessorKey: "request_type",
         header: "Type",
-        filterFn: (row, value: string) => {
-          return value.includes(row.original.request_type.name);
+        filterFn: (row, id, value: string) => {
+          return value.includes(row.getValue(id));
         },
         meta: {
           filterComponent: ReimbursementTypeFilter,
@@ -195,7 +217,7 @@ const MyAdmin: React.FC = () => {
     ];
 
     defaultColumns.forEach((a) => {
-      a.cell = TableCell;
+      a.cell = a.id === "select" ? a.cell : TableCell;
     });
 
     return defaultColumns;
@@ -276,10 +298,12 @@ const MyAdmin: React.FC = () => {
       setDownloadReportLoading(false);
       closeReportConfirmDialog();
     },
-    onError: () => {
+    onError: (data) => {
       showToast({
         type: "error",
-        description: "Error downloading.Please try again.",
+        description: data
+          ? (data as string)
+          : "Error downloading.Please try again.",
       });
       setDownloadReportLoading(false);
       closeReportConfirmDialog();
@@ -288,13 +312,34 @@ const MyAdmin: React.FC = () => {
 
   const downloadReport = async () => {
     setDownloadReportLoading(true);
-    await exportReport(
-      `${
-        env.NEXT_PUBLIC_BASEAPI_URL
-      }/api/finance/reimbursements/requests/reports/finance?reimbursement_request_ids=${JSON.stringify(
-        selectedItems,
-      )}`,
-    );
+
+    setDownloadReportLoading(true);
+
+    const reference_nos: string[] = [];
+    selectedItems.forEach((a) => {
+      const reimbursement = data?.results.find((b) => +a === b.id);
+      if (reimbursement) {
+        reference_nos.push(reimbursement.reference_no);
+      }
+    });
+
+    let filename: string = "ADMINISTRATOR_REIMBURSEMENT_REPORT";
+
+    if (reference_nos.length === 1) {
+      const requestor = data?.results.find(
+        (b) => reference_nos[0] === b.reference_no,
+      )?.reimb_requestor;
+
+      filename = `${filename} (${requestor?.first_name.toUpperCase()} ${requestor?.last_name.toUpperCase()}-${reference_nos[0]})`;
+    }
+
+    if (reference_nos.length > 1) {
+      filename = `${filename} - ${reference_nos.join(",")}`;
+    }
+
+    const url = `${env.NEXT_PUBLIC_BASEAPI_URL}/reimbursements/request/administrator/download-reports${reference_nos.length > 0 ? `?multi_reference_no=${reference_nos.join(",")}` : ""}`;
+
+    await exportReport(url, filename);
   };
 
   return (

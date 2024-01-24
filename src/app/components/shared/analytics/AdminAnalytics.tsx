@@ -28,7 +28,7 @@ const AdminAnalytics: React.FC = () => {
               <FaThList className="h-4 w-4 text-orange-600 sm:h-5 sm:w-5" />
             }
             label="All Reimbursements"
-            count={analytics.administrator_analytics}
+            count={analytics.all_reimb_request_count}
           />
 
           <DashboardCard

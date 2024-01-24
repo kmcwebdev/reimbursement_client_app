@@ -176,7 +176,7 @@ const MyApprovals: React.FC = () => {
       {
         id: "reimb_requestor",
         accessorKey: "reimb_requestor",
-        header: "ID",
+        header: "E-ID",
       },
       {
         id: "reimb_requestor",

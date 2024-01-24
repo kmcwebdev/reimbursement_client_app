@@ -26,7 +26,7 @@ const TableCell: React.FC<CellContext<IReimbursementRequest, unknown>> = (
     "Filed",
     "Approved",
     "Name",
-    "ID",
+    "E-ID",
     "Client",
   ];
 
@@ -51,7 +51,7 @@ const TableCell: React.FC<CellContext<IReimbursementRequest, unknown>> = (
         (props.getValue() as IUser)?.profile.organization}
 
       {/* REQUESTOR ID */}
-      {props.column.columnDef.header === "ID" && (props.getValue() as IUser).id}
+      {props.column.columnDef.header === "E-ID" && (props.getValue() as IUser).id}
 
       {/* REQUESTOR NAME*/}
       {props.column.columnDef.header === "Name" && (

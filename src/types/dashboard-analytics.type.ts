@@ -11,4 +11,5 @@ export type IAnalytics = {
   rejected_request_count: number;
   onhold_request_count: number;
   administrator_analytics: number;
+  all_reimb_request_count: number;
 };

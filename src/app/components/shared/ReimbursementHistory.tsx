@@ -48,7 +48,7 @@ const DateFiledFilter = dynamic(
 
 const SideDrawer = dynamic(() => import("~/app/components/core/SideDrawer"));
 
-const MyReimbursements: React.FC = () => {
+const ReimbursementHistory: React.FC = () => {
   const dispatch = useAppDispatch();
   const { user, assignedRole } = useAppSelector((state) => state.session);
   const [downloadReportLoading, setDownloadReportLoading] = useState(false);
@@ -91,10 +91,12 @@ const MyReimbursements: React.FC = () => {
       setDownloadReportLoading(false);
       closeDownloadConfirmation();
     },
-    onError: () => {
+    onError: (data) => {
       showToast({
         type: "error",
-        description: "Error downloading.Please try again.",
+        description: data
+          ? (data as string)
+          : "Error downloading.Please try again.",
       });
       setDownloadReportLoading(false);
       closeDownloadConfirmation();
@@ -105,11 +107,14 @@ const MyReimbursements: React.FC = () => {
     dispatch(setSelectedItems(value));
   };
 
-  const { isFetching, currentData: data } = useGetRequestsHistoryQuery({
-    ...filters,
-    search: debouncedSearchText,
-    type: assignedRole?.split("_")[1].toLowerCase()!,
-  });
+  const { isFetching, currentData: data } = useGetRequestsHistoryQuery(
+    {
+      ...filters,
+      search: debouncedSearchText,
+      type: assignedRole?.split("_")[1].toLowerCase()!,
+    },
+    { skip: !assignedRole },
+  );
 
   const columns = React.useMemo<ColumnDef<IReimbursementRequest>[]>(() => {
     //FINANCE COLUMNS
@@ -158,7 +163,7 @@ const MyReimbursements: React.FC = () => {
       {
         id: "reimb_requestor",
         accessorKey: "reimb_requestor",
-        header: "ID",
+        header: "E-ID",
       },
       {
         id: "reimb_requestor",
@@ -212,7 +217,7 @@ const MyReimbursements: React.FC = () => {
       },
       {
         id: "actions",
-        accessorKey: "reimbursement_request_id",
+        accessorKey: "id",
         header: "",
         setFocusedReimbursementId: setFocusedReimbursementId,
         openDrawer: open,
@@ -234,23 +239,31 @@ const MyReimbursements: React.FC = () => {
   const downloadReport = async () => {
     setDownloadReportLoading(true);
 
-    if (assignedRole === "REIMBURSEMENT_FINANCE") {
-      await exportReport(
-        `${env.NEXT_PUBLIC_BASEAPI_URL}/reimbursements/request/finance/download-reports`,
-      );
+    const reference_nos: string[] = [];
+    selectedItems.forEach((a) => {
+      const reimbursement = data?.results.find((b) => +a === b.id);
+      if (reimbursement) {
+        reference_nos.push(reimbursement.reference_no);
+      }
+    });
+
+    let filename: string = `${assignedRole?.split("_")[1].toUpperCase()}_REIMBURSEMENT_HISTORY_REPORT`;
+
+    if (reference_nos.length === 1) {
+      const requestor = data?.results.find(
+        (b) => reference_nos[0] === b.reference_no,
+      )?.reimb_requestor;
+
+      filename = `${filename} - ${requestor?.first_name.toUpperCase()} ${requestor?.last_name.toUpperCase()}-${reference_nos[0]}`;
     }
 
-    if (assignedRole === "REIMBURSEMENT_HRBP") {
-      await exportReport(
-        `${env.NEXT_PUBLIC_BASEAPI_URL}/reimbursements/request/hrbp/download-reports`,
-      );
+    if (reference_nos.length > 1) {
+      filename = `${filename} - ${reference_nos.join(",")}`;
     }
 
-    if (assignedRole === "REIMBURSEMENT_MANAGER") {
-      await exportReport(
-        `${env.NEXT_PUBLIC_BASEAPI_URL}/reimbursements/request/manager/download-reports`,
-      );
-    }
+    const url = `${env.NEXT_PUBLIC_BASEAPI_URL}/reimbursements/request/${assignedRole?.split("_")[1].toLowerCase()}/download-reports${reference_nos.length > 0 ? `?reference_no=${reference_nos.join(",")}` : ""}`;
+
+    await exportReport(url, filename);
   };
 
   const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
@@ -278,20 +291,17 @@ const MyReimbursements: React.FC = () => {
                 <SkeletonLoading className="h-5 w-5 rounded-full" />
               ) : (
                 <>
-                  {user &&
-                    (user.groups[0] === "REIMBURSEMENT_FINANCE" ||
-                      user.groups[0] === "REIMBURSEMENT_HRBP") && (
-                      <CollapseWidthAnimation
-                        isVisible={
-                          data && data.results.length > 0 ? true : false
-                        }
-                      >
-                        <MdDownload
-                          onClick={openDownloadConfirmation}
-                          className="h-5 w-5 rounded-full border border-green-600 p-0.5 text-green-600"
-                        />
-                      </CollapseWidthAnimation>
-                    )}
+                  {(assignedRole === "REIMBURSEMENT_FINANCE" ||
+                    assignedRole === "REIMBURSEMENT_HRBP") && (
+                    <CollapseWidthAnimation
+                      isVisible={data && data.results.length > 0 ? true : false}
+                    >
+                      <MdDownload
+                        onClick={openDownloadConfirmation}
+                        className="h-5 w-5 rounded-full border border-green-600 p-0.5 text-green-600"
+                      />
+                    </CollapseWidthAnimation>
+                  )}
                 </>
               )}
             </div>
@@ -438,4 +448,4 @@ const MyReimbursements: React.FC = () => {
   );
 };
 
-export default MyReimbursements;
+export default ReimbursementHistory;
