@@ -94,7 +94,9 @@ const Payables: React.FC = () => {
           { type: "ReimbursementApprovalList" },
         ]),
       );
-      dispatch(appApiSlice.util.invalidateTags([{ type: "FinanceAnalytics" }]));
+      dispatch(
+        appApiSlice.util.invalidateTags([{ type: "ApprovalAnalytics" }]),
+      );
       dispatch(setSelectedItems([]));
       setDownloadReportLoading(false);
       closeReportConfirmDialog();

@@ -23,9 +23,7 @@ export const actionsApiSlice = appApiSlice.injectEndpoints({
       },
       invalidatesTags: [
         { type: "ReimbursementApprovalList" },
-        { type: "ManagerAnalytics" },
-        { type: "HRBPAnalytics" },
-        { type: "FinanceAnalytics" },
+        { type: "ApprovalAnalytics" },
       ],
     }),
     rejectReimbursement: builder.mutation<
@@ -43,9 +41,7 @@ export const actionsApiSlice = appApiSlice.injectEndpoints({
       },
       invalidatesTags: [
         { type: "ReimbursementApprovalList" },
-        { type: "ManagerAnalytics" },
-        { type: "HRBPAnalytics" },
-        { type: "FinanceAnalytics" },
+        { type: "ApprovalAnalytics" },
       ],
     }),
     approveReimbursementViaEmail: builder.mutation<{ message: string }, string>(
@@ -79,9 +75,7 @@ export const actionsApiSlice = appApiSlice.injectEndpoints({
       invalidatesTags: [
         { type: "ReimbursementRequestList" },
         { type: "MyAnalytics" },
-        { type: "ManagerAnalytics" },
-        { type: "HRBPAnalytics" },
-        { type: "FinanceAnalytics" },
+        { type: "ApprovalAnalytics" },
       ],
     }),
     holdReimbursement: builder.mutation<
@@ -100,9 +94,7 @@ export const actionsApiSlice = appApiSlice.injectEndpoints({
       invalidatesTags: [
         { type: "ReimbursementApprovalList" },
         { type: "MyAnalytics" },
-        { type: "ManagerAnalytics" },
-        { type: "HRBPAnalytics" },
-        { type: "FinanceAnalytics" },
+        { type: "ApprovalAnalytics" },
       ],
     }),
   }),

@@ -127,7 +127,9 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
           { type: "ReimbursementApprovalList" },
         ]),
       );
-      dispatch(appApiSlice.util.invalidateTags([{ type: "FinanceAnalytics" }]));
+      dispatch(
+        appApiSlice.util.invalidateTags([{ type: "ApprovalAnalytics" }]),
+      );
       setDownloadReportLoading(false);
       closeApproveDialog();
     },
