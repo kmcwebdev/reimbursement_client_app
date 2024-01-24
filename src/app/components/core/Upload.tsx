@@ -56,8 +56,10 @@ const Upload: React.FC<UploadProps> = ({
 
   const { getRootProps, getInputProps, fileRejections } = useDropzone({
     onDrop: (e, i, f) => {
-      onDrop && onDrop(e, i, f);
-      handleDrop(e[0]);
+      if (i.length === 0) {
+        onDrop && onDrop(e, i, f);
+        handleDrop(e[0]);
+      }
     },
     accept,
     // disabled: !!(rest.maxFiles && files.length === rest.maxFiles),
