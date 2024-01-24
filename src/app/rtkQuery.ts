@@ -105,7 +105,6 @@ export const appApiSlice = createApi({
     "AllExpenseTypes",
     "AllGroups",
     "AllStatuses",
-    "AuditLogs",
     "Users",
     "Permissions",
     "AssignPermissions",

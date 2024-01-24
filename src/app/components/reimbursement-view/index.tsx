@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   useContext,

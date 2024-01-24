@@ -1,11 +1,9 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 "use client";
 import { type ColumnDef } from "@tanstack/react-table";
 import dynamic from "next/dynamic";
 import React, { useEffect, useState, type ChangeEvent } from "react";
+import { type IconType } from "react-icons-all-files";
 import { MdSearch } from "react-icons-all-files/md/MdSearch";
 import { Button } from "~/app/components/core/Button";
 import Table from "~/app/components/core/table";
@@ -14,7 +12,6 @@ import { type FilterProps } from "~/app/components/core/table/filters/StatusFilt
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { appApiSlice } from "~/app/rtkQuery";
 import { Can } from "~/context/AbilityContext";
-
 import { useApproveReimbursementMutation } from "~/features/api/actions-api-slice";
 import { useApprovalAnalyticsQuery } from "~/features/api/analytics-api-slice";
 import {
@@ -327,7 +324,7 @@ const MyApprovals: React.FC = () => {
                 placeholder="Find anything..."
                 loading={isLoading && isSearching}
                 className="w-full md:w-64"
-                icon={MdSearch}
+                icon={MdSearch as IconType}
                 defaultValue={filters.search}
                 onChange={handleSearch}
               />

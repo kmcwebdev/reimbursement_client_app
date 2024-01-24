@@ -1,7 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import React, { useMemo, useState } from "react";
 import { type UseFormReturn } from "react-hook-form";
 import { IoMdImage } from "react-icons-all-files/io/IoMdImage";
@@ -137,9 +133,7 @@ const UploadAttachments: React.FC<UploadAttachmentsProps> = ({
         ...reimbursementFormValues,
       };
 
-      if (reimbursementFormValues.request_type === 1) {
-        delete payload["manager_approver_email"];
-      }
+      delete payload["manager_approver_email"];
 
       void createReimbursement(payload)
         .unwrap()

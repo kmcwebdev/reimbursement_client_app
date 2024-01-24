@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { zodResolver } from "@hookform/resolvers/zod";
 import { type ColumnDef } from "@tanstack/react-table";
 import dynamic from "next/dynamic";
 import React, { useEffect, useMemo, useState, type ChangeEvent } from "react";
 import { useForm } from "react-hook-form";
+import { type IconType } from "react-icons-all-files";
 import { AiOutlinePlusCircle } from "react-icons-all-files/ai/AiOutlinePlusCircle";
 import { MdSearch } from "react-icons-all-files/md/MdSearch";
 import { Button } from "~/app/components/core/Button";
@@ -260,7 +260,7 @@ const MyReimbursements: React.FC = () => {
                   placeholder="Find anything..."
                   loading={isFetching && isSearching}
                   className="w-full md:w-64"
-                  icon={MdSearch}
+                  icon={MdSearch as IconType}
                   defaultValue={filters.search}
                   onChange={handleSearch}
                 />
@@ -312,18 +312,18 @@ const MyReimbursements: React.FC = () => {
         title={classNames(
           activeStep == 0 && "Reimbursement Type",
           activeStep === 1 &&
-          !particularDetailsFormIsVisible &&
-          "Add Particulars",
+            !particularDetailsFormIsVisible &&
+            "Add Particulars",
           activeStep === 1 && particularDetailsFormIsVisible && "Particular",
           activeStep === 2 &&
-          !selectedAttachmentMethod &&
-          "Select Attachment Method",
+            !selectedAttachmentMethod &&
+            "Select Attachment Method",
           activeStep === 2 &&
-          selectedAttachmentMethod === "capture" &&
-          "Take Photo",
+            selectedAttachmentMethod === "capture" &&
+            "Take Photo",
           activeStep === 2 &&
-          selectedAttachmentMethod === "upload" &&
-          "Upload Files",
+            selectedAttachmentMethod === "upload" &&
+            "Upload Files",
           activeStep === 3 && "Set Approver",
         )}
         isVisible={formDialogIsOpen}

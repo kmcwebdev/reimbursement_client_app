@@ -1,7 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import Image from "next/image";
 import React, { useMemo, useRef, useState } from "react";
 import { Camera, type CameraType } from "react-camera-pro";
@@ -143,9 +139,7 @@ const Capture: React.FC<CaptureProps> = ({ formReturn }) => {
         ...reimbursementFormValues,
       };
 
-      if (reimbursementFormValues.request_type === 1) {
-        delete payload["manager_approver_email"];
-      }
+      delete payload["manager_approver_email"];
 
       void createReimbursement(payload)
         .unwrap()

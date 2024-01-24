@@ -1,9 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import React, { useEffect, useState, type ChangeEvent } from "react";
-
 import { type ColumnDef } from "@tanstack/react-table";
 import dynamic from "next/dynamic";
+import React, { useEffect, useState, type ChangeEvent } from "react";
 import { type IconType } from "react-icons-all-files";
 import { AiOutlineSearch } from "react-icons-all-files/ai/AiOutlineSearch";
 import { useAppDispatch, useAppSelector } from "~/app/hook";

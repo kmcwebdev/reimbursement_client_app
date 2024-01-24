@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/require-await */
 import NextAuth from "next-auth";
 
 import authConfig from "./auth.config";

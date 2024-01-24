@@ -1,4 +1,5 @@
 import React from "react";
+import { HiInformationCircle } from "react-icons-all-files/hi/HiInformationCircle";
 import { HiOutlinePlus } from "react-icons-all-files/hi/HiOutlinePlus";
 import { Button } from "~/app/components/core/Button";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
@@ -49,31 +50,42 @@ const Particulars: React.FC<ParticularsProps> = ({
             label={
               allExpenseTypesIsLoading
                 ? "..."
-                : `${allExpenseTypes?.results.find(
-                    (a) => a.id === part.expense_type,
-                  )?.name}-${part.name}`
+                : `${
+                    allExpenseTypes?.results.find(
+                      (a) => a.id === part.expense_type,
+                    )?.name
+                  }-${part.name}`
             }
           />
         ))}
 
-      <Button
-        type="button"
-        buttonType="text"
-        onClick={() => {
-          dispatch(setParticularDetailsFormIsVisible(true));
-        }}
-      >
-        <span className="group flex gap-1">
-          <HiOutlinePlus className="h-5 w-5" />
-          <p className="text-neutral-900 group-hover:text-neutral-800">
-            Add{" "}
-            {reimbursementFormValues.particulars &&
-              reimbursementFormValues.particulars.length > 0 &&
-              "Another "}
-            Particular
-          </p>
-        </span>
-      </Button>
+      {reimbursementFormValues.particulars.length === 10 && (
+        <div className="flex items-center gap-1 text-blue-600">
+          <HiInformationCircle className="h-4 w-4" />
+          <p className="text-xs">Maximum 10 particulars per request reached.</p>
+        </div>
+      )}
+
+      {reimbursementFormValues.particulars.length < 10 && (
+        <Button
+          type="button"
+          buttonType="text"
+          onClick={() => {
+            dispatch(setParticularDetailsFormIsVisible(true));
+          }}
+        >
+          <span className="group flex gap-1">
+            <HiOutlinePlus className="h-5 w-5" />
+            <p className="text-neutral-900 group-hover:text-neutral-800">
+              Add{" "}
+              {reimbursementFormValues.particulars &&
+                reimbursementFormValues.particulars.length > 0 &&
+                "Another "}
+              Particular
+            </p>
+          </span>
+        </Button>
+      )}
 
       <div className="flex justify-end pt-4">
         <div className="flex w-1/2 items-center justify-center gap-2">

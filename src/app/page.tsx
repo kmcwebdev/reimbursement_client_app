@@ -4,10 +4,6 @@ import { type NextPage } from "next";
 import { useRouter } from "next/navigation";
 import { Button } from "~/app/components/core/Button";
 
-// interface SSRProps {
-//   userJson: string;
-// }
-
 const Home: NextPage = () => {
   const router = useRouter();
 

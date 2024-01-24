@@ -6,7 +6,6 @@ import DashboardCard, {
   DashboardCardSkeleton,
 } from "~/app/components/core/DashboardCard";
 import { useApprovalAnalyticsQuery } from "~/features/api/analytics-api-slice";
-// import { useFinanceAnalyticsQuery } from "~/features/api/analytics-api-slice";
 
 const AdminAnalytics: React.FC = () => {
   const { isLoading: analyticsIsLoading, data: analytics } =
