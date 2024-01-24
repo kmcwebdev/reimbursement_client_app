@@ -19,6 +19,7 @@ export const analyticsApiSlice = appApiSlice.injectEndpoints({
         { type: "MyAnalytics", id: JSON.stringify(query) },
       ],
     }),
+
     approvalAnalytics: builder.query<IAnalytics, { type: string }>({
       query: (query) => {
         return {
@@ -26,7 +27,7 @@ export const analyticsApiSlice = appApiSlice.injectEndpoints({
         };
       },
       providesTags: (_result, _fetchBaseQuery, query) => [
-        { type: "ManagerAnalytics", id: JSON.stringify(query) },
+        { type: "ApprovalAnalytics", id: JSON.stringify(query) },
       ],
     }),
   }),
