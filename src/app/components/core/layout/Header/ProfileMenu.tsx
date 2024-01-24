@@ -106,52 +106,56 @@ const ProfileMenu: React.FC = () => {
       content={
         <div className="relative w-72">
           <div className="flex gap-4 border-b p-4">
-            <div className="grid h-10 w-10 place-items-center rounded-full bg-orange-600 text-lg font-bold text-white">
+            <div className="grid h-8 w-8 place-items-center rounded-full bg-orange-600 text-md font-bold text-white">
               {user?.first_name?.charAt(0)}
               {user?.last_name?.charAt(0)}
             </div>
 
-            <div className="flex flex-1 flex-col gap-2">
+            <div className="flex flex-1 flex-col gap-1">
               <p className="font-bold uppercase text-orange-600">
                 {user?.first_name} {user?.last_name}
               </p>
-              <p className="text-xs text-neutral-600">{assignedRole}</p>
+              <div className="text-xs">
+                {user?.is_superuser
+                  ? "ADMINISTRATOR"
+                  : assignedRole?.split("_")[1]}
+              </div>
+
               {typeof window !== "undefined" &&
                 (window.location.origin.includes("http://localhost") ||
                   window.location.origin.includes(
                     "https://reimbursement-client-app-staging.vercel.app",
                   )) &&
                 user?.is_superuser && (
-                  <div className="flex flex-col gap-2">
-                    <div className="flex flex-col gap-8">
-                      <Popover
-                        panelClassName="-translate-x-1/2"
-                        buttonRef={buttonChildRef}
-                        btn={
-                          <div className="flex items-center gap-1 text-xs text-yellow-600 transition-all ease-in-out hover:text-yellow-700">
-                            <MdChangeCircle className="h-4 w-4" />
-                            <p>Change Role</p>
-                          </div>
-                        }
-                        content={
-                          <div className="flex w-60 flex-col gap-4">
-                            <Select
-                              name="role"
-                              onChangeEvent={onRoleChanged}
-                              isLoading={isFetching}
-                              options={
-                                groupOptions
-                                  ?.filter((a) => a.label !== assignedRole)
-                                  .map((group) => ({
-                                    value: group.value,
-                                    label: group.label,
-                                  })) || []
-                              }
-                            />
-                          </div>
-                        }
-                      />
-                    </div>
+                  <div className="mt-1 flex flex-col gap-2">
+                    <div className="h-px w-full bg-neutral-200" />
+                    <Popover
+                      panelClassName="-translate-y-2"
+                      buttonRef={buttonChildRef}
+                      btn={
+                        <div className="flex w-full items-center justify-between rounded-md border border-neutral-300 px-4 py-2 text-xs text-yellow-600 transition-all ease-in-out hover:border-orange-600">
+                          <p>{assignedRole?.split("_")[1]}</p>
+                          <MdChangeCircle className="h-5 w-5" />
+                        </div>
+                      }
+                      content={
+                        <div className="flex w-[12.5rem] flex-col gap-4">
+                          <Select
+                            name="role"
+                            onChangeEvent={onRoleChanged}
+                            isLoading={isFetching}
+                            options={
+                              groupOptions
+                                ?.filter((a) => a.label !== assignedRole)
+                                .map((group) => ({
+                                  value: group.value,
+                                  label: group.label,
+                                })) || []
+                            }
+                          />
+                        </div>
+                      }
+                    />
                   </div>
                 )}
             </div>

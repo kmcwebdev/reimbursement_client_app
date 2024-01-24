@@ -29,8 +29,8 @@ import { showToast } from "../core/Toast";
 import Input from "../core/form/fields/Input";
 import TableCell from "../core/table/TableCell";
 import TableCheckbox from "../core/table/TableCheckbox";
-import ReimbursementsCardView from "../reimbursement-view";
 
+const ReimbursementsCardView = dynamic(() => import("../reimbursement-view"));
 const Dialog = dynamic(() => import("~/app/components/core/Dialog"));
 const StatusFilter = dynamic(
   () => import("~/app/components/core/table/filters/StatusFilter"),

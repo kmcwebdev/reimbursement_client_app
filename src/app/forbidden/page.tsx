@@ -1,22 +1,13 @@
 import { type Metadata } from "next";
 import React from "react";
-import EmptyState from "~/app/components/core/EmptyState";
+import ForbiddenPage from "../components/ForbiddenPage";
 
 export const metadata: Metadata = {
   title: "Forbidden",
 };
 
-const ForbiddenPage: React.FC = () => {
-  return (
-    <div className="grid h-full w-full place-items-center">
-      <div className="h-72 w-full">
-        <EmptyState
-          title="Forbidden."
-          description="You do not have permission to access this page."
-        />
-      </div>
-    </div>
-  );
+const Forbidden: React.FC = () => {
+  return <ForbiddenPage />;
 };
 
-export default ForbiddenPage;
+export default Forbidden;

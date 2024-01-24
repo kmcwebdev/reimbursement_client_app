@@ -2,18 +2,19 @@ import React, { type PropsWithChildren } from "react";
 import { type IconType } from "react-icons-all-files";
 import { MdBrowserNotSupported } from "react-icons-all-files/md/MdBrowserNotSupported";
 
-interface EmptyStateProps extends PropsWithChildren {
+interface EmptyStateProps {
   title: string;
   description: string;
   icon?: IconType;
 }
 
-const EmptyState: React.FC<EmptyStateProps> = ({
+const EmptyState: React.FC<PropsWithChildren<EmptyStateProps>> = ({
   title,
   description,
   icon: Icon = MdBrowserNotSupported as IconType,
   children,
 }) => {
+  console.log("Children", children);
   return (
     <div className="grid place-items-center gap-4">
       <div className="flex flex-col items-center gap-5">

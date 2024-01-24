@@ -1,9 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
-import { zodResolver } from "@hookform/resolvers/zod";
 import { type ColumnDef } from "@tanstack/react-table";
 import dynamic from "next/dynamic";
-import React, { useMemo, useState, type ChangeEvent } from "react";
-import { useForm } from "react-hook-form";
+import React, { useState, type ChangeEvent } from "react";
 import { type IconType } from "react-icons-all-files";
 import { AiOutlineSearch } from "react-icons-all-files/ai/AiOutlineSearch";
 import { Button } from "~/app/components/core/Button";
@@ -14,19 +12,10 @@ import {
   useGetAdminListQuery,
   useGetRequestQuery,
 } from "~/features/api/reimbursement-api-slice";
-import {
-  clearReimbursementForm,
-  toggleCancelDialog,
-  toggleFormDialog,
-} from "~/features/state/reimbursement-form-slice";
 import { setSelectedItems } from "~/features/state/table-state.slice";
 import { useDebounce } from "~/hooks/use-debounce";
 import { useDialogState } from "~/hooks/use-dialog-state";
 import { useReportDownload } from "~/hooks/use-report-download";
-import {
-  ReimbursementTypeSchema,
-  type ReimbursementFormType,
-} from "~/schema/reimbursement-type.schema";
 import {
   type IReimbursementRequest,
   type IReimbursementsFilterQuery,
@@ -39,7 +28,6 @@ import Input from "../core/form/fields/Input";
 import TableCell from "../core/table/TableCell";
 import TableCheckbox from "../core/table/TableCheckbox";
 import AdminAnalytics from "./analytics/AdminAnalytics";
-import ReimburseForm from "./reimburse-form";
 
 const ReimbursementsCardView = dynamic(
   () => import("~/app/components/reimbursement-view"),
@@ -60,14 +48,6 @@ const DateFiledFilter = dynamic(
 );
 
 const MyAdmin: React.FC = () => {
-  const {
-    formDialogIsOpen,
-    cancelDialogIsOpen,
-    reimbursementFormValues,
-    activeStep,
-    particularDetailsFormIsVisible,
-    selectedAttachmentMethod,
-  } = useAppSelector((state) => state.reimbursementForm);
   const { selectedItems, filters } = useAppSelector(
     (state) => state.pageTableState,
   );
@@ -222,55 +202,6 @@ const MyAdmin: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
-  //Form return for reimbursement type selection
-  const useReimbursementTypeFormReturn = useForm<ReimbursementFormType>({
-    resolver: useMemo(() => {
-      if (activeStep === 0) {
-        return zodResolver(ReimbursementTypeSchema);
-      }
-    }, [activeStep]),
-    defaultValues: useMemo(() => {
-      if (reimbursementFormValues.request_type) {
-        return {
-          request_type: reimbursementFormValues.request_type,
-        };
-      }
-    }, [reimbursementFormValues]),
-    mode: "onChange",
-  });
-
-  /***Closes the form and open cancel dialog */
-  const handleOpenCancelDialog = () => {
-    const selectedReimbursementType =
-      useReimbursementTypeFormReturn.getValues("request_type");
-    dispatch(toggleFormDialog());
-
-    if (selectedReimbursementType) {
-      dispatch(toggleCancelDialog());
-    }
-  };
-
-  /**Continue reimbursement request cancellation */
-  const handleConfirmCancellation = () => {
-    dispatch(clearReimbursementForm());
-    useReimbursementTypeFormReturn.reset();
-    dispatch(toggleCancelDialog());
-  };
-
-  /**Aborts reimbursement request cancellation */
-  const handleAbortCancellation = () => {
-    dispatch(toggleCancelDialog());
-    dispatch(
-      appApiSlice.util.invalidateTags([
-        {
-          type: "ExpenseTypes",
-          id: useReimbursementTypeFormReturn.getValues("request_type"),
-        },
-      ]),
-    );
-    dispatch(toggleFormDialog());
-  };
-
   const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
     setIsSearching(true);
     const searchValue = e.target.value;
@@ -398,61 +329,6 @@ const MyAdmin: React.FC = () => {
         />
       </div>
 
-      <Dialog
-        title={
-          activeStep === 0
-            ? "Reimbursement Type"
-            : activeStep === 1 && !particularDetailsFormIsVisible
-              ? "Add Particulars"
-              : activeStep === 1 && particularDetailsFormIsVisible
-                ? "Particular"
-                : activeStep === 2 && !selectedAttachmentMethod
-                  ? "File a Reimbursements"
-                  : activeStep === 2 && selectedAttachmentMethod === "capture"
-                    ? "Take Photo"
-                    : "Upload Files"
-        }
-        isVisible={formDialogIsOpen}
-        close={handleOpenCancelDialog}
-        hideCloseIcon
-      >
-        <ReimburseForm
-          formReturn={useReimbursementTypeFormReturn}
-          handleOpenCancelDialog={handleOpenCancelDialog}
-        />
-      </Dialog>
-
-      <Dialog
-        title="Cancel Reimbursements?"
-        isVisible={cancelDialogIsOpen}
-        close={handleAbortCancellation}
-        hideCloseIcon
-      >
-        <div className="flex flex-col gap-8 pt-8">
-          <p className="text-neutral-800">
-            Are you sure you want to cancel reimbursement request?
-          </p>
-
-          <div className="flex items-center gap-4">
-            <Button
-              variant="neutral"
-              buttonType="outlined"
-              className="w-1/2"
-              onClick={handleAbortCancellation}
-            >
-              No
-            </Button>
-            <Button
-              variant="danger"
-              className="w-1/2"
-              onClick={handleConfirmCancellation}
-            >
-              Yes, Cancel
-            </Button>
-          </div>
-        </div>
-      </Dialog>
-
       <SideDrawer
         title={
           !focusedReimbursementDataIsFetching && focusedReimbursementData
@@ -482,16 +358,14 @@ const MyAdmin: React.FC = () => {
         <div className="flex flex-col gap-8 pt-8">
           {selectedItems.length === 0 && (
             <p className="text-neutral-800">
-              Downloading the report will change the reimbursements status to
-              processing. Are you sure you want to download <strong>all</strong>{" "}
+              Are you sure you want to download <strong>all</strong>{" "}
               reimbursements?
             </p>
           )}
 
           {selectedItems.length === 1 && (
             <p className="text-neutral-800">
-              Downloading the report will change the reimbursements status to
-              processing. Are you sure you want to download{" "}
+              Are you sure you want to download{" "}
               <strong>
                 {
                   data?.results.find((a) => a.id === selectedItems[0])
@@ -513,8 +387,7 @@ const MyAdmin: React.FC = () => {
 
           {selectedItems.length > 1 && (
             <p className="text-neutral-800">
-              Downloading the report will change the reimbursements status to
-              processing. Are you sure you want to download{" "}
+              Are you sure you want to download{" "}
               <strong>{selectedItems.length}</strong> reimbursements?
             </p>
           )}

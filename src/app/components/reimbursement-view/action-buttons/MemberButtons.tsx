@@ -1,5 +1,6 @@
 import React from "react";
 import { Button } from "~/app/components/core/Button";
+import { useAppSelector } from "~/app/hook";
 
 interface MemberButtonsProps {
   onClose: () => void;
@@ -12,6 +13,8 @@ const MemberButtons: React.FC<MemberButtonsProps> = ({
   onClose,
   isCancellable,
 }) => {
+  const { user } = useAppSelector((state) => state.session);
+
   return (
     <>
       <Button
@@ -23,7 +26,7 @@ const MemberButtons: React.FC<MemberButtonsProps> = ({
         Back
       </Button>
 
-      {isCancellable && (
+      {isCancellable && !user?.is_superuser && (
         <Button className="w-full" variant="danger" onClick={onCancel}>
           Cancel
         </Button>

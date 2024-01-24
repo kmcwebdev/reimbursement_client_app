@@ -1,13 +1,13 @@
 "use client";
 import { type NextPage } from "next";
 import { type IconType } from "react-icons-all-files";
+import { FaTools } from "react-icons-all-files/fa/FaTools";
 import { FaUserTie } from "react-icons-all-files/fa/FaUserTie";
 import { HiBriefcase } from "react-icons-all-files/hi/HiBriefcase";
 import { MdMail } from "react-icons-all-files/md/MdMail";
-import { MdOutlineList } from "react-icons-all-files/md/MdOutlineList";
 import { useAppSelector } from "~/app/hook";
-import { classNames } from "~/utils/classNames";
 import EmptyState from "../core/EmptyState";
+import StatusBadge from "../core/StatusBadge";
 
 const Profile: NextPage = () => {
   const { user, assignedRole } = useAppSelector((state) => state.session);
@@ -28,7 +28,10 @@ const Profile: NextPage = () => {
               {user && user.first_name} {user && user.last_name}
             </h1>
           </div>
-          <div className="flex flex-col gap-2 font-bold">
+          <div className="flex flex-col gap-2">
+            {user?.is_superuser && (
+              <StatusBadge status="pending" label="Administrator" />
+            )}
             <div className="flex items-center gap-2 text-neutral-700">
               <HiBriefcase className="h-5 w-5" />
               <p className="mt-0.5">
@@ -50,9 +53,9 @@ const Profile: NextPage = () => {
 
       <div className="grid h-[50vh] grid-cols-1 gap-4">
         <div className="flex flex-col gap-4 rounded-md bg-white p-4 shadow-sm">
-          <h4>Permissions</h4>
+          <h4>Coming soon</h4>
 
-          {user && user.permissions.length === 0 && (
+          {/* {user && user.permissions.length === 0 && (
             <div className="grid h-full w-full place-items-center rounded-md bg-neutral-100">
               <EmptyState
                 icon={MdOutlineList as IconType}
@@ -60,9 +63,17 @@ const Profile: NextPage = () => {
                 description=""
               />
             </div>
-          )}
+          )} */}
 
-          {user &&
+          <div className="grid h-full w-full place-items-center rounded-md bg-neutral-100">
+            <EmptyState
+              icon={FaTools as IconType}
+              title="Under Development"
+              description="This page is currently under development"
+            />
+          </div>
+
+          {/* {user &&
             user.permissions.length > 0 &&
             user?.permissions.map((permission) => (
               <div
@@ -73,7 +84,7 @@ const Profile: NextPage = () => {
               >
                 {permission}
               </div>
-            ))}
+            ))} */}
         </div>
       </div>
     </div>
