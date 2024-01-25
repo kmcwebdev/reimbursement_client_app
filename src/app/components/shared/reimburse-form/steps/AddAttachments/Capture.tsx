@@ -176,7 +176,7 @@ const Capture: React.FC<CaptureProps> = ({ formReturn }) => {
   return (
     <div className="relative flex flex-col gap-4">
       {cameraIsLoading && (
-        <SkeletonLoading className="absolute z-[100] h-60 w-full rounded-md" />
+        <SkeletonLoading className="absolute z-[100] h-[60vh] w-full rounded-md" />
       )}
 
       <div
