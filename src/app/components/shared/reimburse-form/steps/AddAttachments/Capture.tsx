@@ -1,9 +1,12 @@
 import Image from "next/image";
 import React, { useMemo, useRef, useState } from "react";
 import { Camera, type CameraType } from "react-camera-pro";
+import { type FacingMode } from "react-camera-pro/dist/components/Camera/types";
 import { type UseFormReturn } from "react-hook-form";
 import { IoMdImage } from "react-icons-all-files/io/IoMdImage";
 import { MdCameraAlt } from "react-icons-all-files/md/MdCameraAlt";
+import { MdCameraFront } from "react-icons-all-files/md/MdCameraFront";
+import { MdCameraRear } from "react-icons-all-files/md/MdCameraRear";
 import { MdOutlineDelete } from "react-icons-all-files/md/MdOutlineDelete";
 import { RiLoader4Fill } from "react-icons-all-files/ri/RiLoader4Fill";
 import CollapseHeightAnimation from "~/app/components/animation/CollapseHeight";
@@ -38,6 +41,7 @@ const Capture: React.FC<CaptureProps> = ({ formReturn }) => {
   const dispatch = useAppDispatch();
   const camera = useRef<CameraType>(null);
   const [cameraIsLoading, setCameraIsLoading] = useState<boolean>(true);
+  const [facingMode, setFacingMode] = useState<FacingMode>("user");
   const { activeStep, reimbursementFormValues } = useAppSelector(
     (state) => state.reimbursementForm,
   );
@@ -193,7 +197,7 @@ const Capture: React.FC<CaptureProps> = ({ formReturn }) => {
               "It is not possible to switch camera to different one because there is only one video device accessible.",
             canvas: "Canvas is not supported.",
           }}
-          facingMode="user"
+          facingMode={facingMode as FacingMode}
           videoReadyCallback={() =>
             setTimeout(() => setCameraIsLoading(false), 1000)
           }
@@ -207,13 +211,26 @@ const Capture: React.FC<CaptureProps> = ({ formReturn }) => {
             <Image src={photo} alt="test" fill />
           </div>
         )}
-
+        <div className="absolute right-5 top-5 h-8 w-8">
+          {facingMode === "user" ? (
+            <MdCameraRear
+              className="h-6 w-6 text-white"
+              onClick={() => setFacingMode("environment")}
+            />
+          ) : (
+            <MdCameraFront
+              className="h-6 w-6 text-white"
+              onClick={() => setFacingMode("user")}
+            />
+          )}
+        </div>
         <div className="absolute bottom-2 flex h-14 w-full items-center justify-center">
           {isUploading && (
             <div className="grid h-10 w-10 cursor-not-allowed place-items-center rounded-full bg-white bg-opacity-40">
               <RiLoader4Fill className="h-6 w-6 animate-spin text-orange-600" />
             </div>
           )}
+
           {!isUploading && (
             <div
               className="grid h-10 w-10 cursor-pointer place-items-center  rounded-full bg-white bg-opacity-40"
