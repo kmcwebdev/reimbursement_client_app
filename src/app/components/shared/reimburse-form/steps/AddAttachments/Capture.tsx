@@ -113,6 +113,8 @@ const Capture: React.FC<CaptureProps> = ({ formReturn }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reimbursementFormValues]);
 
+  console.log(numberOfCameras);
+
   //Automatically upload if attachment name is not in uploadedAttachmentNames
   useMemo(() => {
     if (attachedFiles.length > 0) {
@@ -195,6 +197,7 @@ const Capture: React.FC<CaptureProps> = ({ formReturn }) => {
               "It is not possible to switch camera to different one because there is only one video device accessible.",
             canvas: "Canvas is not supported.",
           }}
+          aspectRatio={9 / 16}
           facingMode="environment"
           numberOfCamerasCallback={(i) => setNumberOfCameras(i)}
           videoReadyCallback={() =>
@@ -205,7 +208,9 @@ const Capture: React.FC<CaptureProps> = ({ formReturn }) => {
 
         {photo && (
           <div
-            className={classNames("relative h-60 overflow-hidden rounded-md")}
+            className={classNames(
+              "relative h-[60vh] overflow-hidden rounded-md",
+            )}
           >
             <Image src={photo} alt="test" fill />
           </div>
