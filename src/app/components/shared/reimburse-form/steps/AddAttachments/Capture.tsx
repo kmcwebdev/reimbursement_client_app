@@ -41,7 +41,8 @@ const Capture: React.FC<CaptureProps> = ({ formReturn }) => {
   const dispatch = useAppDispatch();
   const camera = useRef<CameraType>(null);
   const [cameraIsLoading, setCameraIsLoading] = useState<boolean>(true);
-  const [facingMode, setFacingMode] = useState<FacingMode>("user");
+  const [numberOfCameras, setNumberOfCameras] = useState<number>(0);
+  const [facingMode] = useState<FacingMode>("user");
   const { activeStep, reimbursementFormValues } = useAppSelector(
     (state) => state.reimbursementForm,
   );
@@ -175,17 +176,6 @@ const Capture: React.FC<CaptureProps> = ({ formReturn }) => {
     }
   };
 
-  const handleFacingMode = () => {
-    setCameraIsLoading(true);
-    if (facingMode === "user") {
-      setFacingMode("environment");
-      setCameraIsLoading(false);
-    } else {
-      setFacingMode("user");
-      setCameraIsLoading(false);
-    }
-  };
-
   return (
     <div className="relative flex flex-col gap-4">
       {cameraIsLoading && (
@@ -198,24 +188,22 @@ const Capture: React.FC<CaptureProps> = ({ formReturn }) => {
           "relative h-60 overflow-hidden rounded-md",
         )}
       >
-        {!cameraIsLoading && (
-          <Camera
-            errorMessages={{
-              noCameraAccessible:
-                "No camera device accessible. Please connect your camera or try a different browser.",
-              permissionDenied:
-                "Permission denied. Please refresh and give camera permission.",
-              switchCamera:
-                "It is not possible to switch camera to different one because there is only one video device accessible.",
-              canvas: "Canvas is not supported.",
-            }}
-            facingMode={facingMode as FacingMode}
-            videoReadyCallback={() =>
-              setTimeout(() => setCameraIsLoading(false), 1000)
-            }
-            ref={camera}
-          />
-        )}
+        <Camera
+          errorMessages={{
+            noCameraAccessible:
+              "No camera device accessible. Please connect your camera or try a different browser.",
+            permissionDenied:
+              "Permission denied. Please refresh and give camera permission.",
+            switchCamera:
+              "It is not possible to switch camera to different one because there is only one video device accessible.",
+            canvas: "Canvas is not supported.",
+          }}
+          numberOfCamerasCallback={(i) => setNumberOfCameras(i)}
+          videoReadyCallback={() =>
+            setTimeout(() => setCameraIsLoading(false), 1000)
+          }
+          ref={camera}
+        />
 
         {photo && (
           <div
@@ -224,19 +212,33 @@ const Capture: React.FC<CaptureProps> = ({ formReturn }) => {
             <Image src={photo} alt="test" fill />
           </div>
         )}
-        <div className="absolute right-5 top-5 h-8 w-8">
-          {facingMode === "user" ? (
-            <MdCameraRear
-              className="h-6 w-6 text-white"
-              onClick={handleFacingMode}
-            />
-          ) : (
-            <MdCameraFront
-              className="h-6 w-6 text-white"
-              onClick={handleFacingMode}
-            />
-          )}
-        </div>
+
+        {numberOfCameras > 1 && (
+          <div className="absolute right-5 top-5 h-8 w-8">
+            {facingMode === "user" ? (
+              <MdCameraRear
+                className="h-6 w-6 text-white"
+                onClick={() => {
+                  if (camera.current) {
+                    const result = camera.current.switchCamera();
+                    console.log(result);
+                  }
+                }}
+              />
+            ) : (
+              <MdCameraFront
+                className="h-6 w-6 text-white"
+                onClick={() => {
+                  if (camera.current) {
+                    const result = camera.current.switchCamera();
+                    console.log(result);
+                  }
+                }}
+              />
+            )}
+          </div>
+        )}
+
         <div className="absolute bottom-2 flex h-14 w-full items-center justify-center">
           {isUploading && (
             <div className="grid h-10 w-10 cursor-not-allowed place-items-center rounded-full bg-white bg-opacity-40">
