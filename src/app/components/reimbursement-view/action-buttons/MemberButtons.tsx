@@ -13,7 +13,7 @@ const MemberButtons: React.FC<MemberButtonsProps> = ({
   onClose,
   isCancellable,
 }) => {
-  const { user } = useAppSelector((state) => state.session);
+  const { user, assignedRole } = useAppSelector((state) => state.session);
 
   return (
     <>
@@ -26,11 +26,13 @@ const MemberButtons: React.FC<MemberButtonsProps> = ({
         Back
       </Button>
 
-      {isCancellable && !user?.is_superuser && (
-        <Button className="w-full" variant="danger" onClick={onCancel}>
-          Cancel
-        </Button>
-      )}
+      {isCancellable &&
+        !user?.is_superuser &&
+        assignedRole === "REIMBURSEMENT_USER" && (
+          <Button className="w-full" variant="danger" onClick={onCancel}>
+            Cancel
+          </Button>
+        )}
     </>
   );
 };
