@@ -84,7 +84,7 @@ export default Pagination;
 
 export const PaginationSkeletonLoading: React.FC = () => {
   return (
-    <div className="flex items-center justify-between gap-2 border-t border-neutral-300 bg-white px-2 py-4 lg:px-0 lg:pb-0 lg:pt-5">
+    <div className=" flex items-center justify-between gap-2 border-t border-neutral-300 bg-white px-2 py-4 lg:px-0 lg:pb-0 lg:pt-5">
       <SkeletonLoading className="h-5 w-48 rounded-md" />
       <div className="flex items-center gap-2">
         <Button buttonType="outlined" variant="neutral" disabled={true}>

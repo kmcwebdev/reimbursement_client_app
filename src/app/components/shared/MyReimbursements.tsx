@@ -4,9 +4,6 @@ import { type ColumnDef } from "@tanstack/react-table";
 import dynamic from "next/dynamic";
 import React, { useEffect, useMemo, useState, type ChangeEvent } from "react";
 import { useForm } from "react-hook-form";
-import { type IconType } from "react-icons-all-files";
-import { AiOutlinePlusCircle } from "react-icons-all-files/ai/AiOutlinePlusCircle";
-import { MdSearch } from "react-icons-all-files/md/MdSearch";
 import { Button } from "~/app/components/core/Button";
 import Table from "~/app/components/core/table";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
@@ -30,9 +27,8 @@ import {
   type IReimbursementsFilterQuery,
 } from "~/types/reimbursement.types";
 import { classNames } from "~/utils/classNames";
-import SkeletonLoading from "../core/SkeletonLoading";
-import Input from "../core/form/fields/Input";
 import TableCell from "../core/table/TableCell";
+import TableHeaderTitle from "../core/table/TableHeaderTitle";
 import MemberAnalytics from "./analytics/MemberAnalytics";
 import ReimburseForm from "./reimburse-form";
 
@@ -241,48 +237,16 @@ const MyReimbursements: React.FC = () => {
 
   return (
     <>
-      <div className="grid bg-neutral-50 md:gap-y-4 lg:p-5">
+      <div className="grid bg-neutral-50 md:gap-y-4 md:p-5">
         <MemberAnalytics />
 
-        <div className="flex items-center justify-between p-4 lg:p-0">
-          <h4>Reimbursements</h4>
-          {!isSearching && isFetching ? (
-            <SkeletonLoading className="h-5 w-5 rounded-full md:h-10 md:w-[5rem] md:rounded" />
-          ) : (
-            <>
-              <div
-                className={classNames(
-                  "flex flex-col gap-2 md:flex-row md:items-center",
-                )}
-              >
-                <Input
-                  name="searchFilter"
-                  placeholder="Find anything..."
-                  loading={isFetching && isSearching}
-                  className="w-full md:w-64"
-                  icon={MdSearch as IconType}
-                  defaultValue={filters.search}
-                  onChange={handleSearch}
-                />
-
-                <Button
-                  className="hidden md:block"
-                  onClick={() => dispatch(toggleFormDialog())}
-                >
-                  Reimburse
-                </Button>
-
-                <Button
-                  buttonType="text"
-                  className="block md:hidden"
-                  onClick={() => dispatch(toggleFormDialog())}
-                >
-                  <AiOutlinePlusCircle className="h-5 w-5" />
-                </Button>
-              </div>
-            </>
-          )}
-        </div>
+        <TableHeaderTitle
+          title="Reimbursements"
+          isLoading={!isSearching && isFetching}
+          searchIsLoading={isFetching}
+          handleSearch={handleSearch}
+          hasCreateButton
+        />
 
         <Table
           type="reimbursements"

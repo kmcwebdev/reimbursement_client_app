@@ -4,9 +4,6 @@
 import { type ColumnDef } from "@tanstack/react-table";
 import dynamic from "next/dynamic";
 import React, { useEffect, useState, type ChangeEvent } from "react";
-import { type IconType } from "react-icons-all-files";
-import { AiOutlineSearch } from "react-icons-all-files/ai/AiOutlineSearch";
-import { MdDownload } from "react-icons-all-files/md/MdDownload";
 import { Button } from "~/app/components/core/Button";
 import Table from "~/app/components/core/table";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
@@ -23,12 +20,10 @@ import {
   type IReimbursementsFilterQuery,
 } from "~/types/reimbursement.types";
 import { env } from "../../../../env.mjs";
-import CollapseWidthAnimation from "../animation/CollapseWidth";
-import SkeletonLoading from "../core/SkeletonLoading";
 import { showToast } from "../core/Toast";
-import Input from "../core/form/fields/Input";
 import TableCell from "../core/table/TableCell";
 import TableCheckbox from "../core/table/TableCheckbox";
+import TableHeaderTitle from "../core/table/TableHeaderTitle";
 
 const ReimbursementsCardView = dynamic(() => import("../reimbursement-view"));
 const Dialog = dynamic(() => import("~/app/components/core/Dialog"));
@@ -281,66 +276,16 @@ const ReimbursementHistory: React.FC = () => {
 
   return (
     <>
-      <div className="grid bg-neutral-50 md:gap-y-4 lg:p-5">
-        <div className="flex flex-col justify-between gap-2 p-4 md:flex-row lg:p-0">
-          <div className="flex items-center justify-between">
-            <h4>Reimbursements History</h4>
-
-            <div className="flex md:hidden">
-              {!isSearching && isFetching ? (
-                <SkeletonLoading className="h-5 w-5 rounded-full" />
-              ) : (
-                <>
-                  {(assignedRole === "REIMBURSEMENT_FINANCE" ||
-                    assignedRole === "REIMBURSEMENT_HRBP") && (
-                    <CollapseWidthAnimation
-                      isVisible={data && data.results.length > 0 ? true : false}
-                    >
-                      <MdDownload
-                        onClick={openDownloadConfirmation}
-                        className="h-5 w-5 rounded-full border border-green-600 p-0.5 text-green-600"
-                      />
-                    </CollapseWidthAnimation>
-                  )}
-                </>
-              )}
-            </div>
-          </div>
-
-          {!isSearching && isFetching ? (
-            <div className="flex gap-2">
-              <SkeletonLoading className="h-10 w-full rounded-sm md:w-64" />
-              <SkeletonLoading className="h-10 w-full rounded-sm md:w-40" />
-            </div>
-          ) : (
-            <div className="flex flex-col gap-2 md:flex-row md:gap-4">
-              <Input
-                name="inputText"
-                placeholder="Find anything..."
-                className="w-full md:w-64"
-                loading={isSearching && isFetching}
-                icon={AiOutlineSearch as IconType}
-                onChange={handleSearch}
-              />
-
-              {user &&
-                (user.groups[0] === "REIMBURSEMENT_FINANCE" ||
-                  user.groups[0] === "REIMBURSEMENT_HRBP") && (
-                  <CollapseWidthAnimation
-                    isVisible={data && data.results.length > 0 ? true : false}
-                  >
-                    <Button
-                      variant="success"
-                      className="hidden whitespace-nowrap md:flex"
-                      onClick={openDownloadConfirmation}
-                    >
-                      Download Report
-                    </Button>
-                  </CollapseWidthAnimation>
-                )}
-            </div>
-          )}
-        </div>
+      <div className="grid bg-neutral-50 md:gap-y-4 md:p-5">
+        <TableHeaderTitle
+          title="Reimbursements History"
+          isLoading={!isSearching && isFetching}
+          searchIsLoading={isFetching}
+          handleSearch={handleSearch}
+          downloadReportButtonIsVisible={data && data.results.length > 0}
+          hasDownloadReportButton
+          handleDownloadReportButton={openDownloadConfirmation}
+        />
 
         <Table
           type="history"

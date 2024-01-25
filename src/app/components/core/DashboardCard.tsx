@@ -16,7 +16,7 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
 }) => {
   return (
     <>
-      <div className="hidden h-[120px] w-full flex-col gap-2 rounded border border-neutral-300 bg-white p-4 sm:flex md:w-[312px]">
+      <div className="hidden h-[120px] w-full flex-col gap-2 rounded border border-neutral-300 bg-white p-4 sm:flex lg:w-[312px]">
         <span>{icon}</span>
         <p className="text-sm text-neutral-800 md:text-base">{label}</p>
         <div className="text-md font-bold text-neutral-900 lg:text-lg">

@@ -1,17 +1,16 @@
 /* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
 "use client";
+import { useAbility } from "@casl/react";
 import { type ColumnDef } from "@tanstack/react-table";
 import dynamic from "next/dynamic";
 import React, { useEffect, useState, type ChangeEvent } from "react";
-import { type IconType } from "react-icons-all-files";
-import { MdSearch } from "react-icons-all-files/md/MdSearch";
 import { Button } from "~/app/components/core/Button";
 import Table from "~/app/components/core/table";
 import TableCheckbox from "~/app/components/core/table/TableCheckbox";
 import { type FilterProps } from "~/app/components/core/table/filters/StatusFilter";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { appApiSlice } from "~/app/rtkQuery";
-import { Can } from "~/context/AbilityContext";
+import { AbilityContext } from "~/context/AbilityContext";
 import { useApproveReimbursementMutation } from "~/features/api/actions-api-slice";
 import { useApprovalAnalyticsQuery } from "~/features/api/analytics-api-slice";
 import {
@@ -25,13 +24,10 @@ import {
   type IReimbursementRequest,
   type IReimbursementsFilterQuery,
 } from "~/types/reimbursement.types";
-import { classNames } from "~/utils/classNames";
 import { currencyFormat } from "~/utils/currencyFormat";
-import CollapseWidthAnimation from "../animation/CollapseWidth";
-import SkeletonLoading from "../core/SkeletonLoading";
 import { showToast } from "../core/Toast";
-import Input from "../core/form/fields/Input";
 import TableCell from "../core/table/TableCell";
+import TableHeaderTitle from "../core/table/TableHeaderTitle";
 import ApprovalTableAnalytics from "./analytics/ApprovalTableAnalytics";
 
 const ReimbursementsCardView = dynamic(
@@ -56,6 +52,7 @@ const DateFiledFilter = dynamic(
 
 const MyApprovals: React.FC = () => {
   const dispatch = useAppDispatch();
+  const ability = useAbility(AbilityContext);
   const { assignedRole } = useAppSelector((state) => state.session);
   const { selectedItems, filters } = useAppSelector(
     (state) => state.pageTableState,
@@ -309,42 +306,18 @@ const MyApprovals: React.FC = () => {
           />
         )}
 
-        <div className="flex flex-col p-4 md:flex-row md:justify-between lg:p-0">
-          <h4>For Approval</h4>
-          {!isSearching && isLoading ? (
-            <SkeletonLoading className="h-10 w-full rounded-sm md:w-64" />
-          ) : (
-            <div
-              className={classNames(
-                "flex flex-col gap-2 md:flex-row md:items-center",
-              )}
-            >
-              <Input
-                name="searchFilter"
-                placeholder="Find anything..."
-                loading={isLoading && isSearching}
-                className="w-full md:w-64"
-                icon={MdSearch as IconType}
-                defaultValue={filters.search}
-                onChange={handleSearch}
-              />
-
-              <CollapseWidthAnimation
-                isVisible={selectedItems && selectedItems.length > 0}
-              >
-                <Can I="access" a="CAN_BULK_APPROVE_REIMBURSEMENT">
-                  <Button
-                    variant="primary"
-                    disabled={selectedItems.length === 0}
-                    onClick={handleBulkApprove}
-                  >
-                    Approve
-                  </Button>
-                </Can>
-              </CollapseWidthAnimation>
-            </div>
+        <TableHeaderTitle
+          title="For Approval"
+          isLoading={!isSearching && isLoading}
+          searchIsLoading={isLoading}
+          handleSearch={handleSearch}
+          hasApproveButton={ability.can(
+            "access",
+            "CAN_BULK_APPROVE_REIMBURSEMENT",
           )}
-        </div>
+          handleApproveButton={handleBulkApprove}
+          approveButtonIsVisible={selectedItems && selectedItems.length > 0}
+        />
 
         <Table
           type="approvals"
@@ -354,6 +327,10 @@ const MyApprovals: React.FC = () => {
           tableState={{
             filters,
             selectedItems,
+          }}
+          handleMobileClick={(e: number) => {
+            setFocusedReimbursementId(e);
+            openReimbursementView();
           }}
           tableStateActions={{
             setSelectedItems: setSelectedItemsState,

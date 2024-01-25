@@ -85,6 +85,7 @@ const StatusFilter: React.FC<FilterProps> = () => {
 
   return (
     <Popover
+      panelClassName="-translate-x-16 md:translate-x-0"
       btn={<FaCaretDown className="text-neutral-900 hover:text-neutral-800" />}
       content={
         <div className="flex flex-col">

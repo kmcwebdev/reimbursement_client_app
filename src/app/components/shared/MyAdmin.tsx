@@ -2,8 +2,6 @@
 import { type ColumnDef } from "@tanstack/react-table";
 import dynamic from "next/dynamic";
 import React, { useState, type ChangeEvent } from "react";
-import { type IconType } from "react-icons-all-files";
-import { AiOutlineSearch } from "react-icons-all-files/ai/AiOutlineSearch";
 import { Button } from "~/app/components/core/Button";
 import Table from "~/app/components/core/table";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
@@ -21,12 +19,10 @@ import {
   type IReimbursementsFilterQuery,
 } from "~/types/reimbursement.types";
 import { env } from "../../../../env.mjs";
-import CollapseWidthAnimation from "../animation/CollapseWidth";
-import SkeletonLoading from "../core/SkeletonLoading";
 import { showToast } from "../core/Toast";
-import Input from "../core/form/fields/Input";
 import TableCell from "../core/table/TableCell";
 import TableCheckbox from "../core/table/TableCheckbox";
+import TableHeaderTitle from "../core/table/TableHeaderTitle";
 import AdminAnalytics from "./analytics/AdminAnalytics";
 
 const ReimbursementsCardView = dynamic(
@@ -275,37 +271,18 @@ const MyAdmin: React.FC = () => {
 
   return (
     <>
-      <div className="grid bg-neutral-50 md:gap-y-4 lg:p-5">
+      <div className="grid bg-neutral-50 md:gap-y-4 md:p-5">
         <AdminAnalytics />
-        <div className="flex flex-col justify-between gap-2 p-4 md:flex-row lg:p-0">
-          <h4>Reimbursements</h4>
 
-          {!isSearching && isFetching ? (
-            <SkeletonLoading className="h-10 w-full rounded-sm md:w-64" />
-          ) : (
-            <div className="flex flex-col gap-2 md:flex-row md:gap-4">
-              <Input
-                name="inputText"
-                placeholder="Find anything..."
-                loading={isFetching}
-                icon={AiOutlineSearch as IconType}
-                onChange={handleSearch}
-              />
-
-              <CollapseWidthAnimation
-                isVisible={data && data.results.length > 0 ? true : false}
-              >
-                <Button
-                  variant="success"
-                  className="whitespace-nowrap"
-                  onClick={openReportConfirmDialog}
-                >
-                  Download Report
-                </Button>
-              </CollapseWidthAnimation>
-            </div>
-          )}
-        </div>
+        <TableHeaderTitle
+          title="Reimbursements"
+          isLoading={!isSearching && isFetching}
+          searchIsLoading={isFetching}
+          handleSearch={handleSearch}
+          downloadReportButtonIsVisible={data && data.results.length > 0}
+          hasDownloadReportButton
+          handleDownloadReportButton={openReportConfirmDialog}
+        />
 
         <Table
           type="admin"
@@ -347,7 +324,6 @@ const MyAdmin: React.FC = () => {
           isLoading={focusedReimbursementDataIsFetching}
           isError={focusedReimbursementDataIsError}
           data={focusedReimbursementData}
-          isHistoryView
           setFocusedReimbursementId={setFocusedReimbursementId}
         />
       </SideDrawer>

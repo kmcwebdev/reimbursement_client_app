@@ -2,6 +2,7 @@ export type IAnalytics = {
   pending_request_count: number;
   scheduled_request_count: number;
   unscheduled_request_count: number;
+  overall_request_count: number;
 
   pending_for_approval_count: number;
   scheduled_for_approval_request_count: number;

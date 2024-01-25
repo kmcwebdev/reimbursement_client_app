@@ -95,6 +95,9 @@ const FilterView: React.FC<FilterViewProps> = ({ colSpan }) => {
     setFilterViewState(undefined);
     dispatch(resetPageTableState());
     dispatch(appApiSlice.util.invalidateTags(["MyRequests"]));
+    dispatch(appApiSlice.util.invalidateTags(["ReimbursementApprovalList"]));
+    dispatch(appApiSlice.util.invalidateTags(["ReimbursementAdminList"]));
+    dispatch(appApiSlice.util.invalidateTags(["ReimbursementHistoryList"]));
   };
 
   return (
@@ -105,7 +108,7 @@ const FilterView: React.FC<FilterViewProps> = ({ colSpan }) => {
           Object.keys(filters).filter((a) => a !== "page").length > 0
             ? "h-16 border-t px-4 opacity-100 first:px-0"
             : "h-0 p-0 opacity-0",
-          "overflow-hidden",
+          "hidden overflow-hidden md:table-cell",
         )}
       >
         <div

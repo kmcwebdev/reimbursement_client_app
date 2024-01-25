@@ -14,12 +14,17 @@ import {
 } from "@tanstack/react-table";
 
 import { FaSpinner } from "react-icons-all-files/fa/FaSpinner";
+import { MdClose } from "react-icons-all-files/md/MdClose";
+import { useAppDispatch, useAppSelector } from "~/app/hook";
+import { appApiSlice } from "~/app/rtkQuery";
+import { resetPageTableState } from "~/features/state/table-state.slice";
 import { type IResponsePagination } from "~/types/global-types";
 import {
   type IReimbursementRequest,
   type IReimbursementsFilterQuery,
 } from "~/types/reimbursement.types";
 import { classNames } from "~/utils/classNames";
+import { Button } from "../Button";
 import FilterView from "./FilterView";
 import MobileListItem from "./MobileListItem";
 import Pagination, { PaginationSkeletonLoading } from "./Pagination";
@@ -83,6 +88,8 @@ interface CustomFilterMeta extends FilterMeta {
 const Table: React.FC<TableProps> = (props) => {
   const { columns } = props;
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+  const dispatch = useAppDispatch();
+  const { filters } = useAppSelector((state) => state.pageTableState);
 
   useEffect(() => {
     if (
@@ -135,11 +142,21 @@ const Table: React.FC<TableProps> = (props) => {
     },
   });
 
+  const handleClear = () => {
+    dispatch(resetPageTableState());
+    dispatch(appApiSlice.util.invalidateTags(["MyRequests"]));
+    dispatch(appApiSlice.util.invalidateTags(["ReimbursementApprovalList"]));
+    dispatch(appApiSlice.util.invalidateTags(["ReimbursementAdminList"]));
+    dispatch(appApiSlice.util.invalidateTags(["ReimbursementHistoryList"]));
+  };
+
   return (
     <div
       className={classNames(
         "flex h-[31.5rem] flex-col",
-        props.loading ? "overflow-hidden" : "overflow-x-auto overflow-y-hidden",
+        props.loading
+          ? "overflow-hidden"
+          : "overflow-y-hidden md:overflow-x-auto",
       )}
     >
       <div
@@ -147,7 +164,7 @@ const Table: React.FC<TableProps> = (props) => {
           "relative h-full w-full",
           props.loading
             ? "overflow-x-hidden overflow-y-hidden"
-            : "overflow-y-auto",
+            : "overflow-y-auto overflow-x-hidden md:overflow-x-auto",
         )}
       >
         {/* TABLE HEADER */}
@@ -186,12 +203,17 @@ const Table: React.FC<TableProps> = (props) => {
                             header.getContext(),
                           )}
 
-                          {header.column.columnDef?.meta &&
-                            (header.column.columnDef?.meta as CustomFilterMeta)
-                              .filterComponent &&
-                            (
-                              header.column.columnDef?.meta as CustomFilterMeta
-                            ).filterComponent()}
+                          <div className="mt-1">
+                            {header.column.columnDef?.meta &&
+                              (
+                                header.column.columnDef
+                                  ?.meta as CustomFilterMeta
+                              ).filterComponent &&
+                              (
+                                header.column.columnDef
+                                  ?.meta as CustomFilterMeta
+                              ).filterComponent()}
+                          </div>
                         </div>
                       </th>
                     );
@@ -200,10 +222,85 @@ const Table: React.FC<TableProps> = (props) => {
               ))}
           </thead>
 
+          {/* MOBILE FILTERS */}
+          <thead className="sticky top-0 z-[5] table-header-group h-12 rounded-t-sm  bg-white text-xs md:hidden">
+            {props.loading && (
+              <tr>
+                <th colSpan={42} className="h-12 border-b">
+                  <div className="flex gap-4 px-4 text-neutral-600">
+                    <FaSpinner className="h-4 w-4 animate-spin" />
+                    <p>Fetching table data...</p>
+                  </div>
+                </th>
+              </tr>
+            )}
+
+            {!props.loading &&
+              props.data &&
+              table.getHeaderGroups().map((headerGroup, i) => (
+                <tr key={i} className="h-12">
+                  <th
+                    colSpan={42}
+                    className="flex h-12 items-center justify-between gap-2 border-b px-4"
+                  >
+                    <div className="flex h-full gap-2">
+                      {headerGroup.headers
+                        .filter(
+                          (header) =>
+                            header.column.columnDef?.meta &&
+                            (header.column.columnDef?.meta as CustomFilterMeta)
+                              .filterComponent,
+                        )
+                        .map((header, index) => {
+                          return (
+                            <div
+                              key={`header-${index}`}
+                              className="flex h-full items-center gap-2 text-xs"
+                            >
+                              <div
+                                className={classNames(
+                                  "flex items-center gap-1 rounded-sm bg-neutral-200 px-1",
+                                )}
+                              >
+                                {flexRender(
+                                  header.column.columnDef.header,
+                                  header.getContext(),
+                                )}
+                                <div className="mt-1">
+                                  {header.column.columnDef?.meta &&
+                                    (
+                                      header.column.columnDef
+                                        ?.meta as CustomFilterMeta
+                                    ).filterComponent &&
+                                    (
+                                      header.column.columnDef
+                                        ?.meta as CustomFilterMeta
+                                    ).filterComponent()}
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                    </div>
+                    {Object.keys(filters).filter((a) => a !== "page").length >
+                      0 && (
+                      <Button
+                        buttonType="text"
+                        variant="danger"
+                        onClick={handleClear}
+                      >
+                        <MdClose className="h-5 w-5" />
+                      </Button>
+                    )}
+                  </th>
+                </tr>
+              ))}
+          </thead>
+
           <tbody
             className={classNames(
               !props.loading && "shadow-sm",
-              "relative h-full w-full rounded-b-sm bg-white p-4",
+              "relative h-full w-full rounded-b-sm bg-white p-4 md:border-none",
             )}
           >
             <FilterView colSpan={table.getAllColumns().length} />
@@ -234,7 +331,7 @@ const Table: React.FC<TableProps> = (props) => {
               table &&
               table.getRowModel().rows.map((row, i) => {
                 return (
-                  <tr key={`mobile-${i}`} className="md:hidden">
+                  <tr key={`mobile-${i}`} className="border-b md:hidden">
                     <td colSpan={row.getVisibleCells().length}>
                       <MobileListItem
                         type={props.type}

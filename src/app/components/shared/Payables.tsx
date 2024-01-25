@@ -2,8 +2,6 @@
 import { type ColumnDef } from "@tanstack/react-table";
 import dynamic from "next/dynamic";
 import React, { useEffect, useState, type ChangeEvent } from "react";
-import { type IconType } from "react-icons-all-files";
-import { AiOutlineSearch } from "react-icons-all-files/ai/AiOutlineSearch";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { appApiSlice } from "~/app/rtkQuery";
 import { useApprovalAnalyticsQuery } from "~/features/api/analytics-api-slice";
@@ -20,14 +18,12 @@ import {
   type IReimbursementsFilterQuery,
 } from "~/types/reimbursement.types";
 import { env } from "../../../../env.mjs";
-import CollapseWidthAnimation from "../animation/CollapseWidth";
 import { Button } from "../core/Button";
-import SkeletonLoading from "../core/SkeletonLoading";
 import { showToast } from "../core/Toast";
-import Input from "../core/form/fields/Input";
 import Table from "../core/table";
 import TableCell from "../core/table/TableCell";
 import TableCheckbox from "../core/table/TableCheckbox";
+import TableHeaderTitle from "../core/table/TableHeaderTitle";
 import ApprovalTableAnalytics from "./analytics/ApprovalTableAnalytics";
 
 const ReimbursementsCardView = dynamic(() => import("../reimbursement-view"));
@@ -300,61 +296,22 @@ const Payables: React.FC = () => {
 
   return (
     <>
-      <div className="grid bg-neutral-50 md:gap-y-4 lg:p-5">
+      <div className="grid bg-neutral-50 md:gap-y-4 md:p-5">
         <ApprovalTableAnalytics
           type="finance"
           data={analytics!}
           isLoading={analyticsIsLoading}
         />
 
-        <SideDrawer
-          title={
-            !reimbursementRequestDataIsLoading && reimbursementRequestData
-              ? reimbursementRequestData.reference_no
-              : "..."
-          }
-          isVisible={isVisible}
-          closeDrawer={closeReimbursementView}
-        >
-          <ReimbursementsCardView
-            closeDrawer={closeReimbursementView}
-            isLoading={reimbursementRequestDataIsLoading}
-            data={reimbursementRequestData}
-            setFocusedReimbursementId={setFocusedReimbursementId}
-            isApproverView
-          />
-        </SideDrawer>
-
-        {/* table */}
-        <div className="flex flex-col justify-between gap-2 p-4 md:flex-row lg:p-0">
-          <h4>For Approvals</h4>
-
-          {!isSearching && isFetching ? (
-            <SkeletonLoading className="h-10 w-full rounded-sm md:w-64" />
-          ) : (
-            <div className="flex flex-col gap-2 md:flex-row md:gap-4">
-              <Input
-                name="inputText"
-                placeholder="Find anything..."
-                loading={isFetching && isSearching}
-                icon={AiOutlineSearch as IconType}
-                onChange={handleSearch}
-              />
-
-              <CollapseWidthAnimation
-                isVisible={data && data.results.length > 0 ? true : false}
-              >
-                <Button
-                  variant="success"
-                  className="whitespace-nowrap"
-                  onClick={openReportConfirmDialog}
-                >
-                  Download Report
-                </Button>
-              </CollapseWidthAnimation>
-            </div>
-          )}
-        </div>
+        <TableHeaderTitle
+          title="For Approval"
+          isLoading={!isSearching && isFetching}
+          searchIsLoading={isFetching}
+          handleSearch={handleSearch}
+          downloadReportButtonIsVisible={data && data.results.length > 0}
+          hasDownloadReportButton
+          handleDownloadReportButton={openReportConfirmDialog}
+        />
 
         <Table
           type="approvals"
@@ -374,7 +331,23 @@ const Payables: React.FC = () => {
             previous: data?.previous!,
           }}
         />
-
+        <SideDrawer
+          title={
+            !reimbursementRequestDataIsLoading && reimbursementRequestData
+              ? reimbursementRequestData.reference_no
+              : "..."
+          }
+          isVisible={isVisible}
+          closeDrawer={closeReimbursementView}
+        >
+          <ReimbursementsCardView
+            closeDrawer={closeReimbursementView}
+            isLoading={reimbursementRequestDataIsLoading}
+            data={reimbursementRequestData}
+            setFocusedReimbursementId={setFocusedReimbursementId}
+            isApproverView
+          />
+        </SideDrawer>
         <Dialog
           title="Download Report"
           isVisible={confirmReportDownloadIsOpen}

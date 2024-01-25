@@ -42,14 +42,14 @@ const StatusBadge: React.FC<StatusBadgeProps> = ({ status, label }) => {
         "text-xs capitalize md:text-sm",
         status === "default" &&
           label &&
-          label.length >= 25 &&
+          label.length >= 23 &&
           "block min-w-[150px]",
         statusVariant({ status }),
       )}
     >
       <p
         className={classNames(
-          status === "default" && label && label.length >= 25
+          status === "default" && label && label.length >= 23
             ? "block truncate"
             : "",
         )}

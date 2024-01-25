@@ -105,11 +105,12 @@ const DateFiledFilter: React.FC<FilterProps> = () => {
 
   return (
     <Popover
+      panelClassName="-translate-x-3/4 md:translate-x-0"
       btn={
         <MdCalendarToday className="text-neutral-900 hover:text-neutral-800" />
       }
       content={
-        <div className="flex flex-col">
+        <div className="flex  flex-col">
           <div className="flex h-10 items-center border-b px-4 text-orange-600">
             Pick Dates
           </div>

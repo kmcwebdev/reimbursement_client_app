@@ -20,6 +20,7 @@ export const defineAbility = (
         can("access", "NAV_ITEM_APPROVAL");
         can("access", "NAV_ITEM_HISTORY");
         can("access", "REIMBURSEMENT_VIEW_APPROVAL");
+        can("access", "CAN_BULK_APPROVE_REIMBURSEMENT");
       }
 
       //HRBP Permissions

@@ -3,6 +3,7 @@ import { AiOutlinePause } from "react-icons-all-files/ai/AiOutlinePause";
 import { MdAccessTimeFilled } from "react-icons-all-files/md/MdAccessTimeFilled";
 import { MdGavel } from "react-icons-all-files/md/MdGavel";
 import { type IAnalytics } from "~/types/dashboard-analytics.type";
+import { classNames } from "~/utils/classNames";
 import DashboardCard, { DashboardCardSkeleton } from "../../core/DashboardCard";
 
 interface ApprovalTableAnalyticsProps {
@@ -17,16 +18,28 @@ const ApprovalTableAnalytics: React.FC<ApprovalTableAnalyticsProps> = ({
   type,
 }) => {
   return (
-    <div className="flex gap-4 p-4 lg:mb-5 lg:p-0">
+    <>
       {isLoading && (
-        <>
+        <div
+          className={classNames(
+            type === "finance" ? "grid-cols-2 md:grid-cols-3" : "grid-cols-2",
+            "grid gap-3 px-4 pt-4 md:p-4 lg:flex lg:p-0",
+          )}
+        >
           <DashboardCardSkeleton />
           <DashboardCardSkeleton />
-        </>
+
+          {type === "finance" && <DashboardCardSkeleton />}
+        </div>
       )}
 
       {!isLoading && data && (
-        <>
+        <div
+          className={classNames(
+            type === "finance" ? "grid-cols-2 md:grid-cols-3" : "grid-cols-2",
+            "grid gap-3 px-4 pt-4 md:p-4 lg:flex lg:p-0",
+          )}
+        >
           <DashboardCard
             icon={<MdGavel className="h-5 w-5 text-yellow-600" />}
             label="Pending Approval"
@@ -48,9 +61,9 @@ const ApprovalTableAnalytics: React.FC<ApprovalTableAnalyticsProps> = ({
               count={data.onhold_request_count}
             />
           )}
-        </>
+        </div>
       )}
-    </div>
+    </>
   );
 };
 

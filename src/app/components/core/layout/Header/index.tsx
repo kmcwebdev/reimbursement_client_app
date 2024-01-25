@@ -2,7 +2,6 @@ import React from "react";
 import PageTitle from "./PageTitle";
 import ProfileMenu from "./ProfileMenu";
 
-
 const Header: React.FC = () => {
   return (
     <div className="sticky top-0 z-20 flex h-16 flex-col justify-between border-b bg-white shadow-sm">

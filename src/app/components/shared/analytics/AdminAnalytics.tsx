@@ -11,9 +11,9 @@ const AdminAnalytics: React.FC = () => {
   const { isLoading: analyticsIsLoading, data: analytics } =
     useApprovalAnalyticsQuery({ type: "administrator" });
   return (
-    <div className="mb-5 place-items-start gap-4 md:overflow-x-auto">
+    <div>
       {analyticsIsLoading && (
-        <div className="grid grid-cols-2 gap-3 p-4 sm:flex lg:p-0">
+        <div className="grid grid-cols-2 gap-3 px-4 pt-4 md:grid-cols-3 md:px-0 md:py-4 lg:flex lg:p-0">
           <DashboardCardSkeleton />
           <DashboardCardSkeleton />
           <DashboardCardSkeleton />
@@ -21,7 +21,7 @@ const AdminAnalytics: React.FC = () => {
       )}
 
       {!analyticsIsLoading && analytics && (
-        <div className="grid grid-cols-2 gap-3 p-4 sm:flex lg:p-0">
+        <div className="grid grid-cols-2 gap-3 px-4 pt-4 md:grid-cols-3 md:px-0 md:py-4 lg:flex lg:p-0">
           <DashboardCard
             icon={
               <FaThList className="h-4 w-4 text-orange-600 sm:h-5 sm:w-5" />
