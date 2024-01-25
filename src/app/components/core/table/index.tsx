@@ -153,7 +153,7 @@ const Table: React.FC<TableProps> = (props) => {
   return (
     <div
       className={classNames(
-        "flex h-[31.5rem] flex-col",
+        "no-scrollbar flex h-[31.5rem] flex-col",
         props.loading
           ? "overflow-hidden"
           : "overflow-y-hidden md:overflow-x-auto",
@@ -161,7 +161,7 @@ const Table: React.FC<TableProps> = (props) => {
     >
       <div
         className={classNames(
-          "relative h-full w-full",
+          "no-scrollbar relative h-full w-full",
           props.loading
             ? "overflow-x-hidden overflow-y-hidden"
             : "overflow-y-auto overflow-x-hidden md:overflow-x-auto",

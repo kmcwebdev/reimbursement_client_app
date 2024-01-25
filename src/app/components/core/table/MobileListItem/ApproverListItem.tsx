@@ -1,7 +1,6 @@
 import React, { type ChangeEvent } from "react";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { setSelectedItems } from "~/features/state/table-state.slice";
-import useLongAndShortPress from "~/hooks/use-press";
 import { type IParticularDetails } from "~/types/reimbursement.types";
 import { classNames } from "~/utils/classNames";
 import { currencyFormat } from "~/utils/currencyFormat";
@@ -39,19 +38,19 @@ const ApproverListItem: React.FC<ApproverListItemProps> = ({
   const dispatch = useAppDispatch();
   const { selectedItems } = useAppSelector((state) => state.pageTableState);
 
-  const handleLongPress = (e: number) => {
-    if (selectedItems.includes(e)) {
-      const updated = selectedItems.filter((item) => item !== e);
-      dispatch(setSelectedItems([...updated]));
-    } else {
-      dispatch(setSelectedItems([...selectedItems, e]));
-    }
-  };
+  // const handleLongPress = (e: number) => {
+  //   if (selectedItems.includes(e)) {
+  //     const updated = selectedItems.filter((item) => item !== e);
+  //     dispatch(setSelectedItems([...updated]));
+  //   } else {
+  //     dispatch(setSelectedItems([...selectedItems, e]));
+  //   }
+  // };
 
-  const pressHandler = useLongAndShortPress(
-    () => handleLongPress(id),
-    () => onClick(),
-  );
+  // const pressHandler = useLongAndShortPress(
+  //   () => handleLongPress(id),
+  //   () => onClick(),
+  // );
 
   const handleCheckboxChange = (e: ChangeEvent<HTMLInputElement>) => {
     const checked = e.target.checked;
@@ -86,7 +85,7 @@ const ApproverListItem: React.FC<ApproverListItemProps> = ({
         />
       </div>
 
-      <div className="flex flex-1 flex-col justify-between" {...pressHandler}>
+      <div className="flex flex-1 flex-col justify-between" onClick={onClick}>
         <div className="flex flex-col justify-between">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
