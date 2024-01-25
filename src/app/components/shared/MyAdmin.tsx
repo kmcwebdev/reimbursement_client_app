@@ -347,6 +347,7 @@ const MyAdmin: React.FC = () => {
           isLoading={focusedReimbursementDataIsFetching}
           isError={focusedReimbursementDataIsError}
           data={focusedReimbursementData}
+          isHistoryView
           setFocusedReimbursementId={setFocusedReimbursementId}
         />
       </SideDrawer>
