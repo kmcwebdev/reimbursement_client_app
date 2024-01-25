@@ -175,6 +175,17 @@ const Capture: React.FC<CaptureProps> = ({ formReturn }) => {
     }
   };
 
+  const handleFacingMode = () => {
+    setCameraIsLoading(true);
+    if (facingMode === "user") {
+      setFacingMode("environment");
+      setCameraIsLoading(false);
+    } else {
+      setFacingMode("user");
+      setCameraIsLoading(false);
+    }
+  };
+
   return (
     <div className="relative flex flex-col gap-4">
       {cameraIsLoading && (
@@ -187,22 +198,24 @@ const Capture: React.FC<CaptureProps> = ({ formReturn }) => {
           "relative h-60 overflow-hidden rounded-md",
         )}
       >
-        <Camera
-          errorMessages={{
-            noCameraAccessible:
-              "No camera device accessible. Please connect your camera or try a different browser.",
-            permissionDenied:
-              "Permission denied. Please refresh and give camera permission.",
-            switchCamera:
-              "It is not possible to switch camera to different one because there is only one video device accessible.",
-            canvas: "Canvas is not supported.",
-          }}
-          facingMode={facingMode as FacingMode}
-          videoReadyCallback={() =>
-            setTimeout(() => setCameraIsLoading(false), 1000)
-          }
-          ref={camera}
-        />
+        {!cameraIsLoading && (
+          <Camera
+            errorMessages={{
+              noCameraAccessible:
+                "No camera device accessible. Please connect your camera or try a different browser.",
+              permissionDenied:
+                "Permission denied. Please refresh and give camera permission.",
+              switchCamera:
+                "It is not possible to switch camera to different one because there is only one video device accessible.",
+              canvas: "Canvas is not supported.",
+            }}
+            facingMode={facingMode as FacingMode}
+            videoReadyCallback={() =>
+              setTimeout(() => setCameraIsLoading(false), 1000)
+            }
+            ref={camera}
+          />
+        )}
 
         {photo && (
           <div
@@ -215,12 +228,12 @@ const Capture: React.FC<CaptureProps> = ({ formReturn }) => {
           {facingMode === "user" ? (
             <MdCameraRear
               className="h-6 w-6 text-white"
-              onClick={() => setFacingMode("environment")}
+              onClick={handleFacingMode}
             />
           ) : (
             <MdCameraFront
               className="h-6 w-6 text-white"
-              onClick={() => setFacingMode("user")}
+              onClick={handleFacingMode}
             />
           )}
         </div>
