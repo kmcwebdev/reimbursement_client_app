@@ -32,7 +32,9 @@ const Dialog = dynamic(() => import("../core/Dialog"));
 const ReimbursementTypeFilter = dynamic(
   () => import("../core/table/filters/ReimbursementTypeFilter"),
 );
-
+const StatusFilter = dynamic(
+  () => import("../core/table/filters/StatusFilter"),
+);
 const ExpenseTypeFilter = dynamic(
   () => import("../core/table/filters/ExpenseTypeFilter"),
 );
@@ -189,6 +191,23 @@ const Payables: React.FC = () => {
               onChange={row.getToggleSelectedHandler()}
             />
           ),
+        },
+        {
+          id: "request_status",
+          accessorKey: "request_status",
+          header: "Status",
+          filterFn: (row, id, value: string) => {
+            return value.includes(row.getValue(id));
+          },
+          enableColumnFilter: true,
+          meta: {
+            filterComponent: StatusFilter,
+          },
+        },
+        {
+          id: "reimb_requestor",
+          accessorKey: "reimb_requestor",
+          header: "Client",
         },
         {
           id: "reimb_requestor",
