@@ -328,6 +328,7 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
                 onClose={closeDrawer}
                 onCancel={openCancelDialog}
                 isCancellable={
+                  !data.approver_matrix[0].is_approved &&
                   data.request_status.name !== "Cancelled" &&
                   data.request_status.name === "Pending"
                 }

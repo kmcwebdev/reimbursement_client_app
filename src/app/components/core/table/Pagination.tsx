@@ -1,4 +1,6 @@
 import React from "react";
+import { MdArrowBack } from "react-icons-all-files/md/MdArrowBack";
+import { MdArrowForward } from "react-icons-all-files/md/MdArrowForward";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { setPageTableFilters } from "~/features/state/table-state.slice";
 import { type IResponsePagination } from "~/types/global-types";
@@ -40,10 +42,10 @@ const Pagination: React.FC<PaginationProps> = ({ data, currentPageLength }) => {
   };
 
   return (
-    <div className="flex items-center justify-between gap-2 border-t border-neutral-300 bg-white px-2 py-4 lg:px-0 lg:pb-0 lg:pt-5">
+    <div className="flex items-center justify-between gap-2 border-neutral-300 bg-white px-2 py-4 md:border-t lg:px-0 lg:pb-0 lg:pt-5">
       {data && (
         <>
-          <div className="flex items-center gap-2 text-neutral-800">
+          <div className="flex items-center gap-2 text-xs text-neutral-800 md:text-md">
             Showing{" "}
             {filters.page
               ? filters.page > 1
@@ -57,22 +59,31 @@ const Pagination: React.FC<PaginationProps> = ({ data, currentPageLength }) => {
             of {data.count} results
           </div>
           <div className="flex items-center gap-2">
-            <Button
-              buttonType="outlined"
-              variant="neutral"
-              disabled={!data.previous}
-              onClick={handlePrevious}
-            >
-              Previous
-            </Button>
-            <Button
-              buttonType="outlined"
-              variant="neutral"
-              disabled={!data.next}
-              onClick={handleNext}
-            >
-              Next
-            </Button>
+            {data.previous && (
+              <Button
+                buttonType="outlined"
+                variant="neutral"
+                onClick={handlePrevious}
+              >
+                <p className="hidden md:flex">Previous</p>
+                <p className="md:hidden">
+                  <MdArrowBack className="h-5 w-5" />
+                </p>
+              </Button>
+            )}
+
+            {data.next && (
+              <Button
+                buttonType="outlined"
+                variant="neutral"
+                onClick={handleNext}
+              >
+                <p className="hidden md:flex">Next</p>
+                <p className="md:hidden">
+                  <MdArrowForward className="h-5 w-5" />
+                </p>
+              </Button>
+            )}
           </div>
         </>
       )}
@@ -87,12 +98,8 @@ export const PaginationSkeletonLoading: React.FC = () => {
     <div className=" flex items-center justify-between gap-2 border-t border-neutral-300 bg-white px-2 py-4 lg:px-0 lg:pb-0 lg:pt-5">
       <SkeletonLoading className="h-5 w-48 rounded-md" />
       <div className="flex items-center gap-2">
-        <Button buttonType="outlined" variant="neutral" disabled={true}>
-          Previous
-        </Button>
-        <Button buttonType="outlined" variant="neutral" disabled={true}>
-          Next
-        </Button>
+        <SkeletonLoading className="h-9 w-20 rounded-md" />
+        <SkeletonLoading className="h-9 w-20 rounded-md" />
       </div>
     </div>
   );

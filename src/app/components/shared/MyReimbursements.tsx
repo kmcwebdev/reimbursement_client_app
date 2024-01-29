@@ -15,7 +15,6 @@ import {
   toggleCancelDialog,
   toggleFormDialog,
 } from "~/features/state/reimbursement-form-slice";
-import { setSelectedItems } from "~/features/state/table-state.slice";
 import { useDebounce } from "~/hooks/use-debounce";
 import { useDialogState } from "~/hooks/use-dialog-state";
 import {
@@ -28,7 +27,6 @@ import {
 } from "~/types/reimbursement.types";
 import { classNames } from "~/utils/classNames";
 import TableCell from "../core/table/TableCell";
-import TableHeaderTitle from "../core/table/TableHeaderTitle";
 import MemberAnalytics from "./analytics/MemberAnalytics";
 import ReimburseForm from "./reimburse-form";
 
@@ -59,9 +57,7 @@ const MyReimbursements: React.FC = () => {
     particularDetailsFormIsVisible,
     selectedAttachmentMethod,
   } = useAppSelector((state) => state.reimbursementForm);
-  const { selectedItems, filters } = useAppSelector(
-    (state) => state.pageTableState,
-  );
+  const { filters } = useAppSelector((state) => state.pageTableState);
 
   const [searchParams, setSearchParams] = useState<IReimbursementsFilterQuery>({
     search: undefined,
@@ -75,10 +71,6 @@ const MyReimbursements: React.FC = () => {
   const [isSearching, setIsSearching] = useState<boolean>(false);
 
   const dispatch = useAppDispatch();
-
-  const setSelectedItemsState = (value: number[]) => {
-    dispatch(setSelectedItems(value));
-  };
 
   const [focusedReimbursementId, setFocusedReimbursementId] =
     useState<number>();
@@ -240,29 +232,23 @@ const MyReimbursements: React.FC = () => {
       <div className="grid bg-neutral-50 md:gap-y-4 md:p-5">
         <MemberAnalytics />
 
-        <TableHeaderTitle
-          title="Reimbursements"
-          isLoading={!isSearching && isFetching}
-          searchIsLoading={isFetching}
-          handleSearch={handleSearch}
-          hasCreateButton
-        />
-
         <Table
-          type="reimbursements"
+          header={{
+            isLoading: !isSearching && isFetching,
+            title: "Reimbursements",
+            button: "create",
+            buttonClickHandler: () => dispatch(toggleFormDialog()),
+            buttonIsVisible: true,
+            handleSearch: handleSearch,
+            searchIsLoading: isFetching,
+          }}
+          type="reimbursement"
           loading={isFetching}
           data={data?.results}
           columns={columns}
           handleMobileClick={(e: number) => {
             setFocusedReimbursementId(e);
             open();
-          }}
-          tableState={{
-            filters,
-            selectedItems,
-          }}
-          tableStateActions={{
-            setSelectedItems: setSelectedItemsState,
           }}
           pagination={{
             count: data?.count!,

@@ -1,13 +1,13 @@
 import React from "react";
 import { type IconType } from "react-icons-all-files";
 import { MdBrowserNotSupported } from "react-icons-all-files/md/MdBrowserNotSupported";
-import EmptyState from "../EmptyState";
+import EmptyState from "../../EmptyState";
 
 interface TableEmptyStateProps {
   type:
     | "finance"
-    | "approvals"
-    | "reimbursements"
+    | "approval"
+    | "reimbursement"
     | "no-results"
     | "history"
     | "admin";
@@ -19,10 +19,10 @@ const TableEmptyState: React.FC<TableEmptyStateProps> = ({ type, colSpan }) => {
     <>
       {type !== "no-results" && (
         <tr>
-          <td colSpan={colSpan} className="px-4 pb-4 md:px-0">
+          <td colSpan={colSpan} className="p-4 md:p-0">
             <div>
               <div className="grid h-[40vh] place-items-center rounded-md bg-neutral-100 py-10">
-                {type === "approvals" && (
+                {type === "approval" && (
                   <EmptyState
                     icon={MdBrowserNotSupported as IconType}
                     title="No Reimbursement Requests to Approve."
@@ -30,7 +30,7 @@ const TableEmptyState: React.FC<TableEmptyStateProps> = ({ type, colSpan }) => {
                   />
                 )}
 
-                {type === "reimbursements" && (
+                {type === "reimbursement" && (
                   <EmptyState
                     icon={MdBrowserNotSupported as IconType}
                     title="No Pending Reimbursement Requests"
@@ -70,13 +70,13 @@ const TableEmptyState: React.FC<TableEmptyStateProps> = ({ type, colSpan }) => {
       {/* Filter returns 0 record */}
       {type === "no-results" && (
         <tr>
-          <td colSpan={length} className="pt-4">
+          <td colSpan={colSpan} className="p-4 md:p-0">
             <div>
               <div className="grid h-[40vh] place-items-center rounded-md bg-neutral-100 py-10">
                 <EmptyState
                   icon={MdBrowserNotSupported as IconType}
                   title="No Reimbursement Requests Available."
-                  description="You may try to change your filter values to see records."
+                  description="Try to change your filter values to see records."
                 />
               </div>
             </div>

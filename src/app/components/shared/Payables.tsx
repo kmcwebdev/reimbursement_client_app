@@ -9,7 +9,10 @@ import {
   useGetApprovalListQuery,
   useGetRequestQuery,
 } from "~/features/api/reimbursement-api-slice";
-import { setSelectedItems } from "~/features/state/table-state.slice";
+import {
+  setPageTableFilters,
+  setSelectedItems,
+} from "~/features/state/table-state.slice";
 import { useDebounce } from "~/hooks/use-debounce";
 import { useDialogState } from "~/hooks/use-dialog-state";
 import { useReportDownload } from "~/hooks/use-report-download";
@@ -20,10 +23,10 @@ import {
 import { env } from "../../../../env.mjs";
 import { Button } from "../core/Button";
 import { showToast } from "../core/Toast";
+import { type ButtonGroupOption } from "../core/form/fields/ButtonGroup";
 import Table from "../core/table";
 import TableCell from "../core/table/TableCell";
 import TableCheckbox from "../core/table/TableCheckbox";
-import TableHeaderTitle from "../core/table/TableHeaderTitle";
 import ApprovalTableAnalytics from "./analytics/ApprovalTableAnalytics";
 
 const ReimbursementsCardView = dynamic(() => import("../reimbursement-view"));
@@ -32,9 +35,7 @@ const Dialog = dynamic(() => import("../core/Dialog"));
 const ReimbursementTypeFilter = dynamic(
   () => import("../core/table/filters/ReimbursementTypeFilter"),
 );
-const StatusFilter = dynamic(
-  () => import("../core/table/filters/StatusFilter"),
-);
+
 const ExpenseTypeFilter = dynamic(
   () => import("../core/table/filters/ExpenseTypeFilter"),
 );
@@ -61,6 +62,8 @@ const Payables: React.FC = () => {
   const [isSearching, setIsSearching] = useState<boolean>(false);
   const [focusedReimbursementId, setFocusedReimbursementId] =
     useState<number>();
+
+  const [selectedStatusValue, setSelectedStatusValue] = useState<number>(1);
 
   const {
     isFetching: reimbursementRequestDataIsLoading,
@@ -141,10 +144,6 @@ const Payables: React.FC = () => {
 
   const dispatch = useAppDispatch();
 
-  const setSelectedItemsState = (value: number[]) => {
-    dispatch(setSelectedItems(value));
-  };
-
   const { isFetching, data } = useGetApprovalListQuery(
     {
       ...filters,
@@ -191,18 +190,6 @@ const Payables: React.FC = () => {
               onChange={row.getToggleSelectedHandler()}
             />
           ),
-        },
-        {
-          id: "request_status",
-          accessorKey: "request_status",
-          header: "Status",
-          filterFn: (row, id, value: string) => {
-            return value.includes(row.getValue(id));
-          },
-          enableColumnFilter: true,
-          meta: {
-            filterComponent: StatusFilter,
-          },
         },
         {
           id: "reimb_requestor",
@@ -294,6 +281,22 @@ const Payables: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isFetching]);
 
+  useEffect(() => {
+    if (selectedStatusValue) {
+      dispatch(
+        setPageTableFilters({
+          ...filters,
+          request_status__id: selectedStatusValue.toString(),
+        }),
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedStatusValue]);
+
+  const handleStatusToggleChange = (e: ButtonGroupOption) => {
+    setSelectedStatusValue(+e.value);
+  };
+
   return (
     <>
       <div className="grid bg-neutral-50 md:gap-y-4 md:p-5">
@@ -303,28 +306,22 @@ const Payables: React.FC = () => {
           isLoading={analyticsIsLoading}
         />
 
-        <TableHeaderTitle
-          title="For Approval"
-          isLoading={!isSearching && isFetching}
-          searchIsLoading={isFetching}
-          handleSearch={handleSearch}
-          downloadReportButtonIsVisible={data && data.results.length > 0}
-          hasDownloadReportButton
-          handleDownloadReportButton={openReportConfirmDialog}
-        />
-
         <Table
-          type="approvals"
+          header={{
+            isLoading: !isSearching && isFetching,
+            title: "For Processing",
+            button: "download",
+            buttonClickHandler: openReportConfirmDialog,
+            buttonIsVisible: data && data.results.length > 0 ? true : false,
+            handleSearch: handleSearch,
+            searchIsLoading: isFetching,
+            handleStatusToggle: handleStatusToggleChange,
+            statusToggleValue: selectedStatusValue,
+          }}
+          type="finance"
           loading={isFetching}
           data={data?.results}
           columns={columns}
-          tableState={{
-            selectedItems,
-            filters,
-          }}
-          tableStateActions={{
-            setSelectedItems: setSelectedItemsState,
-          }}
           pagination={{
             count: data?.count!,
             next: data?.next!,

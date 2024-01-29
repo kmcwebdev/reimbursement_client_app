@@ -27,7 +27,6 @@ import {
 import { currencyFormat } from "~/utils/currencyFormat";
 import { showToast } from "../core/Toast";
 import TableCell from "../core/table/TableCell";
-import TableHeaderTitle from "../core/table/TableHeaderTitle";
 import ApprovalTableAnalytics from "./analytics/ApprovalTableAnalytics";
 
 const ReimbursementsCardView = dynamic(
@@ -306,34 +305,28 @@ const MyApprovals: React.FC = () => {
           />
         )}
 
-        <TableHeaderTitle
-          title="For Approval"
-          isLoading={!isSearching && isLoading}
-          searchIsLoading={isLoading}
-          handleSearch={handleSearch}
-          hasApproveButton={ability.can(
-            "access",
-            "CAN_BULK_APPROVE_REIMBURSEMENT",
-          )}
-          handleApproveButton={handleBulkApprove}
-          approveButtonIsVisible={selectedItems && selectedItems.length > 0}
-        />
-
         <Table
-          type="approvals"
+          header={{
+            isLoading: !isSearching && isLoading,
+            title: "For Approval",
+            button: "approve",
+            buttonClickHandler: handleBulkApprove,
+            buttonIsVisible:
+              ability.can("access", "CAN_BULK_APPROVE_REIMBURSEMENT") &&
+              data &&
+              data.results.length > 0
+                ? true
+                : false,
+            handleSearch: handleSearch,
+            searchIsLoading: isLoading,
+          }}
+          type="approval"
           loading={isLoading}
           data={data?.results}
           columns={columns}
-          tableState={{
-            filters,
-            selectedItems,
-          }}
           handleMobileClick={(e: number) => {
             setFocusedReimbursementId(e);
             openReimbursementView();
-          }}
-          tableStateActions={{
-            setSelectedItems: setSelectedItemsState,
           }}
           pagination={{
             count: data?.count!,

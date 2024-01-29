@@ -21,7 +21,7 @@ const Navigation: React.FC<NavigationProps> = ({ collapsed }) => {
     <div className="flex flex-col gap-2">
       {user && user.is_superuser && (
         <NavigationItem
-          label="Admin Dashboard"
+          label="Admin"
           icon={MdAdminPanelSettings as IconType}
           active={pathname ? pathname === "/admin" : false}
           href="/admin"

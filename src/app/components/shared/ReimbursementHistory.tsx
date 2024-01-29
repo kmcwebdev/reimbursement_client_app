@@ -23,7 +23,6 @@ import { env } from "../../../../env.mjs";
 import { showToast } from "../core/Toast";
 import TableCell from "../core/table/TableCell";
 import TableCheckbox from "../core/table/TableCheckbox";
-import TableHeaderTitle from "../core/table/TableHeaderTitle";
 
 const ReimbursementsCardView = dynamic(() => import("../reimbursement-view"));
 const Dialog = dynamic(() => import("~/app/components/core/Dialog"));
@@ -97,10 +96,6 @@ const ReimbursementHistory: React.FC = () => {
       closeDownloadConfirmation();
     },
   });
-
-  const setSelectedItemsState = (value: number[]) => {
-    dispatch(setSelectedItems(value));
-  };
 
   const { isFetching, currentData: data } = useGetRequestsHistoryQuery(
     {
@@ -256,9 +251,15 @@ const ReimbursementHistory: React.FC = () => {
       filename = `${filename} - ${reference_nos.join(",")}`;
     }
 
-    const url = `${env.NEXT_PUBLIC_BASEAPI_URL}/reimbursements/request/${assignedRole?.split("_")[1].toLowerCase()}/download-reports${reference_nos.length > 0 ? `?reference_no=${reference_nos.join(",")}` : ""}`;
+    if (assignedRole === "REIMBURSEMENT_FINANCE") {
+      const url = `${env.NEXT_PUBLIC_BASEAPI_URL}/reimbursements/request/${assignedRole?.split("_")[1].toLowerCase()}/download-reports/history${reference_nos.length > 0 ? `?reference_no=${reference_nos.join(",")}` : ""}`;
 
-    await exportReport(url, filename);
+      await exportReport(url, filename);
+    } else {
+      const url = `${env.NEXT_PUBLIC_BASEAPI_URL}/reimbursements/request/${assignedRole?.split("_")[1].toLowerCase()}/download-reports${reference_nos.length > 0 ? `?reference_no=${reference_nos.join(",")}` : ""}`;
+
+      await exportReport(url, filename);
+    }
   };
 
   const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
@@ -277,28 +278,20 @@ const ReimbursementHistory: React.FC = () => {
   return (
     <>
       <div className="grid bg-neutral-50 md:gap-y-4 md:p-5">
-        <TableHeaderTitle
-          title="Reimbursements History"
-          isLoading={!isSearching && isFetching}
-          searchIsLoading={isFetching}
-          handleSearch={handleSearch}
-          downloadReportButtonIsVisible={data && data.results.length > 0}
-          hasDownloadReportButton
-          handleDownloadReportButton={openDownloadConfirmation}
-        />
-
         <Table
+          header={{
+            isLoading: !isSearching && isFetching,
+            title: "Reimbursements History",
+            button: "download",
+            buttonClickHandler: openDownloadConfirmation,
+            buttonIsVisible: data && data.results.length > 0 ? true : false,
+            handleSearch: handleSearch,
+            searchIsLoading: isFetching,
+          }}
           type="history"
           loading={isFetching}
           data={data?.results}
           columns={columns}
-          tableState={{
-            filters,
-            selectedItems,
-          }}
-          tableStateActions={{
-            setSelectedItems: setSelectedItemsState,
-          }}
           pagination={{
             count: data?.count!,
             next: data?.next!,

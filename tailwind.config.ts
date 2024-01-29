@@ -83,7 +83,7 @@ export const tailwindExtendConfig = {
     barlowCondensed: "var(--font-barlow-condensed)",
   },
   fontSize: {
-    sm: ["12px", , "16px"],
+    sm: ["14px", , "16px"],
     base: ["14px", , "26px"],
     md: ["16px", , "24px"],
     lg: ["20px", , "24px"],

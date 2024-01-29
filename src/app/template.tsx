@@ -14,7 +14,7 @@ const Template = ({ children }: { children: ReactNode }) => {
     return <>{children}</>;
   }
 
-  return <PageAnimation>{children}</PageAnimation>;
+  return <PageAnimation className="h-full">{children}</PageAnimation>;
 };
 
 export default Template;
