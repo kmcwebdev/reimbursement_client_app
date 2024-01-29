@@ -21,6 +21,7 @@ import StatusBadge, { type StatusType } from "../StatusBadge";
 
 interface FilterViewProps {
   colSpan: number;
+  type: "history" | "admin" | "reimbursements" | "approvals" | "finance";
 }
 
 interface IFilters {
@@ -30,7 +31,7 @@ interface IFilters {
   date: string[];
 }
 
-const FilterView: React.FC<FilterViewProps> = ({ colSpan }) => {
+const FilterView: React.FC<FilterViewProps> = ({ colSpan, type }) => {
   const { filters } = useAppSelector((state) => state.pageTableState);
   const dispatch = useAppDispatch();
   const [filterViewState, setFilterViewState] = useState<IFilters>();
@@ -87,8 +88,13 @@ const FilterView: React.FC<FilterViewProps> = ({ colSpan }) => {
           }
         }
       });
+      if (type === "finance") {
+        transformedFilters.request_status__id = [];
+      }
+
       setFilterViewState(transformedFilters);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters]);
 
   const handleClear = () => {
@@ -105,7 +111,11 @@ const FilterView: React.FC<FilterViewProps> = ({ colSpan }) => {
       <th
         colSpan={colSpan}
         className={classNames(
-          Object.keys(filters).filter((a) => a !== "page").length > 0
+          Object.keys(filters).filter((a) =>
+            type === "finance"
+              ? a !== "page" && a !== "request_status__id"
+              : a !== "page",
+          ).length > 0
             ? "h-16 border-t px-4 opacity-100 first:px-0"
             : "h-0 p-0 opacity-0",
           "hidden overflow-hidden md:table-cell",
@@ -113,7 +123,11 @@ const FilterView: React.FC<FilterViewProps> = ({ colSpan }) => {
       >
         <div
           className={classNames(
-            Object.keys(filters).filter((a) => a !== "page").length > 0
+            Object.keys(filters).filter((a) =>
+              type === "finance"
+                ? a !== "page" && a !== "request_status__id"
+                : a !== "page",
+            ).length > 0
               ? "h-16 px-4 opacity-100 first:px-0"
               : "h-0 p-0 opacity-0",
             "relative flex items-center justify-between gap-4 overflow-hidden transition-all ease-in-out",
@@ -122,7 +136,11 @@ const FilterView: React.FC<FilterViewProps> = ({ colSpan }) => {
           <div className="flex items-center gap-2 px-4">
             <span className="font-bold text-neutral-900">Filters: </span>
             <div className="flex items-center gap-4 overflow-x-auto">
-              {Object.keys(filters).filter((a) => a !== "page").length > 0 &&
+              {Object.keys(filters).filter((a) =>
+                type === "finance"
+                  ? a !== "page" && a !== "request_status__id"
+                  : a !== "page",
+              ).length > 0 &&
                 filterViewState &&
                 Object.keys(filterViewState).map((key) => (
                   <div key={key}>

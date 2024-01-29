@@ -303,7 +303,10 @@ const Table: React.FC<TableProps> = (props) => {
               "relative h-full w-full rounded-b-sm bg-white p-4 md:border-none",
             )}
           >
-            <FilterView colSpan={table.getAllColumns().length} />
+            <FilterView
+              colSpan={table.getAllColumns().length}
+              type={props.type}
+            />
             {props.loading && (
               <TableSkeleton length={table.getAllFlatColumns().length} />
             )}
