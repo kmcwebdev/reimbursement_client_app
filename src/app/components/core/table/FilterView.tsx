@@ -16,12 +16,13 @@ import {
 } from "~/features/api/references-api-slice";
 import { resetPageTableState } from "~/features/state/table-state.slice";
 import { classNames } from "~/utils/classNames";
+import { type TableType } from ".";
 import { Button } from "../Button";
 import StatusBadge, { type StatusType } from "../StatusBadge";
 
 interface FilterViewProps {
   colSpan: number;
-  type: "history" | "admin" | "reimbursements" | "approvals" | "finance";
+  type: TableType;
 }
 
 interface IFilters {
