@@ -34,9 +34,14 @@ const Sidebar: React.FC = () => {
           "z-20 hidden border-r bg-black transition-all ease-in-out lg:block",
         )}
       >
-        <div className="h-screen w-full flex-col gap-4">
+        <div
+          className={classNames(
+            collapsed ? "w-[88px]" : "w-64",
+            "h-screen flex-col gap-4",
+          )}
+        >
           <SidebarHeader collapsed={collapsed} toggle={toggleSidebar} />
-          <div className="flex flex-col gap-y-4 px-2 py-4 children:cursor-pointer ">
+          <div className="flex flex-col gap-y-4 px-2 py-4 children:cursor-pointer">
             <Navigation collapsed={collapsed} />
           </div>
         </div>
