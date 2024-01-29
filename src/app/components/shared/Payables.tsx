@@ -23,13 +23,10 @@ import {
 import { env } from "../../../../env.mjs";
 import { Button } from "../core/Button";
 import { showToast } from "../core/Toast";
-import ButtonGroup, {
-  type ButtonGroupOption,
-} from "../core/form/fields/ButtonGroup";
+import { type ButtonGroupOption } from "../core/form/fields/ButtonGroup";
 import Table from "../core/table";
 import TableCell from "../core/table/TableCell";
 import TableCheckbox from "../core/table/TableCheckbox";
-import TableHeaderTitle from "../core/table/TableHeaderTitle";
 import ApprovalTableAnalytics from "./analytics/ApprovalTableAnalytics";
 
 const ReimbursementsCardView = dynamic(() => import("../reimbursement-view"));
@@ -309,30 +306,18 @@ const Payables: React.FC = () => {
           isLoading={analyticsIsLoading}
         />
 
-        <TableHeaderTitle
-          title="For Approval"
-          isLoading={!isSearching && isFetching}
-          searchIsLoading={isFetching}
-          handleSearch={handleSearch}
-          downloadReportButtonIsVisible={data && data.results.length > 0}
-          hasDownloadReportButton
-          handleDownloadReportButton={openReportConfirmDialog}
-        />
-
-        <div className="w-40">
-          <ButtonGroup
-            options={[
-              { label: "Pending", value: 1 },
-              { label: "On-hold", value: 5 },
-            ]}
-            label=""
-            name="statusToggle"
-            handleChange={handleStatusToggleChange}
-            defaultValue={selectedStatusValue}
-          />
-        </div>
-
         <Table
+          header={{
+            isLoading: !isSearching && isFetching,
+            title: "For Processing",
+            button: "download",
+            buttonClickHandler: openReportConfirmDialog,
+            buttonIsVisible: data && data.results.length > 0 ? true : false,
+            handleSearch: handleSearch,
+            searchIsLoading: isFetching,
+            handleStatusToggle: handleStatusToggleChange,
+            statusToggleValue: selectedStatusValue,
+          }}
           type="finance"
           loading={isFetching}
           data={data?.results}

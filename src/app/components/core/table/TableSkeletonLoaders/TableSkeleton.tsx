@@ -1,5 +1,5 @@
 import React from "react";
-import SkeletonLoading from "../SkeletonLoading";
+import SkeletonLoading from "../../SkeletonLoading";
 interface TableSkeletonProps {
   length: number;
 }
@@ -7,7 +7,7 @@ interface TableSkeletonProps {
 const TableSkeleton: React.FC<TableSkeletonProps> = ({ length }) => {
   return (
     <>
-      {Array.from({ length: 6 }).map((_a, i) => (
+      {Array.from({ length: 8 }).map((_a, i) => (
         <tr key={`web-${i}`} className="hidden h-16 border-b md:table-row">
           {Array.from({
             length,

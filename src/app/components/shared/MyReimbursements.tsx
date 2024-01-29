@@ -27,7 +27,6 @@ import {
 } from "~/types/reimbursement.types";
 import { classNames } from "~/utils/classNames";
 import TableCell from "../core/table/TableCell";
-import TableHeaderTitle from "../core/table/TableHeaderTitle";
 import MemberAnalytics from "./analytics/MemberAnalytics";
 import ReimburseForm from "./reimburse-form";
 
@@ -233,15 +232,16 @@ const MyReimbursements: React.FC = () => {
       <div className="grid bg-neutral-50 md:gap-y-4 md:p-5">
         <MemberAnalytics />
 
-        <TableHeaderTitle
-          title="Reimbursements"
-          isLoading={!isSearching && isFetching}
-          searchIsLoading={isFetching}
-          handleSearch={handleSearch}
-          hasCreateButton
-        />
-
         <Table
+          header={{
+            isLoading: !isSearching && isFetching,
+            title: "Reimbursements",
+            button: "create",
+            buttonClickHandler: () => dispatch(toggleFormDialog()),
+            buttonIsVisible: true,
+            handleSearch: handleSearch,
+            searchIsLoading: isFetching,
+          }}
           type="reimbursement"
           loading={isFetching}
           data={data?.results}

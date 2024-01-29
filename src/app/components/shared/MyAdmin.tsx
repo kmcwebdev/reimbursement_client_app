@@ -22,7 +22,6 @@ import { env } from "../../../../env.mjs";
 import { showToast } from "../core/Toast";
 import TableCell from "../core/table/TableCell";
 import TableCheckbox from "../core/table/TableCheckbox";
-import TableHeaderTitle from "../core/table/TableHeaderTitle";
 import AdminAnalytics from "./analytics/AdminAnalytics";
 
 const ReimbursementsCardView = dynamic(
@@ -267,34 +266,35 @@ const MyAdmin: React.FC = () => {
 
   return (
     <>
-      <div className="grid bg-neutral-50 md:gap-y-4 md:p-5">
+      <div className="relative flex flex-col bg-neutral-50 md:gap-y-4 md:p-5">
         <AdminAnalytics />
 
-        <TableHeaderTitle
-          title="Reimbursements"
-          isLoading={!isSearching && isFetching}
-          searchIsLoading={isFetching}
-          handleSearch={handleSearch}
-          downloadReportButtonIsVisible={data && data.results.length > 0}
-          hasDownloadReportButton
-          handleDownloadReportButton={openReportConfirmDialog}
-        />
-
-        <Table
-          type="admin"
-          loading={isFetching}
-          data={data?.results}
-          columns={columns}
-          handleMobileClick={(e: number) => {
-            setFocusedReimbursementId(e);
-            open();
-          }}
-          pagination={{
-            count: data?.count!,
-            next: data?.next!,
-            previous: data?.previous!,
-          }}
-        />
+        <div className="relative flex-1">
+          <Table
+            header={{
+              isLoading: !isSearching && isFetching,
+              title: "Reimbursements",
+              button: "download",
+              buttonClickHandler: openReportConfirmDialog,
+              buttonIsVisible: data && data.results.length > 0 ? true : false,
+              handleSearch: handleSearch,
+              searchIsLoading: isFetching,
+            }}
+            type="admin"
+            loading={isFetching}
+            data={data?.results}
+            columns={columns}
+            handleMobileClick={(e: number) => {
+              setFocusedReimbursementId(e);
+              open();
+            }}
+            pagination={{
+              count: data?.count!,
+              next: data?.next!,
+              previous: data?.previous!,
+            }}
+          />
+        </div>
       </div>
 
       <SideDrawer

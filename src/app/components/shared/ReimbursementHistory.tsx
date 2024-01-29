@@ -23,7 +23,6 @@ import { env } from "../../../../env.mjs";
 import { showToast } from "../core/Toast";
 import TableCell from "../core/table/TableCell";
 import TableCheckbox from "../core/table/TableCheckbox";
-import TableHeaderTitle from "../core/table/TableHeaderTitle";
 
 const ReimbursementsCardView = dynamic(() => import("../reimbursement-view"));
 const Dialog = dynamic(() => import("~/app/components/core/Dialog"));
@@ -279,17 +278,16 @@ const ReimbursementHistory: React.FC = () => {
   return (
     <>
       <div className="grid bg-neutral-50 md:gap-y-4 md:p-5">
-        <TableHeaderTitle
-          title="Reimbursements History"
-          isLoading={!isSearching && isFetching}
-          searchIsLoading={isFetching}
-          handleSearch={handleSearch}
-          downloadReportButtonIsVisible={data && data.results.length > 0}
-          hasDownloadReportButton
-          handleDownloadReportButton={openDownloadConfirmation}
-        />
-
         <Table
+          header={{
+            isLoading: !isSearching && isFetching,
+            title: "Reimbursements History",
+            button: "download",
+            buttonClickHandler: openDownloadConfirmation,
+            buttonIsVisible: data && data.results.length > 0 ? true : false,
+            handleSearch: handleSearch,
+            searchIsLoading: isFetching,
+          }}
           type="history"
           loading={isFetching}
           data={data?.results}

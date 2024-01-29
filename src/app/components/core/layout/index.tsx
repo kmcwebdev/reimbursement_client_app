@@ -46,19 +46,19 @@ const Layout: React.FC<PropsWithChildren> = ({ children }) => {
   }
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex h-screen">
       {pathname && !pathname.includes("email-action") && <Sidebar />}
 
       <div
         className={classNames(
-          `${karla.variable} ${barlow_Condensed.variable} w-full flex-1 overflow-y-auto bg-neutral-100 font-karla`,
+          `${karla.variable} ${barlow_Condensed.variable} relative h-full w-full flex-1 overflow-y-auto bg-neutral-100 font-karla`,
         )}
       >
         <Header />
         <div className="relative flex h-[calc(100vh_-_4rem)] w-full flex-col">
           <div
             className={classNames(
-              "relative h-full w-full overflow-hidden overflow-y-auto bg-neutral-100",
+              "relative h-full w-full overflow-y-auto bg-neutral-100",
             )}
           >
             {children}

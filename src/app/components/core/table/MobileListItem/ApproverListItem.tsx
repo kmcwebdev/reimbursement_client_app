@@ -69,48 +69,49 @@ const ApproverListItem: React.FC<ApproverListItemProps> = ({
   };
 
   return (
-    <div
-      className={classNames(
-        client ? "h-[140px]" : "h-[120px]",
-        selectedItems.includes(id) && "bg-orange-50",
-        "flex w-screen p-4",
-      )}
-    >
-      <div className="w-6">
-        <Checkbox
-          name="checkbox"
-          value={id}
-          onChange={handleCheckboxChange}
-          checked={selectedItems.includes(id)}
-        />
-      </div>
+    <div className={classNames(client ? "h-[140px]" : "h-[120px]", "p-1")}>
+      <div
+        className={classNames(
+          selectedItems.includes(id) && "bg-orange-100",
+          "flex h-full rounded-md p-2",
+        )}
+      >
+        <div className="w-6">
+          <Checkbox
+            name="checkbox"
+            value={id}
+            onChange={handleCheckboxChange}
+            checked={selectedItems.includes(id)}
+          />
+        </div>
 
-      <div className="flex flex-1 flex-col justify-between" onClick={onClick}>
-        <div className="flex flex-col justify-between">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <StatusDot status={status} />
-              <p className="text-md font-bold">{requestorName}</p>
+        <div className="flex flex-1 flex-col justify-between" onClick={onClick}>
+          <div className="flex flex-col justify-between">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <StatusDot status={status} />
+                <p className="text-md font-bold">{requestorName}</p>
+              </div>
+
+              <p className="text-sm text-neutral-800">
+                {parseTimezone(date).format("MMM DD,YYYY")}
+              </p>
             </div>
 
-            <p className="text-sm text-neutral-800">
-              {parseTimezone(date).format("MMM DD,YYYY")}
-            </p>
+            <div className="flex flex-col">
+              <p className="text-sm font-medium text-neutral-900">
+                {reference_no}
+              </p>
+              {client && <p className="text-sm text-neutral-800">{client}</p>}
+            </div>
           </div>
-
-          <div className="flex flex-col">
-            <p className="text-sm font-medium text-neutral-900">
-              {reference_no}
-            </p>
-            {client && <p className="text-sm text-neutral-800">{client}</p>}
+          <div className="flex divide-x">
+            <div className="w-[30%] text-neutral-800">{type}</div>
+            <div className="block w-[40%] px-2">
+              <ExpenseTypeCell value={particulars} />
+            </div>
+            <div className="w-[30%] text-right">{currencyFormat(+amount)}</div>
           </div>
-        </div>
-        <div className="flex divide-x">
-          <div className="w-[30%] text-neutral-800">{type}</div>
-          <div className="block w-[40%] px-2">
-            <ExpenseTypeCell value={particulars} />
-          </div>
-          <div className="w-[30%] text-right">{currencyFormat(+amount)}</div>
         </div>
       </div>
     </div>
