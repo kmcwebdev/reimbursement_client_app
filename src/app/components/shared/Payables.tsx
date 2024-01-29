@@ -147,10 +147,6 @@ const Payables: React.FC = () => {
 
   const dispatch = useAppDispatch();
 
-  const setSelectedItemsState = (value: number[]) => {
-    dispatch(setSelectedItems(value));
-  };
-
   const { isFetching, data } = useGetApprovalListQuery(
     {
       ...filters,
@@ -341,13 +337,6 @@ const Payables: React.FC = () => {
           loading={isFetching}
           data={data?.results}
           columns={columns}
-          tableState={{
-            selectedItems,
-            filters,
-          }}
-          tableStateActions={{
-            setSelectedItems: setSelectedItemsState,
-          }}
           pagination={{
             count: data?.count!,
             next: data?.next!,

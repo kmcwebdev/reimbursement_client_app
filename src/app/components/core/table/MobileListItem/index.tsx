@@ -2,13 +2,14 @@ import { type Row } from "@tanstack/react-table";
 import React from "react";
 import { useAppSelector } from "~/app/hook";
 import { type IReimbursementRequest } from "~/types/reimbursement.types";
+import { type TableType } from "..";
 import { type StatusType } from "../../StatusBadge";
 import ApproverListItem from "./ApproverListItem";
 import RequestorListItem from "./RequestorListItem";
 
 type MobileListItemProps = {
   onClick?: (e: number) => void;
-  type: "reimbursements" | "history" | "finance" | "approvals" | "admin";
+  type: TableType;
   row: Row<IReimbursementRequest>;
 };
 
@@ -17,7 +18,7 @@ const MobileListItem: React.FC<MobileListItemProps> = (props) => {
 
   return (
     <div>
-      {props.type === "reimbursements" && (
+      {props.type === "reimbursement" && (
         <RequestorListItem
           amount={props.row.original.total_amount}
           date={props.row.original.created_at}
@@ -31,7 +32,7 @@ const MobileListItem: React.FC<MobileListItemProps> = (props) => {
         />
       )}
 
-      {props.type !== "reimbursements" && (
+      {props.type !== "reimbursement" && (
         <div>
           <ApproverListItem
             id={props.row.original.id}

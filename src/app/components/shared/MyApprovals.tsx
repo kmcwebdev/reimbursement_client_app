@@ -320,20 +320,13 @@ const MyApprovals: React.FC = () => {
         />
 
         <Table
-          type="approvals"
+          type="approval"
           loading={isLoading}
           data={data?.results}
           columns={columns}
-          tableState={{
-            filters,
-            selectedItems,
-          }}
           handleMobileClick={(e: number) => {
             setFocusedReimbursementId(e);
             openReimbursementView();
-          }}
-          tableStateActions={{
-            setSelectedItems: setSelectedItemsState,
           }}
           pagination={{
             count: data?.count!,

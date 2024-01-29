@@ -98,10 +98,6 @@ const ReimbursementHistory: React.FC = () => {
     },
   });
 
-  const setSelectedItemsState = (value: number[]) => {
-    dispatch(setSelectedItems(value));
-  };
-
   const { isFetching, currentData: data } = useGetRequestsHistoryQuery(
     {
       ...filters,
@@ -298,13 +294,6 @@ const ReimbursementHistory: React.FC = () => {
           loading={isFetching}
           data={data?.results}
           columns={columns}
-          tableState={{
-            filters,
-            selectedItems,
-          }}
-          tableStateActions={{
-            setSelectedItems: setSelectedItemsState,
-          }}
           pagination={{
             count: data?.count!,
             next: data?.next!,

@@ -1,6 +1,4 @@
 /* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import React, { useEffect, useState } from "react";
 
 import {
@@ -8,6 +6,7 @@ import {
   getCoreRowModel,
   getFacetedUniqueValues,
   useReactTable,
+  type ColumnDef,
   type FilterMeta,
   type RowSelectionState,
   type Table,
@@ -17,12 +16,12 @@ import { FaSpinner } from "react-icons-all-files/fa/FaSpinner";
 import { MdClose } from "react-icons-all-files/md/MdClose";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { appApiSlice } from "~/app/rtkQuery";
-import { resetPageTableState } from "~/features/state/table-state.slice";
-import { type IResponsePagination } from "~/types/global-types";
 import {
-  type IReimbursementRequest,
-  type IReimbursementsFilterQuery,
-} from "~/types/reimbursement.types";
+  resetPageTableState,
+  setSelectedItems,
+} from "~/features/state/table-state.slice";
+import { type IResponsePagination } from "~/types/global-types";
+import { type IReimbursementRequest } from "~/types/reimbursement.types";
 import { classNames } from "~/utils/classNames";
 import { Button } from "../Button";
 import FilterView from "./FilterView";
@@ -31,55 +30,21 @@ import Pagination, { PaginationSkeletonLoading } from "./Pagination";
 import TableEmptyState from "./TableEmptyState";
 import TableSkeleton from "./TableSkeleton";
 
-export type ITableState = {
-  filters: IReimbursementsFilterQuery;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  selectedItems?: any;
-};
-
-export type ITableStateActions = {
-  setSelectedItems?: (value: number[]) => void;
-};
-
-type ReimbursementTable = {
-  type: "reimbursements";
-  data?: IReimbursementRequest[];
-};
-
-type HistoryTable = {
-  type: "history";
-  data?: IReimbursementRequest[];
-};
-
-type ApprovalTable = {
-  type: "approvals";
-  data?: IReimbursementRequest[];
-};
-
-type FinanceTable = {
-  type: "finance";
-  data?: IReimbursementRequest[];
-};
-
-type AdminTable = {
-  type: "admin";
-  data?: IReimbursementRequest[];
-};
+export type TableType =
+  | "reimbursement"
+  | "finance"
+  | "approval"
+  | "admin"
+  | "history";
 
 type TableProps = {
   loading?: boolean;
-  tableState?: ITableState;
-  tableStateActions?: ITableStateActions;
   handleMobileClick?: (e: number) => void;
   pagination: IResponsePagination;
-  columns: any;
-} & (
-  | ReimbursementTable
-  | ApprovalTable
-  | FinanceTable
-  | HistoryTable
-  | AdminTable
-);
+  columns: ColumnDef<IReimbursementRequest>[];
+  type: TableType;
+  data?: IReimbursementRequest[];
+};
 
 interface CustomFilterMeta extends FilterMeta {
   filterComponent: () => JSX.Element;
@@ -89,17 +54,12 @@ const Table: React.FC<TableProps> = (props) => {
   const { columns } = props;
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const dispatch = useAppDispatch();
-  const { filters } = useAppSelector((state) => state.pageTableState);
+  const { filters, selectedItems } = useAppSelector(
+    (state) => state.pageTableState,
+  );
 
   useEffect(() => {
-    if (
-      !props.loading &&
-      rowSelection &&
-      props.tableState &&
-      props.tableStateActions &&
-      props.tableState.selectedItems &&
-      props.tableStateActions.setSelectedItems
-    ) {
+    if (!props.loading && rowSelection && selectedItems) {
       const selectedItems: number[] = [];
 
       Object.keys(rowSelection).forEach((key) => {
@@ -107,33 +67,31 @@ const Table: React.FC<TableProps> = (props) => {
           selectedItems.push(props.data[key as unknown as number].id);
         }
       });
-      props.tableStateActions?.setSelectedItems(selectedItems);
+
+      dispatch(setSelectedItems(selectedItems));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rowSelection]);
 
   /** Resets the row selection state to its initial state/no selected record */
   useEffect(() => {
-    const selected = props.tableState?.selectedItems;
+    const selected = selectedItems;
     if (Array.isArray(selected) && selected.length === 0) {
       table.resetRowSelection();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.tableState?.selectedItems]);
+  }, [selectedItems]);
 
   const table = useReactTable<IReimbursementRequest>({
     data: props.data!,
     columns,
     state: {
-      ...props.tableState,
-      rowSelection: props.tableState?.selectedItems ? rowSelection : undefined,
+      rowSelection: selectedItems ? rowSelection : undefined,
     },
     onRowSelectionChange: setRowSelection,
     getFacetedUniqueValues: getFacetedUniqueValues(),
     getCoreRowModel: getCoreRowModel(),
-    enableRowSelection: props.tableStateActions?.setSelectedItems
-      ? true
-      : false,
+    enableRowSelection: true,
     manualPagination: true,
     defaultColumn: {
       minSize: 0,

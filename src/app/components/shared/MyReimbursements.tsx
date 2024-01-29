@@ -15,7 +15,6 @@ import {
   toggleCancelDialog,
   toggleFormDialog,
 } from "~/features/state/reimbursement-form-slice";
-import { setSelectedItems } from "~/features/state/table-state.slice";
 import { useDebounce } from "~/hooks/use-debounce";
 import { useDialogState } from "~/hooks/use-dialog-state";
 import {
@@ -59,9 +58,7 @@ const MyReimbursements: React.FC = () => {
     particularDetailsFormIsVisible,
     selectedAttachmentMethod,
   } = useAppSelector((state) => state.reimbursementForm);
-  const { selectedItems, filters } = useAppSelector(
-    (state) => state.pageTableState,
-  );
+  const { filters } = useAppSelector((state) => state.pageTableState);
 
   const [searchParams, setSearchParams] = useState<IReimbursementsFilterQuery>({
     search: undefined,
@@ -75,10 +72,6 @@ const MyReimbursements: React.FC = () => {
   const [isSearching, setIsSearching] = useState<boolean>(false);
 
   const dispatch = useAppDispatch();
-
-  const setSelectedItemsState = (value: number[]) => {
-    dispatch(setSelectedItems(value));
-  };
 
   const [focusedReimbursementId, setFocusedReimbursementId] =
     useState<number>();
@@ -249,20 +242,13 @@ const MyReimbursements: React.FC = () => {
         />
 
         <Table
-          type="reimbursements"
+          type="reimbursement"
           loading={isFetching}
           data={data?.results}
           columns={columns}
           handleMobileClick={(e: number) => {
             setFocusedReimbursementId(e);
             open();
-          }}
-          tableState={{
-            filters,
-            selectedItems,
-          }}
-          tableStateActions={{
-            setSelectedItems: setSelectedItemsState,
           }}
           pagination={{
             count: data?.count!,

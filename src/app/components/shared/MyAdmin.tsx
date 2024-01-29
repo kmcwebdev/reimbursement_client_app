@@ -49,10 +49,6 @@ const MyAdmin: React.FC = () => {
   );
   const dispatch = useAppDispatch();
 
-  const setSelectedItemsState = (value: number[]) => {
-    dispatch(setSelectedItems(value));
-  };
-
   const [focusedReimbursementId, setFocusedReimbursementId] =
     useState<number>();
 
@@ -292,13 +288,6 @@ const MyAdmin: React.FC = () => {
           handleMobileClick={(e: number) => {
             setFocusedReimbursementId(e);
             open();
-          }}
-          tableState={{
-            filters,
-            selectedItems,
-          }}
-          tableStateActions={{
-            setSelectedItems: setSelectedItemsState,
           }}
           pagination={{
             count: data?.count!,

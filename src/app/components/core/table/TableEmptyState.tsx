@@ -6,8 +6,8 @@ import EmptyState from "../EmptyState";
 interface TableEmptyStateProps {
   type:
     | "finance"
-    | "approvals"
-    | "reimbursements"
+    | "approval"
+    | "reimbursement"
     | "no-results"
     | "history"
     | "admin";
@@ -22,7 +22,7 @@ const TableEmptyState: React.FC<TableEmptyStateProps> = ({ type, colSpan }) => {
           <td colSpan={colSpan} className="px-4 pb-4 md:px-0">
             <div>
               <div className="grid h-[40vh] place-items-center rounded-md bg-neutral-100 py-10">
-                {type === "approvals" && (
+                {type === "approval" && (
                   <EmptyState
                     icon={MdBrowserNotSupported as IconType}
                     title="No Reimbursement Requests to Approve."
@@ -30,7 +30,7 @@ const TableEmptyState: React.FC<TableEmptyStateProps> = ({ type, colSpan }) => {
                   />
                 )}
 
-                {type === "reimbursements" && (
+                {type === "reimbursement" && (
                   <EmptyState
                     icon={MdBrowserNotSupported as IconType}
                     title="No Pending Reimbursement Requests"
