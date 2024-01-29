@@ -6,7 +6,7 @@ interface MobileListSkeletonProps {}
 const MobileListSkeleton: React.FC<MobileListSkeletonProps> = () => {
   return (
     <>
-      {Array.from({ length: 10 }).map((_a, i) => (
+      {Array.from({ length: 4 }).map((_a, i) => (
         <tr
           key={`mobileSkeleton-${i}`}
           className="table-row h-[120px] border-b md:hidden"
