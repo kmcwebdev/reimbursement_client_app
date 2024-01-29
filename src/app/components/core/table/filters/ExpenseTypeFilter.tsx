@@ -46,7 +46,7 @@ const ExpenseTypeFilter: React.FC<FilterProps> = () => {
 
   return (
     <Popover
-      panelClassName="-translate-x-1/2 md:translate-x-0"
+      panelClassName="-translate-x-1/4 md:translate-x-0"
       btn={<FaCaretDown className="text-neutral-900 hover:text-neutral-800" />}
       content={
         <div className="flex flex-col">
