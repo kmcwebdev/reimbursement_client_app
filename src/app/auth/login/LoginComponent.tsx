@@ -20,12 +20,6 @@ const LoginComponent: React.FC = () => {
     mode: "onChange",
   });
 
-  const handleOnChange = () => {
-    if (loginError) {
-      setLoginIsError(false);
-    }
-  };
-
   const onSubmit = async (e: Credentials) => {
     setLoginIsError(false);
     setIsLoading(true);
@@ -65,14 +59,12 @@ const LoginComponent: React.FC = () => {
             label="Username or Email"
             name="username"
             placeholder="Username"
-            onChange={handleOnChange}
           />
           <Input
             label="Password"
             type="password"
             name="password"
             placeholder="Password"
-            onChange={handleOnChange}
           />
 
           <Button type="submit" className="w-full" loading={loading}>

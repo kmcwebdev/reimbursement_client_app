@@ -20,55 +20,61 @@ const EmailAction: React.FC<EmailActionProps> = ({ searchParams }) => {
   //   token: string;
   //   type: "approve" | "reject";
   // };
-  const [approveRequestIsLoading, setApproveRequestIsLoading] = useState(false)
-  const [rejectRequestIsLoading, setRejectRequestIsLoading] = useState(false)
-  const [isApproved, setIsApproved] = useState(false)
-  const [isApprovalError, setIsApprovalError] = useState(false)
-  const requestId = Array.isArray(searchParams.request_id) ? searchParams.request_id[0] : searchParams.request_id;
-  const action_id = Array.isArray(searchParams.action_id) ? searchParams.action_id[0] : searchParams.action_id;
+  const [approveRequestIsLoading, setApproveRequestIsLoading] = useState(false);
+  const [rejectRequestIsLoading, setRejectRequestIsLoading] = useState(false);
+  const [isApproved, setIsApproved] = useState(false);
+  const [isApprovalError, setIsApprovalError] = useState(false);
+  const requestId = Array.isArray(searchParams.request_id)
+    ? searchParams.request_id[0]
+    : searchParams.request_id;
+  const action_id = Array.isArray(searchParams.action_id)
+    ? searchParams.action_id[0]
+    : searchParams.action_id;
   const token = Array.isArray(params.token) ? params.token[0] : params.token;
 
-  useEffect(() => { 
-    if ( !isApproved ) {
-      setApproveRequestIsLoading(true)
-      setRejectRequestIsLoading(true)
+  useEffect(() => {
+    if (!isApproved) {
+      setApproveRequestIsLoading(true);
+      setRejectRequestIsLoading(true);
       const fetchData = async () => {
         try {
-          const response = await fetch(process.env.NEXT_PUBLIC_BASEAPI_URL + `reimbursements/request/${requestId}/${token}?via_email_link=true&action_id=${action_id}`, {
-            method: 'PATCH',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${String(searchParams.access_token)}`,
+          const response = await fetch(
+            process.env.NEXT_PUBLIC_BASEAPI_URL +
+              `/reimbursements/request/${requestId}/${token}?via_email_link=true&action_id=${action_id}`,
+            {
+              method: "PATCH",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${String(searchParams.access_token)}`,
+              },
             },
-          });
-    
+          );
+
           if (!response.ok) {
             throw new Error(`Error: ${response.status}`);
           }
-    
+
           const data = response.json();
-          console.log('Data fetched successfully:', data);
-          setIsApproved(true)
+          console.log("Data fetched successfully:", data);
+          setIsApproved(true);
           // Handle the fetched data
         } catch (error) {
-          setIsApprovalError(true)
-          console.error('Fetching data failed:', error);
+          setIsApprovalError(true);
+          console.error("Fetching data failed:", error);
         }
       };
-      fetchData().catch(error => {
-        console.error('Error in fetchData:', error);
+      fetchData().catch((error) => {
+        console.error("Error in fetchData:", error);
       });
-    
-      setApproveRequestIsLoading(false)
-      setRejectRequestIsLoading(false)
+
+      setApproveRequestIsLoading(false);
+      setRejectRequestIsLoading(false);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isApproved]);
 
   return (
-    <div
-      className="grid h-full place-items-center"
-    >
+    <div className="grid h-full place-items-center">
       <div className="flex w-1/4 flex-col gap-4 rounded-md border bg-white p-4 shadow-md">
         <div className="relative h-6 w-[101px]">
           <Image
@@ -80,12 +86,9 @@ const EmailAction: React.FC<EmailActionProps> = ({ searchParams }) => {
         </div>
 
         <CollapseHeightAnimation
-          isVisible={
-            (!approveRequestIsLoading) ||
-            (!rejectRequestIsLoading)
-          }
+          isVisible={!approveRequestIsLoading || !rejectRequestIsLoading}
         >
-          {!isApprovalError  ? (
+          {!isApprovalError ? (
             <div className="flex flex-col gap-2">
               <div className="flex items-center gap-2">
                 {params.token === "reject" && (
@@ -103,8 +106,10 @@ const EmailAction: React.FC<EmailActionProps> = ({ searchParams }) => {
                 )}
               </div>
               <p className="text-neutral-600">
-                {typeof params.type === 'string' ? params.type.toUpperCase() : ''} has been{" "}
-                {params.token === "approve" ? "approved" : "rejected"}
+                {typeof params.type === "string"
+                  ? params.type.toUpperCase()
+                  : ""}{" "}
+                has been {params.token === "approve" ? "approved" : "rejected"}
               </p>
             </div>
           ) : (
