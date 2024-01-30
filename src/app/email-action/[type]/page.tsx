@@ -10,7 +10,7 @@ const EmailActionPage = () => {
 
   return (
     <div className="grid-place-items-center grid h-full">
-      {(params && params.type !== "approve" && params.type !== "reject") ||
+      {(params && params.token !== "approve" && params.token !== "reject") ||
         (!params?.token && (
           <EmptyState
             icon={MdGavel as IconType}
