@@ -3,9 +3,11 @@
 import { type CellContext } from "@tanstack/react-table";
 import dayjs from "dayjs";
 import React from "react";
+import { useAppSelector } from "~/app/hook";
 import { type IUser } from "~/features/state/user-state.slice";
 import { type ReimbursementRequestType } from "~/types/reimbursement.request-type";
 import {
+  type IApproverMatrix,
   type IParticularDetails,
   type IReimbursementRequest,
   type IStatus,
@@ -18,6 +20,8 @@ import ExpenseTypeCell from "./ExpenseTypeCell";
 const TableCell: React.FC<CellContext<IReimbursementRequest, unknown>> = (
   props,
 ) => {
+  const { user } = useAppSelector((state) => state.session);
+
   const nonPlainTextCells = [
     "Status",
     "Expense",
@@ -38,20 +42,35 @@ const TableCell: React.FC<CellContext<IReimbursementRequest, unknown>> = (
         props.getValue()}
 
       {/* STATUS */}
-      {props.column.columnDef.header === "Status" && (
-        <StatusBadge
-          status={
-            (props.getValue() as IStatus).name.toLowerCase() as StatusType
-          }
-        />
-      )}
+      {props.column.columnDef.header === "Status" &&
+        props.column.columnDef.id !== "approver_matrix" && (
+          <StatusBadge
+            status={
+              (props.getValue() as IStatus).name.toLowerCase() as StatusType
+            }
+          />
+        )}
+
+      {props.column.columnDef.header === "Status" &&
+        props.column.columnDef.id === "approver_matrix" && (
+          <>
+            {(props.getValue() as IApproverMatrix[]).find(
+              (a) => a.approver.email === user?.email,
+            )?.is_approved && <StatusBadge status="approved" />}
+
+            {(props.getValue() as IApproverMatrix[]).find(
+              (a) => a.approver.email === user?.email,
+            )?.is_rejected && <StatusBadge status="rejected" />}
+          </>
+        )}
 
       {/* CLIENT NAME */}
       {props.column.columnDef.header === "Client" &&
         (props.getValue() as IUser)?.profile.organization}
 
       {/* REQUESTOR ID */}
-      {props.column.columnDef.header === "E-ID" && (props.getValue() as IUser).id}
+      {props.column.columnDef.header === "E-ID" &&
+        (props.getValue() as IUser).id}
 
       {/* REQUESTOR NAME*/}
       {props.column.columnDef.header === "Name" && (

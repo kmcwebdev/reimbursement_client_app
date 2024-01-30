@@ -140,6 +140,12 @@ const Payables: React.FC = () => {
     const url = `${env.NEXT_PUBLIC_BASEAPI_URL}/reimbursements/request/finance/download-reports${reference_nos.length > 0 ? `?multi_reference_no=${reference_nos.join(",")}` : ""}`;
 
     await exportReport(url, filename);
+    dispatch(
+      appApiSlice.util.invalidateTags([
+        { type: "ReimbursementApprovalList" },
+        { type: "ApprovalAnalytics" },
+      ]),
+    );
   };
 
   const dispatch = useAppDispatch();

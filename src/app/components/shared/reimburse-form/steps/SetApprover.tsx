@@ -12,6 +12,7 @@ import { useCreateReimbursementMutation } from "~/features/api/reimbursement-for
 import {
   clearReimbursementForm,
   setActiveStep,
+  setSelectedAttachmentMethod,
   toggleFormDialog,
 } from "~/features/state/reimbursement-form-slice";
 import {
@@ -23,9 +24,13 @@ import { type MutationError } from "~/types/global-types";
 
 interface SetApproverProps {
   formReturn: UseFormReturn<ParticularDetails>;
+  handleResetRequestType: () => void;
 }
 
-const SetApprover: React.FC<SetApproverProps> = ({ formReturn }) => {
+const SetApprover: React.FC<SetApproverProps> = ({
+  formReturn,
+  handleResetRequestType,
+}) => {
   const { activeStep, reimbursementFormValues } = useAppSelector(
     (state) => state.reimbursementForm,
   );
@@ -59,6 +64,8 @@ const SetApprover: React.FC<SetApproverProps> = ({ formReturn }) => {
       .then(() => {
         dispatch(toggleFormDialog());
         dispatch(clearReimbursementForm());
+        dispatch(setSelectedAttachmentMethod(null));
+        handleResetRequestType();
         formReturn.reset();
         showToast({
           type: "success",

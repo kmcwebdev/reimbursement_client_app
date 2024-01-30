@@ -38,59 +38,61 @@ const LoginComponent: React.FC = () => {
     }
   };
   return (
-    <div className="flex w-80 flex-col gap-4 rounded-md bg-white p-4 shadow-md">
-      <div className="flex flex-col items-center">
-        <div className="relative h-12 w-12">
-          <Image src="/images/logo.png" alt="kmclogo" fill />
+    <div className="grid h-full w-full place-items-center">
+      <div className="flex w-80 flex-col gap-4 rounded-md bg-white p-4 shadow-md">
+        <div className="flex flex-col items-center">
+          <div className="relative h-12 w-12">
+            <Image src="/images/logo.png" alt="kmclogo" fill />
+          </div>
+          <h4 className="text-orange-600">KMC REIMBURSEMENT</h4>
+
+          <p className="font-medium">LOGIN</p>
         </div>
-        <h4 className="text-orange-600">KMC REIMBURSEMENT</h4>
 
-        <p className="font-medium">LOGIN</p>
-      </div>
+        <CollapseHeightAnimation isVisible={loginError}>
+          <p className="font-medium text-red-600">
+            Login Failed! Please check your credentials!
+          </p>
+        </CollapseHeightAnimation>
 
-      <CollapseHeightAnimation isVisible={loginError}>
-        <p className="font-medium text-red-600">
-          Login Failed! Please check your credentials!
-        </p>
-      </CollapseHeightAnimation>
-
-      <Form
-        name="login-form"
-        useFormReturn={useCredentialsForm}
-        onSubmit={(e: Credentials) => void onSubmit(e)}
-        className="flex w-full flex-col gap-4"
-      >
-        <Input
-          label="Username or Email"
-          name="username"
-          placeholder="Username"
-          onChange={handleOnChange}
-        />
-        <Input
-          label="Password"
-          type="password"
-          name="password"
-          placeholder="Password"
-          onChange={handleOnChange}
-        />
-
-        <Button type="submit" className="w-full" loading={loading}>
-          Login
-        </Button>
-      </Form>
-
-      <div className="flex flex-col items-center gap-4">
-        <p className="text-neutral-600">Or sign in with</p>
-
-        <Button
-          onClick={() => void handleAzureAdLogin()}
-          className="w-full"
-          buttonType="outlined"
-          variant="informative"
+        <Form
+          name="login-form"
+          useFormReturn={useCredentialsForm}
+          onSubmit={(e: Credentials) => void onSubmit(e)}
+          className="flex w-full flex-col gap-4"
         >
-          <SiMicrosoftoffice className="h-5 w-5" />
-          MS Office 365
-        </Button>
+          <Input
+            label="Username or Email"
+            name="username"
+            placeholder="Username"
+            onChange={handleOnChange}
+          />
+          <Input
+            label="Password"
+            type="password"
+            name="password"
+            placeholder="Password"
+            onChange={handleOnChange}
+          />
+
+          <Button type="submit" className="w-full" loading={loading}>
+            Login
+          </Button>
+        </Form>
+
+        <div className="flex flex-col items-center gap-4">
+          <p className="text-neutral-600">Or sign in with</p>
+
+          <Button
+            onClick={() => void handleAzureAdLogin()}
+            className="w-full"
+            buttonType="outlined"
+            variant="informative"
+          >
+            <SiMicrosoftoffice className="h-5 w-5" />
+            MS Office 365
+          </Button>
+        </div>
       </div>
     </div>
   );

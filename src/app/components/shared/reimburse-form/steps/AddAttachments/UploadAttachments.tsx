@@ -26,10 +26,12 @@ import { type MutationError } from "~/types/global-types";
 
 interface UploadAttachmentsProps {
   formReturn: UseFormReturn<ParticularDetails>;
+  handleResetRequestType: () => void;
 }
 
 const UploadAttachments: React.FC<UploadAttachmentsProps> = ({
   formReturn,
+  handleResetRequestType,
 }) => {
   const dispatch = useAppDispatch();
 
@@ -140,6 +142,8 @@ const UploadAttachments: React.FC<UploadAttachmentsProps> = ({
         .then(() => {
           dispatch(toggleFormDialog());
           dispatch(clearReimbursementForm());
+          dispatch(setSelectedAttachmentMethod(null));
+          handleResetRequestType();
           formReturn.reset();
           showToast({
             type: "success",
@@ -148,16 +152,18 @@ const UploadAttachments: React.FC<UploadAttachmentsProps> = ({
           });
         })
         .catch((error: MutationError) => {
-          if (Array.isArray(error.data.errors)) {
-            showToast({
-              type: "error",
-              description: error.data.errors[0].message,
-            });
-          } else {
-            showToast({
-              type: "error",
-              description: error.data.message,
-            });
+          if (error) {
+            if (Array.isArray(error.data.errors)) {
+              showToast({
+                type: "error",
+                description: error.data.errors[0].message,
+              });
+            } else {
+              showToast({
+                type: "error",
+                description: error.data.message,
+              });
+            }
           }
         });
     } else {

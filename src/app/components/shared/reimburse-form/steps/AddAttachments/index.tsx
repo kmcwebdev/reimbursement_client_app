@@ -8,9 +8,13 @@ import UploadAttachments from "./UploadAttachments";
 
 interface AttachmentProps {
   formReturn: UseFormReturn<ParticularDetails>;
+  handleResetRequestType: () => void;
 }
 
-const AddAttachments: React.FC<AttachmentProps> = ({ formReturn }) => {
+const AddAttachments: React.FC<AttachmentProps> = ({
+  formReturn,
+  handleResetRequestType,
+}) => {
   const { selectedAttachmentMethod } = useAppSelector(
     (state) => state.reimbursementForm,
   );
@@ -19,10 +23,16 @@ const AddAttachments: React.FC<AttachmentProps> = ({ formReturn }) => {
       {!selectedAttachmentMethod && <MethodSelection />}
 
       {selectedAttachmentMethod === "capture" && (
-        <Capture formReturn={formReturn} />
+        <Capture
+          formReturn={formReturn}
+          handleResetRequestType={handleResetRequestType}
+        />
       )}
       {selectedAttachmentMethod === "upload" && (
-        <UploadAttachments formReturn={formReturn} />
+        <UploadAttachments
+          formReturn={formReturn}
+          handleResetRequestType={handleResetRequestType}
+        />
       )}
     </div>
   );

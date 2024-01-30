@@ -178,6 +178,12 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
       const url = `${env.NEXT_PUBLIC_BASEAPI_URL}/reimbursements/request/finance/download-reports?multi_reference_no=${data.reference_no}`;
 
       await exportReport(url, filename);
+      dispatch(
+        appApiSlice.util.invalidateTags([
+          { type: "ReimbursementApprovalList" },
+          { type: "ApprovalAnalytics" },
+        ]),
+      );
 
       closeDrawer();
     }

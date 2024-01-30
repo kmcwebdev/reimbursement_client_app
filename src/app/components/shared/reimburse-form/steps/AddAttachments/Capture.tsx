@@ -33,9 +33,13 @@ import { classNames } from "~/utils/classNames";
 
 interface CaptureProps {
   formReturn: UseFormReturn<ParticularDetails>;
+  handleResetRequestType: () => void;
 }
 
-const Capture: React.FC<CaptureProps> = ({ formReturn }) => {
+const Capture: React.FC<CaptureProps> = ({
+  formReturn,
+  handleResetRequestType,
+}) => {
   const dispatch = useAppDispatch();
   const camera = useRef<CameraType>(null);
   const [cameraIsLoading, setCameraIsLoading] = useState<boolean>(true);
@@ -113,8 +117,6 @@ const Capture: React.FC<CaptureProps> = ({ formReturn }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reimbursementFormValues]);
 
-  console.log(numberOfCameras);
-
   //Automatically upload if attachment name is not in uploadedAttachmentNames
   useMemo(() => {
     if (attachedFiles.length > 0) {
@@ -150,6 +152,9 @@ const Capture: React.FC<CaptureProps> = ({ formReturn }) => {
         .then(() => {
           dispatch(toggleFormDialog());
           dispatch(clearReimbursementForm());
+          dispatch(setSelectedAttachmentMethod(null));
+
+          handleResetRequestType();
           formReturn.reset();
           showToast({
             type: "success",

@@ -13,8 +13,9 @@ import SelectReimbursementType from "./steps/SelectReimbursementType";
 import AddApprovers from "./steps/SetApprover";
 
 interface ReimburseFormProps {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  formReturn: UseFormReturn<any>;
+  formReturn: UseFormReturn<{
+    request_type: number;
+  }>;
   handleOpenCancelDialog: () => void;
 }
 
@@ -50,6 +51,10 @@ const ReimburseForm: React.FC<ReimburseFormProps> = ({
     ]),
   });
 
+  const handleResetRequestType = () => {
+    formReturn.reset();
+  };
+
   return (
     <div>
       {activeStep === 0 && (
@@ -66,11 +71,17 @@ const ReimburseForm: React.FC<ReimburseFormProps> = ({
       )}
 
       {activeStep === 2 && (
-        <AddAttachments formReturn={useParticularDetailsFormReturn} />
+        <AddAttachments
+          formReturn={useParticularDetailsFormReturn}
+          handleResetRequestType={handleResetRequestType}
+        />
       )}
 
       {activeStep === 3 && (
-        <AddApprovers formReturn={useParticularDetailsFormReturn} />
+        <AddApprovers
+          formReturn={useParticularDetailsFormReturn}
+          handleResetRequestType={() => formReturn.reset()}
+        />
       )}
     </div>
   );
