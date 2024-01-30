@@ -28,8 +28,6 @@ export const useReportDownload = ({
             new Blob([blob], { type: "csv" }),
           );
 
-          console.log(response);
-
           const link = document.createElement("a");
           link.href = url;
           link.setAttribute("download", `${filename}.csv`);

@@ -25,7 +25,7 @@ const DesktopHeader: React.FC<DesktopHeaderProps> = ({
       {isLoading && (
         <tr>
           <th colSpan={42} className="h-12 border-b text-left">
-            <div className="gap- flex items-center px-4 text-neutral-600">
+            <div className="flex items-center gap-4 px-4 text-neutral-600">
               <FaSpinner className="h-4 w-4 animate-spin" />
               <p>Fetching data. Please wait...</p>
             </div>

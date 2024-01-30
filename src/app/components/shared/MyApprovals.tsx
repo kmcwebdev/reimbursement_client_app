@@ -256,12 +256,8 @@ const MyApprovals: React.FC = () => {
         }
       });
 
-      if (matrixIds) {
-        const payload = {
-          id: matrixIds[0],
-        };
-
-        void approveReimbursement(payload)
+      matrixIds.forEach((a) => {
+        void approveReimbursement({ id: a })
           .unwrap()
           .then(() => {
             dispatch(
@@ -269,6 +265,7 @@ const MyApprovals: React.FC = () => {
                 { type: "ReimbursementRequest" },
               ]),
             );
+
             showToast({
               type: "success",
               description: "Reimbursement Requests successfully approved!",
@@ -283,7 +280,7 @@ const MyApprovals: React.FC = () => {
               description: "Approval failed!",
             });
           });
-      }
+      });
     }
   };
 

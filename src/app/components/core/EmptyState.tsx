@@ -14,7 +14,6 @@ const EmptyState: React.FC<PropsWithChildren<EmptyStateProps>> = ({
   icon: Icon = MdBrowserNotSupported as IconType,
   children,
 }) => {
-  console.log("Children", children);
   return (
     <div className="grid place-items-center gap-4">
       <div className="flex flex-col items-center gap-5">
