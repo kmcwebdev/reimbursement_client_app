@@ -10,7 +10,7 @@ type StatusBadgeProps = {
 const statusVariant = cva("h-2 w-2 rounded-full", {
   variants: {
     status: {
-      processing: "bg-[#F5F3FF] ",
+      processing: "bg-[#7C3AED]",
       pending: "bg-yellow-600",
       approved: "bg-green-600",
       rejected: "bg-red-600",

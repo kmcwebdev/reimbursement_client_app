@@ -38,20 +38,6 @@ const ApproverListItem: React.FC<ApproverListItemProps> = ({
   const dispatch = useAppDispatch();
   const { selectedItems } = useAppSelector((state) => state.pageTableState);
 
-  // const handleLongPress = (e: number) => {
-  //   if (selectedItems.includes(e)) {
-  //     const updated = selectedItems.filter((item) => item !== e);
-  //     dispatch(setSelectedItems([...updated]));
-  //   } else {
-  //     dispatch(setSelectedItems([...selectedItems, e]));
-  //   }
-  // };
-
-  // const pressHandler = useLongAndShortPress(
-  //   () => handleLongPress(id),
-  //   () => onClick(),
-  // );
-
   const handleCheckboxChange = (e: ChangeEvent<HTMLInputElement>) => {
     const checked = e.target.checked;
     const value = +e.target.value;
@@ -106,11 +92,11 @@ const ApproverListItem: React.FC<ApproverListItemProps> = ({
             </div>
           </div>
           <div className="flex divide-x">
-            <div className="w-[30%] text-neutral-800">{type}</div>
-            <div className="block w-[40%] px-2">
+            <div className="w-[28%] text-neutral-800">{type}</div>
+            <div className="block w-[44%] px-2">
               <ExpenseTypeCell value={particulars} />
             </div>
-            <div className="w-[30%] text-right">{currencyFormat(+amount)}</div>
+            <div className="w-[28%] text-right">{currencyFormat(+amount)}</div>
           </div>
         </div>
       </div>

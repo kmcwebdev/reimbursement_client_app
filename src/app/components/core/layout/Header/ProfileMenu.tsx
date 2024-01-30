@@ -149,7 +149,7 @@ const ProfileMenu: React.FC = () => {
                                 ?.filter((a) => a.label !== assignedRole)
                                 .map((group) => ({
                                   value: group.value,
-                                  label: group.label,
+                                  label: group.label.split("_")[1],
                                 })) || []
                             }
                           />

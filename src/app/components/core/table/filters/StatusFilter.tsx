@@ -27,26 +27,26 @@ const StatusFilter: React.FC<FilterProps> = () => {
   useMemo(() => {
     const options: OptionData[] = [];
     if (!allStatusesIsLoading && allStatuses) {
-      if (
-        assignedRole === "REIMBURSEMENT_FINANCE" &&
-        pathname.includes("history")
-      ) {
-        allStatuses.results
-          .filter((a) => a.id === 2 || a.id === 6)
-          .forEach((opt) => {
-            options.push({
-              value: opt.id,
-              label: opt.name,
-            });
-          });
-      } else {
-        allStatuses.results.forEach((opt) => {
-          options.push({
-            value: opt.id,
-            label: opt.name,
-          });
+      // if (
+      //   assignedRole === "REIMBURSEMENT_FINANCE" &&
+      //   pathname.includes("history")
+      // ) {
+      //   allStatuses.results
+      //     .filter((a) => a.id === 3 || a.id === 6 || a.id === 5)
+      //     .forEach((opt) => {
+      //       options.push({
+      //         value: opt.id,
+      //         label: opt.name,
+      //       });
+      //     });
+      // } else {
+      allStatuses.results.forEach((opt) => {
+        options.push({
+          value: opt.id,
+          label: opt.name,
         });
-      }
+      });
+      // }
 
       setStatusOptions(options);
     }

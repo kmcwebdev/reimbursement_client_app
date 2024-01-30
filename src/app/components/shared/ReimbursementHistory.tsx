@@ -135,8 +135,14 @@ const ReimbursementHistory: React.FC = () => {
         ),
       },
       {
-        id: "approver_matrix",
-        accessorKey: "approver_matrix",
+        id:
+          assignedRole === "REIMBURSEMENT_FINANCE"
+            ? "request_status"
+            : "approver_matrix",
+        accessorKey:
+          assignedRole === "REIMBURSEMENT_FINANCE"
+            ? "request_status"
+            : "approver_matrix",
         header: "Status",
         filterFn: (row, id, value: string) => {
           return value.includes(row.getValue(id));
