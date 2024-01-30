@@ -1,5 +1,4 @@
 import { type Column } from "@tanstack/react-table";
-import { usePathname } from "next/navigation";
 import { useMemo, useState, type ChangeEvent } from "react";
 import { FaCaretDown } from "react-icons-all-files/fa/FaCaretDown";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
@@ -15,10 +14,10 @@ export interface FilterProps {
 }
 
 const StatusFilter: React.FC<FilterProps> = () => {
-  const { assignedRole } = useAppSelector((state) => state.session);
+  // const { assignedRole } = useAppSelector((state) => state.session);
   const { filters } = useAppSelector((state) => state.pageTableState);
   const dispatch = useAppDispatch();
-  const pathname = usePathname();
+  // const pathname = usePathname();
 
   const [statusOptions, setStatusOptions] = useState<OptionData[]>();
   const { data: allStatuses, isLoading: allStatusesIsLoading } =
@@ -50,7 +49,7 @@ const StatusFilter: React.FC<FilterProps> = () => {
 
       setStatusOptions(options);
     }
-  }, [allStatusesIsLoading, allStatuses, assignedRole, pathname]);
+  }, [allStatusesIsLoading, allStatuses]);
 
   const onChange = (e: ChangeEvent<HTMLInputElement>, value: number) => {
     let request_status__id: string | undefined = "";
