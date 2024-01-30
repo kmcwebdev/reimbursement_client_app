@@ -8,9 +8,13 @@ import EmptyState from "~/app/components/core/EmptyState";
 const EmailActionPage = () => {
   const params = useParams();
 
+  console.log("Par", params);
+
   return (
     <div className="grid-place-items-center grid h-full">
-      {(params && params.token !== "approve" && params.token !== "reject") ||
+      {(params &&
+        params.action_type !== "approve" &&
+        params.action_type !== "reject") ||
         (!params?.token && (
           <EmptyState
             icon={MdGavel as IconType}

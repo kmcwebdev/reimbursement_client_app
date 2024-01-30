@@ -44,20 +44,31 @@ export const actionsApiSlice = appApiSlice.injectEndpoints({
         { type: "ApprovalAnalytics" },
       ],
     }),
-    approveReimbursementViaEmail: builder.mutation<{ message: string }, string>(
-      {
-        query: (hash) => ({
-          method: "POST",
-          url: "/api/finance/reimbursement/requests/email-approval/approve",
-          body: { hash },
-        }),
-      },
-    ),
-    rejectReimbursementViaEmail: builder.mutation<{ message: string }, string>({
-      query: (hash) => ({
+    approveReimbursementViaEmail: builder.mutation<
+      unknown,
+      { id: string; action_id: string; access_token: string }
+    >({
+      query: (data) => ({
         method: "PATCH",
-        url: "/api/finance/reimbursement/requests/email-approval/reject",
-        body: { hash },
+        headers: {
+          Authorization: `Bearer ${data.access_token}`,
+        },
+        url: `/reimbursements/request/${data.id}/approve?via_email_link=true&action_id=${data.action_id}`,
+      }),
+    }),
+    rejectReimbursementViaEmail: builder.mutation<
+      unknown,
+      { id: string; action_id: string; remarks: string; access_token: string }
+    >({
+      query: (data) => ({
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${data.access_token}`,
+        },
+        url: `/reimbursements/request/${data.id}/reject?via_email_link=true&action_id=${data.action_id}`,
+        body: {
+          remarks: data.remarks,
+        },
       }),
     }),
     cancelReimbursement: builder.mutation<
