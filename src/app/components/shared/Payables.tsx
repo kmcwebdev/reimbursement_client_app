@@ -178,6 +178,7 @@ const Payables: React.FC = () => {
             if (table.getRowModel().rows.length > 0) {
               return (
                 <TableCheckbox
+                  id="table-header-checkbox"
                   checked={table.getIsAllRowsSelected()}
                   indeterminate={table.getIsSomeRowsSelected()}
                   onChange={table.getToggleAllRowsSelectedHandler()}
@@ -189,6 +190,7 @@ const Payables: React.FC = () => {
 
           cell: ({ row }) => (
             <TableCheckbox
+              id={`checkbox-${row.original.id}`}
               checked={row.getIsSelected()}
               tableHasChecked={selectedItems.length > 0}
               disabled={!row.getCanSelect()}

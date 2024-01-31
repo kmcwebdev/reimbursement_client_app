@@ -25,6 +25,7 @@ const TableCheckbox: React.FC<IndeterminateCheckboxProps> = ({
 
   return (
     <input
+      name="table-checkbox"
       type="checkbox"
       ref={ref}
       className={classNames(

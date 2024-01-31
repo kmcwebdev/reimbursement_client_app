@@ -64,7 +64,7 @@ const ApproverListItem: React.FC<ApproverListItemProps> = ({
       >
         <div className="w-6">
           <Checkbox
-            name="checkbox"
+            name={`mobile-checkbox-${id}`}
             value={id}
             onChange={handleCheckboxChange}
             checked={selectedItems.includes(id)}

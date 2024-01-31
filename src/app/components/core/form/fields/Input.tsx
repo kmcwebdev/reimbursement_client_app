@@ -112,6 +112,7 @@ const Input = ({
           />
         ) : (
           <input
+            name={name}
             type={inputType}
             className={classNames(
               className,
