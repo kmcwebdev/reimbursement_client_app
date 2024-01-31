@@ -3,6 +3,7 @@
 "use client";
 import { type ColumnDef } from "@tanstack/react-table";
 import dynamic from "next/dynamic";
+import { redirect } from "next/navigation";
 import React, { useEffect, useState, type ChangeEvent } from "react";
 import { Button } from "~/app/components/core/Button";
 import Table from "~/app/components/core/table";
@@ -281,6 +282,10 @@ const ReimbursementHistory: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isFetching]);
 
+  if (assignedRole === "REIMBURSEMENT_USER") {
+    redirect("/forbidden");
+  }
+
   return (
     <>
       <div className="grid bg-neutral-50 md:gap-y-4 md:p-5">
@@ -370,6 +375,7 @@ const ReimbursementHistory: React.FC = () => {
 
           <div className="flex items-center gap-4">
             <Button
+              aria-label="No"
               variant="neutral"
               buttonType="outlined"
               className="w-1/2"
@@ -378,6 +384,7 @@ const ReimbursementHistory: React.FC = () => {
               No
             </Button>
             <Button
+              aria-label="Yes,Download"
               loading={downloadReportLoading}
               variant="success"
               className="w-1/2"

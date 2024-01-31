@@ -26,6 +26,7 @@ const Accordion: React.FC<AccordionProps> = ({ items, label }) => {
           items.map((item) => (
             <div key={item.id} className="rounded-md border border-opacity-20">
               <button
+                aria-label={item.label}
                 className="flex w-full items-center justify-between gap-2 p-3 text-left text-sm"
                 onClick={() => {
                   if (activeItem === item.id) {

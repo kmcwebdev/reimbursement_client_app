@@ -101,6 +101,7 @@ const CardSelection = React.forwardRef<HTMLDivElement, CardSelectionProps>(
                 const OptionIcon = option.icon;
                 return (
                   <button
+                    aria-label={option.label}
                     key={option.value}
                     type="button"
                     className={classNames(
@@ -143,6 +144,7 @@ const CardSelection = React.forwardRef<HTMLDivElement, CardSelectionProps>(
                 const OptionIcon = option.icon;
                 return (
                   <button
+                    aria-label={option.label}
                     key={option.value}
                     type="button"
                     className={classNames(

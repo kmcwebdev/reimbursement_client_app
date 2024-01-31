@@ -85,6 +85,7 @@ const ToastComponent: React.FC<Props> = ({
 
       {showCloseButton && (
         <button
+          aria-label="Close Toast"
           onClick={() => toast.dismiss()}
           className="absolute right-2 top-2"
         >

@@ -85,17 +85,16 @@ const ProfileMenu: React.FC = () => {
 
   return (
     <Popover
+      ariaLabel={`${user?.first_name?.charAt(0)}
+              ${user?.last_name?.charAt(0)}`}
       buttonRef={buttonRef}
       btn={
-        <div
-          role="button"
-          className="grid h-8 w-8 place-items-center rounded-full bg-gray-200 font-bold text-neutral-800"
-        >
+        <div className="grid h-8 w-8 place-items-center rounded-full bg-gray-200 font-bold text-neutral-800">
           <div className="relative grid h-5 w-5 place-items-center">
-            <>
+            <p>
               {user?.first_name?.charAt(0)}
               {user?.last_name?.charAt(0)}
-            </>
+            </p>
           </div>
         </div>
       }
@@ -127,6 +126,7 @@ const ProfileMenu: React.FC = () => {
                   <div className="mt-1 flex flex-col gap-2">
                     <div className="h-px w-full bg-neutral-200" />
                     <Popover
+                      ariaLabel="Assigned Role"
                       panelClassName="-translate-y-2"
                       buttonRef={buttonChildRef}
                       btn={
@@ -160,6 +160,7 @@ const ProfileMenu: React.FC = () => {
 
           <div className="flex flex-col gap-4 p-4">
             <Button
+              aria-label="Sign out"
               variant="neutral"
               buttonType="text"
               onClick={openSignoutDialog}
@@ -183,6 +184,7 @@ const ProfileMenu: React.FC = () => {
 
               <div className="flex gap-4">
                 <Button
+                  aria-label="No"
                   buttonType="outlined"
                   variant="neutral"
                   className="w-1/2"
@@ -191,6 +193,7 @@ const ProfileMenu: React.FC = () => {
                   No
                 </Button>
                 <Button
+                  aria-label="Yes"
                   variant="danger"
                   className="w-1/2"
                   loading={signoutButtonIsLoading}

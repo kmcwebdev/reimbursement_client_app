@@ -48,11 +48,12 @@ const Particular: React.FC<ParticularProps> = ({ index, label }) => {
         </div>
 
         <div className="flex items-center gap-2">
-          <Button buttonType="text" variant="danger">
+          <Button aria-label="Delete" buttonType="text" variant="danger">
             <MdDelete className="h-4 w-4" onClick={open} />
           </Button>
 
           <Button
+            aria-label="Arrow"
             buttonType="text"
             variant="primary"
             onClick={() => {
@@ -78,6 +79,7 @@ const Particular: React.FC<ParticularProps> = ({ index, label }) => {
 
           <div className="flex items-center gap-4">
             <Button
+              aria-label="No"
               variant="neutral"
               buttonType="outlined"
               className="w-1/2"
@@ -86,6 +88,7 @@ const Particular: React.FC<ParticularProps> = ({ index, label }) => {
               No
             </Button>
             <Button
+              aria-label="Yes,Remove"
               variant="danger"
               className="w-1/2"
               onClick={() => handleRemove(index)}

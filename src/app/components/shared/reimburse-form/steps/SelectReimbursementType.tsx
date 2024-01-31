@@ -78,6 +78,7 @@ const SelectReimbursementType: React.FC<SelectReimbursementTypeProps> = ({
       <div className="flex justify-end pt-4">
         <div className="flex w-1/2 items-center justify-center gap-2">
           <Button
+            aria-label="Cancel"
             type="button"
             buttonType="outlined"
             variant="neutral"
@@ -88,6 +89,7 @@ const SelectReimbursementType: React.FC<SelectReimbursementTypeProps> = ({
           </Button>
 
           <Button
+            aria-label="Continue"
             type="submit"
             className="w-full"
             disabled={!selectedReimbursementType}

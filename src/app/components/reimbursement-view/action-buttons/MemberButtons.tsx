@@ -15,6 +15,7 @@ const MemberButtons: React.FC<MemberButtonsProps> = ({
   return (
     <>
       <Button
+        aria-label="Back"
         onClick={onClose}
         className="w-full"
         buttonType="outlined"
@@ -24,7 +25,12 @@ const MemberButtons: React.FC<MemberButtonsProps> = ({
       </Button>
 
       {isCancellable && (
-        <Button className="w-full" variant="danger" onClick={onCancel}>
+        <Button
+          aria-label="Cancel"
+          className="w-full"
+          variant="danger"
+          onClick={onCancel}
+        >
           Cancel
         </Button>
       )}

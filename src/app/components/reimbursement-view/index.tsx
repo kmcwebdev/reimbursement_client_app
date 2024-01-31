@@ -320,6 +320,7 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
           <div className="absolute bottom-0 grid h-[72px] w-full grid-cols-2 items-center justify-center gap-2 border-t border-neutral-300 bg-white px-5">
             {isHistoryView && (
               <Button
+                aria-label="Back"
                 onClick={closeDrawer}
                 className="w-full"
                 buttonType="outlined"
@@ -392,6 +393,7 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
 
             <div className="flex items-center gap-4">
               <Button
+                aria-label="Cancel"
                 type="button"
                 variant="neutral"
                 buttonType="outlined"
@@ -401,6 +403,7 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
                 Cancel
               </Button>
               <Button
+                aria-label="Reject"
                 className="w-1/2"
                 variant="danger"
                 type="submit"
@@ -434,6 +437,7 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
 
             <div className="flex items-center gap-4">
               <Button
+                aria-label="Cancel"
                 type="button"
                 variant="neutral"
                 buttonType="outlined"
@@ -443,6 +447,7 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
                 Cancel
               </Button>
               <Button
+                aria-label="Hold"
                 className="w-1/2"
                 variant="warning"
                 type="submit"
@@ -487,6 +492,7 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
 
               <div className="flex items-center gap-4">
                 <Button
+                  aria-label="Cancel"
                   variant="neutral"
                   buttonType="outlined"
                   className="w-1/2"
@@ -498,6 +504,7 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
                 {assignedRole !== "REIMBURSEMENT_FINANCE" &&
                   assignedRole !== "REIMBURSEMENT_USER" && (
                     <Button
+                      aria-label="Approve"
                       className="w-1/2"
                       onClick={handleApprove}
                       disabled={isApproving}
@@ -509,6 +516,7 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
 
                 {assignedRole === "REIMBURSEMENT_FINANCE" && (
                   <Button
+                    aria-label="Yes,Download"
                     className="w-1/2"
                     variant="success"
                     onClick={() => void downloadReport()}
@@ -536,6 +544,7 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
 
           <div className="flex items-center gap-4">
             <Button
+              aria-label="No"
               variant="neutral"
               buttonType="outlined"
               className="w-1/2"
@@ -545,6 +554,7 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
               No
             </Button>
             <Button
+              aria-label="Yes"
               variant="danger"
               className="w-1/2"
               onClick={handleConfirmCancellation}

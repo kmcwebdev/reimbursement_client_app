@@ -13,7 +13,10 @@ const PageNotFound: React.FC = () => {
           title="Page Not Found."
           description="The page tou want to access doesn't exist."
         >
-          <Button onClick={() => router.push("/dashboard")}>
+          <Button
+            aria-label="Go back to Dashboard"
+            onClick={() => router.push("/dashboard")}
+          >
             Go back to Dashboard
           </Button>
         </EmptyState>

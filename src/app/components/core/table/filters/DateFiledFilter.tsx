@@ -105,6 +105,7 @@ const DateFiledFilter: React.FC<FilterProps> = () => {
 
   return (
     <Popover
+      ariaLabel="Calendar"
       panelClassName="-translate-x-3/4 md:translate-x-0"
       btn={
         <MdCalendarToday className="text-neutral-900 hover:text-neutral-800" />
@@ -146,11 +147,17 @@ const DateFiledFilter: React.FC<FilterProps> = () => {
 
               <CollapseHeightAnimation isVisible={!!dateFrom}>
                 <div className="flex items-center justify-between">
-                  <Button buttonType="text" onClick={clearDates}>
+                  <Button
+                    aria-label="Clear"
+                    buttonType="text"
+                    onClick={clearDates}
+                  >
                     Clear
                   </Button>
 
-                  <Button onClick={validate}>Apply</Button>
+                  <Button aria-label="Apply" onClick={validate}>
+                    Apply
+                  </Button>
                 </div>
               </CollapseHeightAnimation>
             </div>

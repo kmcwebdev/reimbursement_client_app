@@ -1,4 +1,5 @@
 "use client";
+import { LazyMotion, domAnimation } from "framer-motion";
 import { usePathname } from "next/navigation";
 import { type ReactNode } from "react";
 import PageAnimation from "./components/animation/PageAnimation";
@@ -14,7 +15,11 @@ const Template = ({ children }: { children: ReactNode }) => {
     return <>{children}</>;
   }
 
-  return <PageAnimation className="h-full">{children}</PageAnimation>;
+  return (
+    <LazyMotion features={domAnimation}>
+      <PageAnimation className="h-full">{children}</PageAnimation>
+    </LazyMotion>
+  );
 };
 
 export default Template;

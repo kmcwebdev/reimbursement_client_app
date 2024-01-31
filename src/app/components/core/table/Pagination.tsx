@@ -61,6 +61,7 @@ const Pagination: React.FC<PaginationProps> = ({ data, currentPageLength }) => {
           <div className="flex items-center gap-2">
             {data.previous && (
               <Button
+                aria-label="Previous"
                 buttonType="outlined"
                 variant="neutral"
                 onClick={handlePrevious}
@@ -74,6 +75,7 @@ const Pagination: React.FC<PaginationProps> = ({ data, currentPageLength }) => {
 
             {data.next && (
               <Button
+                aria-label="Next"
                 buttonType="outlined"
                 variant="neutral"
                 onClick={handleNext}

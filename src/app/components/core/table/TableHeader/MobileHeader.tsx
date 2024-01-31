@@ -43,13 +43,18 @@ const MobileTableHeader: React.FC<MobileHeaderProps> = ({
               ) : (
                 <CollapseWidthAnimation isVisible={buttonIsVisible}>
                   {button === "create" && (
-                    <Button buttonType="text" onClick={buttonClickHandler}>
+                    <Button
+                      aria-label="Add New"
+                      buttonType="text"
+                      onClick={buttonClickHandler}
+                    >
                       <HiPlusCircle className="h-6 w-6" />
                     </Button>
                   )}
 
                   {button === "download" && (
                     <Button
+                      aria-label="Download"
                       variant="success"
                       buttonType="text"
                       onClick={buttonClickHandler}
@@ -59,7 +64,11 @@ const MobileTableHeader: React.FC<MobileHeaderProps> = ({
                   )}
 
                   {button === "approve" && (
-                    <Button buttonType="text" onClick={buttonClickHandler}>
+                    <Button
+                      aria-label="Approve"
+                      buttonType="text"
+                      onClick={buttonClickHandler}
+                    >
                       <MdCheck className="h-6 w-6" />
                     </Button>
                   )}

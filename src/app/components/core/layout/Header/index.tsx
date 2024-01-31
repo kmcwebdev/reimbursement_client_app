@@ -16,7 +16,11 @@ const Header: React.FC = () => {
 
         {session.status === "authenticated" && <ProfileMenu />}
         {session.status === "unauthenticated" && (
-          <Button buttonType="text" onClick={() => router.push("/auth/login")}>
+          <Button
+            aria-label="Login"
+            buttonType="text"
+            onClick={() => router.push("/auth/login")}
+          >
             Login
           </Button>
         )}

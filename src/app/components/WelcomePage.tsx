@@ -34,7 +34,9 @@ const WelcomePage: NextPage = () => {
       <div className="flex flex-col items-center gap-4">
         <h1>Welcome!</h1>
         <p>File your reimbursements in one place!</p>
-        <Button onClick={handleClick}>File a Reimbursement</Button>
+        <Button aria-label="File a Reimbursement" onClick={handleClick}>
+          File a Reimbursement
+        </Button>
       </div>
     </section>
   );

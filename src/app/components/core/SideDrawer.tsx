@@ -54,7 +54,11 @@ const SideDrawer: React.FC<DrawerProps> = ({
                         <span>{title}</span>
                       </Dialog.Title>
 
-                      <button type="button" onClick={closeDrawer}>
+                      <button
+                        aria-label="Close Side Drawer"
+                        type="button"
+                        onClick={closeDrawer}
+                      >
                         <MdClose className="h-4 w-4 text-neutral-800 transition-all hover:text-neutral-900" />
                       </button>
                     </div>

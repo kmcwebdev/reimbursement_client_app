@@ -299,6 +299,7 @@ const MyReimbursements: React.FC = () => {
 
           <div className="flex items-center gap-4">
             <Button
+              aria-label="No"
               variant="neutral"
               buttonType="outlined"
               className="w-1/2"
@@ -307,6 +308,7 @@ const MyReimbursements: React.FC = () => {
               No
             </Button>
             <Button
+              aria-label="Yes,Cancel"
               variant="danger"
               className="w-1/2"
               onClick={handleConfirmCancellation}

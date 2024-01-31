@@ -13,6 +13,7 @@ const ApproverButtons: React.FC<ApproverButtonsProps> = ({
   return (
     <>
       <Button
+        aria-label="Reject"
         className="w-full"
         buttonType="outlined"
         variant="danger"
@@ -21,7 +22,12 @@ const ApproverButtons: React.FC<ApproverButtonsProps> = ({
         Reject
       </Button>
 
-      <Button className="w-full" variant="primary" onClick={onApprove}>
+      <Button
+        aria-label="Approve"
+        className="w-full"
+        variant="primary"
+        onClick={onApprove}
+      >
         Approve
       </Button>
     </>

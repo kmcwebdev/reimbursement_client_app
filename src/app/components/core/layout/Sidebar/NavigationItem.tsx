@@ -22,6 +22,7 @@ const NavigationItem: React.FC<NavigationItemProps> = ({
 }) => {
   return (
     <Link
+      aria-label={href}
       href={href}
       className={classNames(
         !active && "hover:bg-white hover:bg-opacity-5",

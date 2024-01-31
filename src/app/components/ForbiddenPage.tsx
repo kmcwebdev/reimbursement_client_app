@@ -13,7 +13,10 @@ const ForbiddenPage: React.FC = () => {
           title="Forbidden."
           description="You do not have permission to access this page."
         >
-          <Button onClick={() => router.push("/dashboard")}>
+          <Button
+            aria-label="Go back to Dashboard"
+            onClick={() => router.push("/dashboard")}
+          >
             Go back to Dashboard
           </Button>
         </EmptyState>

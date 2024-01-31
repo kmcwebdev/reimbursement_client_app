@@ -238,7 +238,12 @@ const FilterView: React.FC<FilterViewProps> = ({ colSpan, type }) => {
           </div>
 
           <div className="absolute right-5">
-            <Button buttonType="text" variant="danger" onClick={handleClear}>
+            <Button
+              aria-label="Clear All"
+              buttonType="text"
+              variant="danger"
+              onClick={handleClear}
+            >
               <div className="flex gap-1">
                 <IoMdClose className="h-5 w-5" /> Clear All
               </div>

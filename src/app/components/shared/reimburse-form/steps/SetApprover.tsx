@@ -107,6 +107,7 @@ const SetApprover: React.FC<SetApproverProps> = ({
       <div className="grid grid-cols-2 items-center gap-2 pt-4">
         <div>
           <Button
+            aria-label="Return"
             type="button"
             buttonType="outlined"
             variant="neutral"
@@ -119,7 +120,12 @@ const SetApprover: React.FC<SetApproverProps> = ({
           </Button>
         </div>
 
-        <Button type="submit" className="w-full" loading={isSubmitting}>
+        <Button
+          aria-label="Submit"
+          type="submit"
+          className="w-full"
+          loading={isSubmitting}
+        >
           Submit
         </Button>
       </div>

@@ -169,6 +169,7 @@ const EmailActionPage: React.FC = () => {
                   />
 
                   <Button
+                    aria-label="Reject"
                     variant="danger"
                     type="submit"
                     loading={isRejectLoading}

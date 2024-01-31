@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 import React, { type PropsWithChildren } from "react";
 
 interface PageAnimationProps extends PropsWithChildren {
@@ -11,7 +11,7 @@ const PageAnimation: React.FC<PageAnimationProps> = ({
 }) => {
   return (
     <AnimatePresence initial={true}>
-      <motion.div
+      <m.div
         viewport={{ once: true }}
         initial={{ y: 20 }}
         animate={{ y: 0, opacity: 100 }}
@@ -20,7 +20,7 @@ const PageAnimation: React.FC<PageAnimationProps> = ({
         className={className}
       >
         {children}
-      </motion.div>
+      </m.div>
     </AnimatePresence>
   );
 };

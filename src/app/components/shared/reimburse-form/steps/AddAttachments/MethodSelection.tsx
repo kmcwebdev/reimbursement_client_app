@@ -55,6 +55,7 @@ const MethodSelection: React.FC<MethodSelectionProps> = () => {
 
       <div className="grid grid-cols-2 pt-4">
         <Button
+          aria-label="Return"
           buttonType="outlined"
           variant="neutral"
           className="w-full"

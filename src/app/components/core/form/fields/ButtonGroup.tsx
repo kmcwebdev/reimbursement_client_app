@@ -80,6 +80,7 @@ const ButtonGroup = React.forwardRef<HTMLDivElement, ButtonGroupProps>(
               {options.map((option) => {
                 return (
                   <button
+                    aria-label={option.label}
                     key={option.value}
                     type="button"
                     className={classNames(
@@ -103,6 +104,7 @@ const ButtonGroup = React.forwardRef<HTMLDivElement, ButtonGroupProps>(
               {options.map((option) => {
                 return (
                   <button
+                    aria-label={option.label}
                     key={option.value}
                     type="button"
                     className={classNames(

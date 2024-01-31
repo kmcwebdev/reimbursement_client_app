@@ -362,6 +362,7 @@ const MyAdmin: React.FC = () => {
 
           <div className="flex items-center gap-4">
             <Button
+              aria-label="No"
               variant="neutral"
               buttonType="outlined"
               className="w-1/2"
@@ -370,6 +371,7 @@ const MyAdmin: React.FC = () => {
               No
             </Button>
             <Button
+              aria-label="Yes,Download"
               loading={downloadReportLoading}
               disabled={downloadReportLoading}
               variant="success"

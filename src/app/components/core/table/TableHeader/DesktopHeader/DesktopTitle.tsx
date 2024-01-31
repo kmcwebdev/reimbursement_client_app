@@ -33,17 +33,25 @@ const DesktopTitle: React.FC<TableHeaderProps> = ({
           <CollapseWidthAnimation isVisible={buttonIsVisible}>
             <div className="whitespace-nowrap">
               {button === "create" && (
-                <Button onClick={buttonClickHandler}>Reimburse</Button>
+                <Button aria-label="Add New" onClick={buttonClickHandler}>
+                  Reimburse
+                </Button>
               )}
 
               {button === "download" && (
-                <Button variant="success" onClick={buttonClickHandler}>
+                <Button
+                  aria-label="Download Report"
+                  variant="success"
+                  onClick={buttonClickHandler}
+                >
                   Download Report
                 </Button>
               )}
 
               {button === "approve" && (
-                <Button onClick={buttonClickHandler}>Approve</Button>
+                <Button aria-label="Approve" onClick={buttonClickHandler}>
+                  Approve
+                </Button>
               )}
             </div>
           </CollapseWidthAnimation>

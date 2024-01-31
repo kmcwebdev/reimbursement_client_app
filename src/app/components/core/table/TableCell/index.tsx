@@ -106,6 +106,7 @@ const TableCell: React.FC<CellContext<IReimbursementRequest, unknown>> = (
         props.column.columnDef.setFocusedReimbursementId &&
         props.column.columnDef.openDrawer && (
           <Button
+            aria-label="View"
             buttonType="text"
             onClick={() => {
               props.column.columnDef.setFocusedReimbursementId(

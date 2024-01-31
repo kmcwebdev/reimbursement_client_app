@@ -26,7 +26,7 @@ const Attachments: React.FC<AttachmentsProps> = ({ attachments }) => {
             </span>
           </div>
 
-          <Button buttonType="text">
+          <Button aria-label="Arrow" buttonType="text">
             <FaArrowRight className="h-3 w-3 " />
           </Button>
         </div>

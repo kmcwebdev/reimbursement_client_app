@@ -67,7 +67,12 @@ const LoginComponent: React.FC = () => {
             placeholder="Password"
           />
 
-          <Button type="submit" className="w-full" loading={loading}>
+          <Button
+            aria-label="Login"
+            type="submit"
+            className="w-full"
+            loading={loading}
+          >
             Login
           </Button>
         </Form>
@@ -76,6 +81,7 @@ const LoginComponent: React.FC = () => {
           <p className="text-neutral-600">Or sign in with</p>
 
           <Button
+            aria-label="Ms Office 365"
             onClick={() => void handleAzureAdLogin()}
             className="w-full"
             buttonType="outlined"

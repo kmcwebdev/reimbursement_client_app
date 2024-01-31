@@ -68,6 +68,7 @@ const Particulars: React.FC<ParticularsProps> = ({
 
       {reimbursementFormValues.particulars.length < 10 && (
         <Button
+          aria-label="Add Particular"
           type="button"
           buttonType="text"
           onClick={() => {
@@ -90,6 +91,7 @@ const Particulars: React.FC<ParticularsProps> = ({
       <div className="flex justify-end pt-4">
         <div className="flex w-1/2 items-center justify-center gap-2">
           <Button
+            aria-label="Cancel"
             type="button"
             buttonType="outlined"
             variant="neutral"
@@ -100,6 +102,7 @@ const Particulars: React.FC<ParticularsProps> = ({
           </Button>
 
           <Button
+            aria-label="Continue"
             type="button"
             className="w-full"
             disabled={

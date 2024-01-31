@@ -79,7 +79,6 @@ const ParticularDetailsForm: React.FC<ParticularDetailsProps> = ({
         "amount",
         reimbursementFormValues.particulars[+activeParticularIndex].amount,
       );
-
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reimbursementFormValues, activeParticularIndex]);
@@ -159,6 +158,7 @@ const ParticularDetailsForm: React.FC<ParticularDetailsProps> = ({
       <div className="grid grid-cols-2 items-center gap-2 pt-4">
         <div>
           <Button
+            aria-label="Return"
             type="button"
             buttonType="outlined"
             variant="neutral"
@@ -173,7 +173,7 @@ const ParticularDetailsForm: React.FC<ParticularDetailsProps> = ({
           </Button>
         </div>
 
-        <Button type="submit" className="w-full">
+        <Button aria-label="Submit" type="submit" className="w-full">
           {activeParticularIndex &&
           reimbursementFormValues.particulars[+activeParticularIndex]
             ? "Update"

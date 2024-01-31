@@ -393,6 +393,7 @@ const MyApprovals: React.FC = () => {
 
               <div className="flex items-center gap-4">
                 <Button
+                  aria-label="Cancel"
                   variant="neutral"
                   buttonType="outlined"
                   className="w-1/2"
@@ -401,6 +402,7 @@ const MyApprovals: React.FC = () => {
                   Cancel
                 </Button>
                 <Button
+                  aria-label="Approve"
                   className="w-1/2"
                   onClick={handleConfirmBulkApprove}
                   disabled={isSubmitting}

@@ -24,6 +24,7 @@ const FinanceButtons: React.FC<FinanceButtonsProps> = ({
     <div className="absolute bottom-0 grid h-[72px] w-full grid-cols-2 items-center justify-center gap-2 border-t border-neutral-300 px-5">
       {!isOnHold && (
         <Popover
+          ariaLabel="Change Status"
           panelClassName="translate-y-[-170px] w-full"
           btn={
             <div className="border-s-1 flex h-full justify-between divide-x-2 rounded-md border p-2">
@@ -71,6 +72,7 @@ const FinanceButtons: React.FC<FinanceButtonsProps> = ({
 
       {isOnHold && (
         <Button
+          aria-label="Reject"
           className="w-full"
           buttonType="outlined"
           variant="danger"
@@ -81,6 +83,7 @@ const FinanceButtons: React.FC<FinanceButtonsProps> = ({
       )}
 
       <Button
+        aria-label="Download"
         className="w-full"
         buttonType="filled"
         variant="success"

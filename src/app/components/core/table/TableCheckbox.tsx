@@ -24,17 +24,23 @@ const TableCheckbox: React.FC<IndeterminateCheckboxProps> = ({
   }, [ref, indeterminate]);
 
   return (
-    <input
-      name="table-checkbox"
-      type="checkbox"
-      ref={ref}
-      className={classNames(
-        showOnHover && "opacity-0 group-hover:opacity-100",
-        tableHasChecked && "opacity-100",
-        "h-4 w-4 cursor-pointer rounded border-neutral-600 text-orange-600 transition-all ease-in-out checked:opacity-100 focus:ring-0 focus:ring-transparent ",
-      )}
-      {...rest}
-    />
+    <>
+      <label htmlFor="table-checkbox" className="sr-only">
+        Table Checkbox
+      </label>
+      <input
+        aria-label="Table Checkbox"
+        name="table-checkbox"
+        type="checkbox"
+        ref={ref}
+        className={classNames(
+          showOnHover && "opacity-0 group-hover:opacity-100",
+          tableHasChecked && "opacity-100",
+          "h-4 w-4 cursor-pointer rounded border-neutral-600 text-orange-600 transition-all ease-in-out checked:opacity-100 focus:ring-0 focus:ring-transparent ",
+        )}
+        {...rest}
+      />{" "}
+    </>
   );
 };
 

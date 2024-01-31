@@ -327,6 +327,7 @@ const Capture: React.FC<CaptureProps> = ({
       <div className="grid grid-cols-2 items-center gap-2 pt-4">
         <div>
           <Button
+            aria-label="Return"
             type="button"
             buttonType="outlined"
             variant="neutral"
@@ -350,6 +351,7 @@ const Capture: React.FC<CaptureProps> = ({
         </div>
 
         <Button
+          aria-label="Continue"
           type="button"
           className="w-full"
           onClick={handleContinue}
@@ -374,6 +376,7 @@ const Capture: React.FC<CaptureProps> = ({
 
           <div className="flex items-center gap-4">
             <Button
+              aria-label="No"
               variant="neutral"
               buttonType="outlined"
               className="w-1/2"
@@ -382,6 +385,7 @@ const Capture: React.FC<CaptureProps> = ({
               No
             </Button>
             <Button
+              aria-label="Yes"
               variant="danger"
               className="w-1/2"
               onClick={() => {

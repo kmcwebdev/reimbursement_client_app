@@ -9,6 +9,7 @@ interface PopoverProps {
   content: JSX.Element;
   panelClassName?: string;
   buttonRef?: Ref<HTMLButtonElement>;
+  ariaLabel: string;
 }
 
 const Popover: React.FC<PopoverProps> = ({
@@ -16,11 +17,14 @@ const Popover: React.FC<PopoverProps> = ({
   content,
   panelClassName,
   buttonRef,
+  ariaLabel,
   ...rest
 }) => {
   return (
     <HUIPopover as="div" className="relative" {...rest}>
       <HUIPopover.Button
+        aria-label={ariaLabel}
+        name={ariaLabel}
         ref={buttonRef}
         className="w-full cursor-pointer focus:outline-none"
       >
