@@ -56,11 +56,15 @@ const TableCell: React.FC<CellContext<IReimbursementRequest, unknown>> = (
           <>
             {(props.getValue() as IApproverMatrix[]).find(
               (a) => a.approver.email === user?.email,
-            )?.is_approved && <StatusBadge status="approved" />}
-
-            {(props.getValue() as IApproverMatrix[]).find(
-              (a) => a.approver.email === user?.email,
-            )?.is_rejected && <StatusBadge status="rejected" />}
+            )?.is_approved && !props.row.original.fully_approved ? (
+              <StatusBadge status="approved" />
+            ) : (
+              <StatusBadge
+                status={
+                  props.row.original.request_status.name.toLowerCase() as StatusType
+                }
+              />
+            )}
           </>
         )}
 
