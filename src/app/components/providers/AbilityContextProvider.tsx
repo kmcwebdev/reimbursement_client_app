@@ -82,7 +82,15 @@ export const AbilityContextProvider: React.FC<PropsWithChildren> = ({
         pathname.includes("/auth") &&
         nextAuthSession.status === "authenticated"
       ) {
-        router.push("/");
+        if (typeof window !== "undefined") {
+          const alreadyLoggedIn = localStorage.getItem("alreadyLoggedIn");
+
+          if (alreadyLoggedIn === "true") {
+            router.push("/dashboard");
+          } else {
+            router.push("/");
+          }
+        }
       }
     }
   }, [nextAuthSession.status, pathname, router]);
