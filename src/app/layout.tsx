@@ -1,4 +1,4 @@
-import { type NextPage } from "next";
+import { type Metadata, type NextPage } from "next";
 import dynamic from "next/dynamic";
 import { type PropsWithChildren } from "react";
 import "~/styles/globals.css";
@@ -8,6 +8,10 @@ import NextAuthSessionProvider from "./components/providers/NextAuthSessionProvi
 import ReduxStoreProvider from "./components/providers/ReduxStoreProvider";
 
 const Toaster = dynamic(() => import("~/context/Toaster"));
+
+export const metadata: Metadata = {
+  description: "KMC Reimbursements",
+};
 
 export const RootLayout: NextPage<PropsWithChildren> = ({ children }) => {
   return (
