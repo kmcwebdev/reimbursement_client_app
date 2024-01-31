@@ -1,4 +1,5 @@
 import { type Column } from "@tanstack/react-table";
+import { usePathname } from "next/navigation";
 import { useMemo, useState, type ChangeEvent } from "react";
 import { FaCaretDown } from "react-icons-all-files/fa/FaCaretDown";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
@@ -14,10 +15,10 @@ export interface FilterProps {
 }
 
 const StatusFilter: React.FC<FilterProps> = () => {
-  // const { assignedRole } = useAppSelector((state) => state.session);
+  const { assignedRole } = useAppSelector((state) => state.session);
   const { filters } = useAppSelector((state) => state.pageTableState);
   const dispatch = useAppDispatch();
-  // const pathname = usePathname();
+  const pathname = usePathname();
 
   const [statusOptions, setStatusOptions] = useState<OptionData[]>();
   const { data: allStatuses, isLoading: allStatusesIsLoading } =
@@ -26,30 +27,30 @@ const StatusFilter: React.FC<FilterProps> = () => {
   useMemo(() => {
     const options: OptionData[] = [];
     if (!allStatusesIsLoading && allStatuses) {
-      // if (
-      //   assignedRole === "REIMBURSEMENT_FINANCE" &&
-      //   pathname.includes("history")
-      // ) {
-      //   allStatuses.results
-      //     .filter((a) => a.id === 3 || a.id === 6 || a.id === 5)
-      //     .forEach((opt) => {
-      //       options.push({
-      //         value: opt.id,
-      //         label: opt.name,
-      //       });
-      //     });
-      // } else {
-      allStatuses.results.forEach((opt) => {
-        options.push({
-          value: opt.id,
-          label: opt.name,
+      if (
+        assignedRole === "REIMBURSEMENT_FINANCE" &&
+        pathname.includes("history")
+      ) {
+        allStatuses.results
+          .filter((a) => a.id === 3 || a.id === 6 || a.id === 5)
+          .forEach((opt) => {
+            options.push({
+              value: opt.id,
+              label: opt.name,
+            });
+          });
+      } else {
+        allStatuses.results.forEach((opt) => {
+          options.push({
+            value: opt.id,
+            label: opt.name,
+          });
         });
-      });
-      // }
+      }
 
       setStatusOptions(options);
     }
-  }, [allStatusesIsLoading, allStatuses]);
+  }, [allStatusesIsLoading, allStatuses, assignedRole, pathname]);
 
   const onChange = (e: ChangeEvent<HTMLInputElement>, value: number) => {
     let request_status__id: string | undefined = "";
