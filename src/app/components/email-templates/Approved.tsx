@@ -3,6 +3,7 @@ import { parseTimezone } from "~/utils/parse-timezone";
 import EmailMain from "./email-components/EmailMain";
 
 interface ApprovedTemplateProps {
+  referenceNo: string;
   fullName: string;
   employeeId: string;
   expenseType: string;
@@ -12,6 +13,7 @@ interface ApprovedTemplateProps {
 }
 
 export const Approved: React.FC<Readonly<ApprovedTemplateProps>> = ({
+  referenceNo,
   fullName,
   employeeId,
   expenseType,
@@ -21,7 +23,7 @@ export const Approved: React.FC<Readonly<ApprovedTemplateProps>> = ({
 }) => (
   <EmailMain receiver={fullName} subject="Approved">
     <Text>
-      We are pleased to inform you that your reimbursement request has been
+      We are pleased to inform you that your reimbursement {referenceNo} request has been
       approved. Below are the details of your approved request:
     </Text>
 

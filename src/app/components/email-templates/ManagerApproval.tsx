@@ -3,6 +3,7 @@ import { parseTimezone } from "~/utils/parse-timezone";
 import EmailMain from "./email-components/EmailMain";
 
 interface ManagerApprovalTemplateProps {
+  referenceNo: string;
   approverFullName: string;
   fullName: string;
   employeeId: string;
@@ -17,6 +18,7 @@ interface ManagerApprovalTemplateProps {
 export const ManagerApproval: React.FC<
   Readonly<ManagerApprovalTemplateProps>
 > = ({
+  referenceNo,
   approverFullName,
   fullName,
   employeeId,
@@ -35,7 +37,7 @@ export const ManagerApproval: React.FC<
     rejectionLink={rejectionLink}
   >
     <Text>
-      I hope this email finds you well. {fullName} has submitted a reimbursement
+      I hope this email finds you well. {fullName} has submitted a reimbursement {referenceNo}
       claim that requires your approval.
     </Text>
     <Text>Details of the reimbursement claim are as follows:</Text>
