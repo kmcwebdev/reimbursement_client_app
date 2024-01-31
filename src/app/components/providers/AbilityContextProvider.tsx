@@ -69,7 +69,7 @@ export const AbilityContextProvider: React.FC<PropsWithChildren> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [me, meIsLoading]);
 
-  if (isLoading) {
+  if (isLoading && nextAuthSession.status === "loading") {
     return <AuthLoader />;
   }
 
