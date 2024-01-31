@@ -15,6 +15,11 @@ type RefreshTokenResponse = {
   access: string;
 };
 
+const unprotectedEndpoints = [
+  "approveReimbursementViaEmail",
+  "rejectReimbursementViaEmail",
+];
+
 const appApiBaseQuery = fetchBaseQuery({
   baseUrl: env.NEXT_PUBLIC_BASEAPI_URL,
   prepareHeaders: (headers, { getState }) => {
@@ -67,7 +72,11 @@ const appApiBaseQueryWithReauth: BaseQueryFn<
 > = async (args, api, extraOptions) => {
   let result = await appApiBaseQuery(args, api, extraOptions);
 
-  if (result?.error?.status === 401) {
+  const isProtectedEndpoint = unprotectedEndpoints.some(
+    (prefix) => api.endpoint === prefix,
+  );
+
+  if (result?.error?.status === 401 && !isProtectedEndpoint) {
     const rootState = api.getState() as RootState;
     const refreshToken = rootState.session.refreshToken!;
     const accessToken = rootState.session.accessToken!;

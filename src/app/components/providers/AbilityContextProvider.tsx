@@ -1,6 +1,5 @@
 "use client";
 import { useSession } from "next-auth/react";
-import { usePathname, useRouter } from "next/navigation";
 import React, {
   useEffect,
   useMemo,
@@ -25,21 +24,6 @@ export const AbilityContextProvider: React.FC<PropsWithChildren> = ({
 }) => {
   const nextAuthSession = useSession();
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const pathname = usePathname();
-  const router = useRouter();
-
-  const [loggedIn, setLoggedIn] = useState<boolean>(false);
-
-  useMemo(() => {
-    if (typeof window !== "undefined") {
-      const isInitialLogin = localStorage.getItem("alreadyLoggedIn");
-
-      if (isInitialLogin) {
-        const parsedValue = JSON.parse(isInitialLogin) as boolean;
-        setLoggedIn(parsedValue);
-      }
-    }
-  }, []);
 
   const { accessToken, assignedRole } = useAppSelector(
     (state) => state.session,
@@ -55,59 +39,6 @@ export const AbilityContextProvider: React.FC<PropsWithChildren> = ({
     dispatch(setRefreshToken(refresh));
   };
 
-  useEffect(() => {
-    if (pathname) {
-      if (
-        !pathname.includes("/auth") &&
-        nextAuthSession.status === "authenticated"
-      ) {
-        setIsLoading(false);
-      }
-
-      if (
-        !pathname.includes("/auth") &&
-        nextAuthSession.status === "unauthenticated"
-      ) {
-        router.push("/auth/login");
-      }
-
-      if (
-        pathname.includes("/auth") &&
-        nextAuthSession.status === "unauthenticated"
-      ) {
-        setIsLoading(false);
-      }
-
-      if (
-        pathname.includes("/auth") &&
-        nextAuthSession.status === "authenticated"
-      ) {
-        if (typeof window !== "undefined") {
-          const alreadyLoggedIn = localStorage.getItem("alreadyLoggedIn");
-
-          if (alreadyLoggedIn === "true") {
-            router.push("/dashboard");
-          } else {
-            router.push("/");
-          }
-        }
-      }
-    }
-  }, [nextAuthSession.status, pathname, router]);
-
-  useEffect(() => {
-    if (
-      pathname === "/" &&
-      nextAuthSession.status === "authenticated" &&
-      loggedIn
-    ) {
-      setIsLoading(true);
-      router.push("/dashboard");
-    }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loggedIn, router]);
-
   /**STORES TOKEN IN REDUX */
   useEffect(() => {
     if (
@@ -121,7 +52,7 @@ export const AbilityContextProvider: React.FC<PropsWithChildren> = ({
         nextAuthSession.data.refreshToken,
       );
     }
-
+    setIsLoading(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nextAuthSession]);
 

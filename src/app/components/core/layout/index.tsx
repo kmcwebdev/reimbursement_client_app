@@ -28,7 +28,8 @@ const Layout: React.FC<PropsWithChildren> = ({ children }) => {
     }
     if (
       nextAuthSession.status === "unauthenticated" &&
-      !pathname.includes("/auth")
+      !pathname.includes("/auth") &&
+      !pathname.includes("/email-action")
     ) {
       redirect("/auth/login");
     }
