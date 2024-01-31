@@ -8,7 +8,7 @@ const protectedRoutes = [
   "/approval",
   "/admin",
   "/",
-  "history",
+  "/history",
 ];
 
 export default async function middleware(request: NextRequest) {

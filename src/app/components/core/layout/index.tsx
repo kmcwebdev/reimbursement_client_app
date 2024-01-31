@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 "use client";
-import { useSession } from "next-auth/react";
-import { redirect, usePathname } from "next/navigation";
+import { usePathname } from "next/navigation";
 import React, { useEffect, type PropsWithChildren } from "react";
 import { useAppDispatch } from "~/app/hook";
 import { resetPageTableState } from "~/features/state/table-state.slice";
@@ -14,7 +13,6 @@ import MobileNav from "./MobileNav";
 import Sidebar from "./Sidebar";
 
 const Layout: React.FC<PropsWithChildren> = ({ children }) => {
-  const nextAuthSession = useSession();
   const pathname = usePathname();
   const dispatch = useAppDispatch();
 
@@ -25,13 +23,6 @@ const Layout: React.FC<PropsWithChildren> = ({ children }) => {
   useEffect(() => {
     if (pathname) {
       dispatch(resetPageTableState());
-    }
-    if (
-      nextAuthSession.status === "unauthenticated" &&
-      !pathname.includes("/auth") &&
-      !pathname.includes("/email-action")
-    ) {
-      redirect("/auth/login");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);

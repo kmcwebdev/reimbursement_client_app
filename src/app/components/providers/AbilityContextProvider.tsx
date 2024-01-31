@@ -52,9 +52,15 @@ export const AbilityContextProvider: React.FC<PropsWithChildren> = ({
         nextAuthSession.data.refreshToken,
       );
     }
-    setIsLoading(false);
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nextAuthSession]);
+
+  useEffect(() => {
+    if (nextAuthSession.status !== "loading") {
+      setIsLoading(false);
+    }
+  }, [accessToken, assignedRole, nextAuthSession]);
 
   useMemo(() => {
     if (me && !meIsLoading) {
@@ -69,7 +75,7 @@ export const AbilityContextProvider: React.FC<PropsWithChildren> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [me, meIsLoading]);
 
-  if (isLoading && nextAuthSession.status === "loading") {
+  if (isLoading) {
     return <AuthLoader />;
   }
 
