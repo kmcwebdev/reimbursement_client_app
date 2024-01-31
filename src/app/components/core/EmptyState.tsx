@@ -19,7 +19,9 @@ const EmptyState: React.FC<PropsWithChildren<EmptyStateProps>> = ({
       <div className="flex flex-col items-center gap-5">
         {Icon && <Icon className="h-8 w-8 text-neutral-600" />}
         <h4 className="font-barlowCondensed font-semibold">{title}</h4>
-        <p className="text-center text-neutral-600">{description}</p>
+        <p className="w-11/12 whitespace-pre-wrap text-center text-neutral-600 md:w-full">
+          {description}
+        </p>
       </div>
 
       {children && <div className="flex justify-center">{children}</div>}
