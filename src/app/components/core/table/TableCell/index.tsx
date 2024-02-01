@@ -90,7 +90,7 @@ const TableCell: React.FC<CellContext<IReimbursementRequest, unknown>> = (
 
       {/* REQUESTOR ID */}
       {props.column.columnDef.header === "E-ID" &&
-        (props.getValue() as IUser).id}
+        (props.getValue() as IUser).profile.employee_id}
 
       {/* REQUESTOR NAME*/}
       {props.column.columnDef.header === "Name" && (

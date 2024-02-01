@@ -57,13 +57,13 @@ const FilterView: React.FC<FilterViewProps> = ({ colSpan, type }) => {
     if (Object.keys(filters).length > 0) {
       Object.keys(filters).map((key) => {
         if (key === "created_at_before") {
-          transformedFilters.date[0] = dayjs(filters.created_at_before).format(
+          transformedFilters.date[1] = dayjs(filters.created_at_before).format(
             "MM/DD/YYYY",
           );
         }
 
         if (key === "created_at_after") {
-          transformedFilters.date[1] = dayjs(filters.created_at_after).format(
+          transformedFilters.date[0] = dayjs(filters.created_at_after).format(
             "MM/DD/YYYY",
           );
         }
