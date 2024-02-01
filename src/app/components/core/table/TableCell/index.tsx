@@ -54,20 +54,19 @@ const TableCell: React.FC<CellContext<IReimbursementRequest, unknown>> = (
       {props.column.columnDef.header === "Status" &&
         props.column.columnDef.id === "approver_matrix" && (
           <>
-            {props.row.original.next_approver !== "Finance" &&
-            !props.row.original.fully_approved &&
+            {!props.row.original.fully_approved &&
             (props.getValue() as IApproverMatrix[]).find(
               (a) =>
-                a.approver &&
-                a.approver.email === user?.email &&
-                a.approval_status,
+                a.display_name.toLowerCase() ===
+                user?.groups[0].split("_")[1].toLowerCase(),
             ) ? (
               <StatusBadge
                 status={
                   (props.getValue() as IApproverMatrix[])
                     .find(
                       (a) =>
-                        a.approver.email === user?.email && a.approval_status,
+                        a.display_name.toLowerCase() ===
+                        user?.groups[0].split("_")[1].toLowerCase(),
                     )
                     ?.approval_status.name.toLowerCase() as StatusType
                 }
