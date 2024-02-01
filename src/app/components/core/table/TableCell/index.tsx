@@ -58,7 +58,8 @@ const TableCell: React.FC<CellContext<IReimbursementRequest, unknown>> = (
             (props.getValue() as IApproverMatrix[]).find(
               (a) =>
                 a.display_name.toLowerCase() ===
-                user?.groups[0].split("_")[1].toLowerCase(),
+                  user?.groups[0].split("_")[1].toLowerCase() &&
+                a.approval_status,
             ) ? (
               <StatusBadge
                 status={
