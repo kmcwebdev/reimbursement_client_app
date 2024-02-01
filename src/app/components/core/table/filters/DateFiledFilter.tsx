@@ -17,28 +17,32 @@ const DateFiledFilter: React.FC<FilterProps> = () => {
   const { filters } = useAppSelector((state) => state.pageTableState);
 
   const dispatch = useAppDispatch();
-  const [dateFrom, setDateFrom] = useState<string | undefined>(undefined);
-  const [dateTo, setDateTo] = useState<string | undefined>(undefined);
+  const [createdAfter, setCreatedAfter] = useState<string | undefined>(
+    undefined,
+  );
+  const [createdBefore, setCreatedBefore] = useState<string | undefined>(
+    undefined,
+  );
   const [hasErrors, setHasErrors] = useState<boolean>(false);
   const [error, setError] = useState<string>();
 
   useMemo(() => {
     if (filters.created_at_before) {
-      setDateFrom(dayjs(filters.created_at_before).format("YYYY-MM-DD"));
+      setCreatedBefore(dayjs(filters.created_at_before).format("YYYY-MM-DD"));
     } else {
-      setDateFrom(undefined);
+      setCreatedBefore(undefined);
     }
 
     if (filters.created_at_after) {
-      setDateTo(dayjs(filters.created_at_after).format("YYYY-MM-DD"));
+      setCreatedAfter(dayjs(filters.created_at_after).format("YYYY-MM-DD"));
     } else {
-      setDateTo(undefined);
+      setCreatedAfter(undefined);
     }
   }, [filters.created_at_before, filters.created_at_after]);
 
   const clearDates = () => {
-    setDateFrom(undefined);
-    setDateTo(undefined);
+    setCreatedBefore(undefined);
+    setCreatedAfter(undefined);
     dispatch(
       setPageTableFilters({
         ...filters,
@@ -50,11 +54,13 @@ const DateFiledFilter: React.FC<FilterProps> = () => {
   };
 
   const validate = () => {
-    if (dateFrom && dateTo) {
-      const isBefore = dayjs.utc(dateTo).isBefore(dayjs.utc(dateFrom));
-      const isSame = dayjs.utc(dateFrom).isSame(dayjs.utc(dateTo));
+    if (createdAfter && createdBefore) {
+      const isBefore = dayjs
+        .utc(createdBefore)
+        .isBefore(dayjs.utc(createdAfter));
+      const isSame = dayjs.utc(createdAfter).isSame(dayjs.utc(createdBefore));
 
-      if (dateTo && isBefore) {
+      if (createdBefore && isBefore) {
         setError("Selected date range invalid!");
         setHasErrors(true);
         return;
@@ -73,9 +79,9 @@ const DateFiledFilter: React.FC<FilterProps> = () => {
         setPageTableFilters({
           ...filters,
           created_at_after:
-            dateFrom && parseTimezone(dateFrom).format("YYYY-MM-DD"),
+            createdAfter && parseTimezone(createdAfter).format("YYYY-MM-DD"),
           created_at_before:
-            dateTo && parseTimezone(dateTo).format("YYYY-MM-DD"),
+            createdBefore && parseTimezone(createdBefore).format("YYYY-MM-DD"),
         }),
       );
     } else {
@@ -83,24 +89,26 @@ const DateFiledFilter: React.FC<FilterProps> = () => {
         setPageTableFilters({
           ...filters,
           created_at_after:
-            dateFrom && parseTimezone(dateFrom).format("YYYY-MM-DD"),
+            createdAfter && parseTimezone(createdAfter).format("YYYY-MM-DD"),
           created_at_before:
-            dateTo && parseTimezone(dateTo).format("YYYY-MM-DD"),
+            createdBefore && parseTimezone(createdBefore).format("YYYY-MM-DD"),
         }),
       );
     }
   };
 
   const onDateFromChanged = (e: ChangeEvent<HTMLInputElement>) => {
-    setDateFrom(e.target.value);
+    setCreatedAfter(e.target.value);
 
-    if (!dateTo) {
-      setDateTo(dayjs(e.target.value).add(5, "days").format("YYYY-MM-DD"));
+    if (!createdBefore) {
+      setCreatedBefore(
+        dayjs(e.target.value).add(5, "days").format("YYYY-MM-DD"),
+      );
     }
   };
 
   const onDateToChanged = (e: ChangeEvent<HTMLInputElement>) => {
-    setDateTo(e.target.value);
+    setCreatedBefore(e.target.value);
   };
 
   return (
@@ -122,7 +130,7 @@ const DateFiledFilter: React.FC<FilterProps> = () => {
                 name="from"
                 label="From"
                 defaultValue={
-                  dateFrom ? dayjs(dateFrom).format("YYYY-MM-DD") : ""
+                  createdAfter ? dayjs(createdAfter).format("YYYY-MM-DD") : ""
                 }
                 onBlur={onDateFromChanged}
                 hasErrors={hasErrors}
@@ -131,10 +139,12 @@ const DateFiledFilter: React.FC<FilterProps> = () => {
                 type="date"
                 name="to"
                 label="To"
-                defaultValue={dateTo ? dayjs(dateTo).format("YYYY-MM-DD") : ""}
+                defaultValue={
+                  createdBefore ? dayjs(createdBefore).format("YYYY-MM-DD") : ""
+                }
                 min={
-                  dateFrom
-                    ? dayjs(dateFrom).add(1, "day").format("YYYY-MM-DD")
+                  createdAfter
+                    ? dayjs(createdAfter).add(1, "day").format("YYYY-MM-DD")
                     : ""
                 }
                 onBlur={onDateToChanged}
@@ -145,7 +155,7 @@ const DateFiledFilter: React.FC<FilterProps> = () => {
                 <p className="text-danger-default mt-1 text-sm">{error}</p>
               )}
 
-              <CollapseHeightAnimation isVisible={!!dateFrom}>
+              <CollapseHeightAnimation isVisible={!!createdBefore}>
                 <div className="flex items-center justify-between">
                   <Button
                     aria-label="Clear"
