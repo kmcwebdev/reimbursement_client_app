@@ -77,5 +77,4 @@ export type IReimbursementsFilterQuery = {
   created_at_before?: string;
   created_at_after?: string;
   history?: boolean;
-  approval_matrix_approval_status?: string;
 };

@@ -49,6 +49,13 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
     >({
       query: (query) => {
         const searchParams = createSearchParams(query);
+        if (query.type !== "finance" && query.request_status__id) {
+          searchParams?.delete("request_status__id");
+          searchParams?.append(
+            "approval_matrix_approval_status",
+            query.request_status__id,
+          );
+        }
         searchParams?.delete("type");
         searchParams?.append("ordering", "-created_at");
         return {

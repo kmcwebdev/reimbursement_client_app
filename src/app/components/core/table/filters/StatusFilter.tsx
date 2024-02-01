@@ -1,5 +1,4 @@
 import { type Column } from "@tanstack/react-table";
-import { usePathname } from "next/navigation";
 import { useMemo, useState, type ChangeEvent } from "react";
 import { FaCaretDown } from "react-icons-all-files/fa/FaCaretDown";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
@@ -15,10 +14,8 @@ export interface FilterProps {
 }
 
 const StatusFilter: React.FC<FilterProps> = () => {
-  const { assignedRole } = useAppSelector((state) => state.session);
   const { filters } = useAppSelector((state) => state.pageTableState);
   const dispatch = useAppDispatch();
-  const pathname = usePathname();
 
   const [statusOptions, setStatusOptions] = useState<OptionData[]>();
   const { data: allStatuses, isLoading: allStatusesIsLoading } =
@@ -74,26 +71,13 @@ const StatusFilter: React.FC<FilterProps> = () => {
       request_status__id = value.toString();
     }
 
-    if (
-      assignedRole !== "REIMBURSEMENT_FINANCE" &&
-      pathname.includes("history")
-    ) {
-      dispatch(
-        setPageTableFilters({
-          ...filters,
-          page: undefined,
-          approval_matrix_approval_status: request_status__id,
-        }),
-      );
-    } else {
-      dispatch(
-        setPageTableFilters({
-          ...filters,
-          page: undefined,
-          request_status__id,
-        }),
-      );
-    }
+    dispatch(
+      setPageTableFilters({
+        ...filters,
+        page: undefined,
+        request_status__id,
+      }),
+    );
   };
 
   return (
