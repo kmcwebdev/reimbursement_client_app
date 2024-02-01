@@ -47,6 +47,7 @@ export type IApproverMatrix = {
   is_rejected: boolean;
   acknowledge_datetime: string;
   remarks: string;
+  approval_status: { id: number; name: string };
 };
 
 export type IStatusResponse = {
@@ -76,4 +77,5 @@ export type IReimbursementsFilterQuery = {
   created_at_before?: string;
   created_at_after?: string;
   history?: boolean;
+  approval_matrix_approval_status?: string;
 };

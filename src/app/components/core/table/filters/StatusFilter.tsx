@@ -74,13 +74,26 @@ const StatusFilter: React.FC<FilterProps> = () => {
       request_status__id = value.toString();
     }
 
-    dispatch(
-      setPageTableFilters({
-        ...filters,
-        page: undefined,
-        request_status__id,
-      }),
-    );
+    if (
+      assignedRole !== "REIMBURSEMENT_FINANCE" &&
+      pathname.includes("history")
+    ) {
+      dispatch(
+        setPageTableFilters({
+          ...filters,
+          page: undefined,
+          approval_matrix_approval_status: request_status__id,
+        }),
+      );
+    } else {
+      dispatch(
+        setPageTableFilters({
+          ...filters,
+          page: undefined,
+          request_status__id,
+        }),
+      );
+    }
   };
 
   return (
