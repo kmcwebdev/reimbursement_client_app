@@ -49,12 +49,28 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
     >({
       query: (query) => {
         const searchParams = createSearchParams(query);
-        if (query.type !== "finance" && query.request_status__id) {
-          searchParams?.delete("request_status__id");
+        if (query.type !== "finance") {
           searchParams?.append(
-            "approval_matrix_approval_status",
-            query.request_status__id,
+            "approver_matrix__display_name",
+            query.type === "hrbp" ? "HRBP" : "Manager",
           );
+
+          if (query.request_status__id?.includes("2")) {
+            const statusArray = query.request_status__id.split(",");
+            searchParams?.delete("request_status__id");
+
+            if (
+              statusArray.includes("2") &&
+              statusArray.filter((a) => a !== "2").length > 0
+            ) {
+              searchParams?.append(
+                "request_status__id",
+                statusArray.filter((a) => a !== "2").join(","),
+              );
+            }
+
+            searchParams?.append("approver_matrix_is_approved", "True");
+          }
         }
         searchParams?.delete("type");
         searchParams?.append("ordering", "-created_at");

@@ -54,25 +54,27 @@ const TableCell: React.FC<CellContext<IReimbursementRequest, unknown>> = (
       {props.column.columnDef.header === "Status" &&
         props.column.columnDef.id === "approver_matrix" && (
           <>
-            {!props.row.original.fully_approved &&
-            (props.getValue() as IApproverMatrix[]).find(
-              (a) =>
-                a.display_name.toLowerCase() ===
-                  user?.groups[0].split("_")[1].toLowerCase() &&
-                a.approval_status,
-            ) ? (
-              <StatusBadge
-                status={
-                  (props.getValue() as IApproverMatrix[])
-                    .find(
-                      (a) =>
-                        a.display_name.toLowerCase() ===
-                        user?.groups[0].split("_")[1].toLowerCase(),
-                    )
-                    ?.approval_status.name.toLowerCase() as StatusType
-                }
-              />
-            ) : (
+            {props.row.original.request_status.name === "Pending" &&
+              (props.getValue() as IApproverMatrix[]).find(
+                (a) =>
+                  a.display_name.toLowerCase() ===
+                    user?.groups[0].split("_")[1].toLowerCase() &&
+                  a.approval_status,
+              ) && (
+                <StatusBadge
+                  status={
+                    (props.getValue() as IApproverMatrix[])
+                      .find(
+                        (a) =>
+                          a.display_name.toLowerCase() ===
+                          user?.groups[0].split("_")[1].toLowerCase(),
+                      )
+                      ?.approval_status.name.toLowerCase() as StatusType
+                  }
+                />
+              )}
+
+            {props.row.original.request_status.name !== "Pending" && (
               <StatusBadge
                 status={
                   props.row.original.request_status.name.toLowerCase() as StatusType
