@@ -1,28 +1,18 @@
 import React from "react";
-import { AiOutlinePauseCircle } from "react-icons-all-files/ai/AiOutlinePauseCircle";
-import { AiOutlineStop } from "react-icons-all-files/ai/AiOutlineStop";
-import { BsChevronDown } from "react-icons-all-files/bs/BsChevronDown";
 import { Button } from "~/app/components/core/Button";
-import Popover from "~/app/components/core/Popover";
 
 interface FinanceButtonsProps {
-  isOnHold: boolean;
-  currentState: string;
   onApprove: () => void;
   onReject: () => void;
-  onHold: () => void;
 }
 
 const FinanceButtons: React.FC<FinanceButtonsProps> = ({
-  isOnHold,
-  currentState,
   onApprove,
   onReject,
-  onHold,
 }) => {
   return (
     <div className="absolute bottom-0 grid h-[72px] w-full grid-cols-2 items-center justify-center gap-2 border-t border-neutral-300 px-5">
-      {!isOnHold && (
+      {/* {!isOnHold && (
         <Popover
           ariaLabel="Change Status"
           panelClassName="translate-y-[-170px] w-full"
@@ -68,19 +58,19 @@ const FinanceButtons: React.FC<FinanceButtonsProps> = ({
             </div>
           }
         />
-      )}
+      )} */}
 
-      {isOnHold && (
-        <Button
-          aria-label="Reject"
-          className="w-full"
-          buttonType="outlined"
-          variant="danger"
-          onClick={onReject}
-        >
-          Reject
-        </Button>
-      )}
+      {/* {isOnHold && ( */}
+      <Button
+        aria-label="Reject"
+        className="w-full"
+        buttonType="outlined"
+        variant="danger"
+        onClick={onReject}
+      >
+        Reject
+      </Button>
+      {/* )} */}
 
       <Button
         aria-label="Download"
