@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { type CellContext } from "@tanstack/react-table";
-import dayjs from "dayjs";
 import React from "react";
 import { useAppSelector } from "~/app/hook";
 import { type IUser } from "~/features/state/user-state.slice";
@@ -13,6 +12,7 @@ import {
   type IStatus,
 } from "~/types/reimbursement.types";
 import { currencyFormat } from "~/utils/currencyFormat";
+import { parseTimezone } from "~/utils/parse-timezone";
 import { Button } from "../../Button";
 import StatusBadge, { type StatusType } from "../../StatusBadge";
 import ExpenseTypeCell from "./ExpenseTypeCell";
@@ -33,6 +33,15 @@ const TableCell: React.FC<CellContext<IReimbursementRequest, unknown>> = (
     "E-ID",
     "Client",
   ];
+
+  const getHRBPAcknowledgeDate = (value: IApproverMatrix[]) => {
+    const hrbpApprover = value.find((a) => a.display_name === "HRBP");
+
+    if (hrbpApprover) {
+      return hrbpApprover.acknowledge_datetime;
+    }
+    return "";
+  };
 
   return (
     <>
@@ -109,9 +118,13 @@ const TableCell: React.FC<CellContext<IReimbursementRequest, unknown>> = (
         (props.getValue() as ReimbursementRequestType).name}
 
       {/* DATES */}
-      {(props.column.columnDef.header === "Filed" ||
-        props.column.columnDef.header === "Approved") &&
-        dayjs(props.getValue() as string).format("MMM D, YYYY")}
+      {props.column.columnDef.header === "Filed" &&
+        parseTimezone(props.getValue() as string).format("MMM D, YYYY")}
+
+      {props.column.columnDef.header === "Approved" &&
+        parseTimezone(
+          getHRBPAcknowledgeDate(props.row.original.approver_matrix),
+        ).format("MMM D, YYYY")}
 
       {/* AMOUNT */}
       {props.column.columnDef.header === "Total" &&

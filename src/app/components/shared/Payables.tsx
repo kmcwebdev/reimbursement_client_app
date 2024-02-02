@@ -20,6 +20,7 @@ import {
   type IReimbursementRequest,
   type IReimbursementsFilterQuery,
 } from "~/types/reimbursement.types";
+import { createSearchParams } from "~/utils/create-search-params";
 import { env } from "../../../../env.mjs";
 import { Button } from "../core/Button";
 import { showToast } from "../core/Toast";
@@ -123,6 +124,12 @@ const Payables: React.FC = () => {
       }
     });
 
+    const searchParams = createSearchParams(filters);
+    if (reference_nos.length > 0) {
+      searchParams?.append("multi_reference_no", reference_nos.join(","));
+    }
+    searchParams?.append("ordering", "-created_at");
+
     let filename: string = "FINANCE_REIMBURSEMENT_REPORT";
 
     if (reference_nos.length === 1) {
@@ -137,7 +144,7 @@ const Payables: React.FC = () => {
       filename = `${filename} - ${reference_nos.join(",")}`;
     }
 
-    const url = `${env.NEXT_PUBLIC_BASEAPI_URL}/reimbursements/request/finance/download-reports${reference_nos.length > 0 ? `?multi_reference_no=${reference_nos.join(",")}` : ""}`;
+    const url = `${env.NEXT_PUBLIC_BASEAPI_URL}/reimbursements/request/finance/download-reports${searchParams && searchParams.size ? `?${searchParams.toString()}` : ""}`;
 
     await exportReport(url, filename);
     dispatch(
@@ -242,8 +249,8 @@ const Payables: React.FC = () => {
           },
         },
         {
-          id: "created_at",
-          accessorKey: "created_at",
+          id: "approver_matrix",
+          accessorKey: "approver_matrix",
           header: "Approved",
           filterFn: (row, id, value: string) => {
             return value.includes(row.getValue(id));

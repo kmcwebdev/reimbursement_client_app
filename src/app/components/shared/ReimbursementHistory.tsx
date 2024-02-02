@@ -20,6 +20,7 @@ import {
   type IReimbursementRequest,
   type IReimbursementsFilterQuery,
 } from "~/types/reimbursement.types";
+import { createSearchParams } from "~/utils/create-search-params";
 import { env } from "../../../../env.mjs";
 import { showToast } from "../core/Toast";
 import TableCell from "../core/table/TableCell";
@@ -244,6 +245,12 @@ const ReimbursementHistory: React.FC = () => {
       }
     });
 
+    const searchParams = createSearchParams(filters);
+    if (reference_nos.length > 0) {
+      searchParams?.append("reference_no", reference_nos.join(","));
+    }
+    searchParams?.append("ordering", "-created_at");
+
     let filename: string = `${assignedRole?.split("_")[1].toUpperCase()}_REIMBURSEMENT_HISTORY_REPORT`;
 
     if (reference_nos.length === 1) {
@@ -259,11 +266,11 @@ const ReimbursementHistory: React.FC = () => {
     }
 
     if (assignedRole === "REIMBURSEMENT_FINANCE") {
-      const url = `${env.NEXT_PUBLIC_BASEAPI_URL}/reimbursements/request/${assignedRole?.split("_")[1].toLowerCase()}/download-reports/history${reference_nos.length > 0 ? `?reference_no=${reference_nos.join(",")}` : ""}`;
+      const url = `${env.NEXT_PUBLIC_BASEAPI_URL}/reimbursements/request/${assignedRole?.split("_")[1].toLowerCase()}/download-reports/history${searchParams && searchParams.size ? `?${searchParams.toString()}` : ""}`;
 
       await exportReport(url, filename);
     } else {
-      const url = `${env.NEXT_PUBLIC_BASEAPI_URL}/reimbursements/request/${assignedRole?.split("_")[1].toLowerCase()}/download-reports${reference_nos.length > 0 ? `?reference_no=${reference_nos.join(",")}` : ""}`;
+      const url = `${env.NEXT_PUBLIC_BASEAPI_URL}/reimbursements/request/${assignedRole?.split("_")[1].toLowerCase()}/download-reports${searchParams && searchParams.size ? `?${searchParams.toString()}` : ""}`;
 
       await exportReport(url, filename);
     }
