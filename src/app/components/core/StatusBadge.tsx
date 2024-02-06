@@ -18,7 +18,7 @@ type StatusBadgeProps = {
 };
 
 const statusVariant = cva(
-  "h-6 max-w-[92px] rounded text-sm border border-opacity-20 px-2 flex items-center justify-center select-none",
+  "h-6 max-w-[150px] rounded text-sm border border-opacity-20 px-2 flex items-center justify-center select-none",
   {
     variants: {
       status: {
@@ -39,21 +39,11 @@ const StatusBadge: React.FC<StatusBadgeProps> = ({ status, label }) => {
   return (
     <div
       className={classNames(
-        "text-xs capitalize md:text-sm",
-        status === "default" &&
-          label &&
-          label.length >= 23 &&
-          "block min-w-[150px]",
+        "block text-xs capitalize md:text-sm",
         statusVariant({ status }),
       )}
     >
-      <p
-        className={classNames(
-          status === "default" && label && label.length >= 23
-            ? "block truncate"
-            : "",
-        )}
-      >
+      <p className={classNames("truncate whitespace-nowrap")}>
         {label ? label : status}
       </p>
     </div>
