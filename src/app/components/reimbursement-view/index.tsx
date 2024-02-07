@@ -14,10 +14,15 @@ import { AbilityContext } from "~/context/AbilityContext";
 import {
   useApproveReimbursementMutation,
   useCancelReimbursementMutation,
+  useHoldReimbursementMutation,
   useRejectReimbursementMutation,
 } from "~/features/api/actions-api-slice";
 import { useDialogState } from "~/hooks/use-dialog-state";
 import { useReportDownload } from "~/hooks/use-report-download";
+import {
+  OnholdReimbursementSchema,
+  type OnholdReimbursementType,
+} from "~/schema/reimbursement-onhold-form.schema";
 import {
   RejectReimbursementSchema,
   type RejectReimbursementType,
@@ -36,6 +41,7 @@ import Details from "./Details";
 import Notes from "./Notes";
 import Particulars from "./Particulars";
 import ReimbursementViewSkeleton from "./ReimbursementViewSkeleton";
+import AdminButtons from "./action-buttons/AdminButtons";
 import ApproverButtons from "./action-buttons/ApproverButtons";
 import FinanceButtons from "./action-buttons/FinanceButtons";
 import MemberButtons from "./action-buttons/MemberButtons";
@@ -44,6 +50,7 @@ export interface ReimbursementsCardViewProps extends PropsWithChildren {
   isLoading?: boolean;
   isApproverView?: boolean;
   isHistoryView?: boolean;
+  isAdminView?: boolean;
   data?: IReimbursementRequest;
   closeDrawer: () => void;
   isError?: boolean;
@@ -56,6 +63,7 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
   isLoading = false,
   isApproverView = false,
   isHistoryView = false,
+  isAdminView = false,
   isError = false,
   setFocusedReimbursementId,
 }) => {
@@ -73,8 +81,8 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
   const [rejectReimbursement, { isLoading: isRejecting }] =
     useRejectReimbursementMutation();
 
-  // const [holdReimbursement, { isLoading: isOnHolding }] =
-  //   useHoldReimbursementMutation();
+  const [holdReimbursement, { isLoading: isOnHolding }] =
+    useHoldReimbursementMutation();
 
   const [cancelReimbursement, { isLoading: isCancelling }] =
     useCancelReimbursementMutation();
@@ -99,21 +107,21 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
     close: closeRejectDialog,
   } = useDialogState();
 
-  // const {
-  //   isVisible: holdDialogIsOpen,
-  //   open: openHoldDialog,
-  //   close: closeHoldDialog,
-  // } = useDialogState();
+  const {
+    isVisible: holdDialogIsOpen,
+    open: openHoldDialog,
+    close: closeHoldDialog,
+  } = useDialogState();
 
   const useRejectFormReturn = useForm<RejectReimbursementType>({
     resolver: zodResolver(RejectReimbursementSchema),
     mode: "onChange",
   });
 
-  // const useHoldFormReturn = useForm<OnholdReimbursementType>({
-  //   resolver: zodResolver(OnholdReimbursementSchema),
-  //   mode: "onChange",
-  // });
+  const useHoldFormReturn = useForm<OnholdReimbursementType>({
+    resolver: zodResolver(OnholdReimbursementSchema),
+    mode: "onChange",
+  });
 
   const { download: exportReport } = useReportDownload({
     onSuccess: () => {
@@ -237,46 +245,45 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
     }
   };
 
-  // const handleConfirmHold = (values: OnholdReimbursementType) => {
-  //   setCurrentState("Reject");
-  //   if (data) {
-  //     const payload = {
-  //       id: data.id,
-  //       remarks: values.remarks,
-  //     };
+  const handleConfirmHold = (values: OnholdReimbursementType) => {
+    if (data) {
+      const payload = {
+        id: data.id,
+        remarks: values.remarks,
+      };
 
-  //     void holdReimbursement(payload)
-  //       .unwrap()
-  //       .then(() => {
-  //         dispatch(
-  //           appApiSlice.util.invalidateTags([{ type: "ReimbursementRequest" }]),
-  //         );
-  //         showToast({
-  //           type: "success",
-  //           description: "Reimbursement Request successfully put onhold!",
-  //         });
-  //         closeRejectDialog();
-  //         closeDrawer();
-  //         useRejectFormReturn.reset();
-  //       })
-  //       .catch(() => {
-  //         showToast({
-  //           type: "error",
-  //           description: "Rejection failed!",
-  //         });
-  //       });
-  //   }
-  // };
+      void holdReimbursement(payload)
+        .unwrap()
+        .then(() => {
+          dispatch(
+            appApiSlice.util.invalidateTags([{ type: "ReimbursementRequest" }]),
+          );
+          showToast({
+            type: "success",
+            description: "Reimbursement Request successfully put onhold!",
+          });
+          closeRejectDialog();
+          closeDrawer();
+          useRejectFormReturn.reset();
+        })
+        .catch(() => {
+          showToast({
+            type: "error",
+            description: "Rejection failed!",
+          });
+        });
+    }
+  };
 
   const handleCloseRejectDialog = () => {
     useRejectFormReturn.reset();
     closeRejectDialog();
   };
 
-  // const handleCloseOnHoldDialog = () => {
-  //   useHoldFormReturn.reset();
-  //   closeHoldDialog();
-  // };
+  const handleCloseOnHoldDialog = () => {
+    useHoldFormReturn.reset();
+    closeHoldDialog();
+  };
 
   return (
     <div className="relative flex h-full w-full flex-col overflow-hidden">
@@ -313,7 +320,7 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
           </div>
 
           <div className="absolute bottom-0 grid h-[72px] w-full grid-cols-2 items-center justify-center gap-2 border-t border-neutral-300 bg-white px-5">
-            {isHistoryView && (
+            {!isAdminView && isHistoryView && (
               <Button
                 aria-label="Back"
                 onClick={closeDrawer}
@@ -325,7 +332,7 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
               </Button>
             )}
 
-            {!isHistoryView && !isApproverView && (
+            {!isAdminView && !isHistoryView && !isApproverView && (
               <MemberButtons
                 onClose={closeDrawer}
                 onCancel={openCancelDialog}
@@ -337,7 +344,8 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
               />
             )}
 
-            {!isHistoryView &&
+            {!isAdminView &&
+              !isHistoryView &&
               isApproverView &&
               ability.can("access", "REIMBURSEMENT_VIEW_APPROVAL") && (
                 <ApproverButtons
@@ -346,17 +354,31 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
                 />
               )}
 
-            {!isHistoryView &&
+            {!isAdminView &&
+              !isHistoryView &&
               isApproverView &&
               ability.can("access", "REIMBURSEMENT_VIEW_DOWNLOAD_HOLD") && (
                 <FinanceButtons
-                  // isOnHold={data.request_status.name === "On-hold"}
-                  // currentState={currentState}
                   onApprove={openApproveDialog}
-                  // onHold={openHoldDialog}
                   onReject={openRejectDialog}
                 />
               )}
+
+            {isAdminView && (
+              <AdminButtons
+                isOnhold={data.request_status.name === "On-hold"}
+                canOnHold={
+                  data.approver_matrix.find((a) => a.display_name === "HRBP")
+                    ?.is_approved &&
+                  !data.approver_matrix.find(
+                    (a) => a.display_name === "Finance",
+                  )?.is_approved &&
+                  assignedRole === "REIMBURSEMENT_FINANCE"
+                }
+                handleOnhold={openHoldDialog}
+                onBack={closeDrawer}
+              />
+            )}
           </div>
         </>
       )}
@@ -412,7 +434,7 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
         </Form>
       </Dialog>
 
-      {/* <Dialog
+      <Dialog
         title="Hold Reimbursement?"
         isVisible={holdDialogIsOpen}
         close={closeHoldDialog}
@@ -454,7 +476,7 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
             </div>
           </div>
         </Form>
-      </Dialog> */}
+      </Dialog>
 
       <Dialog
         title="Approve Reimbursement?"

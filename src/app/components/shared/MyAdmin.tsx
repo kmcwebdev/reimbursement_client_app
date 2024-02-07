@@ -309,6 +309,7 @@ const MyAdmin: React.FC = () => {
         closeDrawer={close}
       >
         <ReimbursementsCardView
+          isAdminView
           closeDrawer={close}
           isLoading={focusedReimbursementDataIsFetching}
           isError={focusedReimbursementDataIsError}
