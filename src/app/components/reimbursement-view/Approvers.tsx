@@ -108,7 +108,8 @@ const Approvers: React.FC<ApproversProps> = ({ approvers, request_status }) => {
                   {!approver.is_approved &&
                     approver.display_name !== "Finance" &&
                     pathname === "/admin" &&
-                    user?.is_superuser && (
+                    user?.is_superuser &&
+                    !approver.is_rejected && (
                       <Button
                         buttonType="text"
                         onClick={() => {
