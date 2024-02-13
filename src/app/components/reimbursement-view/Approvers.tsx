@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import { usePathname } from "next/navigation";
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { type IconType } from "react-icons-all-files";
 import { HiCheckCircle } from "react-icons-all-files/hi/HiCheckCircle";
@@ -11,6 +11,7 @@ import { MdClose } from "react-icons-all-files/md/MdClose";
 import { MdEdit } from "react-icons-all-files/md/MdEdit";
 import { MdMail } from "react-icons-all-files/md/MdMail";
 import { useAppSelector } from "~/app/hook";
+import { useReRouteApproverMutation } from "~/features/api/actions-api-slice";
 import { useDialogState } from "~/hooks/use-dialog-state";
 import {
   ApproverSchema,
@@ -23,6 +24,7 @@ import {
 import { parseTimezone } from "~/utils/parse-timezone";
 import { Button } from "../core/Button";
 import Dialog from "../core/Dialog";
+import { showToast } from "../core/Toast";
 import Form from "../core/form";
 import Input from "../core/form/fields/Input";
 
@@ -32,11 +34,20 @@ interface ApproversProps {
   request_status: IStatus;
 }
 
+export interface IApproverToEdit {
+  approver_matrix_id: number;
+  prev_approver_email: string;
+  prev_approver_group: string;
+}
+
 const Approvers: React.FC<ApproversProps> = ({ approvers, request_status }) => {
   const { user } = useAppSelector((state) => state.session);
   const pathname = usePathname();
-
   const { isVisible, open, close } = useDialogState();
+  const [approverToEdit, setApproverToEdit] = useState<IApproverToEdit>();
+
+  const [reRouteApprover, { isLoading: isReRouting }] =
+    useReRouteApproverMutation();
 
   const useSetApproverFormReturn = useForm<Approver>({
     resolver: zodResolver(ApproverSchema),
@@ -44,7 +55,26 @@ const Approvers: React.FC<ApproversProps> = ({ approvers, request_status }) => {
   });
 
   const handleSubmit = (e: Approver) => {
-    console.log(e);
+    if (approverToEdit) {
+      const payload = {
+        ...approverToEdit,
+        new_approver_email: e.manager_approver_email,
+      };
+      void reRouteApprover(payload)
+        .unwrap()
+        .then(() => {
+          close();
+          useSetApproverFormReturn.reset();
+          setApproverToEdit(undefined);
+          showToast({
+            type: "success",
+            description: "New Approver has been set successfully.",
+          });
+        })
+        .catch((error: { status: number; data: { detail: string } }) => {
+          showToast({ type: "error", description: error.data.detail });
+        });
+    }
   };
 
   return (
@@ -82,6 +112,11 @@ const Approvers: React.FC<ApproversProps> = ({ approvers, request_status }) => {
                       <Button
                         buttonType="text"
                         onClick={() => {
+                          setApproverToEdit({
+                            approver_matrix_id: approver.id,
+                            prev_approver_email: approver.approver.email,
+                            prev_approver_group: approver.approver.groups[0],
+                          });
                           open();
                         }}
                       >
@@ -150,6 +185,7 @@ const Approvers: React.FC<ApproversProps> = ({ approvers, request_status }) => {
                 className="w-full"
                 onClick={() => {
                   close();
+                  setApproverToEdit(undefined);
                   useSetApproverFormReturn.reset();
                 }}
               >
@@ -161,7 +197,7 @@ const Approvers: React.FC<ApproversProps> = ({ approvers, request_status }) => {
               aria-label="Submit"
               type="submit"
               className="w-full"
-              // loading={isSubmitting}
+              loading={isReRouting}
             >
               Update
             </Button>

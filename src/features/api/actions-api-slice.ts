@@ -1,3 +1,4 @@
+import { type IApproverToEdit } from "~/app/components/reimbursement-view/Approvers";
 import { appApiSlice } from "~/app/rtkQuery";
 import { type OnholdReimbursementType } from "~/schema/reimbursement-onhold-form.schema";
 import { type RejectReimbursementType } from "~/schema/reimbursement-reject-form.schema";
@@ -109,6 +110,27 @@ export const actionsApiSlice = appApiSlice.injectEndpoints({
         { type: "ApprovalAnalytics" },
       ],
     }),
+
+    reRouteApprover: builder.mutation<
+      unknown,
+      IApproverToEdit & {
+        new_approver_email: string;
+      }
+    >({
+      query: (data) => {
+        return {
+          url: `/reimbursements/request/reroute/approver`,
+          method: "PATCH",
+          body: { ...data },
+        };
+      },
+      invalidatesTags: [
+        { type: "ReimbursementRequest" },
+        { type: "ReimbursementApprovalList" },
+        { type: "MyAnalytics" },
+        { type: "ApprovalAnalytics" },
+      ],
+    }),
   }),
 });
 
@@ -119,4 +141,5 @@ export const {
   useRejectReimbursementViaEmailMutation,
   useCancelReimbursementMutation,
   useHoldReimbursementMutation,
+  useReRouteApproverMutation,
 } = actionsApiSlice;
