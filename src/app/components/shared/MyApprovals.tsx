@@ -108,6 +108,7 @@ const MyApprovals: React.FC = () => {
           if (table.getRowModel().rows.length > 0) {
             return (
               <TableCheckbox
+                id="MyApprovalsHeaderCheckbox"
                 checked={table.getIsAllRowsSelected()}
                 indeterminate={table.getIsSomeRowsSelected()}
                 onChange={table.getToggleAllRowsSelectedHandler()}
@@ -119,6 +120,7 @@ const MyApprovals: React.FC = () => {
 
         cell: ({ row }) => (
           <TableCheckbox
+            id={row.original.id.toString()}
             checked={row.getIsSelected()}
             tableHasChecked={selectedItems.length > 0}
             disabled={!row.getCanSelect()}

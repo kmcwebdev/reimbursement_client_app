@@ -12,6 +12,7 @@ const TableCheckbox: React.FC<IndeterminateCheckboxProps> = ({
   indeterminate,
   showOnHover = true,
   tableHasChecked,
+  id,
   ...rest
 }) => {
   const ref = React.useRef<HTMLInputElement>(null!);
@@ -25,13 +26,13 @@ const TableCheckbox: React.FC<IndeterminateCheckboxProps> = ({
 
   return (
     <>
-      <label htmlFor="table-checkbox" className="sr-only">
+      <label htmlFor={`table-checkbox-${id}`} className="sr-only">
         Table Checkbox
       </label>
       <input
         aria-label="Table Checkbox"
-        name="table-checkbox"
-        id="table-checkbox"
+        id={`table-checkbox-${id}`}
+        name={`table-checkbox-${id}`}
         type="checkbox"
         ref={ref}
         className={classNames(
