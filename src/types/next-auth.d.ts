@@ -22,10 +22,3 @@ declare module "next-auth" {
     refresh: string & DefaultSession["user"];
   }
 }
-
-declare module "@tanstack/react-table" {
-  interface ColumnDefBase {
-    setFocusedReimbursementId?: any;
-    openDrawer?: any;
-  }
-}

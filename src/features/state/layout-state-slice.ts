@@ -5,11 +5,11 @@ interface LayoutState {
 }
 
 const initialState: LayoutState = {
-   sideBarCollapsed: false
+  sideBarCollapsed: false,
 };
 
 const layoutStateSlice = createSlice({
-  name: "user",
+  name: "layoutStateSlice",
   initialState,
   reducers: {
     toggleSidebarCollapse(state) {
@@ -18,8 +18,6 @@ const layoutStateSlice = createSlice({
   },
 });
 
-export const {
-  toggleSidebarCollapse,
-} = layoutStateSlice.actions;
+export const { toggleSidebarCollapse } = layoutStateSlice.actions;
 
 export default layoutStateSlice.reducer;

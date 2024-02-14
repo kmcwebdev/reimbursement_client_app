@@ -106,6 +106,7 @@ export const actionsApiSlice = appApiSlice.injectEndpoints({
       },
       invalidatesTags: [
         { type: "ReimbursementApprovalList" },
+        { type: "ReimbursementAdminList" },
         { type: "MyAnalytics" },
         { type: "ApprovalAnalytics" },
       ],

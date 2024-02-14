@@ -4,28 +4,26 @@ import { useAbility } from "@casl/react";
 import { type ColumnDef } from "@tanstack/react-table";
 import dynamic from "next/dynamic";
 import React, { useEffect, useState, type ChangeEvent } from "react";
-import { Button } from "~/app/components/core/Button";
 import Table from "~/app/components/core/table";
 import TableCheckbox from "~/app/components/core/table/TableCheckbox";
 import { type FilterProps } from "~/app/components/core/table/filters/StatusFilter";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
-import { appApiSlice } from "~/app/rtkQuery";
 import { AbilityContext } from "~/context/AbilityContext";
-import { useApproveReimbursementMutation } from "~/features/api/actions-api-slice";
 import { useApprovalAnalyticsQuery } from "~/features/api/analytics-api-slice";
 import {
   useGetApprovalListQuery,
   useGetRequestQuery,
 } from "~/features/api/reimbursement-api-slice";
-import { setSelectedItems } from "~/features/state/table-state.slice";
+import {
+  setFocusedReimbursementId,
+  toggleBulkApprovalDialog,
+  toggleSideDrawer,
+} from "~/features/state/table-state.slice";
 import { useDebounce } from "~/hooks/use-debounce";
-import { useDialogState } from "~/hooks/use-dialog-state";
 import {
   type IReimbursementRequest,
   type IReimbursementsFilterQuery,
 } from "~/types/reimbursement.types";
-import { currencyFormat } from "~/utils/currencyFormat";
-import { showToast } from "../core/Toast";
 import TableCell from "../core/table/TableCell";
 import ApprovalTableAnalytics from "./analytics/ApprovalTableAnalytics";
 
@@ -33,7 +31,9 @@ const ReimbursementsCardView = dynamic(
   () => import("~/app/components/reimbursement-view"),
 );
 const SideDrawer = dynamic(() => import("~/app/components/core/SideDrawer"));
-const Dialog = dynamic(() => import("~/app/components/core/Dialog"));
+const BulkApproveReimbursementsDialog = dynamic(
+  () => import("./dialogs/approval/BulkApproveReimbursementsDialog"),
+);
 
 const StatusFilter = dynamic(
   () => import("~/app/components/core/table/filters/StatusFilter"),
@@ -53,7 +53,7 @@ const MyApprovals: React.FC = () => {
   const dispatch = useAppDispatch();
   const ability = useAbility(AbilityContext);
   const { assignedRole } = useAppSelector((state) => state.session);
-  const { selectedItems, filters } = useAppSelector(
+  const { selectedItems, filters, focusedReimbursementId } = useAppSelector(
     (state) => state.pageTableState,
   );
 
@@ -66,12 +66,6 @@ const MyApprovals: React.FC = () => {
   });
   const debouncedSearchText = useDebounce(searchParams.search, 500);
   const [isSearching, setIsSearching] = useState<boolean>(false);
-
-  const [focusedReimbursementId, setFocusedReimbursementId] =
-    useState<number>();
-
-  const [approveReimbursement, { isLoading: isSubmitting }] =
-    useApproveReimbursementMutation();
 
   const { isFetching: analyticsIsLoading, data: analytics } =
     useApprovalAnalyticsQuery(
@@ -99,22 +93,6 @@ const MyApprovals: React.FC = () => {
       skip: !assignedRole,
     },
   );
-
-  const {
-    isVisible,
-    open: openReimbursementView,
-    close: closeReimbursementView,
-  } = useDialogState();
-
-  const {
-    isVisible: bulkApproveDialogIsOpen,
-    open: openBulkApproveDialog,
-    close: closeBulkApproveDialog,
-  } = useDialogState();
-
-  const setSelectedItemsState = (value: number[]) => {
-    dispatch(setSelectedItems(value));
-  };
 
   const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
     setIsSearching(true);
@@ -223,8 +201,6 @@ const MyApprovals: React.FC = () => {
         id: "actions",
         accessorKey: "id",
         header: "",
-        setFocusedReimbursementId: setFocusedReimbursementId,
-        openDrawer: openReimbursementView,
       },
     ];
 
@@ -241,47 +217,8 @@ const MyApprovals: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
-  const handleBulkApprove = () => {
-    openBulkApproveDialog();
-  };
-
-  const handleConfirmBulkApprove = () => {
-    if (data && selectedItems) {
-      const matrixIds: number[] = [];
-
-      selectedItems.forEach((a) => {
-        const reimbursement = data.results.find((b) => +a === b.id);
-        if (reimbursement) {
-          matrixIds.push(reimbursement.id);
-        }
-      });
-
-      matrixIds.forEach((a) => {
-        void approveReimbursement({ id: a })
-          .unwrap()
-          .then(() => {
-            dispatch(
-              appApiSlice.util.invalidateTags([
-                { type: "ReimbursementRequest" },
-              ]),
-            );
-
-            showToast({
-              type: "success",
-              description: "Reimbursement Requests successfully approved!",
-            });
-
-            setSelectedItemsState([]);
-            closeBulkApproveDialog();
-          })
-          .catch(() => {
-            showToast({
-              type: "error",
-              description: "Approval failed!",
-            });
-          });
-      });
-    }
+  const toggleApprovalDialogVisibility = () => {
+    dispatch(toggleBulkApprovalDialog());
   };
 
   useEffect(() => {
@@ -307,7 +244,7 @@ const MyApprovals: React.FC = () => {
             isLoading: !isSearching && isLoading,
             title: "For Approval",
             button: "approve",
-            buttonClickHandler: handleBulkApprove,
+            buttonClickHandler: toggleApprovalDialogVisibility,
             buttonIsVisible:
               ability.can("access", "CAN_BULK_APPROVE_REIMBURSEMENT") &&
               data &&
@@ -322,8 +259,8 @@ const MyApprovals: React.FC = () => {
           data={data?.results}
           columns={columns}
           handleMobileClick={(e: number) => {
-            setFocusedReimbursementId(e);
-            openReimbursementView();
+            dispatch(setFocusedReimbursementId(e));
+            dispatch(toggleSideDrawer());
           }}
           pagination={{
             count: data?.count!,
@@ -333,88 +270,26 @@ const MyApprovals: React.FC = () => {
         />
       </div>
 
+      <BulkApproveReimbursementsDialog
+        data={data}
+        selectedReimbursement={data?.results.find(
+          (a) => a.id === selectedItems[0],
+        )}
+      />
+
       <SideDrawer
         title={
           !reimbursementRequestDataIsLoading && reimbursementRequestData
             ? reimbursementRequestData.reference_no
             : "..."
         }
-        isVisible={isVisible}
-        closeDrawer={closeReimbursementView}
       >
         <ReimbursementsCardView
-          closeDrawer={closeReimbursementView}
           isLoading={reimbursementRequestDataIsLoading}
           data={reimbursementRequestData}
-          setFocusedReimbursementId={setFocusedReimbursementId}
           isApproverView
         />
       </SideDrawer>
-
-      <Dialog
-        title={
-          selectedItems && selectedItems.length > 1
-            ? "Approve Reimbursements?"
-            : "Approve Reimbursement?"
-        }
-        isVisible={bulkApproveDialogIsOpen}
-        close={closeBulkApproveDialog}
-        hideCloseIcon
-      >
-        <div className="flex flex-col gap-8 pt-8">
-          {data && (
-            <>
-              <p className="text-neutral-800">
-                {selectedItems && selectedItems.length === 1 && data && (
-                  <>
-                    Are you sure you want to approve reimbursement request{" "}
-                    {
-                      data.results.find((a) => a.id === selectedItems[0])
-                        ?.reference_no
-                    }{" "}
-                    with total amount of{" "}
-                    {currencyFormat(
-                      // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
-                      +data.results.find((a) => a.id === selectedItems[0])
-                        ?.total_amount!,
-                    )}
-                    ?
-                  </>
-                )}
-
-                {selectedItems && selectedItems.length > 1 && (
-                  <>
-                    Are you sure you want to approve{" "}
-                    <strong>{selectedItems.length}</strong> selected
-                    reimbursement request?
-                  </>
-                )}
-              </p>
-
-              <div className="flex items-center gap-4">
-                <Button
-                  aria-label="Cancel"
-                  variant="neutral"
-                  buttonType="outlined"
-                  className="w-1/2"
-                  onClick={closeBulkApproveDialog}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  aria-label="Approve"
-                  className="w-1/2"
-                  onClick={handleConfirmBulkApprove}
-                  disabled={isSubmitting}
-                  loading={isSubmitting}
-                >
-                  Approve
-                </Button>
-              </div>
-            </>
-          )}
-        </div>
-      </Dialog>
     </>
   );
 };

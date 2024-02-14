@@ -4,7 +4,6 @@ import { type ColumnDef } from "@tanstack/react-table";
 import dynamic from "next/dynamic";
 import React, { useEffect, useMemo, useState, type ChangeEvent } from "react";
 import { useForm } from "react-hook-form";
-import { Button } from "~/app/components/core/Button";
 import Table from "~/app/components/core/table";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { appApiSlice } from "~/app/rtkQuery";
@@ -15,8 +14,11 @@ import {
   toggleCancelDialog,
   toggleFormDialog,
 } from "~/features/state/reimbursement-form-slice";
+import {
+  setFocusedReimbursementId,
+  toggleSideDrawer,
+} from "~/features/state/table-state.slice";
 import { useDebounce } from "~/hooks/use-debounce";
-import { useDialogState } from "~/hooks/use-dialog-state";
 import {
   ReimbursementTypeSchema,
   type ReimbursementFormType,
@@ -25,15 +27,20 @@ import {
   type IReimbursementRequest,
   type IReimbursementsFilterQuery,
 } from "~/types/reimbursement.types";
-import { classNames } from "~/utils/classNames";
 import TableCell from "../core/table/TableCell";
 import MemberAnalytics from "./analytics/MemberAnalytics";
-import ReimburseForm from "./reimburse-form";
 
 const ReimbursementsCardView = dynamic(
   () => import("~/app/components/reimbursement-view"),
 );
-const Dialog = dynamic(() => import("~/app/components/core/Dialog"));
+const CreateReimbursementDialog = dynamic(
+  () => import("./dialogs/CreateReimbursementDialog"),
+);
+
+const CancelReimbursementCreationDialog = dynamic(
+  () => import("./dialogs/CancelReimbursementCreationDialog"),
+);
+
 const SideDrawer = dynamic(() => import("~/app/components/core/SideDrawer"));
 const StatusFilter = dynamic(
   () => import("~/app/components/core/table/filters/StatusFilter"),
@@ -49,15 +56,13 @@ const DateFiledFilter = dynamic(
 );
 
 const MyReimbursements: React.FC = () => {
-  const {
-    formDialogIsOpen,
-    cancelDialogIsOpen,
-    reimbursementFormValues,
-    activeStep,
-    particularDetailsFormIsVisible,
-    selectedAttachmentMethod,
-  } = useAppSelector((state) => state.reimbursementForm);
-  const { filters } = useAppSelector((state) => state.pageTableState);
+  const { reimbursementFormValues, activeStep } = useAppSelector(
+    (state) => state.reimbursementForm,
+  );
+
+  const { filters, focusedReimbursementId } = useAppSelector(
+    (state) => state.pageTableState,
+  );
 
   const [searchParams, setSearchParams] = useState<IReimbursementsFilterQuery>({
     search: undefined,
@@ -72,9 +77,6 @@ const MyReimbursements: React.FC = () => {
 
   const dispatch = useAppDispatch();
 
-  const [focusedReimbursementId, setFocusedReimbursementId] =
-    useState<number>();
-
   const { isFetching, data } = useMyRequestsQuery({
     ...filters,
     search: debouncedSearchText,
@@ -88,8 +90,6 @@ const MyReimbursements: React.FC = () => {
     { id: focusedReimbursementId! },
     { skip: !focusedReimbursementId },
   );
-
-  const { isVisible, open, close } = useDialogState();
 
   const columns = React.useMemo<ColumnDef<IReimbursementRequest>[]>(() => {
     const defaultColumns: ColumnDef<IReimbursementRequest, unknown>[] = [
@@ -152,8 +152,6 @@ const MyReimbursements: React.FC = () => {
         id: "actions",
         accessorKey: "id",
         header: "",
-        setFocusedReimbursementId: setFocusedReimbursementId,
-        openDrawer: open,
       },
     ];
 
@@ -247,8 +245,8 @@ const MyReimbursements: React.FC = () => {
           data={data?.results}
           columns={columns}
           handleMobileClick={(e: number) => {
-            setFocusedReimbursementId(e);
-            open();
+            dispatch(setFocusedReimbursementId(e));
+            dispatch(toggleSideDrawer());
           }}
           pagination={{
             count: data?.count!,
@@ -258,66 +256,15 @@ const MyReimbursements: React.FC = () => {
         />
       </div>
 
-      <Dialog
-        title={classNames(
-          activeStep == 0 && "Reimbursement Type",
-          activeStep === 1 &&
-            !particularDetailsFormIsVisible &&
-            "Add Particulars",
-          activeStep === 1 && particularDetailsFormIsVisible && "Particular",
-          activeStep === 2 &&
-            !selectedAttachmentMethod &&
-            "Select Attachment Method",
-          activeStep === 2 &&
-            selectedAttachmentMethod === "capture" &&
-            "Take Photo",
-          activeStep === 2 &&
-            selectedAttachmentMethod === "upload" &&
-            "Upload Files",
-          activeStep === 3 && "Set Approver",
-        )}
-        isVisible={formDialogIsOpen}
-        close={handleOpenCancelDialog}
-        hideCloseIcon
-      >
-        <ReimburseForm
-          formReturn={useReimbursementTypeFormReturn}
-          handleOpenCancelDialog={handleOpenCancelDialog}
-        />
-      </Dialog>
+      <CreateReimbursementDialog
+        formReturn={useReimbursementTypeFormReturn}
+        onAbort={handleOpenCancelDialog}
+      />
 
-      <Dialog
-        title="Cancel Reimbursements?"
-        isVisible={cancelDialogIsOpen}
-        close={handleAbortCancellation}
-        hideCloseIcon
-      >
-        <div className="flex flex-col gap-8 pt-8">
-          <p className="text-neutral-800">
-            Are you sure you want to cancel reimbursement request?
-          </p>
-
-          <div className="flex items-center gap-4">
-            <Button
-              aria-label="No"
-              variant="neutral"
-              buttonType="outlined"
-              className="w-1/2"
-              onClick={handleAbortCancellation}
-            >
-              No
-            </Button>
-            <Button
-              aria-label="Yes,Cancel"
-              variant="danger"
-              className="w-1/2"
-              onClick={handleConfirmCancellation}
-            >
-              Yes, Cancel
-            </Button>
-          </div>
-        </div>
-      </Dialog>
+      <CancelReimbursementCreationDialog
+        onAbort={handleAbortCancellation}
+        onConfirm={handleConfirmCancellation}
+      />
 
       <SideDrawer
         title={
@@ -327,15 +274,11 @@ const MyReimbursements: React.FC = () => {
               ? "Error"
               : "..."
         }
-        isVisible={isVisible}
-        closeDrawer={close}
       >
         <ReimbursementsCardView
-          closeDrawer={close}
           isLoading={focusedReimbursementDataIsFetching}
           isError={focusedReimbursementDataIsError}
           data={focusedReimbursementData}
-          setFocusedReimbursementId={setFocusedReimbursementId}
         />
       </SideDrawer>
     </>

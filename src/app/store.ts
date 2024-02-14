@@ -1,5 +1,4 @@
 import { configureStore } from "@reduxjs/toolkit";
-// import testReducer from "../features/test-slice";
 import layoutStateSlice from "~/features/state/layout-state-slice";
 import reimbursementFormSlice from "~/features/state/reimbursement-form-slice";
 import pageTableStateSlice from "~/features/state/table-state.slice";

@@ -1,22 +1,30 @@
 import React from "react";
 import { Button } from "~/app/components/core/Button";
+import { useAppDispatch } from "~/app/hook";
+import {
+  setFocusedReimbursementId,
+  toggleSideDrawer,
+} from "~/features/state/table-state.slice";
 
 interface MemberButtonsProps {
-  onClose: () => void;
   onCancel: () => void;
   isCancellable: boolean;
 }
 
 const MemberButtons: React.FC<MemberButtonsProps> = ({
   onCancel,
-  onClose,
   isCancellable,
 }) => {
+  const dispatch = useAppDispatch();
+
   return (
     <>
       <Button
         aria-label="Back"
-        onClick={onClose}
+        onClick={() => {
+          dispatch(toggleSideDrawer());
+          dispatch(setFocusedReimbursementId(null));
+        }}
         className="w-full"
         buttonType="outlined"
         variant="neutral"
