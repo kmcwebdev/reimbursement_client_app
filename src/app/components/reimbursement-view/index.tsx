@@ -16,6 +16,7 @@ import {
   useCancelReimbursementMutation,
   useHoldReimbursementMutation,
   useRejectReimbursementMutation,
+  useTransitionToCreditedMutation,
 } from "~/features/api/actions-api-slice";
 import { useDialogState } from "~/hooks/use-dialog-state";
 import { useReportDownload } from "~/hooks/use-report-download";
@@ -113,6 +114,12 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
     close: closeHoldDialog,
   } = useDialogState();
 
+  const {
+    isVisible: confirmCreditDownloadIsOpen,
+    open: openCreditConfirmDialog,
+    close: closeCreditConfirmDialog,
+  } = useDialogState();
+
   const useRejectFormReturn = useForm<RejectReimbursementType>({
     resolver: zodResolver(RejectReimbursementSchema),
     mode: "onChange",
@@ -169,6 +176,9 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
         });
     }
   };
+
+  const [creditReimbursement, { isLoading: isCrediting }] =
+    useTransitionToCreditedMutation();
 
   const downloadReport = async () => {
     if (data) {
@@ -285,6 +295,33 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
     closeHoldDialog();
   };
 
+  const handleConfirmCreditReimbursements = () => {
+    if (data) {
+      const payload = {
+        request_ids: [data.id.toString()],
+      };
+
+      void creditReimbursement(payload)
+        .unwrap()
+        .then(() => {
+          showToast({
+            type: "success",
+            description:
+              "Reimbursement Requests status successfully changed to credited!",
+          });
+          closeRejectDialog();
+          closeDrawer();
+          useRejectFormReturn.reset();
+        })
+        .catch(() => {
+          showToast({
+            type: "error",
+            description: "Status update failed!",
+          });
+        });
+    }
+  };
+
   return (
     <div className="relative flex h-full w-full flex-col overflow-hidden">
       {!isLoading && !isError && data && (
@@ -359,8 +396,11 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
               isApproverView &&
               ability.can("access", "REIMBURSEMENT_VIEW_DOWNLOAD_HOLD") && (
                 <FinanceButtons
+                  isCrediting={data.request_status.name === "Processing"}
                   onApprove={openApproveDialog}
                   onReject={openRejectDialog}
+                  onClose={closeDrawer}
+                  onCredit={openCreditConfirmDialog}
                 />
               )}
 
@@ -579,6 +619,45 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
               loading={isCancelling}
             >
               Yes
+            </Button>
+          </div>
+        </div>
+      </Dialog>
+
+      <Dialog
+        title="Change Status to Credited?"
+        isVisible={confirmCreditDownloadIsOpen}
+        close={closeCreditConfirmDialog}
+        hideCloseIcon
+      >
+        <div className="flex flex-col gap-8 pt-8">
+          <p className="text-neutral-800">
+            Are you sure you want{" "}
+            <strong>
+              {data?.reimb_requestor.first_name}{" "}
+              {data?.reimb_requestor.last_name}, {data?.reference_no}
+            </strong>{" "}
+            reimbursement status to be changed to credited?
+          </p>
+
+          <div className="flex items-center gap-4">
+            <Button
+              aria-label="No"
+              variant="neutral"
+              buttonType="outlined"
+              className="w-1/2"
+              onClick={closeCreditConfirmDialog}
+            >
+              No
+            </Button>
+            <Button
+              aria-label="Yes,Download"
+              loading={isCrediting}
+              disabled={isCrediting}
+              className="w-1/2"
+              onClick={() => void handleConfirmCreditReimbursements()}
+            >
+              Yes, Update
             </Button>
           </div>
         </div>

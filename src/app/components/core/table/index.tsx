@@ -36,7 +36,7 @@ export type TableType =
 export type TableHeaderProps = {
   isLoading: boolean;
   title: string;
-  button: "approve" | "download" | "create";
+  button: "approve" | "download" | "create" | "credit";
   buttonClickHandler: () => void;
   buttonIsVisible: boolean;
   searchIsLoading: boolean;

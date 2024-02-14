@@ -110,7 +110,6 @@ export const actionsApiSlice = appApiSlice.injectEndpoints({
         { type: "ApprovalAnalytics" },
       ],
     }),
-
     reRouteApprover: builder.mutation<
       unknown,
       IApproverToEdit & {
@@ -120,6 +119,26 @@ export const actionsApiSlice = appApiSlice.injectEndpoints({
       query: (data) => {
         return {
           url: `/reimbursements/request/reroute/approver`,
+          method: "PATCH",
+          body: { ...data },
+        };
+      },
+      invalidatesTags: [
+        { type: "ReimbursementRequest" },
+        { type: "ReimbursementApprovalList" },
+        { type: "MyAnalytics" },
+        { type: "ApprovalAnalytics" },
+      ],
+    }),
+    transitionToCredited: builder.mutation<
+      unknown,
+      {
+        request_ids: string[];
+      }
+    >({
+      query: (data) => {
+        return {
+          url: `/reimbursements/request/credit`,
           method: "PATCH",
           body: { ...data },
         };
@@ -142,4 +161,5 @@ export const {
   useCancelReimbursementMutation,
   useHoldReimbursementMutation,
   useReRouteApproverMutation,
+  useTransitionToCreditedMutation,
 } = actionsApiSlice;

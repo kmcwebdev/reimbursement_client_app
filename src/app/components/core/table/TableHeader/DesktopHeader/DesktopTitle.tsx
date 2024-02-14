@@ -53,17 +53,24 @@ const DesktopTitle: React.FC<TableHeaderProps> = ({
                   Approve
                 </Button>
               )}
+
+              {button === "credit" && (
+                <Button aria-label="Credit" onClick={buttonClickHandler}>
+                  Credit
+                </Button>
+              )}
             </div>
           </CollapseWidthAnimation>
         </div>
       </div>
 
       {handleStatusToggle && statusToggleValue && (
-        <div className="w-40 pb-4">
+        <div className="w-64 pb-4">
           <ButtonGroup
             options={[
               { label: "Pending", value: 1 },
               { label: "On-hold", value: 5 },
+              { label: "Crediting", value: 3 },
             ]}
             label=""
             name="statusToggle"

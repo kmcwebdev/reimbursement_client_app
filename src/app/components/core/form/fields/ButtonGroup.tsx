@@ -74,7 +74,7 @@ const ButtonGroup = React.forwardRef<HTMLDivElement, ButtonGroupProps>(
           {formContext ? (
             <div
               {...formContext.register(name)}
-              className="mt-1 inline-flex flex-1 overflow-hidden rounded border border-neutral-500"
+              className="mt-1 inline-flex flex-1 overflow-hidden rounded bg-neutral-600"
               {...rest}
             >
               {options.map((option) => {
@@ -98,7 +98,7 @@ const ButtonGroup = React.forwardRef<HTMLDivElement, ButtonGroupProps>(
             </div>
           ) : (
             <div
-              className="mt-1 inline-flex flex-1 overflow-hidden rounded border border-neutral-500"
+              className="mt-1 inline-flex flex-1 overflow-hidden rounded bg-neutral-300"
               {...rest}
             >
               {options.map((option) => {
@@ -108,10 +108,10 @@ const ButtonGroup = React.forwardRef<HTMLDivElement, ButtonGroupProps>(
                     key={option.value}
                     type="button"
                     className={classNames(
-                      "relative inline-flex h-[32px] flex-1 border-collapse items-center justify-center px-3 py-2 text-sm font-medium transition-all focus:outline-none",
+                      "relative inline-flex h-[32px] flex-1 items-center justify-center border px-3 py-2 text-sm font-medium transition-all ",
                       selected?.value === option.value
-                        ? "bg-orange-600 text-white"
-                        : "bg-white text-neutral-600 hover:bg-orange-100 hover:text-orange-600",
+                        ? "rounded-md border-orange-600 bg-white"
+                        : "border-transparent bg-neutral-300 hover:text-orange-600",
                     )}
                     onClick={() => handleClick(option)}
                   >

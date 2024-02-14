@@ -42,10 +42,10 @@ const Pagination: React.FC<PaginationProps> = ({ data, currentPageLength }) => {
   };
 
   return (
-    <div className="flex items-center justify-between gap-2 border-neutral-300 bg-white px-2 py-4 md:border-t lg:px-0 lg:pb-0 lg:pt-5">
+    <div className="flex items-center justify-between gap-2 border-neutral-300 bg-white px-2 py-4 md:border-t lg:px-0 lg:pb-0 lg:pt-4">
       {data && (
         <>
-          <div className="flex items-center gap-2 text-xs text-neutral-800 md:text-md">
+          <div className="flex h-10 items-center gap-2 text-xs text-neutral-800 md:text-md">
             Showing{" "}
             {filters.page
               ? filters.page > 1

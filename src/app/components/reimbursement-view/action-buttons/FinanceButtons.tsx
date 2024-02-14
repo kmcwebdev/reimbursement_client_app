@@ -2,13 +2,19 @@ import React from "react";
 import { Button } from "~/app/components/core/Button";
 
 interface FinanceButtonsProps {
+  isCrediting: boolean;
   onApprove: () => void;
   onReject: () => void;
+  onCredit: () => void;
+  onClose: () => void;
 }
 
 const FinanceButtons: React.FC<FinanceButtonsProps> = ({
+  isCrediting,
   onApprove,
   onReject,
+  onClose,
+  onCredit,
 }) => {
   return (
     <div className="absolute bottom-0 grid h-[72px] w-full grid-cols-2 items-center justify-center gap-2 border-t border-neutral-300 px-5">
@@ -60,27 +66,52 @@ const FinanceButtons: React.FC<FinanceButtonsProps> = ({
         />
       )} */}
 
-      {/* {isOnHold && ( */}
-      <Button
-        aria-label="Reject"
-        className="w-full"
-        buttonType="outlined"
-        variant="danger"
-        onClick={onReject}
-      >
-        Reject
-      </Button>
-      {/* )} */}
+      {!isCrediting && (
+        <>
+          <Button
+            aria-label="Reject"
+            className="w-full"
+            buttonType="outlined"
+            variant="danger"
+            onClick={onReject}
+          >
+            Reject
+          </Button>
 
-      <Button
-        aria-label="Download"
-        className="w-full"
-        buttonType="filled"
-        variant="success"
-        onClick={onApprove}
-      >
-        Download
-      </Button>
+          <Button
+            aria-label="Download"
+            className="w-full"
+            buttonType="filled"
+            variant="success"
+            onClick={onApprove}
+          >
+            Download
+          </Button>
+        </>
+      )}
+
+      {isCrediting && (
+        <>
+          <Button
+            aria-label="Back"
+            className="w-full"
+            buttonType="outlined"
+            variant="neutral"
+            onClick={onClose}
+          >
+            Back
+          </Button>
+
+          <Button
+            aria-label="Credit"
+            className="w-full"
+            buttonType="filled"
+            onClick={onCredit}
+          >
+            Credit
+          </Button>
+        </>
+      )}
     </div>
   );
 };

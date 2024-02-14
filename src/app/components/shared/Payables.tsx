@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import React, { useEffect, useState, type ChangeEvent } from "react";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { appApiSlice } from "~/app/rtkQuery";
+import { useTransitionToCreditedMutation } from "~/features/api/actions-api-slice";
 import { useApprovalAnalyticsQuery } from "~/features/api/analytics-api-slice";
 import {
   useGetApprovalListQuery,
@@ -85,6 +86,15 @@ const Payables: React.FC = () => {
     open: openReportConfirmDialog,
     close: closeReportConfirmDialog,
   } = useDialogState();
+
+  const {
+    isVisible: confirmCreditDownloadIsOpen,
+    open: openCreditConfirmDialog,
+    close: closeCreditConfirmDialog,
+  } = useDialogState();
+
+  const [creditReimbursement, { isLoading: isCrediting }] =
+    useTransitionToCreditedMutation();
 
   const { download: exportReport } = useReportDownload({
     onSuccess: () => {
@@ -298,6 +308,7 @@ const Payables: React.FC = () => {
 
   useEffect(() => {
     if (selectedStatusValue) {
+      dispatch(setSelectedItems([]));
       dispatch(
         setPageTableFilters({
           ...filters,
@@ -310,6 +321,30 @@ const Payables: React.FC = () => {
 
   const handleStatusToggleChange = (e: ButtonGroupOption) => {
     setSelectedStatusValue(+e.value);
+  };
+
+  const handleConfirmCreditReimbursements = () => {
+    const payload = {
+      request_ids: selectedItems.map((item) => item.toString()),
+    };
+
+    void creditReimbursement(payload)
+      .unwrap()
+      .then(() => {
+        showToast({
+          type: "success",
+          description:
+            "Reimbursement Request status successfully changed to credited!",
+        });
+        dispatch(setSelectedItems([]));
+        closeCreditConfirmDialog();
+      })
+      .catch(() => {
+        showToast({
+          type: "error",
+          description: "Status update failed!",
+        });
+      });
   };
 
   return (
@@ -325,8 +360,11 @@ const Payables: React.FC = () => {
           header={{
             isLoading: !isSearching && isFetching,
             title: "For Processing",
-            button: "download",
-            buttonClickHandler: openReportConfirmDialog,
+            button: selectedStatusValue === 3 ? "credit" : "download",
+            buttonClickHandler:
+              selectedStatusValue === 3
+                ? openCreditConfirmDialog
+                : openReportConfirmDialog,
             buttonIsVisible: data && data.results.length > 0 ? true : false,
             handleSearch: handleSearch,
             searchIsLoading: isFetching,
@@ -360,6 +398,7 @@ const Payables: React.FC = () => {
             isApproverView
           />
         </SideDrawer>
+
         <Dialog
           title="Download Report"
           isVisible={confirmReportDownloadIsOpen}
@@ -425,6 +464,72 @@ const Payables: React.FC = () => {
                 onClick={() => void downloadReport()}
               >
                 Yes, Download
+              </Button>
+            </div>
+          </div>
+        </Dialog>
+
+        <Dialog
+          title="Change Status to Credited?"
+          isVisible={confirmCreditDownloadIsOpen}
+          close={closeCreditConfirmDialog}
+          hideCloseIcon
+        >
+          <div className="flex flex-col gap-8 pt-8">
+            {selectedItems.length === 0 && (
+              <p className="text-neutral-800">
+                Are you sure you want <strong>all</strong> reimbursements status
+                to be changed to credited?
+              </p>
+            )}
+
+            {selectedItems.length === 1 && (
+              <p className="text-neutral-800">
+                Are you sure you want{" "}
+                <strong>
+                  {
+                    data?.results.find((a) => a.id === selectedItems[0])
+                      ?.reimb_requestor.first_name
+                  }{" "}
+                  {
+                    data?.results.find((a) => a.id === selectedItems[0])
+                      ?.reimb_requestor.last_name
+                  }
+                  ,{" "}
+                  {
+                    data?.results.find((a) => a.id === selectedItems[0])
+                      ?.reference_no
+                  }
+                </strong>{" "}
+                reimbursements status to be changed to credited?
+              </p>
+            )}
+
+            {selectedItems.length > 1 && (
+              <p className="text-neutral-800">
+                Are you sure you want <strong>{selectedItems.length}</strong>{" "}
+                reimbursements status to be changed to credited?
+              </p>
+            )}
+
+            <div className="flex items-center gap-4">
+              <Button
+                aria-label="No"
+                variant="neutral"
+                buttonType="outlined"
+                className="w-1/2"
+                onClick={closeCreditConfirmDialog}
+              >
+                No
+              </Button>
+              <Button
+                aria-label="Yes,Update"
+                loading={isCrediting}
+                disabled={isCrediting}
+                className="w-1/2"
+                onClick={() => void handleConfirmCreditReimbursements()}
+              >
+                Yes, Update
               </Button>
             </div>
           </div>

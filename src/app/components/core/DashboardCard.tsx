@@ -16,7 +16,7 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
 }) => {
   return (
     <>
-      <div className="lg:[234px] hidden h-[120px] w-full flex-col gap-2 rounded border border-neutral-300 bg-white p-4 sm:flex xl:w-[312px]">
+      <div className="hidden h-[120px] w-full flex-col gap-2 rounded border border-neutral-300 bg-white p-4 sm:flex  xl:w-[240px]">
         <span>{icon}</span>
         <p className="text-sm text-neutral-800 md:text-base">{label}</p>
         <div className="text-md font-bold text-neutral-900 lg:text-lg">
@@ -46,7 +46,7 @@ export default DashboardCard;
 
 export const DashboardCardSkeleton: React.FC = () => {
   return (
-    <div className="lg:[234px] lg:[234px] flex h-[80px] w-full flex-col justify-between gap-2 rounded border border-neutral-300 bg-white px-3 py-4 md:h-[120px] md:px-4 xl:w-[312px]">
+    <div className="flex h-[80px] w-full flex-col justify-between gap-2 rounded border border-neutral-300 bg-white px-3 py-4 md:h-[120px] md:px-4 xl:w-[240px]">
       <div className="flex justify-between">
         <SkeletonLoading className="h-5 w-5 rounded-md" />
         <SkeletonLoading className="h-5 w-5 rounded-md md:hidden" />

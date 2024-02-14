@@ -15,7 +15,6 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
       query: (query) => {
         const searchParams = createSearchParams(query);
         searchParams?.delete("type");
-        searchParams?.append("ordering", "-created_at");
         return {
           url: `/reimbursements/request/${query.type}`,
           params: searchParams ? searchParams : {},
@@ -33,7 +32,6 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
       query: (query) => {
         const searchParams = createSearchParams(query);
         searchParams?.delete("type");
-        searchParams?.append("ordering", "-created_at");
         return {
           url: `/reimbursements/request/administrator/all`,
           params: searchParams ? searchParams : {},
@@ -73,7 +71,6 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
           }
         }
         searchParams?.delete("type");
-        searchParams?.append("ordering", "-created_at");
         return {
           url: `/reimbursements/request/${query.type}/history`,
           params:
