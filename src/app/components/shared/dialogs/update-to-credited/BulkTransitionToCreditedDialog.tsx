@@ -1,7 +1,10 @@
 import React from "react";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { useTransitionToCreditedMutation } from "~/features/api/actions-api-slice";
-import { toggleBulkCreditDialog } from "~/features/state/table-state.slice";
+import {
+  setSelectedItems,
+  toggleBulkCreditDialog,
+} from "~/features/state/table-state.slice";
 import { type IReimbursementRequest } from "~/types/reimbursement.types";
 import { Button } from "../../../core/Button";
 import Dialog from "../../../core/Dialog";
@@ -39,6 +42,7 @@ const BulkTransitionToCreditedDialog: React.FC<
             "Reimbursement Requests status successfully changed to credited!",
         });
         onAbort();
+        dispatch(setSelectedItems([]));
       })
       .catch(() => {
         showToast({

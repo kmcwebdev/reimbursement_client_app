@@ -31,6 +31,7 @@ const TableCheckbox: React.FC<IndeterminateCheckboxProps> = ({
       <input
         aria-label="Table Checkbox"
         name="table-checkbox"
+        id="table-checkbox"
         type="checkbox"
         ref={ref}
         className={classNames(

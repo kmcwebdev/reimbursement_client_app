@@ -31,7 +31,9 @@ const Checkbox = ({
       <div>
         <div className="relative flex items-start">
           <div className="flex h-6 items-center">
-            <label className="sr-only">Checkbox</label>
+            <label htmlFor={name} className="sr-only">
+              Checkbox
+            </label>
             {formContext && (
               <input
                 {...formContext.register(name)}
