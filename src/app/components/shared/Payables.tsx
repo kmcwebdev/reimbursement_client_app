@@ -4,18 +4,20 @@ import dynamic from "next/dynamic";
 import React, { useEffect, useState, type ChangeEvent } from "react";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { appApiSlice } from "~/app/rtkQuery";
-import { useTransitionToCreditedMutation } from "~/features/api/actions-api-slice";
 import { useApprovalAnalyticsQuery } from "~/features/api/analytics-api-slice";
 import {
   useGetApprovalListQuery,
   useGetRequestQuery,
 } from "~/features/api/reimbursement-api-slice";
 import {
+  setFocusedReimbursementId,
   setPageTableFilters,
   setSelectedItems,
+  toggleBulkCreditDialog,
+  toggleBulkDownloadReportDialog,
+  toggleSideDrawer,
 } from "~/features/state/table-state.slice";
 import { useDebounce } from "~/hooks/use-debounce";
-import { useDialogState } from "~/hooks/use-dialog-state";
 import { useReportDownload } from "~/hooks/use-report-download";
 import {
   type IReimbursementRequest,
@@ -23,7 +25,6 @@ import {
 } from "~/types/reimbursement.types";
 import { createSearchParams } from "~/utils/create-search-params";
 import { env } from "../../../../env.mjs";
-import { Button } from "../core/Button";
 import { showToast } from "../core/Toast";
 import { type ButtonGroupOption } from "../core/form/fields/ButtonGroup";
 import Table from "../core/table";
@@ -33,7 +34,12 @@ import ApprovalTableAnalytics from "./analytics/ApprovalTableAnalytics";
 
 const ReimbursementsCardView = dynamic(() => import("../reimbursement-view"));
 const SideDrawer = dynamic(() => import("../core/SideDrawer"));
-const Dialog = dynamic(() => import("../core/Dialog"));
+const BulkDownloadReportDialog = dynamic(
+  () => import("./dialogs/download-report/BulkDownloadReportDialog"),
+);
+const BulkTransitionToCreditedDialog = dynamic(
+  () => import("./dialogs/update-to-credited/BulkTransitionToCreditedDialog"),
+);
 const ReimbursementTypeFilter = dynamic(
   () => import("../core/table/filters/ReimbursementTypeFilter"),
 );
@@ -47,7 +53,7 @@ const DateFiledFilter = dynamic(
 
 const Payables: React.FC = () => {
   const { assignedRole } = useAppSelector((state) => state.session);
-  const { selectedItems, filters } = useAppSelector(
+  const { selectedItems, filters, focusedReimbursementId } = useAppSelector(
     (state) => state.pageTableState,
   );
 
@@ -62,8 +68,6 @@ const Payables: React.FC = () => {
   const [downloadReportLoading, setDownloadReportLoading] = useState(false);
   const debouncedSearchText = useDebounce(searchParams.search, 500);
   const [isSearching, setIsSearching] = useState<boolean>(false);
-  const [focusedReimbursementId, setFocusedReimbursementId] =
-    useState<number>();
 
   const [selectedStatusValue, setSelectedStatusValue] = useState<number>(1);
 
@@ -75,26 +79,9 @@ const Payables: React.FC = () => {
     { skip: !focusedReimbursementId },
   );
 
-  const {
-    isVisible,
-    open: openReimbursementView,
-    close: closeReimbursementView,
-  } = useDialogState();
-
-  const {
-    isVisible: confirmReportDownloadIsOpen,
-    open: openReportConfirmDialog,
-    close: closeReportConfirmDialog,
-  } = useDialogState();
-
-  const {
-    isVisible: confirmCreditDownloadIsOpen,
-    open: openCreditConfirmDialog,
-    close: closeCreditConfirmDialog,
-  } = useDialogState();
-
-  const [creditReimbursement, { isLoading: isCrediting }] =
-    useTransitionToCreditedMutation();
+  const toggleDownloadReportDialogVisibility = () => {
+    dispatch(toggleBulkDownloadReportDialog());
+  };
 
   const { download: exportReport } = useReportDownload({
     onSuccess: () => {
@@ -109,7 +96,7 @@ const Payables: React.FC = () => {
       );
       dispatch(setSelectedItems([]));
       setDownloadReportLoading(false);
-      closeReportConfirmDialog();
+      toggleDownloadReportDialogVisibility();
     },
     onError: (data) => {
       showToast({
@@ -119,7 +106,7 @@ const Payables: React.FC = () => {
           : "Error downloading.Please try again.",
       });
       setDownloadReportLoading(false);
-      closeReportConfirmDialog();
+      toggleDownloadReportDialogVisibility();
     },
   });
 
@@ -279,8 +266,6 @@ const Payables: React.FC = () => {
           id: "actions",
           accessorKey: "id",
           header: "",
-          setFocusedReimbursementId: setFocusedReimbursementId,
-          openDrawer: openReimbursementView,
         },
       ];
       defaultColumns.forEach((a) => {
@@ -323,28 +308,8 @@ const Payables: React.FC = () => {
     setSelectedStatusValue(+e.value);
   };
 
-  const handleConfirmCreditReimbursements = () => {
-    const payload = {
-      request_ids: selectedItems.map((item) => item.toString()),
-    };
-
-    void creditReimbursement(payload)
-      .unwrap()
-      .then(() => {
-        showToast({
-          type: "success",
-          description:
-            "Reimbursement Request status successfully changed to credited!",
-        });
-        dispatch(setSelectedItems([]));
-        closeCreditConfirmDialog();
-      })
-      .catch(() => {
-        showToast({
-          type: "error",
-          description: "Status update failed!",
-        });
-      });
+  const toggleCreditDialogVisibility = () => {
+    dispatch(toggleBulkCreditDialog());
   };
 
   return (
@@ -363,8 +328,8 @@ const Payables: React.FC = () => {
             button: selectedStatusValue === 3 ? "credit" : "download",
             buttonClickHandler:
               selectedStatusValue === 3
-                ? openCreditConfirmDialog
-                : openReportConfirmDialog,
+                ? toggleCreditDialogVisibility
+                : toggleDownloadReportDialogVisibility,
             buttonIsVisible: data && data.results.length > 0 ? true : false,
             handleSearch: handleSearch,
             searchIsLoading: isFetching,
@@ -373,6 +338,10 @@ const Payables: React.FC = () => {
           }}
           type="finance"
           loading={isFetching}
+          handleMobileClick={(e: number) => {
+            dispatch(setFocusedReimbursementId(e));
+            dispatch(toggleSideDrawer());
+          }}
           data={data?.results}
           columns={columns}
           pagination={{
@@ -387,153 +356,27 @@ const Payables: React.FC = () => {
               ? reimbursementRequestData.reference_no
               : "..."
           }
-          isVisible={isVisible}
-          closeDrawer={closeReimbursementView}
         >
           <ReimbursementsCardView
-            closeDrawer={closeReimbursementView}
             isLoading={reimbursementRequestDataIsLoading}
             data={reimbursementRequestData}
-            setFocusedReimbursementId={setFocusedReimbursementId}
             isApproverView
           />
         </SideDrawer>
 
-        <Dialog
-          title="Download Report"
-          isVisible={confirmReportDownloadIsOpen}
-          close={closeReportConfirmDialog}
-          hideCloseIcon
-        >
-          <div className="flex flex-col gap-8 pt-8">
-            {selectedItems.length === 0 && (
-              <p className="text-neutral-800">
-                Downloading the report will change the reimbursements status to
-                processing. Are you sure you want to download{" "}
-                <strong>all</strong> reimbursements?
-              </p>
-            )}
+        <BulkDownloadReportDialog
+          isLoading={downloadReportLoading}
+          onConfirm={() => void downloadReport()}
+          selectedReimbursement={data?.results.find(
+            (a) => a.id === selectedItems[0],
+          )}
+        />
 
-            {selectedItems.length === 1 && (
-              <p className="text-neutral-800">
-                Downloading the report will change the reimbursements status to
-                processing. Are you sure you want to download{" "}
-                <strong>
-                  {
-                    data?.results.find((a) => a.id === selectedItems[0])
-                      ?.reimb_requestor.first_name
-                  }{" "}
-                  {
-                    data?.results.find((a) => a.id === selectedItems[0])
-                      ?.reimb_requestor.last_name
-                  }
-                  ,{" "}
-                  {
-                    data?.results.find((a) => a.id === selectedItems[0])
-                      ?.reference_no
-                  }
-                </strong>{" "}
-                reimbursements?
-              </p>
-            )}
-
-            {selectedItems.length > 1 && (
-              <p className="text-neutral-800">
-                Downloading the report will change the reimbursements status to
-                processing. Are you sure you want to download{" "}
-                <strong>{selectedItems.length}</strong> reimbursements?
-              </p>
-            )}
-
-            <div className="flex items-center gap-4">
-              <Button
-                aria-label="No"
-                variant="neutral"
-                buttonType="outlined"
-                className="w-1/2"
-                onClick={closeReportConfirmDialog}
-              >
-                No
-              </Button>
-              <Button
-                aria-label="Yes,Download"
-                loading={downloadReportLoading}
-                disabled={downloadReportLoading}
-                variant="success"
-                className="w-1/2"
-                onClick={() => void downloadReport()}
-              >
-                Yes, Download
-              </Button>
-            </div>
-          </div>
-        </Dialog>
-
-        <Dialog
-          title="Change Status to Credited?"
-          isVisible={confirmCreditDownloadIsOpen}
-          close={closeCreditConfirmDialog}
-          hideCloseIcon
-        >
-          <div className="flex flex-col gap-8 pt-8">
-            {selectedItems.length === 0 && (
-              <p className="text-neutral-800">
-                Are you sure you want <strong>all</strong> reimbursements status
-                to be changed to credited?
-              </p>
-            )}
-
-            {selectedItems.length === 1 && (
-              <p className="text-neutral-800">
-                Are you sure you want{" "}
-                <strong>
-                  {
-                    data?.results.find((a) => a.id === selectedItems[0])
-                      ?.reimb_requestor.first_name
-                  }{" "}
-                  {
-                    data?.results.find((a) => a.id === selectedItems[0])
-                      ?.reimb_requestor.last_name
-                  }
-                  ,{" "}
-                  {
-                    data?.results.find((a) => a.id === selectedItems[0])
-                      ?.reference_no
-                  }
-                </strong>{" "}
-                reimbursements status to be changed to credited?
-              </p>
-            )}
-
-            {selectedItems.length > 1 && (
-              <p className="text-neutral-800">
-                Are you sure you want <strong>{selectedItems.length}</strong>{" "}
-                reimbursements status to be changed to credited?
-              </p>
-            )}
-
-            <div className="flex items-center gap-4">
-              <Button
-                aria-label="No"
-                variant="neutral"
-                buttonType="outlined"
-                className="w-1/2"
-                onClick={closeCreditConfirmDialog}
-              >
-                No
-              </Button>
-              <Button
-                aria-label="Yes,Update"
-                loading={isCrediting}
-                disabled={isCrediting}
-                className="w-1/2"
-                onClick={() => void handleConfirmCreditReimbursements()}
-              >
-                Yes, Update
-              </Button>
-            </div>
-          </div>
-        </Dialog>
+        <BulkTransitionToCreditedDialog
+          selectedReimbursement={data?.results.find(
+            (a) => a.id === selectedItems[0],
+          )}
+        />
       </div>
     </>
   );

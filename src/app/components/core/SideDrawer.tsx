@@ -1,23 +1,28 @@
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment, type PropsWithChildren } from "react";
 import { MdClose } from "react-icons-all-files/md/MdClose";
+import { useAppDispatch, useAppSelector } from "~/app/hook";
+import {
+  setFocusedReimbursementId,
+  toggleSideDrawer,
+} from "~/features/state/table-state.slice";
 import { barlow_Condensed } from "~/styles/fonts/barlowCondensed";
 import { karla } from "~/styles/fonts/karla";
 
 export interface DrawerProps extends PropsWithChildren {
-  isVisible: boolean;
-  closeDrawer: () => void;
   title?: string;
 }
 
-const SideDrawer: React.FC<DrawerProps> = ({
-  closeDrawer,
-  isVisible,
-  title,
-  children,
-}) => {
+const SideDrawer: React.FC<DrawerProps> = ({ title, children }) => {
+  const { drawerIsOpen } = useAppSelector((state) => state.pageTableState);
+  const dispatch = useAppDispatch();
+  const closeDrawer = () => {
+    dispatch(toggleSideDrawer());
+    dispatch(setFocusedReimbursementId(null));
+  };
+
   return (
-    <Transition.Root show={isVisible} as={Fragment}>
+    <Transition.Root show={drawerIsOpen} as={Fragment}>
       <Dialog
         as="div"
         className={`${karla.variable} ${barlow_Condensed.variable} relative z-20`}

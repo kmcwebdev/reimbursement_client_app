@@ -2,7 +2,11 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { type CellContext } from "@tanstack/react-table";
 import React from "react";
-import { useAppSelector } from "~/app/hook";
+import { useAppDispatch, useAppSelector } from "~/app/hook";
+import {
+  setFocusedReimbursementId,
+  toggleSideDrawer,
+} from "~/features/state/table-state.slice";
 import { type IUser } from "~/features/state/user-state.slice";
 import { type ReimbursementRequestType } from "~/types/reimbursement.request-type";
 import {
@@ -21,6 +25,7 @@ const TableCell: React.FC<CellContext<IReimbursementRequest, unknown>> = (
   props,
 ) => {
   const { user } = useAppSelector((state) => state.session);
+  const dispatch = useAppDispatch();
 
   const nonPlainTextCells = [
     "Status",
@@ -131,22 +136,18 @@ const TableCell: React.FC<CellContext<IReimbursementRequest, unknown>> = (
         currencyFormat(props.getValue() as number)}
 
       {/* VIEW BUTTON  */}
-      {props.column.columnDef.id === "actions" &&
-        props.column.columnDef.setFocusedReimbursementId &&
-        props.column.columnDef.openDrawer && (
-          <Button
-            aria-label="View"
-            buttonType="text"
-            onClick={() => {
-              props.column.columnDef.setFocusedReimbursementId(
-                props.getValue() as number,
-              );
-              props.column.columnDef.openDrawer();
-            }}
-          >
-            View
-          </Button>
-        )}
+      {props.column.columnDef.id === "actions" && (
+        <Button
+          aria-label="View"
+          buttonType="text"
+          onClick={() => {
+            dispatch(setFocusedReimbursementId(props.getValue() as number));
+            dispatch(toggleSideDrawer());
+          }}
+        >
+          View
+        </Button>
+      )}
     </>
   );
 };

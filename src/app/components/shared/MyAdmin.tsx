@@ -2,7 +2,6 @@
 import { type ColumnDef } from "@tanstack/react-table";
 import dynamic from "next/dynamic";
 import React, { useState, type ChangeEvent } from "react";
-import { Button } from "~/app/components/core/Button";
 import Table from "~/app/components/core/table";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { appApiSlice } from "~/app/rtkQuery";
@@ -10,9 +9,13 @@ import {
   useGetAdminListQuery,
   useGetRequestQuery,
 } from "~/features/api/reimbursement-api-slice";
-import { setSelectedItems } from "~/features/state/table-state.slice";
+import {
+  setFocusedReimbursementId,
+  setSelectedItems,
+  toggleBulkDownloadReportDialog,
+  toggleSideDrawer,
+} from "~/features/state/table-state.slice";
 import { useDebounce } from "~/hooks/use-debounce";
-import { useDialogState } from "~/hooks/use-dialog-state";
 import { useReportDownload } from "~/hooks/use-report-download";
 import {
   type IReimbursementRequest,
@@ -27,7 +30,9 @@ import AdminAnalytics from "./analytics/AdminAnalytics";
 const ReimbursementsCardView = dynamic(
   () => import("~/app/components/reimbursement-view"),
 );
-const Dialog = dynamic(() => import("~/app/components/core/Dialog"));
+const BulkDownloadReportDialog = dynamic(
+  () => import("./dialogs/download-report/BulkDownloadReportDialog"),
+);
 const SideDrawer = dynamic(() => import("~/app/components/core/SideDrawer"));
 const StatusFilter = dynamic(
   () => import("~/app/components/core/table/filters/StatusFilter"),
@@ -43,13 +48,10 @@ const DateFiledFilter = dynamic(
 );
 
 const MyAdmin: React.FC = () => {
-  const { selectedItems, filters } = useAppSelector(
+  const { selectedItems, filters, focusedReimbursementId } = useAppSelector(
     (state) => state.pageTableState,
   );
   const dispatch = useAppDispatch();
-
-  const [focusedReimbursementId, setFocusedReimbursementId] =
-    useState<number>();
 
   const [downloadReportLoading, setDownloadReportLoading] = useState(false);
 
@@ -62,7 +64,9 @@ const MyAdmin: React.FC = () => {
     { skip: !focusedReimbursementId },
   );
 
-  const { isVisible, open, close } = useDialogState();
+  const toggleDownloadReportDialogVisibility = () => {
+    dispatch(toggleBulkDownloadReportDialog());
+  };
   const [isSearching, setIsSearching] = useState<boolean>(false);
 
   const [searchParams, setSearchParams] = useState<IReimbursementsFilterQuery>({
@@ -180,8 +184,6 @@ const MyAdmin: React.FC = () => {
         id: "actions",
         accessorKey: "id",
         header: "",
-        setFocusedReimbursementId: setFocusedReimbursementId,
-        openDrawer: open,
       },
     ];
 
@@ -199,12 +201,6 @@ const MyAdmin: React.FC = () => {
     setSearchParams({ ...searchParams, search: searchValue });
   };
 
-  const {
-    isVisible: confirmReportDownloadIsOpen,
-    open: openReportConfirmDialog,
-    close: closeReportConfirmDialog,
-  } = useDialogState();
-
   const { download: exportReport } = useReportDownload({
     onSuccess: () => {
       dispatch(setSelectedItems([]));
@@ -218,7 +214,7 @@ const MyAdmin: React.FC = () => {
       );
       dispatch(setSelectedItems([]));
       setDownloadReportLoading(false);
-      closeReportConfirmDialog();
+      toggleDownloadReportDialogVisibility();
     },
     onError: (data) => {
       showToast({
@@ -228,7 +224,7 @@ const MyAdmin: React.FC = () => {
           : "Error downloading.Please try again.",
       });
       setDownloadReportLoading(false);
-      closeReportConfirmDialog();
+      toggleDownloadReportDialogVisibility();
     },
   });
 
@@ -275,7 +271,7 @@ const MyAdmin: React.FC = () => {
               isLoading: !isSearching && isFetching,
               title: "Reimbursements",
               button: "download",
-              buttonClickHandler: openReportConfirmDialog,
+              buttonClickHandler: toggleDownloadReportDialogVisibility,
               buttonIsVisible: data && data.results.length > 0 ? true : false,
               handleSearch: handleSearch,
               searchIsLoading: isFetching,
@@ -285,8 +281,8 @@ const MyAdmin: React.FC = () => {
             data={data?.results}
             columns={columns}
             handleMobileClick={(e: number) => {
-              setFocusedReimbursementId(e);
-              open();
+              dispatch(setFocusedReimbursementId(e));
+              dispatch(toggleSideDrawer());
             }}
             pagination={{
               count: data?.count!,
@@ -305,85 +301,23 @@ const MyAdmin: React.FC = () => {
               ? "Error"
               : "..."
         }
-        isVisible={isVisible}
-        closeDrawer={close}
       >
         <ReimbursementsCardView
           isAdminView
-          closeDrawer={close}
           isLoading={focusedReimbursementDataIsFetching}
           isError={focusedReimbursementDataIsError}
           data={focusedReimbursementData}
-          setFocusedReimbursementId={setFocusedReimbursementId}
         />
       </SideDrawer>
 
-      <Dialog
-        title="Download Report"
-        isVisible={confirmReportDownloadIsOpen}
-        close={closeReportConfirmDialog}
-        hideCloseIcon
-      >
-        <div className="flex flex-col gap-8 pt-8">
-          {selectedItems.length === 0 && (
-            <p className="text-neutral-800">
-              Are you sure you want to download <strong>all</strong>{" "}
-              reimbursements?
-            </p>
-          )}
-
-          {selectedItems.length === 1 && (
-            <p className="text-neutral-800">
-              Are you sure you want to download{" "}
-              <strong>
-                {
-                  data?.results.find((a) => a.id === selectedItems[0])
-                    ?.reimb_requestor.first_name
-                }{" "}
-                {
-                  data?.results.find((a) => a.id === selectedItems[0])
-                    ?.reimb_requestor.last_name
-                }
-                ,{" "}
-                {
-                  data?.results.find((a) => a.id === selectedItems[0])
-                    ?.reference_no
-                }
-              </strong>{" "}
-              reimbursements?
-            </p>
-          )}
-
-          {selectedItems.length > 1 && (
-            <p className="text-neutral-800">
-              Are you sure you want to download{" "}
-              <strong>{selectedItems.length}</strong> reimbursements?
-            </p>
-          )}
-
-          <div className="flex items-center gap-4">
-            <Button
-              aria-label="No"
-              variant="neutral"
-              buttonType="outlined"
-              className="w-1/2"
-              onClick={closeReportConfirmDialog}
-            >
-              No
-            </Button>
-            <Button
-              aria-label="Yes,Download"
-              loading={downloadReportLoading}
-              disabled={downloadReportLoading}
-              variant="success"
-              className="w-1/2"
-              onClick={() => void downloadReport()}
-            >
-              Yes, Download
-            </Button>
-          </div>
-        </div>
-      </Dialog>
+      <BulkDownloadReportDialog
+        isLoading={downloadReportLoading}
+        downloadType="report-only"
+        onConfirm={() => void downloadReport()}
+        selectedReimbursement={data?.results.find(
+          (a) => a.id === selectedItems[0],
+        )}
+      />
     </>
   );
 };

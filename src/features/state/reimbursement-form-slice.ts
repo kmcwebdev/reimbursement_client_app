@@ -27,7 +27,7 @@ const initialState: ReimburseFormState = {
 };
 
 const reimbursementFormSlice = createSlice({
-  name: "reimburse-form",
+  name: "reimburseFormSlice",
   initialState,
   reducers: {
     setActiveStep(state, action: PayloadAction<number>) {
