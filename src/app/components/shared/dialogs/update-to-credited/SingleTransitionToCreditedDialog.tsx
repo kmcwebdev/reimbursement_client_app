@@ -44,7 +44,6 @@ const SingleTransitionToCreditedDialog: React.FC<
               "Reimbursement Requests status successfully changed to credited!",
           });
           onAbort();
-
           dispatch(toggleSideDrawer());
         })
         .catch(() => {
