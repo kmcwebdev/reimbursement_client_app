@@ -2,8 +2,8 @@ import React from "react";
 import { Button } from "~/app/components/core/Button";
 import { useAppDispatch } from "~/app/hook";
 import {
+  closeSideDrawer,
   setFocusedReimbursementId,
-  toggleSideDrawer,
 } from "~/features/state/table-state.slice";
 
 interface FinanceButtonsProps {
@@ -55,7 +55,7 @@ const FinanceButtons: React.FC<FinanceButtonsProps> = ({
             buttonType="outlined"
             variant="neutral"
             onClick={() => {
-              dispatch(toggleSideDrawer());
+              dispatch(closeSideDrawer());
               dispatch(setFocusedReimbursementId(null));
             }}
           >

@@ -5,7 +5,7 @@ import { showToast } from "~/app/components/core/Toast";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { useTransitionToCreditedMutation } from "~/features/api/actions-api-slice";
 import {
-  toggleSideDrawer,
+  closeSideDrawer,
   toggleSingleCreditDialog,
 } from "~/features/state/table-state.slice";
 import { type IReimbursementRequest } from "~/types/reimbursement.types";
@@ -44,7 +44,7 @@ const SingleTransitionToCreditedDialog: React.FC<
               "Reimbursement Requests status successfully changed to credited!",
           });
           onAbort();
-          dispatch(toggleSideDrawer());
+          dispatch(closeSideDrawer());
         })
         .catch(() => {
           showToast({

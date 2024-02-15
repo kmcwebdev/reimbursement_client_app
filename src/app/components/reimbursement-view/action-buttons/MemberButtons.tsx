@@ -2,8 +2,8 @@ import React from "react";
 import { Button } from "~/app/components/core/Button";
 import { useAppDispatch } from "~/app/hook";
 import {
+  closeSideDrawer,
   setFocusedReimbursementId,
-  toggleSideDrawer,
 } from "~/features/state/table-state.slice";
 
 interface MemberButtonsProps {
@@ -22,7 +22,7 @@ const MemberButtons: React.FC<MemberButtonsProps> = ({
       <Button
         aria-label="Back"
         onClick={() => {
-          dispatch(toggleSideDrawer());
+          dispatch(closeSideDrawer());
           dispatch(setFocusedReimbursementId(null));
         }}
         className="w-full"

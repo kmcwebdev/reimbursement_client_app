@@ -12,10 +12,10 @@ import {
   useGetRequestsHistoryQuery,
 } from "~/features/api/reimbursement-api-slice";
 import {
+  openSideDrawer,
   setFocusedReimbursementId,
   setSelectedItems,
   toggleBulkDownloadReportDialog,
-  toggleSideDrawer,
 } from "~/features/state/table-state.slice";
 import { useDebounce } from "~/hooks/use-debounce";
 import { useReportDownload } from "~/hooks/use-report-download";
@@ -309,7 +309,7 @@ const ReimbursementHistory: React.FC = () => {
           loading={isFetching}
           handleMobileClick={(e: number) => {
             dispatch(setFocusedReimbursementId(e));
-            dispatch(toggleSideDrawer());
+            dispatch(openSideDrawer());
           }}
           data={data?.results}
           columns={columns}

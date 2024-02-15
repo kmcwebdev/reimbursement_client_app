@@ -54,8 +54,11 @@ const TableStateSlice = createSlice({
     setFocusedReimbursementId(state, action: PayloadAction<number | null>) {
       state.focusedReimbursementId = action.payload;
     },
-    toggleSideDrawer(state) {
-      state.drawerIsOpen = !state.drawerIsOpen;
+    closeSideDrawer(state) {
+      state.drawerIsOpen = false;
+    },
+    openSideDrawer(state) {
+      state.drawerIsOpen = true;
     },
     resetPageTableState(state) {
       state.selectedItems = [];
@@ -97,7 +100,8 @@ export const {
   setSelectedItems,
   setPageTableFilters,
   setFocusedReimbursementId,
-  toggleSideDrawer,
+  closeSideDrawer,
+  openSideDrawer,
   resetPageTableState,
   toggleBulkApprovalDialog,
   toggleSingleApprovalDialog,

@@ -5,10 +5,10 @@ import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { appApiSlice } from "~/app/rtkQuery";
 import { AbilityContext } from "~/context/AbilityContext";
 import {
+  closeSideDrawer,
   toggleCancelDialog,
   toggleHoldDialog,
   toggleRejectDialog,
-  toggleSideDrawer,
   toggleSingleApprovalDialog,
   toggleSingleCreditDialog,
   toggleSingleDownloadReportDialog,
@@ -63,7 +63,7 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
   const dispatch = useAppDispatch();
 
   const closeDrawer = () => {
-    dispatch(toggleSideDrawer());
+    dispatch(closeSideDrawer());
   };
 
   const { download: exportReport } = useReportDownload({

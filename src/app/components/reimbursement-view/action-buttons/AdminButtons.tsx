@@ -2,8 +2,8 @@ import React from "react";
 import { AiOutlinePause } from "react-icons-all-files/ai/AiOutlinePause";
 import { useAppDispatch } from "~/app/hook";
 import {
-  setFocusedReimbursementId,
-  toggleSideDrawer,
+  closeSideDrawer,
+  setFocusedReimbursementId
 } from "~/features/state/table-state.slice";
 import { Button } from "../../core/Button";
 
@@ -28,7 +28,7 @@ const AdminButtons: React.FC<AdminButtonsProps> = ({
         buttonType="outlined"
         variant="neutral"
         onClick={() => {
-          dispatch(toggleSideDrawer());
+          dispatch(closeSideDrawer());
           dispatch(setFocusedReimbursementId(null));
         }}
       >
