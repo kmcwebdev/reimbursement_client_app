@@ -31,6 +31,7 @@ export const HRBPApproval: React.FC<Readonly<HRBPApprovalTemplateProps>> = ({
     <Text>Details of the reimbursement claim are as follows:</Text>
     <Text>Employee ID: {employeeId}</Text>
     <Text>Employee Name: {fullName}</Text>
+    <Text>Reference Number: {referenceNo}</Text>
     <Text>Expense Description: {expenseType}</Text>
     <Text>
       Expense Date: {parseTimezone(expenseDate).format("MMMM DD,YYYY")}

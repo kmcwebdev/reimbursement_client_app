@@ -3,6 +3,7 @@ import { parseTimezone } from "~/utils/parse-timezone";
 import EmailMain from "./email-components/EmailMain";
 
 interface RejectedTemplateProps {
+  referenceNo: string;
   fullName: string;
   employeeId: string;
   expenseType: string;
@@ -13,6 +14,7 @@ interface RejectedTemplateProps {
 }
 
 export const Rejected: React.FC<Readonly<RejectedTemplateProps>> = ({
+  referenceNo,
   fullName,
   employeeId,
   expenseType,
@@ -29,6 +31,7 @@ export const Rejected: React.FC<Readonly<RejectedTemplateProps>> = ({
     <Text>Below are the details of your request:</Text>
     <Text>Employee ID: {employeeId}</Text>
     <Text>Employee Name: {fullName}</Text>
+    <Text>Reference Number: {referenceNo}</Text>
     <Text>Expense Description: {expenseType}</Text>
     <Text>
       Expense Date: {parseTimezone(expenseDate).format("MMMM DD,YYYY")}
