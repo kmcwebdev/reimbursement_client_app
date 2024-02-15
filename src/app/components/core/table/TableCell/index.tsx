@@ -4,8 +4,8 @@ import { type CellContext } from "@tanstack/react-table";
 import React from "react";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import {
+  openSideDrawer,
   setFocusedReimbursementId,
-  toggleSideDrawer,
 } from "~/features/state/table-state.slice";
 import { type IUser } from "~/features/state/user-state.slice";
 import { type ReimbursementRequestType } from "~/types/reimbursement.request-type";
@@ -142,7 +142,7 @@ const TableCell: React.FC<CellContext<IReimbursementRequest, unknown>> = (
           buttonType="text"
           onClick={() => {
             dispatch(setFocusedReimbursementId(props.getValue() as number));
-            dispatch(toggleSideDrawer());
+            dispatch(openSideDrawer());
           }}
         >
           View

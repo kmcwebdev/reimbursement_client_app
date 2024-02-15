@@ -3,8 +3,8 @@ import { Fragment, type PropsWithChildren } from "react";
 import { MdClose } from "react-icons-all-files/md/MdClose";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import {
+  closeSideDrawer,
   setFocusedReimbursementId,
-  toggleSideDrawer,
 } from "~/features/state/table-state.slice";
 import { barlow_Condensed } from "~/styles/fonts/barlowCondensed";
 import { karla } from "~/styles/fonts/karla";
@@ -17,7 +17,7 @@ const SideDrawer: React.FC<DrawerProps> = ({ title, children }) => {
   const { drawerIsOpen } = useAppSelector((state) => state.pageTableState);
   const dispatch = useAppDispatch();
   const closeDrawer = () => {
-    dispatch(toggleSideDrawer());
+    dispatch(closeSideDrawer());
     dispatch(setFocusedReimbursementId(null));
   };
 

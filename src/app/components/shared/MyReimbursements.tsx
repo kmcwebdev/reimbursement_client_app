@@ -15,8 +15,8 @@ import {
   toggleFormDialog,
 } from "~/features/state/reimbursement-form-slice";
 import {
+  openSideDrawer,
   setFocusedReimbursementId,
-  toggleSideDrawer,
 } from "~/features/state/table-state.slice";
 import { useDebounce } from "~/hooks/use-debounce";
 import {
@@ -246,7 +246,7 @@ const MyReimbursements: React.FC = () => {
           columns={columns}
           handleMobileClick={(e: number) => {
             dispatch(setFocusedReimbursementId(e));
-            dispatch(toggleSideDrawer());
+            dispatch(openSideDrawer());
           }}
           pagination={{
             count: data?.count!,

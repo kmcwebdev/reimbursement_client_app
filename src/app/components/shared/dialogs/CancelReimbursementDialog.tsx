@@ -2,9 +2,9 @@ import React from "react";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { useCancelReimbursementMutation } from "~/features/api/actions-api-slice";
 import {
+  closeSideDrawer,
   setFocusedReimbursementId,
   toggleCancelDialog,
-  toggleSideDrawer,
 } from "~/features/state/table-state.slice";
 import { Button } from "../../core/Button";
 import Dialog from "../../core/Dialog";
@@ -34,7 +34,7 @@ const CancelReimbursementDialog: React.FC = () => {
             description: "Reimbursement Request successfully cancelled!",
           });
           onAbort();
-          dispatch(toggleSideDrawer());
+          dispatch(closeSideDrawer());
           dispatch(setFocusedReimbursementId(null));
         })
         .catch(() => {

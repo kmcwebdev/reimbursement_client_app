@@ -15,9 +15,9 @@ import {
   useGetRequestQuery,
 } from "~/features/api/reimbursement-api-slice";
 import {
+  openSideDrawer,
   setFocusedReimbursementId,
   toggleBulkApprovalDialog,
-  toggleSideDrawer,
 } from "~/features/state/table-state.slice";
 import { useDebounce } from "~/hooks/use-debounce";
 import {
@@ -262,7 +262,7 @@ const MyApprovals: React.FC = () => {
           columns={columns}
           handleMobileClick={(e: number) => {
             dispatch(setFocusedReimbursementId(e));
-            dispatch(toggleSideDrawer());
+            dispatch(openSideDrawer());
           }}
           pagination={{
             count: data?.count!,

@@ -4,9 +4,9 @@ import { useForm } from "react-hook-form";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { useRejectReimbursementMutation } from "~/features/api/actions-api-slice";
 import {
+  closeSideDrawer,
   setFocusedReimbursementId,
   toggleRejectDialog,
-  toggleSideDrawer,
 } from "~/features/state/table-state.slice";
 import {
   RejectReimbursementSchema,
@@ -51,7 +51,7 @@ const RejectReimbursementDialog: React.FC = () => {
             description: "Reimbursement Request successfully rejected!",
           });
           onAbort();
-          dispatch(toggleSideDrawer());
+          dispatch(closeSideDrawer());
           dispatch(setFocusedReimbursementId(null));
           formReturn.reset();
         })

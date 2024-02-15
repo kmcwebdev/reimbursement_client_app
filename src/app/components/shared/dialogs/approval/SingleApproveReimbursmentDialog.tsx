@@ -6,8 +6,8 @@ import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { appApiSlice } from "~/app/rtkQuery";
 import { useApproveReimbursementMutation } from "~/features/api/actions-api-slice";
 import {
+  closeSideDrawer,
   setFocusedReimbursementId,
-  toggleSideDrawer,
   toggleSingleApprovalDialog,
 } from "~/features/state/table-state.slice";
 import { type IReimbursementRequest } from "~/types/reimbursement.types";
@@ -53,7 +53,7 @@ const SingleApproveReimbursementsDialog: React.FC<
             });
 
             dispatch(setFocusedReimbursementId(null));
-            dispatch(toggleSideDrawer());
+            dispatch(closeSideDrawer());
 
             onAbort();
           })

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
 import { type ColumnDef } from "@tanstack/react-table";
 import dynamic from "next/dynamic";
-import React, { useEffect, useState, type ChangeEvent } from "react";
+import React, { useEffect, useMemo, useState, type ChangeEvent } from "react";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { appApiSlice } from "~/app/rtkQuery";
 import { useApprovalAnalyticsQuery } from "~/features/api/analytics-api-slice";
@@ -10,12 +10,12 @@ import {
   useGetRequestQuery,
 } from "~/features/api/reimbursement-api-slice";
 import {
+  openSideDrawer,
   setFocusedReimbursementId,
   setPageTableFilters,
   setSelectedItems,
   toggleBulkCreditDialog,
   toggleBulkDownloadReportDialog,
-  toggleSideDrawer,
 } from "~/features/state/table-state.slice";
 import { useDebounce } from "~/hooks/use-debounce";
 import { useReportDownload } from "~/hooks/use-report-download";
@@ -70,6 +70,10 @@ const Payables: React.FC = () => {
   const [isSearching, setIsSearching] = useState<boolean>(false);
 
   const [selectedStatusValue, setSelectedStatusValue] = useState<number>(1);
+
+  useMemo(() => {
+    setSelectedStatusValue(1);
+  }, []);
 
   const {
     isFetching: reimbursementRequestDataIsLoading,
@@ -340,7 +344,7 @@ const Payables: React.FC = () => {
           loading={isFetching}
           handleMobileClick={(e: number) => {
             dispatch(setFocusedReimbursementId(e));
-            dispatch(toggleSideDrawer());
+            dispatch(openSideDrawer());
           }}
           data={data?.results}
           columns={columns}
