@@ -328,7 +328,12 @@ const Payables: React.FC = () => {
         <Table
           header={{
             isLoading: !isSearching && isFetching,
-            title: "For Processing",
+            title:
+              selectedStatusValue === 3
+                ? "For Crediting"
+                : selectedStatusValue === 5
+                  ? "Onhold"
+                  : "For Processing",
             button: selectedStatusValue === 3 ? "credit" : "download",
             buttonClickHandler:
               selectedStatusValue === 3
