@@ -71,7 +71,7 @@ export const AbilityContextProvider: React.FC<PropsWithChildren> = ({
         me.groups.length === 0 &&
         !pathname.includes("/profile")
       ) {
-        return redirect("/profile");
+        redirect("/profile");
       }
 
       setTimeout(() => {
