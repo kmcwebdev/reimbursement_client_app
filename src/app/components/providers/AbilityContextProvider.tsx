@@ -66,15 +66,15 @@ export const AbilityContextProvider: React.FC<PropsWithChildren> = ({
 
   useMemo(() => {
     if (me && !meIsLoading) {
-      if (
-        !me.is_superuser &&
-        me.groups.length === 0 &&
-        !pathname.includes("/profile")
-      ) {
-        redirect("/profile");
-      }
-
       setTimeout(() => {
+        if (
+          !me.is_superuser &&
+          me.groups.length === 0 &&
+          !pathname.includes("/profile")
+        ) {
+          redirect("/profile");
+        }
+
         if (!assignedRole && me.groups.length > 0) {
           dispatch(setAssignedRole(me.groups[0]));
         }

@@ -6,6 +6,7 @@ import EmptyState from "./core/EmptyState";
 
 const ForbiddenPage: React.FC = () => {
   const router = useRouter();
+
   return (
     <div className="grid h-full w-full place-items-center">
       <div className="h-72 w-full">

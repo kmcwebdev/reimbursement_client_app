@@ -1,4 +1,5 @@
 "use client";
+import { redirect } from "next/navigation";
 import React from "react";
 import { useAppSelector } from "~/app/hook";
 import FinanceDashboard from "./Finance";
@@ -8,6 +9,14 @@ import MemberDashboard from "./Member";
 
 const DashboardComponent: React.FC = () => {
   const { user, assignedRole } = useAppSelector((state) => state.session);
+
+  if (!assignedRole && !user?.is_superuser) {
+    redirect("/profile");
+  }
+
+  if (!assignedRole && user?.is_superuser) {
+    redirect("/admin");
+  }
 
   return (
     <div>
