@@ -41,7 +41,10 @@ const StatusBadge: React.FC<StatusBadgeProps> = ({ status, label }) => {
       className={classNames(
         "block text-xs capitalize md:text-sm",
         statusVariant({ status }),
-        status === "default" && label ? " max-w-[150px]" : "max-w-[92px]",
+        (status === "default" && label) ||
+          (label && label.includes("Administrator"))
+          ? "max-w-[150px]"
+          : "max-w-[92px]",
       )}
     >
       <p className={classNames("truncate whitespace-nowrap")}>
