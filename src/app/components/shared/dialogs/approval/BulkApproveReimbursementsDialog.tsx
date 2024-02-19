@@ -5,10 +5,7 @@ import { showToast } from "~/app/components/core/Toast";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { appApiSlice } from "~/app/rtkQuery";
 import { useApproveReimbursementMutation } from "~/features/api/actions-api-slice";
-import {
-  setSelectedItems,
-  toggleBulkApprovalDialog,
-} from "~/features/state/table-state.slice";
+import { toggleBulkApprovalDialog } from "~/features/state/table-state.slice";
 import {
   type IReimbursementRequest,
   type IRequestListResponse,
@@ -47,6 +44,8 @@ const BulkApproveReimbursementsDialog: React.FC<
       });
     }
 
+    let processedItems = selectedItems.length;
+
     matrixIds.forEach((a) => {
       void approveReimbursement({ id: a })
         .unwrap()
@@ -55,13 +54,17 @@ const BulkApproveReimbursementsDialog: React.FC<
             appApiSlice.util.invalidateTags([{ type: "ReimbursementRequest" }]),
           );
 
-          showToast({
-            type: "success",
-            description: "Reimbursement Requests successfully approved!",
-          });
+          processedItems = processedItems - 1;
 
-          dispatch(setSelectedItems([]));
-          onAbort();
+          console.log(processedItems);
+
+          if (processedItems === 0) {
+            showToast({
+              type: "success",
+              description: "Reimbursement Requests successfully approved!",
+            });
+            onAbort();
+          }
         })
         .catch(() => {
           showToast({
@@ -84,7 +87,7 @@ const BulkApproveReimbursementsDialog: React.FC<
       hideCloseIcon
     >
       <div className="flex flex-col gap-8 pt-8">
-        <p className="text-neutral-800">
+        <div className="text-neutral-800">
           {selectedItems.length === 0 && (
             <p className="text-neutral-800">
               Are you sure you want to approve <strong>all</strong>{" "}
@@ -108,7 +111,7 @@ const BulkApproveReimbursementsDialog: React.FC<
               request?
             </>
           )}
-        </p>
+        </div>
 
         <div className="flex items-center gap-4">
           <Button

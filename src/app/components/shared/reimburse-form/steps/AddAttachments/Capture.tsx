@@ -355,7 +355,9 @@ const Capture: React.FC<CaptureProps> = ({
           type="button"
           className="w-full"
           onClick={handleContinue}
-          disabled={reimbursementFormValues.attachments.length === 0}
+          disabled={
+            reimbursementFormValues.attachments.length === 0 || isSubmitting
+          }
           loading={isSubmitting}
         >
           Continue

@@ -1,5 +1,6 @@
 "use client";
 import { useSession } from "next-auth/react";
+import { redirect, usePathname } from "next/navigation";
 import React, {
   useEffect,
   useMemo,
@@ -23,6 +24,7 @@ export const AbilityContextProvider: React.FC<PropsWithChildren> = ({
   children,
 }) => {
   const nextAuthSession = useSession();
+  const pathname = usePathname();
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const { accessToken, assignedRole } = useAppSelector(
@@ -64,6 +66,14 @@ export const AbilityContextProvider: React.FC<PropsWithChildren> = ({
 
   useMemo(() => {
     if (me && !meIsLoading) {
+      if (
+        !me.is_superuser &&
+        me.groups.length === 0 &&
+        !pathname.includes("/profile")
+      ) {
+        return redirect("/profile");
+      }
+
       setTimeout(() => {
         if (!assignedRole && me.groups.length > 0) {
           dispatch(setAssignedRole(me.groups[0]));

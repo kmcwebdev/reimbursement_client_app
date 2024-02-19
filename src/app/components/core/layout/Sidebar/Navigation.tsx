@@ -14,7 +14,7 @@ interface NavigationProps {
   collapsed: boolean;
 }
 const Navigation: React.FC<NavigationProps> = ({ collapsed }) => {
-  const { user } = useAppSelector((state) => state.session);
+  const { user, assignedRole } = useAppSelector((state) => state.session);
   const pathname = usePathname();
 
   return (
@@ -28,13 +28,16 @@ const Navigation: React.FC<NavigationProps> = ({ collapsed }) => {
           collapsed={collapsed}
         />
       )}
-      <NavigationItem
-        label="Dashboard"
-        icon={MdDashboard as IconType}
-        active={pathname ? pathname === "/dashboard" : false}
-        href="/dashboard"
-        collapsed={collapsed}
-      />
+
+      {assignedRole && (
+        <NavigationItem
+          label="Dashboard"
+          icon={MdDashboard as IconType}
+          active={pathname ? pathname === "/dashboard" : false}
+          href="/dashboard"
+          collapsed={collapsed}
+        />
+      )}
 
       <Can I="access" a="NAV_ITEM_APPROVAL">
         <NavigationItem

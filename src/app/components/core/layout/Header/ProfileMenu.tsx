@@ -114,7 +114,9 @@ const ProfileMenu: React.FC = () => {
               <div className="text-xs">
                 {user?.is_superuser
                   ? "ADMINISTRATOR"
-                  : assignedRole?.split("_")[1]}
+                  : assignedRole
+                    ? assignedRole?.split("_")[1]
+                    : "No Groups Assigned"}
               </div>
 
               {typeof window !== "undefined" &&
@@ -122,7 +124,8 @@ const ProfileMenu: React.FC = () => {
                   window.location.origin.includes(
                     "https://reimbursement-client-app-staging.vercel.app",
                   )) &&
-                user?.is_superuser && (
+                user?.is_superuser &&
+                assignedRole && (
                   <div className="mt-1 flex flex-col gap-2">
                     <div className="h-px w-full bg-neutral-200" />
                     <Popover

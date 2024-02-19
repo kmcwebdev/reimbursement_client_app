@@ -92,11 +92,10 @@ const Payables: React.FC = () => {
       dispatch(setSelectedItems([]));
       dispatch(
         appApiSlice.util.invalidateTags([
+          { type: "ReimbursementRequest" },
           { type: "ReimbursementApprovalList" },
+          { type: "ApprovalAnalytics" },
         ]),
-      );
-      dispatch(
-        appApiSlice.util.invalidateTags([{ type: "ApprovalAnalytics" }]),
       );
       dispatch(setSelectedItems([]));
       setDownloadReportLoading(false);
@@ -150,6 +149,7 @@ const Payables: React.FC = () => {
     await exportReport(url, filename);
     dispatch(
       appApiSlice.util.invalidateTags([
+        { type: "ReimbursementRequest" },
         { type: "ReimbursementApprovalList" },
         { type: "ApprovalAnalytics" },
       ]),

@@ -40,7 +40,7 @@ const Profile: NextPage = () => {
             </div>
             <div className="flex items-center gap-2 text-neutral-700">
               <FaUserTie className="h-5 w-5" />
-              <p className="mt-0.5">{assignedRole}</p>
+              <p className="mt-0.5">{assignedRole || "No Assigned Group"}</p>
             </div>
 
             <div className="flex items-center gap-2 text-neutral-700">

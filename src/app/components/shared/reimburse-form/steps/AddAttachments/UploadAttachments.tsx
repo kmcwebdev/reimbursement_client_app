@@ -264,7 +264,9 @@ const UploadAttachments: React.FC<UploadAttachmentsProps> = ({
           className="w-full"
           onClick={handleContinue}
           loading={isSubmitting}
-          disabled={reimbursementFormValues.attachments.length === 0}
+          disabled={
+            reimbursementFormValues.attachments.length === 0 || isSubmitting
+          }
         >
           Continue
         </Button>

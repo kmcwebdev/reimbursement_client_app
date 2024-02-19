@@ -125,6 +125,7 @@ const SetApprover: React.FC<SetApproverProps> = ({
           type="submit"
           className="w-full"
           loading={isSubmitting}
+          disabled={isSubmitting}
         >
           Submit
         </Button>
