@@ -27,6 +27,7 @@ import {
   type IReimbursementRequest,
   type IReimbursementsFilterQuery,
 } from "~/types/reimbursement.types";
+import { showToast } from "../core/Toast";
 import TableCell from "../core/table/TableCell";
 import MemberAnalytics from "./analytics/MemberAnalytics";
 
@@ -63,6 +64,8 @@ const MyReimbursements: React.FC = () => {
   const { filters, focusedReimbursementId } = useAppSelector(
     (state) => state.pageTableState,
   );
+
+  const { user } = useAppSelector((state) => state.session);
 
   const [searchParams, setSearchParams] = useState<IReimbursementsFilterQuery>({
     search: undefined,
@@ -235,7 +238,17 @@ const MyReimbursements: React.FC = () => {
             isLoading: !isSearching && isFetching,
             title: "Reimbursements",
             button: "create",
-            buttonClickHandler: () => dispatch(toggleFormDialog()),
+            buttonClickHandler:
+              user && user.profile
+                ? () => dispatch(toggleFormDialog())
+                : () => {
+                    showToast({
+                      type: "error",
+                      title: "Missing Information!",
+                      description:
+                        "Your profile appears to be either incomplete or missing. Please reach out to your account manager for assistance.",
+                    });
+                  },
             buttonIsVisible: true,
             handleSearch: handleSearch,
             searchIsLoading: isFetching,

@@ -13,6 +13,16 @@ const Profile: NextPage = () => {
   const { user, assignedRole } = useAppSelector((state) => state.session);
   return (
     <div className="flex w-full flex-col gap-4 p-4">
+      {user && !user.profile && (
+        <div className=" rounded-r-md border-l-4 border-red-600 bg-red-100 p-4 font-medium ">
+          <h4 className="text-red-600">Missing Information</h4>
+          <p className="text-neutral-900">
+            Your profile appears to be either incomplete or missing. Please
+            reach out to your account manager for assistance.
+          </p>
+        </div>
+      )}
+
       <div className="flex flex-col items-center gap-8 rounded-md bg-white p-8 shadow-sm md:flex-row md:items-start">
         <div className="h-40 w-40 rounded-full border border-orange-600 p-1">
           <div className="grid h-full w-full place-items-center rounded-full bg-neutral-300 font-barlow font-bold text-orange-600">
