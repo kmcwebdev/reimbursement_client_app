@@ -35,7 +35,8 @@ const Profile: NextPage = () => {
             <div className="flex items-center gap-2 text-neutral-700">
               <HiBriefcase className="h-5 w-5" />
               <p className="mt-0.5">
-                {(user && user.profile.organization) || "N/A"}
+                {(user && user.profile && user.profile.organization) ||
+                  "No Assigned Organization"}
               </p>
             </div>
             <div className="flex items-center gap-2 text-neutral-700">

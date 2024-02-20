@@ -47,7 +47,10 @@ const ProfileMenu: React.FC = () => {
 
   const [assignGroup, { isLoading: isSubmitting }] = useAssignGroupMutation();
 
-  const { isFetching, data } = useAllGroupsQuery({}, { skip: !user?.is_staff });
+  const { isFetching, data } = useAllGroupsQuery(
+    {},
+    { skip: !user?.is_staff || !user?.profile },
+  );
 
   useMemo(() => {
     if (data?.results) {

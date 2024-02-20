@@ -10,7 +10,7 @@ export interface IUser {
   is_superuser: boolean;
   is_staff: boolean;
   groups: IGroupType[];
-  profile: IUserProfile;
+  profile: IUserProfile | null;
   permissions: AppClaims[];
 }
 

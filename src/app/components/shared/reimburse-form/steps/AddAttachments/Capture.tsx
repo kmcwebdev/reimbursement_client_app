@@ -28,7 +28,6 @@ import {
 } from "~/features/state/reimbursement-form-slice";
 import { useDialogState } from "~/hooks/use-dialog-state";
 import { type ParticularDetails } from "~/schema/reimbursement-particulars.schema";
-import { type MutationError } from "~/types/global-types";
 import { classNames } from "~/utils/classNames";
 
 interface CaptureProps {
@@ -162,18 +161,11 @@ const Capture: React.FC<CaptureProps> = ({
               "Your reimbursement request has been submitted successfully!",
           });
         })
-        .catch((error: MutationError) => {
-          if (Array.isArray(error.data.errors)) {
-            showToast({
-              type: "error",
-              description: error.data.errors[0].message,
-            });
-          } else {
-            showToast({
-              type: "error",
-              description: error.data.message,
-            });
-          }
+        .catch((error: { status: number; data: { detail: string } }) => {
+          showToast({
+            type: "error",
+            description: error.data.detail,
+          });
         });
     } else {
       dispatch(setActiveStep(activeStep + 1));
