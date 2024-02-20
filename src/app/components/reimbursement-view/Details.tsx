@@ -42,7 +42,7 @@ const Details: React.FC<DetailsProps> = ({
 
       <List.Item
         label="Client"
-        value={reimb_requestor.profile.organization || "Client Missing"}
+        value={reimb_requestor.profile?.organization || "No Organization"}
       />
       <List.Item
         label="Name"

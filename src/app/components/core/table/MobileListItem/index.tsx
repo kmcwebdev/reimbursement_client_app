@@ -48,7 +48,7 @@ const MobileListItem: React.FC<MobileListItemProps> = (props) => {
             client={
               assignedRole === "REIMBURSEMENT_HRBP" ||
               assignedRole === "REIMBURSEMENT_FINANCE"
-                ? props.row.original.reimb_requestor.profile.organization
+                ? props.row.original.reimb_requestor.profile?.organization
                 : undefined
             }
             onClick={() =>

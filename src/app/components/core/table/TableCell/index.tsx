@@ -100,11 +100,11 @@ const TableCell: React.FC<CellContext<IReimbursementRequest, unknown>> = (
 
       {/* CLIENT NAME */}
       {props.column.columnDef.header === "Client" &&
-        (props.getValue() as IUser)?.profile.organization}
+        (props.getValue() as IUser)?.profile?.organization}
 
       {/* REQUESTOR ID */}
       {props.column.columnDef.header === "E-ID" &&
-        (props.getValue() as IUser).profile.employee_id}
+        (props.getValue() as IUser).profile?.employee_id}
 
       {/* REQUESTOR NAME*/}
       {props.column.columnDef.header === "Name" && (
