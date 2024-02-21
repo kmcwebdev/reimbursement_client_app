@@ -10,7 +10,7 @@ import MemberDashboard from "./Member";
 const DashboardComponent: React.FC = () => {
   const { user, assignedRole } = useAppSelector((state) => state.session);
 
-  if (!assignedRole && !user?.is_superuser) {
+  if (user && !assignedRole && !user.is_superuser) {
     redirect("/forbidden");
   }
 
