@@ -194,7 +194,6 @@ const Capture: React.FC<CaptureProps> = ({
               "It is not possible to switch camera to different one because there is only one video device accessible.",
             canvas: "Canvas is not supported.",
           }}
-          aspectRatio={9 / 16}
           facingMode="environment"
           numberOfCamerasCallback={(i) => setNumberOfCameras(i)}
           videoReadyCallback={() =>
