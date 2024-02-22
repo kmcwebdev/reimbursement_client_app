@@ -30,6 +30,7 @@ import Input from "../core/form/fields/Input";
 
 dayjs.extend(timezone);
 interface ApproversProps {
+  isOwnRequest: boolean;
   approvers: IApproverMatrix[];
   request_status: IStatus;
 }
@@ -40,7 +41,7 @@ export interface IApproverToEdit {
   prev_approver_group: string;
 }
 
-const Approvers: React.FC<ApproversProps> = ({ approvers, request_status }) => {
+const Approvers: React.FC<ApproversProps> = ({ approvers, request_status,isOwnRequest }) => {
   const { user } = useAppSelector((state) => state.session);
   const pathname = usePathname();
   const { isVisible, open, close } = useDialogState();
@@ -114,7 +115,7 @@ const Approvers: React.FC<ApproversProps> = ({ approvers, request_status }) => {
                     approver.display_name !== "Finance" &&
                     pathname === "/admin" &&
                     user?.is_superuser &&
-                    !approver.is_rejected && request_status.name === "Pending" && (
+                    !approver.is_rejected && request_status.name === "Pending" && !isOwnRequest && (
                       <Button
                         buttonType="text"
                         onClick={() => {
