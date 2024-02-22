@@ -16,11 +16,10 @@ import {
   toggleFormDialog,
 } from "~/features/state/reimbursement-form-slice";
 import {
-  ApproverSchema,
-  type Approver,
+  getApproverSchema,
+  type Approver
 } from "~/schema/reimbursement-approver.schema";
 import { type ParticularDetails } from "~/schema/reimbursement-particulars.schema";
-import { type MutationError } from "~/types/global-types";
 
 interface SetApproverProps {
   formReturn: UseFormReturn<ParticularDetails>;
@@ -35,10 +34,19 @@ const SetApprover: React.FC<SetApproverProps> = ({
     (state) => state.reimbursementForm,
   );
 
+  const { user } = useAppSelector(
+    (state) => state.session,
+  );
+
   const dispatch = useAppDispatch();
 
   const useSetApproverFormReturn = useForm<Approver>({
-    resolver: zodResolver(ApproverSchema),
+    resolver: useMemo(() => {
+      if (user) {
+        return zodResolver(getApproverSchema(user.email));
+      }
+      return undefined;
+    },[user]),
     mode: "onChange",
     defaultValues: useMemo(() => {
       if (reimbursementFormValues.manager_approver_email) {
@@ -73,19 +81,12 @@ const SetApprover: React.FC<SetApproverProps> = ({
             "Your reimbursement request has been submitted successfully!",
         });
       })
-      .catch((error: MutationError) => {
-        if (Array.isArray(error.data.errors)) {
+      .catch((error: { status: number; data: { detail: string } }) => {
           showToast({
             type: "error",
-            description: error.data.errors[0].message,
+            description: error.data.detail,
           });
-        } else {
-          showToast({
-            type: "error",
-            description: error.data.message,
-          });
-        }
-      });
+        });
   };
 
   return (
