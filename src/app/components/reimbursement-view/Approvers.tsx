@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import { usePathname } from "next/navigation";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { type IconType } from "react-icons-all-files";
 import { HiCheckCircle } from "react-icons-all-files/hi/HiCheckCircle";
@@ -14,8 +14,8 @@ import { useAppSelector } from "~/app/hook";
 import { useReRouteApproverMutation } from "~/features/api/actions-api-slice";
 import { useDialogState } from "~/hooks/use-dialog-state";
 import {
-  ApproverSchema,
-  type Approver,
+  getApproverSchema,
+  type Approver
 } from "~/schema/reimbursement-approver.schema";
 import {
   type IApproverMatrix,
@@ -50,7 +50,12 @@ const Approvers: React.FC<ApproversProps> = ({ approvers, request_status }) => {
     useReRouteApproverMutation();
 
   const useSetApproverFormReturn = useForm<Approver>({
-    resolver: zodResolver(ApproverSchema),
+    resolver: useMemo(() => {
+      if (user) {
+        return zodResolver(getApproverSchema(user.email));
+      }
+      return undefined;
+    },[user]),
     mode: "onChange",
   });
 
