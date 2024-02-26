@@ -14,6 +14,7 @@ import { useAppSelector } from "~/app/hook";
 import { useReRouteApproverMutation } from "~/features/api/actions-api-slice";
 import { useDialogState } from "~/hooks/use-dialog-state";
 import {
+  ApproverSchema,
   getApproverSchema,
   type Approver
 } from "~/schema/reimbursement-approver.schema";
@@ -52,11 +53,11 @@ const Approvers: React.FC<ApproversProps> = ({ approvers, request_status,isOwnRe
 
   const useSetApproverFormReturn = useForm<Approver>({
     resolver: useMemo(() => {
-      if (user) {
+      if (user && isOwnRequest) {
         return zodResolver(getApproverSchema(user.email));
       }
-      return undefined;
-    },[user]),
+      return zodResolver(ApproverSchema);
+    },[isOwnRequest, user]),
     mode: "onChange",
   });
 
