@@ -17,15 +17,24 @@ export const metadata: Metadata = {
     "mobile-web-app-capable": "yes",
   },
   icons: {
-    icon: {
-      url: "/favicon.ico",
-      type: "image/x-icon",
-    },
+    icon: [
+      {
+        url: "/favicon-16x16.png",
+        type: "image/png",
+        sizes: "16x16",
+      },
+      {
+        url: "/favicon-32x132.png",
+        type: "image/png",
+        sizes: "132x32",
+      },
+    ],
     shortcut: {
       url: "/favicon.ico",
       type: "image/x-icon",
     },
   },
+  manifest: "/manifest.json",
 };
 
 export const viewport: Viewport = {
