@@ -1,10 +1,14 @@
 import React, { useMemo, type RefObject } from "react";
-import { useDropzone, type FileRejection } from "react-dropzone";
+import {
+  useDropzone,
+  type DropzoneOptions,
+  type FileRejection,
+} from "react-dropzone";
 import { MdCameraAlt } from "react-icons-all-files/md/MdCameraAlt";
 import { MdCloudUpload } from "react-icons-all-files/md/MdCloudUpload";
 import { showToast } from "~/app/components/core/Toast";
 
-interface MethodSelectionProps {
+interface MethodSelectionProps extends DropzoneOptions {
   buttonRef: RefObject<HTMLButtonElement>;
   toggleCamera: () => void;
   handleDrop: (e: File) => void;
@@ -16,6 +20,7 @@ const MethodSelection: React.FC<MethodSelectionProps> = ({
   buttonRef,
   handleDrop,
   setFileRejections,
+  ...rest
 }) => {
   const fileValidator = (file: File) => {
     if (file.size > 50000000) {
@@ -63,6 +68,7 @@ const MethodSelection: React.FC<MethodSelectionProps> = ({
         });
       }
     },
+    ...rest,
   });
 
   useMemo(() => {
@@ -84,7 +90,7 @@ const MethodSelection: React.FC<MethodSelectionProps> = ({
           {...getRootProps({
             className: "dropzone",
           })}
-          className=" flex w-full gap-2"
+          className="flex w-full gap-2"
         >
           <input {...getInputProps()} />
           <MdCloudUpload className="h-5 w-5" /> Upload File
