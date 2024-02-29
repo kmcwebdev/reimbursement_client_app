@@ -40,7 +40,7 @@ const SetApprover: React.FC<SetApproverProps> = ({
   const useSetApproverFormReturn = useForm<Approver>({
     resolver: useMemo(() => {
       if (user) {
-        return zodResolver(getApproverSchema(user.email));
+        return zodResolver(getApproverSchema(true, user.email));
       }
       return undefined;
     }, [user]),
