@@ -256,12 +256,12 @@ const AddAttachments: React.FC<AttachmentProps> = ({
         </>
       )}
 
-      {/* <MethodSelection
+      <MethodSelection
         setFileRejections={setFileRejections}
         buttonRef={buttonRef}
         toggleCamera={() => setShowCamera(!showCamera)}
         handleDrop={handleDrop}
-      /> */}
+      />
 
       {!showCamera && (
         <div className="grid grid-cols-2 items-center gap-2 pt-4">
