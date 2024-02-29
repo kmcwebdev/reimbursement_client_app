@@ -24,8 +24,9 @@ const MethodSelection: React.FC<MethodSelectionProps> = ({
       <div className="flex h-8 cursor-pointer items-center gap-2 text-neutral-900 transition-all ease-in-out hover:text-orange-600">
         <div
           {...dropZoneState.getRootProps({
-            className: "dropzone flex gap-2 w-full",
+            className: "dropzone",
           })}
+          className="flex w-full gap-2"
           onClick={dropZoneState.open}
         >
           <input {...dropZoneState.getInputProps()} />
