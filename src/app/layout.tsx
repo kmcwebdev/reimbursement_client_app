@@ -10,14 +10,15 @@ import ReduxStoreProvider from "./components/providers/ReduxStoreProvider";
 const Toaster = dynamic(() => import("~/context/Toaster"));
 
 export const metadata: Metadata = {
+  applicationName: "KMC Reimbursements",
   description: "KMC Reimbursements",
   appleWebApp: true,
   other: {
     "mobile-web-app-capable": "yes",
   },
   icons: {
-    icon: "/images/android-chrome-512x512.png",
-    shortcut: "/images/android-chrome-512x512.png",
+    icon: "/android-chrome-512x512.png",
+    shortcut: "/android-chrome-512x512.png",
   },
 };
 
