@@ -57,6 +57,8 @@ const SelectReimbursementType: React.FC<SelectReimbursementTypeProps> = ({
       onSubmit={onSubmit}
       useFormReturn={formReturn}
     >
+      <div className="mt-2 h-px bg-neutral-300" />
+
       <CardSelection
         label=""
         name="request_type"
