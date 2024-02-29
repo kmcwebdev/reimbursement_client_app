@@ -15,6 +15,10 @@ export const metadata: Metadata = {
   other: {
     "mobile-web-app-capable": "yes",
   },
+  icons: {
+    icon: "/images/android-chrome-512x512.png",
+    shortcut: "/images/android-chrome-512x512.png",
+  },
 };
 
 export const viewport: Viewport = {
