@@ -1,4 +1,4 @@
-import { type Metadata, type NextPage } from "next";
+import { type Metadata, type NextPage, type Viewport } from "next";
 import dynamic from "next/dynamic";
 import { type PropsWithChildren } from "react";
 import "~/styles/globals.css";
@@ -11,6 +11,13 @@ const Toaster = dynamic(() => import("~/context/Toaster"));
 
 export const metadata: Metadata = {
   description: "KMC Reimbursements",
+};
+
+export const viewport: Viewport = {
+  initialScale: 1,
+  maximumScale: 1,
+  width: "device-width",
+  userScalable: false,
 };
 
 export const RootLayout: NextPage<PropsWithChildren> = ({ children }) => {

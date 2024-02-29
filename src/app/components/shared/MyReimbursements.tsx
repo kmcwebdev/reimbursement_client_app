@@ -11,6 +11,7 @@ import { useGetRequestQuery } from "~/features/api/reimbursement-api-slice";
 import { useMyRequestsQuery } from "~/features/api/user-api-slice";
 import {
   clearReimbursementForm,
+  setReimbursementFormValues,
   toggleCancelDialog,
   toggleFormDialog,
 } from "~/features/state/reimbursement-form-slice";
@@ -187,6 +188,12 @@ const MyReimbursements: React.FC = () => {
   const handleOpenCancelDialog = () => {
     const selectedReimbursementType =
       useReimbursementTypeFormReturn.getValues("request_type");
+    dispatch(
+      setReimbursementFormValues({
+        ...reimbursementFormValues,
+        request_type: selectedReimbursementType,
+      }),
+    );
     dispatch(toggleFormDialog());
 
     if (selectedReimbursementType) {

@@ -94,7 +94,10 @@ const SelectReimbursementType: React.FC<SelectReimbursementTypeProps> = ({
             aria-label="Continue"
             type="submit"
             className="w-full"
-            disabled={!selectedReimbursementType}
+            disabled={
+              !selectedReimbursementType &&
+              !reimbursementFormValues.request_type
+            }
           >
             Continue
           </Button>
