@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   description: "KMC Reimbursements",
   appleWebApp: true,
   other: {
-    mobileWebApp: "true",
+    "mobile-web-app-capable": "yes",
   },
 };
 
