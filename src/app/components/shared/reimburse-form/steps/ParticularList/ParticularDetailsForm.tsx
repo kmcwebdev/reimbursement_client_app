@@ -135,12 +135,9 @@ const ParticularDetailsForm: React.FC<ParticularDetailsProps> = ({
           required
         />
       </CollapseHeightAnimation>
-      <Input
-        name="name"
-        label="Particular Name"
-        placeholder="Particular Name"
-        required
-      />
+
+      <Input name="name" label="Receipt" placeholder="Receipt" required />
+
       <TextArea
         name="justification"
         label="Justification"
