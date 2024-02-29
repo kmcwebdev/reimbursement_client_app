@@ -1,6 +1,7 @@
 import Image from "next/image";
 import React, { useRef, useState } from "react";
 import { Camera as CameraPro, type CameraType } from "react-camera-pro";
+import { FaChevronLeft } from "react-icons-all-files/fa/FaChevronLeft";
 import { IoMdCloseCircle } from "react-icons-all-files/io/IoMdCloseCircle";
 import { MdCameraAlt } from "react-icons-all-files/md/MdCameraAlt";
 import { MdCameraswitch } from "react-icons-all-files/md/MdCameraswitch";
@@ -12,9 +13,14 @@ import { classNames } from "~/utils/classNames";
 interface CameraProps {
   attachedFilesLength: number;
   onProceed: (attachment: File) => void;
+  toggleCamera: () => void;
 }
 
-const Camera: React.FC<CameraProps> = ({ onProceed, attachedFilesLength }) => {
+const Camera: React.FC<CameraProps> = ({
+  onProceed,
+  attachedFilesLength,
+  toggleCamera,
+}) => {
   const camera = useRef<CameraType>(null);
   const [cameraIsLoading, setCameraIsLoading] = useState<boolean>(true);
   const [numberOfCameras, setNumberOfCameras] = useState<number>(0);
@@ -87,10 +93,16 @@ const Camera: React.FC<CameraProps> = ({ onProceed, attachedFilesLength }) => {
           </div>
         )}
 
+        <div className="absolute left-4 top-4 h-8 w-8">
+          <FaChevronLeft
+            className="h-6 w-6 cursor-pointer text-white transition-all ease-in-out hover:text-orange-600"
+            onClick={toggleCamera}
+          />
+        </div>
         {numberOfCameras > 1 && (
-          <div className="absolute right-5 top-5 h-8 w-8">
+          <div className="absolute right-4 top-4 h-8 w-8 ">
             <MdCameraswitch
-              className="h-6 w-6 text-white"
+              className="h-6 w-6 cursor-pointer text-white transition-all ease-in-out hover:text-orange-600"
               onClick={() => {
                 if (camera.current) {
                   const result = camera.current.switchCamera();

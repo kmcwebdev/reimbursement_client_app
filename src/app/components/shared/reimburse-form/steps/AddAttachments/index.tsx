@@ -1,8 +1,7 @@
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import { useDropzone, type FileWithPath } from "react-dropzone";
 import { type UseFormReturn } from "react-hook-form";
-import { AiOutlineMinusCircle } from "react-icons-all-files/ai/AiOutlineMinusCircle";
-import { AiOutlinePlusCircle } from "react-icons-all-files/ai/AiOutlinePlusCircle";
+import { HiOutlinePlus } from "react-icons-all-files/hi/HiOutlinePlus";
 import CollapseHeightAnimation from "~/app/components/animation/CollapseHeight";
 import { Button } from "~/app/components/core/Button";
 import Popover from "~/app/components/core/Popover";
@@ -240,9 +239,8 @@ const AddAttachments: React.FC<AttachmentProps> = ({
 
   return (
     <div>
-      <div className="flex flex-col gap-1 text-xs text-neutral-700">
-        <p>Only PDF,Excel File or Image are accepted.</p>
-        <p>Maximum upload file size (50mb).</p>
+      <div className="flex text-xs text-neutral-700">
+        <p>Upload PDF,Excel File or JPEG, maximum upload file size (50mb).</p>
       </div>
       <div className="mt-2 h-px bg-neutral-300" />
 
@@ -250,6 +248,7 @@ const AddAttachments: React.FC<AttachmentProps> = ({
         <Camera
           onProceed={onCaptureProceed}
           attachedFilesLength={attachedFiles.length}
+          toggleCamera={() => setShowCamera(!showCamera)}
         />
       </CollapseHeightAnimation>
 
@@ -287,14 +286,8 @@ const AddAttachments: React.FC<AttachmentProps> = ({
               buttonRef={buttonRef}
               btn={
                 <div className="group flex items-center gap-2 text-xs font-medium hover:text-orange-600">
-                  <AiOutlinePlusCircle className="h-5 w-5 text-orange-600" />{" "}
-                  Upload File or Take Photo
-                </div>
-              }
-              panelOpenBtn={
-                <div className="group flex items-center gap-2 text-xs font-medium">
-                  <AiOutlineMinusCircle className="h-5 w-5 text-red-600" />{" "}
-                  Upload File or Take Photo
+                  <HiOutlinePlus className="h-5 w-5 text-orange-600" /> Upload
+                  File or Take Photo
                 </div>
               }
               content={
