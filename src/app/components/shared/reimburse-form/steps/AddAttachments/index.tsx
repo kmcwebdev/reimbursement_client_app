@@ -1,5 +1,9 @@
 import React, { useCallback, useMemo, useRef, useState } from "react";
-import { type FileRejection, type FileWithPath } from "react-dropzone";
+import {
+  useDropzone,
+  type FileRejection,
+  type FileWithPath,
+} from "react-dropzone";
 import { type UseFormReturn } from "react-hook-form";
 import { HiOutlinePlus } from "react-icons-all-files/hi/HiOutlinePlus";
 import CollapseHeightAnimation from "~/app/components/animation/CollapseHeight";
@@ -192,10 +196,69 @@ const AddAttachments: React.FC<AttachmentProps> = ({
     }
   };
 
+  const fileValidator = (file: File) => {
+    if (file.size > 50000000) {
+      return {
+        code: "size-too-large",
+        message: `file is larger than 50MB`,
+      };
+    }
+
+    return null;
+  };
+
+  const { getRootProps, getInputProps, open } = useDropzone({
+    onFileDialogOpen: () => {
+      buttonRef.current?.click();
+      setFileRejections([]);
+    },
+    noClick: true,
+    onDrop: (e, i) => {
+      if (i.length === 0) {
+        handleDrop(e[0]);
+      }
+    },
+    validator: fileValidator,
+    accept: {
+      "application/pdf": [".pdf"],
+      "image/*": [".png", ".jpg", ".jpeg"],
+      "text/csv": [".csv"],
+      "application/vnd.ms-excel": [".xls"],
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [
+        ".xlsx",
+      ],
+    },
+    onDropRejected: (fileRejections) => {
+      setFileRejections([]);
+      if (fileRejections.length > 0) {
+        setFileRejections(fileRejections);
+        let title = "Invalid file type!";
+        let message = "Please input a valid file type.";
+        if (fileRejections[0].errors[0].code === "size-too-large") {
+          title = "File size too large!";
+          message = `File size exceeds the maximum limit. Please reduce the file size and try again.`;
+        }
+        showToast({
+          type: "error",
+          title,
+          description: message,
+        });
+      }
+    },
+  });
+
   return (
     <div>
+      <div
+        {...getRootProps({
+          className: "dropzone",
+        })}
+      >
+        <input {...getInputProps()} />
+      </div>
+
       <div className="flex text-xs text-neutral-700">
-        <p>Upload PDF,Excel File or JPEG, maximum upload file size (50mb).</p>
+        <p>Upload PDF,Excel File or JPEG, maximum upload file size (50mb).</p>d
       </div>
       <div className="mt-2 h-px bg-neutral-300" />
 
@@ -205,6 +268,7 @@ const AddAttachments: React.FC<AttachmentProps> = ({
           attachedFilesLength={attachedFiles.length}
           toggleCamera={() => {
             setShowCamera(!showCamera);
+            setFileRejections([]);
           }}
         />
       </CollapseHeightAnimation>
@@ -244,10 +308,8 @@ const AddAttachments: React.FC<AttachmentProps> = ({
                 }
                 content={
                   <MethodSelection
-                    setFileRejections={setFileRejections}
-                    buttonRef={buttonRef}
+                    openFileDialog={open}
                     toggleCamera={() => setShowCamera(!showCamera)}
-                    handleDrop={handleDrop}
                   />
                 }
               />
@@ -255,13 +317,6 @@ const AddAttachments: React.FC<AttachmentProps> = ({
           </div>
         </>
       )}
-
-      <MethodSelection
-        setFileRejections={setFileRejections}
-        buttonRef={buttonRef}
-        toggleCamera={() => setShowCamera(!showCamera)}
-        handleDrop={handleDrop}
-      />
 
       {!showCamera && (
         <div className="grid grid-cols-2 items-center gap-2 pt-4">
