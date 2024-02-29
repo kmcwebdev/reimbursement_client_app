@@ -296,7 +296,7 @@ const AddAttachments: React.FC<AttachmentProps> = ({
           </CollapseHeightAnimation>
 
           <div className="flex flex-col pt-4">
-            <div className="w-1/2">
+            <div className="w-3/4">
               <Popover
                 ariaLabel="Upload File or Take Photo"
                 buttonRef={buttonRef}
