@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useRef, useState } from "react";
-import { useDropzone, type FileWithPath } from "react-dropzone";
+import { type FileRejection, type FileWithPath } from "react-dropzone";
 import { type UseFormReturn } from "react-hook-form";
 import { HiOutlinePlus } from "react-icons-all-files/hi/HiOutlinePlus";
 import CollapseHeightAnimation from "~/app/components/animation/CollapseHeight";
@@ -44,20 +44,11 @@ const AddAttachments: React.FC<AttachmentProps> = ({
     { name: string; status: "uploading" | "uploaded"; type: string }[]
   >([]);
 
+  const [fileRejections, setFileRejections] = useState<FileRejection[]>([]);
+
   const dispatch = useAppDispatch();
 
   const [uploadFiles] = useUploadFileMutation();
-
-  const fileValidator = (file: File) => {
-    if (file.size > 50000000) {
-      return {
-        code: "size-too-large",
-        message: `file is larger than 50MB`,
-      };
-    }
-
-    return null;
-  };
 
   const handleUpload = (file: File) => {
     const formData = new FormData();
@@ -120,6 +111,11 @@ const AddAttachments: React.FC<AttachmentProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [attachedFiles]);
 
+  const onCaptureProceed = (attachment: File) => {
+    setShowCamera(false);
+    handleDrop(attachment);
+  };
+
   useMemo(() => {
     if (reimbursementFormValues.attachments.length > 0) {
       reimbursementFormValues.attachments.forEach((file) => {
@@ -151,48 +147,6 @@ const AddAttachments: React.FC<AttachmentProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [handleUpload],
   );
-
-  const onCaptureProceed = (attachment: File) => {
-    setShowCamera(false);
-    handleDrop(attachment);
-  };
-
-  const dropZoneState = useDropzone({
-    onFileDialogOpen: () => {
-      buttonRef.current?.click();
-    },
-    noClick: true,
-    onDrop: (e, i) => {
-      if (i.length === 0) {
-        handleDrop(e[0]);
-      }
-    },
-    validator: fileValidator,
-    accept: {
-      "application/pdf": [".pdf"],
-      "image/*": [".png", ".jpg", ".jpeg"],
-      "text/csv": [".csv"],
-      "application/vnd.ms-excel": [".xls"],
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [
-        ".xlsx",
-      ],
-    },
-    onDropRejected: (fileRejections) => {
-      if (fileRejections.length > 0) {
-        let title = "Invalid file type!";
-        let message = "Please input a valid file type.";
-        if (fileRejections[0].errors[0].code === "size-too-large") {
-          title = "File size too large!";
-          message = `File size exceeds the maximum limit. Please reduce the file size and try again.`;
-        }
-        showToast({
-          type: "error",
-          title,
-          description: message,
-        });
-      }
-    },
-  });
 
   const [createReimbursement, { isLoading: isSubmitting }] =
     useCreateReimbursementMutation();
@@ -249,58 +203,58 @@ const AddAttachments: React.FC<AttachmentProps> = ({
         <Camera
           onProceed={onCaptureProceed}
           attachedFilesLength={attachedFiles.length}
-          toggleCamera={() => setShowCamera(!showCamera)}
+          toggleCamera={() => {
+            setShowCamera(!showCamera);
+          }}
         />
       </CollapseHeightAnimation>
 
-      <CollapseHeightAnimation isVisible={!showCamera} hideOverflow={false}>
-        <AttachmentsList
-          uploadedAttachments={uploadedAttachments}
-          setUploadedAttachments={setUploadedAttachments}
-        />
+      {!showCamera && (
+        <>
+          <AttachmentsList
+            uploadedAttachments={uploadedAttachments}
+            setUploadedAttachments={setUploadedAttachments}
+          />
 
-        <CollapseHeightAnimation
-          isVisible={
-            dropZoneState.fileRejections &&
-            dropZoneState.fileRejections.length > 0
-          }
-          className="mt-2"
-        >
-          {dropZoneState.fileRejections &&
-            dropZoneState.fileRejections.length > 0 && (
+          <CollapseHeightAnimation
+            isVisible={fileRejections && fileRejections.length > 0}
+            className="mt-2"
+          >
+            {fileRejections && fileRejections.length > 0 && (
               <p className="mt-1 text-xs text-red-600">
-                {dropZoneState.fileRejections[0].errors[0].code ===
-                  "file-invalid-type" &&
+                {fileRejections[0].errors[0].code === "file-invalid-type" &&
                   "Please provide a file with an accepted file type. The one you selected is not valid."}
 
-                {dropZoneState.fileRejections[0].errors[0].code ===
-                  "size-too-large" &&
+                {fileRejections[0].errors[0].code === "size-too-large" &&
                   "The file you chose is too large. Please shrink its size and try uploading again."}
               </p>
             )}
-        </CollapseHeightAnimation>
+          </CollapseHeightAnimation>
 
-        <div className="flex flex-col pt-4">
-          <div className="w-1/2">
-            <Popover
-              ariaLabel="Upload File or Take Photo"
-              buttonRef={buttonRef}
-              btn={
-                <div className="group flex items-center gap-2 text-xs font-medium hover:text-orange-600">
-                  <HiOutlinePlus className="h-5 w-5 text-orange-600" /> Upload
-                  File or Take Photo
-                </div>
-              }
-              content={
-                <MethodSelection
-                  dropZoneState={dropZoneState}
-                  toggleCamera={() => setShowCamera(!showCamera)}
-                />
-              }
-            />
+          <div className="flex flex-col pt-4">
+            <div className="w-1/2">
+              <Popover
+                ariaLabel="Upload File or Take Photo"
+                buttonRef={buttonRef}
+                btn={
+                  <div className="group flex w-full items-center gap-2 text-xs font-medium hover:text-orange-600">
+                    <HiOutlinePlus className="h-5 w-5 text-orange-600" /> Upload
+                    File or Take Photo
+                  </div>
+                }
+                content={
+                  <MethodSelection
+                    setFileRejections={setFileRejections}
+                    buttonRef={buttonRef}
+                    toggleCamera={() => setShowCamera(!showCamera)}
+                    handleDrop={handleDrop}
+                  />
+                }
+              />
+            </div>
           </div>
-        </div>
-      </CollapseHeightAnimation>
+        </>
+      )}
 
       {!showCamera && (
         <div className="grid grid-cols-2 items-center gap-2 pt-4">
