@@ -11,6 +11,10 @@ const Toaster = dynamic(() => import("~/context/Toaster"));
 
 export const metadata: Metadata = {
   description: "KMC Reimbursements",
+  appleWebApp: true,
+  other: {
+    mobileWebApp: "true",
+  },
 };
 
 export const viewport: Viewport = {
