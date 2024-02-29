@@ -26,6 +26,7 @@ const MethodSelection: React.FC<MethodSelectionProps> = ({
           {...dropZoneState.getRootProps({
             className: "dropzone flex gap-2 w-full",
           })}
+          onClick={dropZoneState.open}
         >
           <input {...dropZoneState.getInputProps()} />
           <MdCloudUpload className="h-5 w-5" /> Upload File

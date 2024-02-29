@@ -161,6 +161,7 @@ const AddAttachments: React.FC<AttachmentProps> = ({
     onFileDialogOpen: () => {
       buttonRef.current?.click();
     },
+    noClick: true,
     onDrop: (e, i) => {
       if (i.length === 0) {
         handleDrop(e[0]);
