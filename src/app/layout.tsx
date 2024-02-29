@@ -17,8 +17,14 @@ export const metadata: Metadata = {
     "mobile-web-app-capable": "yes",
   },
   icons: {
-    icon: "/android-chrome-512x512.png",
-    shortcut: "/android-chrome-512x512.png",
+    icon: {
+      url: "/favicon.ico",
+      type: "image/ico",
+    },
+    shortcut: {
+      url: "/favicon.ico",
+      type: "image/ico",
+    },
   },
 };
 
