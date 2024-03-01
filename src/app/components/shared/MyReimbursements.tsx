@@ -188,15 +188,16 @@ const MyReimbursements: React.FC = () => {
   const handleOpenCancelDialog = () => {
     const selectedReimbursementType =
       useReimbursementTypeFormReturn.getValues("request_type");
-    dispatch(
-      setReimbursementFormValues({
-        ...reimbursementFormValues,
-        request_type: selectedReimbursementType,
-      }),
-    );
+
     dispatch(toggleFormDialog());
 
     if (selectedReimbursementType) {
+      dispatch(
+        setReimbursementFormValues({
+          ...reimbursementFormValues,
+          request_type: +selectedReimbursementType,
+        }),
+      );
       dispatch(toggleCancelDialog());
     }
   };

@@ -5,7 +5,10 @@ import { showToast } from "~/app/components/core/Toast";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { appApiSlice } from "~/app/rtkQuery";
 import { useApproveReimbursementMutation } from "~/features/api/actions-api-slice";
-import { toggleBulkApprovalDialog } from "~/features/state/table-state.slice";
+import {
+  setSelectedItems,
+  toggleBulkApprovalDialog,
+} from "~/features/state/table-state.slice";
 import {
   type IReimbursementRequest,
   type IRequestListResponse,
@@ -56,9 +59,8 @@ const BulkApproveReimbursementsDialog: React.FC<
 
           processedItems = processedItems - 1;
 
-          console.log(processedItems);
-
           if (processedItems === 0) {
+            dispatch(setSelectedItems([]));
             showToast({
               type: "success",
               description: "Reimbursement Requests successfully approved!",
