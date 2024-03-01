@@ -246,7 +246,7 @@ const ReimbursementHistory: React.FC = () => {
 
     const searchParams = createSearchParams(filters);
     if (reference_nos.length > 0) {
-      searchParams?.append("reference_no", reference_nos.join(","));
+      searchParams?.append("multi_reference_no", reference_nos.join(","));
     }
     searchParams?.append("ordering", "-created_at");
 
