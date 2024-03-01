@@ -3,13 +3,13 @@ import { useAppSelector } from "~/app/hook";
 import { Button } from "../../core/Button";
 import Dialog from "../../core/Dialog";
 
-interface CancelReimbursmentDialogProps {
+interface CancelReimbursementDialogProps {
   onAbort: () => void;
   onConfirm: () => void;
 }
 
 const CancelReimbursementCreationDialog: React.FC<
-  CancelReimbursmentDialogProps
+  CancelReimbursementDialogProps
 > = ({ onAbort, onConfirm }) => {
   const { cancelDialogIsOpen } = useAppSelector(
     (state) => state.reimbursementForm,
@@ -19,7 +19,7 @@ const CancelReimbursementCreationDialog: React.FC<
     <Dialog
       title="Cancel Reimbursements?"
       isVisible={cancelDialogIsOpen}
-      close={onAbort}
+      close={() => console.log("Cancel Reimburse")}
       hideCloseIcon
     >
       <div className="flex flex-col gap-8 pt-8">

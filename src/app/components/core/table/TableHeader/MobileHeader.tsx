@@ -91,11 +91,12 @@ const MobileTableHeader: React.FC<MobileHeaderProps> = ({
             )}
 
             {handleStatusToggle && statusToggleValue && (
-              <div className="w-40">
+              <div className="w-64">
                 <ButtonGroup
                   options={[
                     { label: "Pending", value: 1 },
                     { label: "On-hold", value: 5 },
+                    { label: "Crediting", value: 3 },
                   ]}
                   label=""
                   name="statusToggle"

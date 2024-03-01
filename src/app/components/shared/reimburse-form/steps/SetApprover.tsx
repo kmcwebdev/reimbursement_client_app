@@ -12,12 +12,11 @@ import { useCreateReimbursementMutation } from "~/features/api/reimbursement-for
 import {
   clearReimbursementForm,
   setActiveStep,
-  setSelectedAttachmentMethod,
   toggleFormDialog,
 } from "~/features/state/reimbursement-form-slice";
 import {
   getApproverSchema,
-  type Approver
+  type Approver,
 } from "~/schema/reimbursement-approver.schema";
 import { type ParticularDetails } from "~/schema/reimbursement-particulars.schema";
 
@@ -34,19 +33,17 @@ const SetApprover: React.FC<SetApproverProps> = ({
     (state) => state.reimbursementForm,
   );
 
-  const { user } = useAppSelector(
-    (state) => state.session,
-  );
+  const { user } = useAppSelector((state) => state.session);
 
   const dispatch = useAppDispatch();
 
   const useSetApproverFormReturn = useForm<Approver>({
     resolver: useMemo(() => {
       if (user) {
-        return zodResolver(getApproverSchema(user.email));
+        return zodResolver(getApproverSchema(true, user.email));
       }
       return undefined;
-    },[user]),
+    }, [user]),
     mode: "onChange",
     defaultValues: useMemo(() => {
       if (reimbursementFormValues.manager_approver_email) {
@@ -72,7 +69,6 @@ const SetApprover: React.FC<SetApproverProps> = ({
       .then(() => {
         dispatch(toggleFormDialog());
         dispatch(clearReimbursementForm());
-        dispatch(setSelectedAttachmentMethod(null));
         handleResetRequestType();
         formReturn.reset();
         showToast({
@@ -82,11 +78,11 @@ const SetApprover: React.FC<SetApproverProps> = ({
         });
       })
       .catch((error: { status: number; data: { detail: string } }) => {
-          showToast({
-            type: "error",
-            description: error.data.detail,
-          });
+        showToast({
+          type: "error",
+          description: error.data.detail,
         });
+      });
   };
 
   return (

@@ -40,7 +40,7 @@ const Particulars: React.FC<ParticularsProps> = ({
           />
         )}
 
-      <div className="my-2 h-px bg-neutral-300" />
+      <div className="mt-2 h-px bg-neutral-300" />
 
       {reimbursementFormValues.particulars.length > 0 &&
         reimbursementFormValues.particulars.map((part, i) => (
@@ -62,13 +62,13 @@ const Particulars: React.FC<ParticularsProps> = ({
       {reimbursementFormValues.particulars.length === 10 && (
         <div className="flex items-center gap-1 text-blue-600">
           <HiInformationCircle className="h-4 w-4" />
-          <p className="text-xs">Maximum 10 particulars per request reached.</p>
+          <p className="text-xs">Maximum 10 receipt per request reached.</p>
         </div>
       )}
 
       {reimbursementFormValues.particulars.length < 10 && (
         <Button
-          aria-label="Add Particular"
+          aria-label="Add Receipt"
           type="button"
           buttonType="text"
           onClick={() => {
@@ -82,7 +82,7 @@ const Particulars: React.FC<ParticularsProps> = ({
               {reimbursementFormValues.particulars &&
                 reimbursementFormValues.particulars.length > 0 &&
                 "Another "}
-              Particular
+              Receipt
             </p>
           </span>
         </Button>

@@ -55,7 +55,7 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
 }) => {
   const ability = useContext(AbilityContext);
 
-  const { user,assignedRole } = useAppSelector((state) => state.session);
+  const { user, assignedRole } = useAppSelector((state) => state.session);
 
   const [downloadReportLoading, setDownloadReportLoading] =
     useState<boolean>(false);
@@ -123,6 +123,7 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
               amount={data.total_amount}
               particulars={data.particulars}
               reimb_requestor={data.reimb_requestor}
+              payroll_date={data.payroll_date}
             />
 
             {data.remarks &&
@@ -132,13 +133,16 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
                 <Notes note={data.remarks} />
               )}
 
-            {user && data.approver_matrix && data.approver_matrix.length > 0 && (
-              <Approvers
-                isOwnRequest={user.email === data.reimb_requestor.email }
-                approvers={data.approver_matrix}
-                request_status={data.request_status}
-              />
-            )}
+            {user &&
+              data.approver_matrix &&
+              data.approver_matrix.length > 0 && (
+                <Approvers
+                  requestorEmail={data.reimb_requestor.email}
+                  isOwnRequest={user.email === data.reimb_requestor.email}
+                  approvers={data.approver_matrix}
+                  request_status={data.request_status}
+                />
+              )}
 
             <Particulars particulars={data.particulars} />
 

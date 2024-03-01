@@ -5,7 +5,6 @@ interface ReimburseFormState {
   activeStep: number;
   particularDetailsFormIsVisible: boolean;
   activeParticularIndex: string | null;
-  selectedAttachmentMethod: "capture" | "upload" | null;
   reimbursementFormValues: ReimbursementFormValues;
   cancelDialogIsOpen: boolean;
   formDialogIsOpen: boolean;
@@ -15,7 +14,6 @@ const initialState: ReimburseFormState = {
   activeStep: 0,
   particularDetailsFormIsVisible: false,
   activeParticularIndex: null,
-  selectedAttachmentMethod: null,
   reimbursementFormValues: {
     request_type: null,
     particulars: [],
@@ -38,12 +36,6 @@ const reimbursementFormSlice = createSlice({
     },
     setActiveParticularIndex(state, action: PayloadAction<string | null>) {
       state.activeParticularIndex = action.payload;
-    },
-    setSelectedAttachmentMethod(
-      state,
-      action: PayloadAction<"capture" | "upload" | null>,
-    ) {
-      state.selectedAttachmentMethod = action.payload;
     },
     setReimbursementFormValues(
       state,
@@ -68,7 +60,6 @@ export const {
   setActiveStep,
   setParticularDetailsFormIsVisible,
   setActiveParticularIndex,
-  setSelectedAttachmentMethod,
   setReimbursementFormValues,
   clearReimbursementForm,
   toggleFormDialog,

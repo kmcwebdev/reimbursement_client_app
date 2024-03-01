@@ -36,7 +36,7 @@ const Dialog: React.FC<DialogProps> = ({
           as="div"
           initialFocus={cancelButtonRef}
           className={`${karla.variable} fixed inset-0 z-50 overflow-y-auto`}
-          onClose={close}
+          onClose={isVisible ? close : () => console.log("")}
         >
           <div className="min-h-screen px-4 text-center">
             <Transition.Child
@@ -48,7 +48,10 @@ const Dialog: React.FC<DialogProps> = ({
               leaveFrom="opacity-100"
               leaveTo="opacity-0"
             >
-              <DialogComp.Overlay className="fixed inset-0 bg-black bg-opacity-50" />
+              <DialogComp.Overlay
+                onClick={undefined}
+                className="fixed inset-0 bg-black bg-opacity-50"
+              />
             </Transition.Child>
 
             {/* This element is to trick the browser into centering the modal contents. */}

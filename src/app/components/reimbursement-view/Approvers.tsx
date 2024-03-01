@@ -16,7 +16,7 @@ import { useDialogState } from "~/hooks/use-dialog-state";
 import {
   ApproverSchema,
   getApproverSchema,
-  type Approver
+  type Approver,
 } from "~/schema/reimbursement-approver.schema";
 import {
   type IApproverMatrix,
@@ -31,6 +31,7 @@ import Input from "../core/form/fields/Input";
 
 dayjs.extend(timezone);
 interface ApproversProps {
+  requestorEmail: string;
   isOwnRequest: boolean;
   approvers: IApproverMatrix[];
   request_status: IStatus;
@@ -42,7 +43,12 @@ export interface IApproverToEdit {
   prev_approver_group: string;
 }
 
-const Approvers: React.FC<ApproversProps> = ({ approvers, request_status,isOwnRequest }) => {
+const Approvers: React.FC<ApproversProps> = ({
+  approvers,
+  request_status,
+  isOwnRequest,
+  requestorEmail,
+}) => {
   const { user } = useAppSelector((state) => state.session);
   const pathname = usePathname();
   const { isVisible, open, close } = useDialogState();
@@ -54,10 +60,15 @@ const Approvers: React.FC<ApproversProps> = ({ approvers, request_status,isOwnRe
   const useSetApproverFormReturn = useForm<Approver>({
     resolver: useMemo(() => {
       if (user && isOwnRequest) {
-        return zodResolver(getApproverSchema(user.email));
+        return zodResolver(getApproverSchema(true, user.email));
       }
+
+      if (user && !isOwnRequest) {
+        return zodResolver(getApproverSchema(false, requestorEmail));
+      }
+
       return zodResolver(ApproverSchema);
-    },[isOwnRequest, user]),
+    }, [isOwnRequest, user, requestorEmail]),
     mode: "onChange",
   });
 
@@ -116,7 +127,9 @@ const Approvers: React.FC<ApproversProps> = ({ approvers, request_status,isOwnRe
                     approver.display_name !== "Finance" &&
                     pathname === "/admin" &&
                     user?.is_superuser &&
-                    !approver.is_rejected && request_status.name === "Pending" && !isOwnRequest && (
+                    !approver.is_rejected &&
+                    request_status.name === "Pending" &&
+                    !isOwnRequest && (
                       <Button
                         buttonType="text"
                         onClick={() => {
