@@ -33,6 +33,7 @@ const SingleTransitionToCreditedDialog: React.FC<
     if (selectedReimbursement) {
       const payload = {
         request_ids: [selectedReimbursement.id.toString()],
+        credit_all_request: false,
       };
 
       void creditReimbursement(payload)

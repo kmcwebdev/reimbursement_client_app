@@ -2,7 +2,10 @@ import { type IApproverToEdit } from "~/app/components/reimbursement-view/Approv
 import { appApiSlice } from "~/app/rtkQuery";
 import { type OnholdReimbursementType } from "~/schema/reimbursement-onhold-form.schema";
 import { type RejectReimbursementType } from "~/schema/reimbursement-reject-form.schema";
-import { type IReimbursementRequest } from "~/types/reimbursement.types";
+import {
+  type CreditPayload,
+  type IReimbursementRequest,
+} from "~/types/reimbursement.types";
 
 /**
  * ACTIONS API SLICE
@@ -133,9 +136,7 @@ export const actionsApiSlice = appApiSlice.injectEndpoints({
     }),
     transitionToCredited: builder.mutation<
       unknown,
-      {
-        request_ids: string[];
-      }
+      Pick<CreditPayload, "request_ids">
     >({
       query: (data) => {
         return {

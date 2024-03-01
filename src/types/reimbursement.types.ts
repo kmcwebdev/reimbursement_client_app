@@ -68,6 +68,11 @@ export type StatusType =
   | "Rejected"
   | "Cancelled";
 
+export type CreditPayload = {
+  request_ids: string[];
+  credit_all_request: boolean;
+};
+
 export type IReimbursementsFilterQuery = {
   search?: string;
   request_type__id?: string;

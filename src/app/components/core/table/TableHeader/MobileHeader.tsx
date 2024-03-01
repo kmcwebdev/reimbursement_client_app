@@ -5,6 +5,7 @@ import { AiOutlineSearch } from "react-icons-all-files/ai/AiOutlineSearch";
 import { HiFolderDownload } from "react-icons-all-files/hi/HiFolderDownload";
 import { HiPlusCircle } from "react-icons-all-files/hi/HiPlusCircle";
 import { MdCheck } from "react-icons-all-files/md/MdCheck";
+import { MdCreditScore } from "react-icons-all-files/md/MdCreditScore";
 import CollapseWidthAnimation from "~/app/components/animation/CollapseWidth";
 import { type IReimbursementRequest } from "~/types/reimbursement.types";
 import { classNames } from "~/utils/classNames";
@@ -70,6 +71,16 @@ const MobileTableHeader: React.FC<MobileHeaderProps> = ({
                       onClick={buttonClickHandler}
                     >
                       <MdCheck className="h-6 w-6" />
+                    </Button>
+                  )}
+
+                  {button === "credit" && (
+                    <Button
+                      aria-label="Credit"
+                      buttonType="text"
+                      onClick={buttonClickHandler}
+                    >
+                      <MdCreditScore className="h-6 w-6" />
                     </Button>
                   )}
                 </CollapseWidthAnimation>

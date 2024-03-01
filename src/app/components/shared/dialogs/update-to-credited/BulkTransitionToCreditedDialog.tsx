@@ -1,11 +1,15 @@
 import React from "react";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
+import { appApiSlice } from "~/app/rtkQuery";
 import { useTransitionToCreditedMutation } from "~/features/api/actions-api-slice";
 import {
   setSelectedItems,
   toggleBulkCreditDialog,
 } from "~/features/state/table-state.slice";
-import { type IReimbursementRequest } from "~/types/reimbursement.types";
+import {
+  type CreditPayload,
+  type IReimbursementRequest,
+} from "~/types/reimbursement.types";
 import { Button } from "../../../core/Button";
 import Dialog from "../../../core/Dialog";
 import { showToast } from "../../../core/Toast";
@@ -29,9 +33,24 @@ const BulkTransitionToCreditedDialog: React.FC<
   };
 
   const handleConfirmCreditReimbursements = () => {
-    const payload = {
-      request_ids: selectedItems.map((item) => item.toString()),
+    let payload: Pick<CreditPayload, "request_ids"> = {
+      request_ids: [],
+      // credit_all_request: false,
     };
+
+    if (selectedItems.length > 0) {
+      payload = {
+        request_ids: selectedItems.map((item) => item.toString()),
+        // credit_all_request: false,
+      };
+    }
+
+    // if (setSelectedItems.length === 0) {
+    //   payload = {
+    //     request_ids: [],
+    //     credit_all_request: true,
+    //   };
+    // }
 
     void creditReimbursement(payload)
       .unwrap()
@@ -43,6 +62,13 @@ const BulkTransitionToCreditedDialog: React.FC<
         });
         onAbort();
         dispatch(setSelectedItems([]));
+        dispatch(
+          appApiSlice.util.invalidateTags([
+            { type: "ReimbursementRequest" },
+            { type: "ReimbursementApprovalList" },
+            { type: "ApprovalAnalytics" },
+          ]),
+        );
       })
       .catch(() => {
         showToast({
