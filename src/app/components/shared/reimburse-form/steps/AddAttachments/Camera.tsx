@@ -79,11 +79,11 @@ const Camera: React.FC<CameraProps> = ({
 
       {isInitiated && (
         <div className="relative flex flex-col gap-4 pt-4">
-          {cameraIsLoading && numberOfCameras !== 0 && (
+          {cameraIsLoading && (
             <SkeletonLoading className="absolute z-[100] h-[60vh] w-full rounded-md" />
           )}
 
-          {cameraIsLoading && numberOfCameras === 0 && (
+          {!cameraIsLoading && numberOfCameras === 0 && (
             <div className="absolute z-[100] grid h-[60vh] w-full place-items-center rounded-md bg-neutral-200 p-4">
               <EmptyState
                 title="No Camera Device Accessible"
@@ -93,7 +93,6 @@ const Camera: React.FC<CameraProps> = ({
                 <Button
                   onClick={() => {
                     setIsInitiated(false);
-                    // setIsInitiated(true);
                   }}
                 >
                   Reload Camera
@@ -106,8 +105,7 @@ const Camera: React.FC<CameraProps> = ({
             className={classNames(
               !cameraIsLoading && numberOfCameras > 0
                 ? "opacity-100"
-                : "opacity-0",
-              numberOfCameras === 0 ? "h-0" : "h-[60vh]",
+                : "h-0 opacity-0",
               "relative h-[60vh] overflow-hidden rounded-md",
             )}
           >
@@ -122,10 +120,10 @@ const Camera: React.FC<CameraProps> = ({
                 canvas: "Canvas is not supported.",
               }}
               facingMode="environment"
-              numberOfCamerasCallback={(i) => setNumberOfCameras(i)}
-              videoReadyCallback={() =>
-                setTimeout(() => setCameraIsLoading(false), 1000)
-              }
+              numberOfCamerasCallback={(i) => {
+                setNumberOfCameras(i);
+                setCameraIsLoading(false);
+              }}
               ref={camera}
             />
 

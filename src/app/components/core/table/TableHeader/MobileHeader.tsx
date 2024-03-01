@@ -96,6 +96,7 @@ const MobileTableHeader: React.FC<MobileHeaderProps> = ({
                   options={[
                     { label: "Pending", value: 1 },
                     { label: "On-hold", value: 5 },
+                    { label: "Crediting", value: 3 },
                   ]}
                   label=""
                   name="statusToggle"

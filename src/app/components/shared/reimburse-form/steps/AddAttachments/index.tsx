@@ -258,7 +258,7 @@ const AddAttachments: React.FC<AttachmentProps> = ({
       </div>
 
       <div className="flex text-xs text-neutral-700">
-        <p>Upload PDF,Excel File or JPEG, maximum upload file size (50mb).</p>d
+        <p>Upload PDF,Excel File or JPEG, maximum upload file size (50mb).</p>
       </div>
       <div className="mt-2 h-px bg-neutral-300" />
 

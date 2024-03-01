@@ -23,6 +23,10 @@ const unprotectedEndpoints = [
 const appApiBaseQuery = fetchBaseQuery({
   baseUrl: env.NEXT_PUBLIC_BASEAPI_URL,
   prepareHeaders: (headers, { getState }) => {
+    headers.set("Cache-Control", "no-cache");
+    headers.set("Pragma", "no-cache");
+    headers.set("Expires", "0");
+
     const token = (getState() as RootState).session.accessToken;
 
     if (token && !headers.has("authorization")) {
