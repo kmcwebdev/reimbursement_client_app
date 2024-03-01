@@ -19,6 +19,7 @@ export interface DetailsProps {
   reimb_requestor: IUser;
   created_at: string;
   amount: string;
+  payroll_date: string;
 }
 
 const Details: React.FC<DetailsProps> = ({
@@ -28,6 +29,7 @@ const Details: React.FC<DetailsProps> = ({
   particulars,
   created_at,
   amount,
+  payroll_date,
 }) => {
   return (
     <List>
@@ -75,11 +77,10 @@ const Details: React.FC<DetailsProps> = ({
       <List.Item label="Amount" value={currencyFormat(+amount)} />
 
       <div className="flex flex-col">
-        {(request_status.name === "Processing" ||
-          request_status.name === "Credited") && (
+        {payroll_date && request_status.name === "Credited" && (
           <List.Item
             label="Payout"
-            value={parseTimezone(created_at).format("MMMM DD,YYYY")}
+            value={parseTimezone(payroll_date).format("MMMM DD,YYYY")}
           />
         )}
       </div>

@@ -123,6 +123,7 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
               amount={data.total_amount}
               particulars={data.particulars}
               reimb_requestor={data.reimb_requestor}
+              payroll_date={data.payroll_date}
             />
 
             {data.remarks &&
