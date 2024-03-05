@@ -134,10 +134,7 @@ export const actionsApiSlice = appApiSlice.injectEndpoints({
         { type: "ApprovalAnalytics" },
       ],
     }),
-    transitionToCredited: builder.mutation<
-      unknown,
-      Pick<CreditPayload, "request_ids">
-    >({
+    transitionToCredited: builder.mutation<unknown, CreditPayload>({
       query: (data) => {
         return {
           url: `/reimbursements/request/credit`,
