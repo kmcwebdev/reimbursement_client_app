@@ -47,7 +47,7 @@ const BulkApproveReimbursementsDialog: React.FC<
       });
     }
 
-    let processedItems = selectedItems.length;
+    let processedItems = matrixIds.length;
 
     matrixIds.forEach((a) => {
       void approveReimbursement({ id: a })
