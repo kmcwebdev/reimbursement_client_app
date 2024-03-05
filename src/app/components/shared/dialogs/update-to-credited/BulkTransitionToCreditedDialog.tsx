@@ -48,6 +48,7 @@ const BulkTransitionToCreditedDialog: React.FC<
 
     if (selectedItems.length === 0) {
       payload = {
+        request_ids: [],
         credit_all_request: true,
       };
     }
