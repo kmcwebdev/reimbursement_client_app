@@ -43,7 +43,8 @@ const SingleApproveReimbursementsDialog: React.FC<
           .then(() => {
             dispatch(
               appApiSlice.util.invalidateTags([
-                { type: "ReimbursementRequest" },
+                "ReimbursementApprovalList",
+                "ReimbursementRequest",
               ]),
             );
 

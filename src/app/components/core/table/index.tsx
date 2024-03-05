@@ -109,14 +109,6 @@ const Table: React.FC<TableProps> = (props) => {
     },
   });
 
-  // const handleClear = () => {
-  //   dispatch(resetPageTableState());
-  //   dispatch(appApiSlice.util.invalidateTags(["MyRequests"]));
-  //   dispatch(appApiSlice.util.invalidateTags(["ReimbursementApprovalList"]));
-  //   dispatch(appApiSlice.util.invalidateTags(["ReimbursementAdminList"]));
-  //   dispatch(appApiSlice.util.invalidateTags(["ReimbursementHistoryList"]));
-  // };
-
   return (
     <div
       className={classNames(

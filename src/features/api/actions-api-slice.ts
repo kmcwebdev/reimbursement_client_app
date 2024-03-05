@@ -25,10 +25,7 @@ export const actionsApiSlice = appApiSlice.injectEndpoints({
           method: "PATCH",
         };
       },
-      invalidatesTags: [
-        { type: "ReimbursementApprovalList" },
-        { type: "ApprovalAnalytics" },
-      ],
+      invalidatesTags: ["ReimbursementApprovalList", "ApprovalAnalytics"],
     }),
     rejectReimbursement: builder.mutation<
       unknown,
@@ -43,10 +40,7 @@ export const actionsApiSlice = appApiSlice.injectEndpoints({
           },
         };
       },
-      invalidatesTags: [
-        { type: "ReimbursementApprovalList" },
-        { type: "ApprovalAnalytics" },
-      ],
+      invalidatesTags: ["ReimbursementApprovalList", "ApprovalAnalytics"],
     }),
     approveReimbursementViaEmail: builder.mutation<
       unknown,
@@ -88,10 +82,10 @@ export const actionsApiSlice = appApiSlice.injectEndpoints({
         };
       },
       invalidatesTags: [
-        { type: "MyRequests" },
-        { type: "ReimbursementRequestList" },
-        { type: "MyAnalytics" },
-        { type: "ApprovalAnalytics" },
+        "MyRequests",
+        "ReimbursementRequestList",
+        "MyAnalytics",
+        "ApprovalAnalytics",
       ],
     }),
     holdReimbursement: builder.mutation<
@@ -108,10 +102,10 @@ export const actionsApiSlice = appApiSlice.injectEndpoints({
         };
       },
       invalidatesTags: [
-        { type: "ReimbursementApprovalList" },
-        { type: "ReimbursementAdminList" },
-        { type: "MyAnalytics" },
-        { type: "ApprovalAnalytics" },
+        "ReimbursementApprovalList",
+        "ReimbursementAdminList",
+        "MyAnalytics",
+        "ApprovalAnalytics",
       ],
     }),
     reRouteApprover: builder.mutation<
@@ -128,10 +122,10 @@ export const actionsApiSlice = appApiSlice.injectEndpoints({
         };
       },
       invalidatesTags: [
-        { type: "ReimbursementRequest" },
-        { type: "ReimbursementApprovalList" },
-        { type: "MyAnalytics" },
-        { type: "ApprovalAnalytics" },
+        "ReimbursementRequest",
+        "ReimbursementApprovalList",
+        "MyAnalytics",
+        "ApprovalAnalytics",
       ],
     }),
     transitionToCredited: builder.mutation<unknown, CreditPayload>({
@@ -143,10 +137,10 @@ export const actionsApiSlice = appApiSlice.injectEndpoints({
         };
       },
       invalidatesTags: [
-        { type: "ReimbursementRequest" },
-        { type: "ReimbursementApprovalList" },
-        { type: "MyAnalytics" },
-        { type: "ApprovalAnalytics" },
+        "ReimbursementRequest",
+        "ReimbursementApprovalList",
+        "MyAnalytics",
+        "ApprovalAnalytics",
       ],
     }),
   }),

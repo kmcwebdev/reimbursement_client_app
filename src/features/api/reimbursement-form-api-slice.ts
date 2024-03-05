@@ -31,9 +31,9 @@ export const reimbursementFormApiSlice = appApiSlice.injectEndpoints({
         };
       },
       invalidatesTags: [
-        { type: "MyRequests" },
-        { type: "ReimbursementRequestList" },
-        { type: "MyAnalytics" },
+        "MyRequests",
+        "ReimbursementRequestList",
+        "MyAnalytics",
       ],
     }),
   }),

@@ -208,11 +208,9 @@ const MyAdmin: React.FC = () => {
       dispatch(setSelectedItems([]));
       dispatch(
         appApiSlice.util.invalidateTags([
-          { type: "ReimbursementApprovalList" },
+          "ReimbursementApprovalList",
+          "ApprovalAnalytics",
         ]),
-      );
-      dispatch(
-        appApiSlice.util.invalidateTags([{ type: "ApprovalAnalytics" }]),
       );
       dispatch(setSelectedItems([]));
       setDownloadReportLoading(false);

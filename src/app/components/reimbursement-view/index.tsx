@@ -70,9 +70,9 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
     onSuccess: () => {
       dispatch(
         appApiSlice.util.invalidateTags([
-          { type: "ReimbursementRequest" },
-          { type: "ReimbursementApprovalList" },
-          { type: "ApprovalAnalytics" },
+          "ReimbursementRequest",
+          "ReimbursementApprovalList",
+          "ApprovalAnalytics",
         ]),
       );
       setDownloadReportLoading(false);
@@ -101,9 +101,9 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
       await exportReport(url, filename);
       dispatch(
         appApiSlice.util.invalidateTags([
-          { type: "ReimbursementRequest" },
-          { type: "ReimbursementApprovalList" },
-          { type: "ApprovalAnalytics" },
+          "ReimbursementRequest",
+          "ReimbursementApprovalList",
+          "ApprovalAnalytics",
         ]),
       );
 
