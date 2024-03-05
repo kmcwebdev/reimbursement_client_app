@@ -47,7 +47,7 @@ export const managementApiSlice = appApiSlice.injectEndpoints({
         };
       },
 
-      invalidatesTags: [{ type: "Users" }],
+      invalidatesTags: ["Users"],
     }),
   }),
 });

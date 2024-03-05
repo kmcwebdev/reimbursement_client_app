@@ -42,9 +42,7 @@ const HoldReimbursementDialog: React.FC = () => {
       void holdReimbursement(payload)
         .unwrap()
         .then(() => {
-          dispatch(
-            appApiSlice.util.invalidateTags([{ type: "ReimbursementRequest" }]),
-          );
+          dispatch(appApiSlice.util.invalidateTags(["ReimbursementRequest"]));
           showToast({
             type: "success",
             description: "Reimbursement Request successfully put onhold!",

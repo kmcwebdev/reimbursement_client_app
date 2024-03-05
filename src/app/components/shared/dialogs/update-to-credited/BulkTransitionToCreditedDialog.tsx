@@ -65,9 +65,10 @@ const BulkTransitionToCreditedDialog: React.FC<
         dispatch(setSelectedItems([]));
         dispatch(
           appApiSlice.util.invalidateTags([
-            { type: "ReimbursementRequest" },
-            { type: "ReimbursementApprovalList" },
-            { type: "ApprovalAnalytics" },
+            "ReimbursementRequest",
+            "ReimbursementApprovalList",
+            "ReimbursementHistoryList",
+            "ApprovalAnalytics",
           ]),
         );
       })

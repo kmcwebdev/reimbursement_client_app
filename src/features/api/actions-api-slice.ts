@@ -26,8 +26,10 @@ export const actionsApiSlice = appApiSlice.injectEndpoints({
         };
       },
       invalidatesTags: [
-        { type: "ReimbursementApprovalList" },
-        { type: "ApprovalAnalytics" },
+        "ReimbursementRequest",
+        "ReimbursementHistoryList",
+        "ReimbursementApprovalList",
+        "ApprovalAnalytics",
       ],
     }),
     rejectReimbursement: builder.mutation<
@@ -44,8 +46,9 @@ export const actionsApiSlice = appApiSlice.injectEndpoints({
         };
       },
       invalidatesTags: [
-        { type: "ReimbursementApprovalList" },
-        { type: "ApprovalAnalytics" },
+        "ReimbursementHistoryList",
+        "ReimbursementApprovalList",
+        "ApprovalAnalytics",
       ],
     }),
     approveReimbursementViaEmail: builder.mutation<
@@ -74,6 +77,11 @@ export const actionsApiSlice = appApiSlice.injectEndpoints({
           remarks: data.remarks,
         },
       }),
+      invalidatesTags: [
+        "ReimbursementApprovalList",
+        "ReimbursementHistoryList",
+        "ApprovalAnalytics",
+      ],
     }),
     cancelReimbursement: builder.mutation<
       unknown,
@@ -88,10 +96,11 @@ export const actionsApiSlice = appApiSlice.injectEndpoints({
         };
       },
       invalidatesTags: [
-        { type: "MyRequests" },
-        { type: "ReimbursementRequestList" },
-        { type: "MyAnalytics" },
-        { type: "ApprovalAnalytics" },
+        "MyRequests",
+        "ReimbursementRequestList",
+        "MyAnalytics",
+        "ApprovalAnalytics",
+        "ReimbursementHistoryList",
       ],
     }),
     holdReimbursement: builder.mutation<
@@ -108,10 +117,11 @@ export const actionsApiSlice = appApiSlice.injectEndpoints({
         };
       },
       invalidatesTags: [
-        { type: "ReimbursementApprovalList" },
-        { type: "ReimbursementAdminList" },
-        { type: "MyAnalytics" },
-        { type: "ApprovalAnalytics" },
+        "ReimbursementHistoryList",
+        "ReimbursementApprovalList",
+        "ReimbursementAdminList",
+        "MyAnalytics",
+        "ApprovalAnalytics",
       ],
     }),
     reRouteApprover: builder.mutation<
@@ -128,10 +138,10 @@ export const actionsApiSlice = appApiSlice.injectEndpoints({
         };
       },
       invalidatesTags: [
-        { type: "ReimbursementRequest" },
-        { type: "ReimbursementApprovalList" },
-        { type: "MyAnalytics" },
-        { type: "ApprovalAnalytics" },
+        "ReimbursementRequest",
+        "ReimbursementApprovalList",
+        "MyAnalytics",
+        "ApprovalAnalytics",
       ],
     }),
     transitionToCredited: builder.mutation<unknown, CreditPayload>({
@@ -143,10 +153,11 @@ export const actionsApiSlice = appApiSlice.injectEndpoints({
         };
       },
       invalidatesTags: [
-        { type: "ReimbursementRequest" },
-        { type: "ReimbursementApprovalList" },
-        { type: "MyAnalytics" },
-        { type: "ApprovalAnalytics" },
+        "ReimbursementHistoryList",
+        "ReimbursementRequest",
+        "ReimbursementApprovalList",
+        "MyAnalytics",
+        "ApprovalAnalytics",
       ],
     }),
   }),

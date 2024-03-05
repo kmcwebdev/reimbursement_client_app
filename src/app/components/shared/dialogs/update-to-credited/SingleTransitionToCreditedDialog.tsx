@@ -3,6 +3,7 @@ import { Button } from "~/app/components/core/Button";
 import Dialog from "~/app/components/core/Dialog";
 import { showToast } from "~/app/components/core/Toast";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
+import { appApiSlice } from "~/app/rtkQuery";
 import { useTransitionToCreditedMutation } from "~/features/api/actions-api-slice";
 import {
   closeSideDrawer,
@@ -42,6 +43,14 @@ const SingleTransitionToCreditedDialog: React.FC<
       void creditReimbursement(payload)
         .unwrap()
         .then(() => {
+          dispatch(
+            appApiSlice.util.invalidateTags([
+              "ReimbursementRequest",
+              "ReimbursementApprovalList",
+              "ReimbursementHistoryList",
+              "ApprovalAnalytics",
+            ]),
+          );
           showToast({
             type: "success",
             description:

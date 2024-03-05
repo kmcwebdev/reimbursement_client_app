@@ -101,10 +101,14 @@ const FilterView: React.FC<FilterViewProps> = ({ colSpan, type }) => {
   const handleClear = () => {
     setFilterViewState(undefined);
     dispatch(resetPageTableState());
-    dispatch(appApiSlice.util.invalidateTags(["MyRequests"]));
-    dispatch(appApiSlice.util.invalidateTags(["ReimbursementApprovalList"]));
-    dispatch(appApiSlice.util.invalidateTags(["ReimbursementAdminList"]));
-    dispatch(appApiSlice.util.invalidateTags(["ReimbursementHistoryList"]));
+    dispatch(
+      appApiSlice.util.invalidateTags([
+        "MyRequests",
+        "ReimbursementApprovalList",
+        "ReimbursementAdminList",
+        "ReimbursementHistoryList",
+      ]),
+    );
   };
 
   return (

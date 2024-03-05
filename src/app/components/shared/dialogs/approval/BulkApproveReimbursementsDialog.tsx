@@ -53,14 +53,16 @@ const BulkApproveReimbursementsDialog: React.FC<
       void approveReimbursement({ id: a })
         .unwrap()
         .then(() => {
-          dispatch(
-            appApiSlice.util.invalidateTags([{ type: "ReimbursementRequest" }]),
-          );
-
           processedItems = processedItems - 1;
 
           if (processedItems === 0) {
             dispatch(setSelectedItems([]));
+            dispatch(
+              appApiSlice.util.invalidateTags([
+                "ReimbursementRequest",
+                "ReimbursementApprovalList",
+              ]),
+            );
             showToast({
               type: "success",
               description: "Reimbursement Requests successfully approved!",
