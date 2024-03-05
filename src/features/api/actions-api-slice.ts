@@ -25,7 +25,11 @@ export const actionsApiSlice = appApiSlice.injectEndpoints({
           method: "PATCH",
         };
       },
-      invalidatesTags: ["ReimbursementApprovalList", "ApprovalAnalytics"],
+      invalidatesTags: [
+        "ReimbursementHistoryList",
+        "ReimbursementApprovalList",
+        "ApprovalAnalytics",
+      ],
     }),
     rejectReimbursement: builder.mutation<
       unknown,
@@ -40,7 +44,11 @@ export const actionsApiSlice = appApiSlice.injectEndpoints({
           },
         };
       },
-      invalidatesTags: ["ReimbursementApprovalList", "ApprovalAnalytics"],
+      invalidatesTags: [
+        "ReimbursementHistoryList",
+        "ReimbursementApprovalList",
+        "ApprovalAnalytics",
+      ],
     }),
     approveReimbursementViaEmail: builder.mutation<
       unknown,
@@ -68,6 +76,11 @@ export const actionsApiSlice = appApiSlice.injectEndpoints({
           remarks: data.remarks,
         },
       }),
+      invalidatesTags: [
+        "ReimbursementApprovalList",
+        "ReimbursementHistoryList",
+        "ApprovalAnalytics",
+      ],
     }),
     cancelReimbursement: builder.mutation<
       unknown,
@@ -86,6 +99,7 @@ export const actionsApiSlice = appApiSlice.injectEndpoints({
         "ReimbursementRequestList",
         "MyAnalytics",
         "ApprovalAnalytics",
+        "ReimbursementHistoryList",
       ],
     }),
     holdReimbursement: builder.mutation<

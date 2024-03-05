@@ -67,6 +67,7 @@ const BulkTransitionToCreditedDialog: React.FC<
           appApiSlice.util.invalidateTags([
             "ReimbursementRequest",
             "ReimbursementApprovalList",
+            "ReimbursementHistoryList",
             "ApprovalAnalytics",
           ]),
         );
