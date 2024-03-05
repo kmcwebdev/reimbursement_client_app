@@ -1,3 +1,4 @@
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { type Metadata, type NextPage, type Viewport } from "next";
 import dynamic from "next/dynamic";
 import { type PropsWithChildren } from "react";
@@ -52,7 +53,10 @@ export const RootLayout: NextPage<PropsWithChildren> = ({ children }) => {
           <NextAuthSessionProvider>
             <AbilityContextProvider>
               <Toaster />
-              <Layout>{children}</Layout>
+              <Layout>
+                {children}
+                <SpeedInsights />
+              </Layout>
             </AbilityContextProvider>
           </NextAuthSessionProvider>
         </ReduxStoreProvider>
