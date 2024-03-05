@@ -13,6 +13,7 @@ import {
 import { Button } from "../../../core/Button";
 import Dialog from "../../../core/Dialog";
 import { showToast } from "../../../core/Toast";
+
 type BulkTransitionToCreditedDialogProps = {
   selectedReimbursement?: IReimbursementRequest;
 };
@@ -33,24 +34,23 @@ const BulkTransitionToCreditedDialog: React.FC<
   };
 
   const handleConfirmCreditReimbursements = () => {
-    let payload: Pick<CreditPayload, "request_ids"> = {
+    let payload: CreditPayload = {
       request_ids: [],
-      // credit_all_request: false,
+      credit_all_request: false,
     };
 
     if (selectedItems.length > 0) {
       payload = {
-        request_ids: selectedItems.map((item) => item.toString()),
-        // credit_all_request: false,
+        request_ids: selectedItems.map(String),
+        credit_all_request: false,
       };
     }
 
-    // if (setSelectedItems.length === 0) {
-    //   payload = {
-    //     request_ids: [],
-    //     credit_all_request: true,
-    //   };
-    // }
+    if (selectedItems.length === 0) {
+      payload = {
+        credit_all_request: true,
+      };
+    }
 
     void creditReimbursement(payload)
       .unwrap()

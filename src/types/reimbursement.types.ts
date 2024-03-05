@@ -69,7 +69,7 @@ export type StatusType =
   | "Cancelled";
 
 export type CreditPayload = {
-  request_ids: string[];
+  request_ids?: string[];
   credit_all_request: boolean;
 };
 

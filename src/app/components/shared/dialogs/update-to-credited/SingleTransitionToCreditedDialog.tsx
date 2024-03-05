@@ -8,7 +8,10 @@ import {
   closeSideDrawer,
   toggleSingleCreditDialog,
 } from "~/features/state/table-state.slice";
-import { type IReimbursementRequest } from "~/types/reimbursement.types";
+import {
+  type CreditPayload,
+  type IReimbursementRequest,
+} from "~/types/reimbursement.types";
 
 type SingleTransitionToCreditedDialogProps = {
   selectedReimbursement?: IReimbursementRequest;
@@ -31,7 +34,7 @@ const SingleTransitionToCreditedDialog: React.FC<
 
   const handleConfirmCreditReimbursements = () => {
     if (selectedReimbursement) {
-      const payload = {
+      const payload: CreditPayload = {
         request_ids: [selectedReimbursement.id.toString()],
         credit_all_request: false,
       };
