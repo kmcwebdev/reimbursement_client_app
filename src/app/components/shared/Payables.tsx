@@ -128,6 +128,11 @@ const Payables: React.FC = () => {
     if (reference_nos.length > 0) {
       searchParams?.append("multi_reference_no", reference_nos.join(","));
     }
+
+    // if (reference_nos.length === 0) {
+    //   searchParams?.append("process_all_request","true")
+    // }
+
     searchParams?.append("ordering", "-created_at");
 
     let filename: string = "FINANCE_REIMBURSEMENT_REPORT";

@@ -215,7 +215,15 @@ const AddAttachments: React.FC<AttachmentProps> = ({
     noClick: true,
     onDrop: (e, i) => {
       if (i.length === 0) {
-        handleDrop(e[0]);
+        const formattedFile = new File(
+          [e[0]],
+          `Attachment-${attachedFiles.length + 1}`,
+          {
+            ...e[0],
+          },
+        );
+
+        handleDrop(formattedFile);
       }
     },
     validator: fileValidator,
