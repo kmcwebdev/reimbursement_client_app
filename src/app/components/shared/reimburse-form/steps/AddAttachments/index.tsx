@@ -1,9 +1,5 @@
-import React, { useCallback, useMemo, useRef, useState } from "react";
-import {
-  useDropzone,
-  type FileRejection,
-  type FileWithPath,
-} from "react-dropzone";
+import React, { useEffect, useRef, useState } from "react";
+import { useDropzone, type FileRejection } from "react-dropzone";
 import { type UseFormReturn } from "react-hook-form";
 import { HiOutlinePlus } from "react-icons-all-files/hi/HiOutlinePlus";
 import CollapseHeightAnimation from "~/app/components/animation/CollapseHeight";
@@ -33,6 +29,11 @@ interface AttachmentProps {
   handleResetRequestType: () => void;
 }
 
+export interface AttachedFile {
+  status: "uploading" | "uploaded";
+  file: File;
+}
+
 const AddAttachments: React.FC<AttachmentProps> = ({
   handleResetRequestType,
   formReturn,
@@ -41,13 +42,9 @@ const AddAttachments: React.FC<AttachmentProps> = ({
     (state) => state.reimbursementForm,
   );
   const buttonRef = useRef<HTMLButtonElement>(null);
-
   const [showCamera, setShowCamera] = useState<boolean>(false);
-  const [attachedFiles, setAttachedFiles] = useState<File[]>([]);
-  const [uploadedAttachments, setUploadedAttachments] = useState<
-    { name: string; status: "uploading" | "uploaded"; type: string }[]
-  >([]);
-
+  const [attachedFiles, setAttachedFiles] = useState<AttachedFile[]>([]);
+  const [processed, setProcessed] = useState<number>(0);
   const [fileRejections, setFileRejections] = useState<FileRejection[]>([]);
 
   const dispatch = useAppDispatch();
@@ -62,25 +59,33 @@ const AddAttachments: React.FC<AttachmentProps> = ({
       .unwrap()
       .then((data) => {
         if (data) {
-          const attachmentsCopy = [...reimbursementFormValues.attachments];
-          const statusIsUploadingIndex = uploadedAttachments.findIndex(
-            (a) => a.status === "uploading",
-          );
+          const updatedAttachedFiles = attachedFiles.map((a) => {
+            let updated = a;
+            if (a.file.name === data.file_name) {
+              updated = {
+                ...a,
+                status: "uploaded",
+              };
+            }
+            return updated;
+          });
 
-          if (statusIsUploadingIndex !== null) {
-            const uploadedAttachmentsCopy = uploadedAttachments;
-            uploadedAttachmentsCopy[statusIsUploadingIndex].status = "uploaded";
-            setUploadedAttachments(uploadedAttachmentsCopy);
-          }
-
-          attachmentsCopy.push(data);
+          setProcessed(processed + 1);
+          setAttachedFiles(updatedAttachedFiles);
 
           dispatch(
             setReimbursementFormValues({
               ...reimbursementFormValues,
-              attachments: attachmentsCopy,
+              attachments: [...reimbursementFormValues.attachments, data],
             }),
           );
+
+          if (processed === attachedFiles.length - 1) {
+            showToast({
+              type: "success",
+              description: "File Upload Success!",
+            });
+          }
         }
       })
       .catch(() => {
@@ -93,64 +98,33 @@ const AddAttachments: React.FC<AttachmentProps> = ({
   };
 
   //Automatically upload if attachment name is not in uploadedAttachmentNames
-  useMemo(() => {
-    if (attachedFiles.length > 0) {
-      const isAlreadyUploaded = uploadedAttachments.find(
-        (a) => a.name === attachedFiles[attachedFiles.length - 1].name,
+  useEffect(() => {
+    if (
+      attachedFiles &&
+      attachedFiles.length > 0 &&
+      processed !== attachedFiles.length
+    ) {
+      const unUploadedAttachedFiles = attachedFiles.filter(
+        (a) => a.status === "uploading",
       );
 
-      if (!isAlreadyUploaded) {
-        const uploadedAttachmentsCopy = uploadedAttachments;
-
-        uploadedAttachmentsCopy.push({
-          name: attachedFiles[attachedFiles.length - 1].name,
-          status: "uploading",
-          type: attachedFiles[attachedFiles.length - 1].type,
-        });
-        setUploadedAttachments(uploadedAttachmentsCopy);
-        handleUpload(attachedFiles[attachedFiles.length - 1]);
+      if (unUploadedAttachedFiles.length > 0) {
+        handleUpload(unUploadedAttachedFiles[0].file);
       }
     }
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [attachedFiles]);
+  }, [attachedFiles.length, processed]);
 
   const onCaptureProceed = (attachment: File) => {
     setShowCamera(false);
     handleDrop(attachment);
   };
 
-  useMemo(() => {
-    if (reimbursementFormValues.attachments.length > 0) {
-      reimbursementFormValues.attachments.forEach((file) => {
-        const isAlreadyUploaded = uploadedAttachments.find(
-          (a) => a.name === file.file_name,
-        );
-
-        if (!isAlreadyUploaded) {
-          const uploadedAttachmentsCopy = uploadedAttachments;
-
-          uploadedAttachmentsCopy.push({
-            name: file.file_name,
-            status: "uploaded",
-            type: file.file_type,
-          });
-          setUploadedAttachments(uploadedAttachmentsCopy);
-        }
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [reimbursementFormValues.attachments]);
-
-  const handleDrop = useCallback(
-    (e: FileWithPath) => {
-      const filesCopy = [...attachedFiles];
-      filesCopy.push(e);
-      setAttachedFiles(filesCopy);
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [handleUpload],
-  );
+  const handleDrop = (e: File) => {
+    const filesCopy = attachedFiles;
+    filesCopy.push({ status: "uploading", file: e });
+    setAttachedFiles(filesCopy);
+  };
 
   const [createReimbursement, { isLoading: isSubmitting }] =
     useCreateReimbursementMutation();
@@ -215,15 +189,18 @@ const AddAttachments: React.FC<AttachmentProps> = ({
     noClick: true,
     onDrop: (e, i) => {
       if (i.length === 0) {
-        const formattedFile = new File(
-          [e[0]],
-          `Attachment-${attachedFiles.length + 1}`,
-          {
-            ...e[0],
-          },
-        );
-
-        handleDrop(formattedFile);
+        let attachmentCount = attachedFiles.length;
+        e.forEach((file) => {
+          const formattedFile = new File(
+            [file],
+            `Attachment-${attachmentCount + 1}`,
+            {
+              type: file.type,
+            },
+          );
+          handleDrop(formattedFile);
+          attachmentCount++;
+        });
       }
     },
     validator: fileValidator,
@@ -284,8 +261,8 @@ const AddAttachments: React.FC<AttachmentProps> = ({
       {!showCamera && (
         <>
           <AttachmentsList
-            uploadedAttachments={uploadedAttachments}
-            setUploadedAttachments={setUploadedAttachments}
+            uploadedAttachments={attachedFiles}
+            setUploadedAttachments={setAttachedFiles}
           />
 
           <CollapseHeightAnimation

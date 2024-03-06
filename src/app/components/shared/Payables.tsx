@@ -89,7 +89,6 @@ const Payables: React.FC = () => {
 
   const { download: exportReport } = useReportDownload({
     onSuccess: () => {
-      dispatch(setSelectedItems([]));
       dispatch(
         appApiSlice.util.invalidateTags([
           "ReimbursementRequest",
@@ -129,9 +128,14 @@ const Payables: React.FC = () => {
       searchParams?.append("multi_reference_no", reference_nos.join(","));
     }
 
-    // if (reference_nos.length === 0) {
-    //   searchParams?.append("process_all_request","true")
-    // }
+    if (reference_nos.length === 0) {
+      if (data) {
+        const multi_reference_no = data.results
+          .map((a) => a.reference_no)
+          .join(",");
+        searchParams?.append("multi_reference_no", multi_reference_no);
+      }
+    }
 
     searchParams?.append("ordering", "-created_at");
 
@@ -152,6 +156,7 @@ const Payables: React.FC = () => {
     const url = `${env.NEXT_PUBLIC_BASEAPI_URL}/reimbursements/request/finance/download-reports${searchParams && searchParams.size ? `?${searchParams.toString()}` : ""}`;
 
     await exportReport(url, filename);
+    dispatch(setSelectedItems([]));
     dispatch(
       appApiSlice.util.invalidateTags([
         "ReimbursementRequest",
