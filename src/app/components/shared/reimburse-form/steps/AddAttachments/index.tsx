@@ -30,7 +30,7 @@ interface AttachmentProps {
 }
 
 export interface AttachedFile {
-  status: "uploading" | "uploaded";
+  status: "uploading" | "uploaded" | "unprocessed";
   file: File;
 }
 
@@ -105,11 +105,23 @@ const AddAttachments: React.FC<AttachmentProps> = ({
       processed !== attachedFiles.length
     ) {
       const unUploadedAttachedFiles = attachedFiles.filter(
-        (a) => a.status === "uploading",
+        (a) => a.status === "unprocessed",
       );
 
       if (unUploadedAttachedFiles.length > 0) {
         handleUpload(unUploadedAttachedFiles[0].file);
+        const updatedAttachedFiles = attachedFiles.map((a) => {
+          let updated = a;
+          if (a.file.name === unUploadedAttachedFiles[0].file.name) {
+            updated = {
+              ...a,
+              status: "uploading",
+            };
+          }
+          return updated;
+        });
+
+        setAttachedFiles(updatedAttachedFiles);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -122,7 +134,7 @@ const AddAttachments: React.FC<AttachmentProps> = ({
 
   const handleDrop = (e: File) => {
     const filesCopy = attachedFiles;
-    filesCopy.push({ status: "uploading", file: e });
+    filesCopy.push({ status: "unprocessed", file: e });
     setAttachedFiles(filesCopy);
   };
 
@@ -142,6 +154,7 @@ const AddAttachments: React.FC<AttachmentProps> = ({
         .then(() => {
           dispatch(toggleFormDialog());
           dispatch(clearReimbursementForm());
+          setAttachedFiles([]);
           handleResetRequestType();
           formReturn.reset();
           showToast({
@@ -339,6 +352,10 @@ const AddAttachments: React.FC<AttachmentProps> = ({
                 loading={isSubmitting}
                 disabled={
                   reimbursementFormValues.attachments.length === 0 ||
+                  attachedFiles.filter(
+                    (a) =>
+                      a.status === "unprocessed" || a.status === "uploading",
+                  ).length > 0 ||
                   isSubmitting
                 }
               >
