@@ -17,7 +17,6 @@ import { setSelectedItems } from "~/features/state/table-state.slice";
 import { type IResponsePagination } from "~/types/global-types";
 import { type IReimbursementRequest } from "~/types/reimbursement.types";
 import { classNames } from "~/utils/classNames";
-import { type ButtonGroupOption } from "../form/fields/ButtonGroup";
 import MobileListItem from "./MobileListItem";
 import Pagination, { PaginationSkeletonLoading } from "./Pagination";
 import TableEmptyState from "./TableEmptyState";
@@ -41,8 +40,6 @@ export type TableHeaderProps = {
   buttonIsVisible: boolean;
   searchIsLoading: boolean;
   handleSearch: (e: ChangeEvent<HTMLInputElement>) => void;
-  handleStatusToggle?: (e: ButtonGroupOption) => void;
-  statusToggleValue?: number;
 };
 
 type TableProps = {
@@ -118,7 +115,7 @@ const Table: React.FC<TableProps> = (props) => {
           : "md:overflow-x-auto md:overflow-y-hidden",
       )}
     >
-      <DesktopTitle {...header} />
+      <DesktopTitle {...header} isFinanceTable={props.type === "finance"} />
 
       <div
         className={classNames(
@@ -140,6 +137,7 @@ const Table: React.FC<TableProps> = (props) => {
 
           <MobileTableHeader
             {...header}
+            isFinanceTable={props.type === "finance"}
             isLoading={props.loading ? true : false}
             headerGroups={table.getHeaderGroups()}
           />

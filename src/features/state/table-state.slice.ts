@@ -5,7 +5,6 @@ import { removeUndefinedValues } from "~/utils/remove-undefined-values";
 interface TableState {
   selectedItems: number[];
   filters: IReimbursementsFilterQuery;
-  page: number | null;
   focusedReimbursementId: number | null;
   drawerIsOpen: boolean;
   bulkApprovalDialogIsOpen: boolean;
@@ -23,7 +22,6 @@ interface TableState {
 const initialState: TableState = {
   selectedItems: [],
   filters: {},
-  page: null,
   focusedReimbursementId: null,
   drawerIsOpen: false,
   bulkApprovalDialogIsOpen: false,
@@ -63,8 +61,8 @@ const TableStateSlice = createSlice({
       state.drawerIsOpen = true;
     },
     resetPageTableState(state) {
-      state.selectedItems = [];
-      state.filters = {};
+      state.selectedItems = initialState.selectedItems;
+      state.filters = initialState.filters;
     },
     toggleBulkApprovalDialog(state) {
       state.bulkApprovalDialogIsOpen = !state.bulkApprovalDialogIsOpen;
