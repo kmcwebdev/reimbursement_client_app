@@ -17,6 +17,7 @@ interface TableState {
   rejectDialogIsOpen: boolean;
   cancelDialogIsOpen: boolean;
   holdDialogIsOpen: boolean;
+  currentSelectedFinanceTabValue: number;
 }
 
 const initialState: TableState = {
@@ -34,6 +35,7 @@ const initialState: TableState = {
   rejectDialogIsOpen: false,
   cancelDialogIsOpen: false,
   holdDialogIsOpen: false,
+  currentSelectedFinanceTabValue: 1,
 };
 
 const TableStateSlice = createSlice({
@@ -93,6 +95,9 @@ const TableStateSlice = createSlice({
     toggleHoldDialog(state) {
       state.holdDialogIsOpen = !state.holdDialogIsOpen;
     },
+    setCurrentSelectedFinanceTabValue(state, action: PayloadAction<number>) {
+      state.currentSelectedFinanceTabValue = action.payload;
+    },
   },
 });
 
@@ -112,6 +117,7 @@ export const {
   toggleRejectDialog,
   toggleCancelDialog,
   toggleHoldDialog,
+  setCurrentSelectedFinanceTabValue,
 } = TableStateSlice.actions;
 
 export default TableStateSlice.reducer;

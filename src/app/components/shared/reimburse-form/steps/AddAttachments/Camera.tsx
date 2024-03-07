@@ -13,16 +13,17 @@ import { Button } from "~/app/components/core/Button";
 import EmptyState from "~/app/components/core/EmptyState";
 import SkeletonLoading from "~/app/components/core/SkeletonLoading";
 import { classNames } from "~/utils/classNames";
+import { type AttachedFile } from ".";
 
 interface CameraProps {
-  attachedFilesLength: number;
+  attachedFiles: AttachedFile[];
   onProceed: (attachment: File) => void;
   toggleCamera: () => void;
 }
 
 const Camera: React.FC<CameraProps> = ({
   onProceed,
-  attachedFilesLength,
+  attachedFiles,
   toggleCamera,
 }) => {
   const camera = useRef<CameraType>(null);
@@ -39,13 +40,20 @@ const Camera: React.FC<CameraProps> = ({
       void fetch(url)
         .then((res) => res.blob())
         .then((blob) => {
-          const attachment = new File(
-            [blob],
-            `Attachment-${attachedFilesLength + 1}`,
-            {
-              type: "image/png",
-            },
-          );
+          let attachmentCount = 0;
+          if (attachedFiles.length > 0) {
+            const lastAttachmentCount =
+              attachedFiles[attachedFiles.length - 1].file.name.split("-")[1];
+
+            attachmentCount = parseInt(lastAttachmentCount) + 1;
+          }
+          if (attachedFiles.length === 0) {
+            attachmentCount = 1;
+          }
+
+          const attachment = new File([blob], `Attachment-${attachmentCount}`, {
+            type: "image/png",
+          });
 
           setAttachment(attachment);
         });

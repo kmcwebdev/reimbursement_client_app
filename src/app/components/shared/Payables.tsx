@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
 import { type ColumnDef } from "@tanstack/react-table";
 import dynamic from "next/dynamic";
-import React, { useEffect, useMemo, useState, type ChangeEvent } from "react";
+import React, { useEffect, useState, type ChangeEvent } from "react";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { appApiSlice } from "~/app/rtkQuery";
 import { useApprovalAnalyticsQuery } from "~/features/api/analytics-api-slice";
@@ -11,6 +11,7 @@ import {
 } from "~/features/api/reimbursement-api-slice";
 import {
   openSideDrawer,
+  setCurrentSelectedFinanceTabValue,
   setFocusedReimbursementId,
   setPageTableFilters,
   setSelectedItems,
@@ -53,9 +54,12 @@ const DateFiledFilter = dynamic(
 
 const Payables: React.FC = () => {
   const { assignedRole } = useAppSelector((state) => state.session);
-  const { selectedItems, filters, focusedReimbursementId } = useAppSelector(
-    (state) => state.pageTableState,
-  );
+  const {
+    selectedItems,
+    filters,
+    focusedReimbursementId,
+    currentSelectedFinanceTabValue,
+  } = useAppSelector((state) => state.pageTableState);
 
   const [searchParams, setSearchParams] = useState<IReimbursementsFilterQuery>({
     search: undefined,
@@ -68,12 +72,6 @@ const Payables: React.FC = () => {
   const [downloadReportLoading, setDownloadReportLoading] = useState(false);
   const debouncedSearchText = useDebounce(searchParams.search, 500);
   const [isSearching, setIsSearching] = useState<boolean>(false);
-
-  const [selectedStatusValue, setSelectedStatusValue] = useState<number>(1);
-
-  useMemo(() => {
-    setSelectedStatusValue(1);
-  }, []);
 
   const {
     isFetching: reimbursementRequestDataIsLoading,
@@ -306,20 +304,20 @@ const Payables: React.FC = () => {
   }, [isFetching]);
 
   useEffect(() => {
-    if (selectedStatusValue) {
+    if (currentSelectedFinanceTabValue) {
       dispatch(setSelectedItems([]));
       dispatch(
         setPageTableFilters({
           ...filters,
-          request_status__id: selectedStatusValue.toString(),
+          request_status__id: currentSelectedFinanceTabValue.toString(),
         }),
       );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedStatusValue]);
+  }, [currentSelectedFinanceTabValue]);
 
   const handleStatusToggleChange = (e: ButtonGroupOption) => {
-    setSelectedStatusValue(+e.value);
+    dispatch(setCurrentSelectedFinanceTabValue(+e.value));
   };
 
   const toggleCreditDialogVisibility = () => {
@@ -339,21 +337,22 @@ const Payables: React.FC = () => {
           header={{
             isLoading: !isSearching && isFetching,
             title:
-              selectedStatusValue === 3
+              currentSelectedFinanceTabValue === 3
                 ? "For Crediting"
-                : selectedStatusValue === 5
+                : currentSelectedFinanceTabValue === 5
                   ? "Onhold"
                   : "For Processing",
-            button: selectedStatusValue === 3 ? "credit" : "download",
+            button:
+              currentSelectedFinanceTabValue === 3 ? "credit" : "download",
             buttonClickHandler:
-              selectedStatusValue === 3
+              currentSelectedFinanceTabValue === 3
                 ? toggleCreditDialogVisibility
                 : toggleDownloadReportDialogVisibility,
             buttonIsVisible: data && data.results.length > 0 ? true : false,
             handleSearch: handleSearch,
             searchIsLoading: isFetching,
             handleStatusToggle: handleStatusToggleChange,
-            statusToggleValue: selectedStatusValue,
+            statusToggleValue: currentSelectedFinanceTabValue,
           }}
           type="finance"
           loading={isFetching}
