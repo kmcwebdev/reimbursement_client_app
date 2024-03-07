@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
 import { type ColumnDef } from "@tanstack/react-table";
 import dynamic from "next/dynamic";
-import React, { useEffect, useState, type ChangeEvent } from "react";
+import React, { useEffect, useMemo, useState, type ChangeEvent } from "react";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { appApiSlice } from "~/app/rtkQuery";
 import { useApprovalAnalyticsQuery } from "~/features/api/analytics-api-slice";
@@ -303,7 +303,7 @@ const Payables: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isFetching]);
 
-  useEffect(() => {
+  useMemo(() => {
     if (currentSelectedFinanceTabValue) {
       dispatch(setSelectedItems([]));
       dispatch(
@@ -312,6 +312,7 @@ const Payables: React.FC = () => {
           request_status__id: currentSelectedFinanceTabValue.toString(),
         }),
       );
+      dispatch(appApiSlice.util.invalidateTags(["ReimbursementApprovalList"]));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentSelectedFinanceTabValue]);

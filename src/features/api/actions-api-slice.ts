@@ -46,6 +46,7 @@ export const actionsApiSlice = appApiSlice.injectEndpoints({
         };
       },
       invalidatesTags: [
+        "ReimbursementRequest",
         "ReimbursementHistoryList",
         "ReimbursementApprovalList",
         "ApprovalAnalytics",
@@ -78,6 +79,7 @@ export const actionsApiSlice = appApiSlice.injectEndpoints({
         },
       }),
       invalidatesTags: [
+        "ReimbursementRequest",
         "ReimbursementApprovalList",
         "ReimbursementHistoryList",
         "ApprovalAnalytics",
