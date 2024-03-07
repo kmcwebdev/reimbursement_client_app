@@ -72,6 +72,7 @@ const Payables: React.FC = () => {
   const [downloadReportLoading, setDownloadReportLoading] = useState(false);
   const debouncedSearchText = useDebounce(searchParams.search, 500);
   const [isSearching, setIsSearching] = useState<boolean>(false);
+  const [isMounted, setIsMounted] = useState<boolean>(false);
 
   const {
     isFetching: reimbursementRequestDataIsLoading,
@@ -173,7 +174,7 @@ const Payables: React.FC = () => {
       type: assignedRole?.split("_")[1].toLowerCase()!,
     },
     {
-      skip: !assignedRole,
+      skip: !isMounted && !assignedRole,
     },
   );
 
@@ -304,16 +305,15 @@ const Payables: React.FC = () => {
   }, [isFetching]);
 
   useMemo(() => {
-    if (currentSelectedFinanceTabValue) {
-      dispatch(setSelectedItems([]));
-      dispatch(
-        setPageTableFilters({
-          ...filters,
-          request_status__id: currentSelectedFinanceTabValue.toString(),
-        }),
-      );
-      dispatch(appApiSlice.util.invalidateTags(["ReimbursementApprovalList"]));
-    }
+    dispatch(setSelectedItems([]));
+    dispatch(
+      setPageTableFilters({
+        ...filters,
+        request_status__id: currentSelectedFinanceTabValue.toString(),
+      }),
+    );
+
+    setIsMounted(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentSelectedFinanceTabValue]);
 
@@ -356,7 +356,7 @@ const Payables: React.FC = () => {
             statusToggleValue: currentSelectedFinanceTabValue,
           }}
           type="finance"
-          loading={isFetching}
+          loading={!isMounted && isFetching}
           handleMobileClick={(e: number) => {
             dispatch(setFocusedReimbursementId(e));
             dispatch(openSideDrawer());
