@@ -32,7 +32,8 @@ const Layout: React.FC<PropsWithChildren> = ({ children }) => {
     (pathname.includes("/auth") ||
       pathname === "/" ||
       pathname.includes("/page-not-found") ||
-      pathname.includes("/forbidden"))
+      pathname.includes("/forbidden") ||
+      pathname.includes("/server-error"))
   ) {
     return <FullPageLayout>{children}</FullPageLayout>;
   }

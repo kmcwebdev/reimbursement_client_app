@@ -97,6 +97,12 @@ const appApiBaseQueryWithReauth: BaseQueryFn<
     }
   }
 
+  if (
+    result?.error?.status === 500 &&
+    !window.location.pathname.includes("server-error")
+  ) {
+    window.location.replace("/server-error");
+  }
   return result;
 };
 
