@@ -4,6 +4,7 @@ import { type UseFormReturn } from "react-hook-form";
 import { HiOutlinePlus } from "react-icons-all-files/hi/HiOutlinePlus";
 import CollapseHeightAnimation from "~/app/components/animation/CollapseHeight";
 import { Button } from "~/app/components/core/Button";
+import Dialog from "~/app/components/core/Dialog";
 import Popover from "~/app/components/core/Popover";
 import { showToast } from "~/app/components/core/Toast";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
@@ -17,6 +18,7 @@ import {
   setReimbursementFormValues,
   toggleFormDialog,
 } from "~/features/state/reimbursement-form-slice";
+import { useDialogState } from "~/hooks/use-dialog-state";
 import { type ParticularDetails } from "~/schema/reimbursement-particulars.schema";
 import { type MutationError } from "~/types/global-types";
 import { classNames } from "~/utils/classNames";
@@ -46,6 +48,11 @@ const AddAttachments: React.FC<AttachmentProps> = ({
   const [attachedFiles, setAttachedFiles] = useState<AttachedFile[]>([]);
   const [processed, setProcessed] = useState<number>(0);
   const [fileRejections, setFileRejections] = useState<FileRejection[]>([]);
+  const {
+    isVisible: confirmReturnDialogOpen,
+    open: openConfirmReturnDialog,
+    close: closeConfirmReturnDialog,
+  } = useDialogState();
 
   const dispatch = useAppDispatch();
 
@@ -202,17 +209,27 @@ const AddAttachments: React.FC<AttachmentProps> = ({
     noClick: true,
     onDrop: (e, i) => {
       if (i.length === 0) {
-        let attachmentCount = attachedFiles.length;
+        let attachmentCount = 0;
+
         e.forEach((file) => {
+          if (attachedFiles.length > 0) {
+            const lastAttachmentCount =
+              attachedFiles[attachedFiles.length - 1].file.name.split("-")[1];
+
+            attachmentCount = parseInt(lastAttachmentCount) + 1;
+          }
+          if (attachedFiles.length === 0) {
+            attachmentCount = 1;
+          }
+
           const formattedFile = new File(
             [file],
-            `Attachment-${attachmentCount + 1}`,
+            `Attachment-${attachmentCount}`,
             {
               type: file.type,
             },
           );
           handleDrop(formattedFile);
-          attachmentCount++;
         });
       }
     },
@@ -245,6 +262,23 @@ const AddAttachments: React.FC<AttachmentProps> = ({
     },
   });
 
+  const onDelete = (name: string) => {
+    const filtered = attachedFiles.filter((a) => a.file.name !== name);
+
+    setAttachedFiles(filtered);
+    setProcessed(processed - 1);
+
+    const updated = reimbursementFormValues.attachments.filter(
+      (a) => a.file_name !== name,
+    );
+    dispatch(
+      setReimbursementFormValues({
+        ...reimbursementFormValues,
+        attachments: updated,
+      }),
+    );
+  };
+
   return (
     <div>
       <div
@@ -263,7 +297,7 @@ const AddAttachments: React.FC<AttachmentProps> = ({
       <CollapseHeightAnimation isVisible={showCamera}>
         <Camera
           onProceed={onCaptureProceed}
-          attachedFilesLength={attachedFiles.length}
+          attachedFiles={attachedFiles}
           toggleCamera={() => {
             setShowCamera(!showCamera);
             setFileRejections([]);
@@ -275,7 +309,7 @@ const AddAttachments: React.FC<AttachmentProps> = ({
         <>
           <AttachmentsList
             uploadedAttachments={attachedFiles}
-            setUploadedAttachments={setAttachedFiles}
+            onDelete={onDelete}
           />
 
           <CollapseHeightAnimation
@@ -336,7 +370,20 @@ const AddAttachments: React.FC<AttachmentProps> = ({
                 variant="neutral"
                 className="w-full"
                 onClick={() => {
-                  dispatch(setActiveStep(activeStep - 1));
+                  if (attachedFiles.length > 0) {
+                    openConfirmReturnDialog();
+                  } else {
+                    setAttachedFiles([]);
+                    setProcessed(0);
+                    setFileRejections([]);
+                    dispatch(setActiveStep(activeStep - 1));
+                    dispatch(
+                      setReimbursementFormValues({
+                        ...reimbursementFormValues,
+                        attachments: [],
+                      }),
+                    );
+                  }
                 }}
               >
                 Return
@@ -365,6 +412,50 @@ const AddAttachments: React.FC<AttachmentProps> = ({
           </div>
         </div>
       )}
+
+      <Dialog
+        title="Confirm Return?"
+        isVisible={confirmReturnDialogOpen}
+        close={closeConfirmReturnDialog}
+      >
+        <div className="flex flex-col gap-8 pt-8">
+          <p className="text-neutral-800">
+            Returning to the previous step will clear all your uploaded files.
+            Are you sure you want to return?
+          </p>
+
+          <div className="flex items-center gap-4">
+            <Button
+              aria-label="No"
+              variant="neutral"
+              buttonType="outlined"
+              className="w-1/2"
+              onClick={closeConfirmReturnDialog}
+            >
+              No
+            </Button>
+            <Button
+              aria-label="Yes"
+              variant="danger"
+              className="w-1/2"
+              onClick={() => {
+                setAttachedFiles([]);
+                setProcessed(0);
+                setFileRejections([]);
+                dispatch(setActiveStep(activeStep - 1));
+                dispatch(
+                  setReimbursementFormValues({
+                    ...reimbursementFormValues,
+                    attachments: [],
+                  }),
+                );
+              }}
+            >
+              Yes
+            </Button>
+          </div>
+        </div>
+      </Dialog>
     </div>
   );
 };
