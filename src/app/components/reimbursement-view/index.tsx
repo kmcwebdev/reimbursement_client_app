@@ -141,6 +141,7 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
                   isOwnRequest={user.email === data.reimb_requestor.email}
                   approvers={data.approver_matrix}
                   request_status={data.request_status}
+                  next_approver={data.next_approver}
                 />
               )}
 

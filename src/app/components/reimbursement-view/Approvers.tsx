@@ -35,6 +35,7 @@ interface ApproversProps {
   isOwnRequest: boolean;
   approvers: IApproverMatrix[];
   request_status: IStatus;
+  next_approver: string;
 }
 
 export interface IApproverToEdit {
@@ -44,6 +45,7 @@ export interface IApproverToEdit {
 }
 
 const Approvers: React.FC<ApproversProps> = ({
+  next_approver,
   approvers,
   request_status,
   isOwnRequest,
@@ -125,6 +127,7 @@ const Approvers: React.FC<ApproversProps> = ({
 
                   {!approver.is_approved &&
                     approver.display_name !== "Finance" &&
+                    next_approver === approver.approver.email &&
                     pathname === "/admin" &&
                     user?.is_superuser &&
                     !approver.is_rejected &&
