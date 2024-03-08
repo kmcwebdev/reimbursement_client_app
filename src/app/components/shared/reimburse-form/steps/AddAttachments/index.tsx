@@ -222,9 +222,13 @@ const AddAttachments: React.FC<AttachmentProps> = ({
             attachmentCount = 1;
           }
 
+          const splitted = file.name.split(".");
+
+          console.log("FileExtenstion", splitted[splitted.length - 1]);
+
           const formattedFile = new File(
             [file],
-            `Attachment-${attachmentCount}`,
+            `Attachment-${attachmentCount}.${splitted[splitted.length - 1]}`,
             {
               type: file.type,
             },
