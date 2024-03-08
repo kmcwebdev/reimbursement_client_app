@@ -2,21 +2,36 @@ import React from "react";
 import { type IconType } from "react-icons-all-files";
 import { AiOutlineSearch } from "react-icons-all-files/ai/AiOutlineSearch";
 import CollapseWidthAnimation from "~/app/components/animation/CollapseWidth";
+import { useAppDispatch, useAppSelector } from "~/app/hook";
+import { setCurrentSelectedFinanceTabValue } from "~/features/state/table-state.slice";
 import { type TableHeaderProps } from "../..";
 import { Button } from "../../../Button";
-import ButtonGroup from "../../../form/fields/ButtonGroup";
+import ButtonGroup, {
+  type ButtonGroupOption,
+} from "../../../form/fields/ButtonGroup";
 import Input from "../../../form/fields/Input";
 
-const DesktopTitle: React.FC<TableHeaderProps> = ({
+const DesktopTitle: React.FC<
+  TableHeaderProps & { isFinanceTable?: boolean }
+> = ({
   title,
   searchIsLoading,
   handleSearch,
   buttonIsVisible,
   buttonClickHandler,
-  handleStatusToggle,
-  statusToggleValue,
   button,
+  isFinanceTable = false,
 }) => {
+  const dispatch = useAppDispatch();
+
+  const { currentSelectedFinanceTabValue } = useAppSelector(
+    (state) => state.pageTableState,
+  );
+
+  const handleStatusToggleChange = (e: ButtonGroupOption) => {
+    dispatch(setCurrentSelectedFinanceTabValue(+e.value));
+  };
+
   return (
     <div className="hidden flex-col md:flex">
       <div className="flex items-center justify-between pb-2 pt-4">
@@ -64,7 +79,7 @@ const DesktopTitle: React.FC<TableHeaderProps> = ({
         </div>
       </div>
 
-      {handleStatusToggle && statusToggleValue && (
+      {isFinanceTable && (
         <div className="w-64 pb-4">
           <ButtonGroup
             options={[
@@ -74,8 +89,8 @@ const DesktopTitle: React.FC<TableHeaderProps> = ({
             ]}
             label=""
             name="statusToggle"
-            handleChange={handleStatusToggle}
-            defaultValue={statusToggleValue}
+            handleChange={handleStatusToggleChange}
+            defaultValue={currentSelectedFinanceTabValue}
           />
         </div>
       )}

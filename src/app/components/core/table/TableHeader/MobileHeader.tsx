@@ -7,15 +7,20 @@ import { HiPlusCircle } from "react-icons-all-files/hi/HiPlusCircle";
 import { MdCheck } from "react-icons-all-files/md/MdCheck";
 import { MdCreditScore } from "react-icons-all-files/md/MdCreditScore";
 import CollapseWidthAnimation from "~/app/components/animation/CollapseWidth";
+import { useAppDispatch, useAppSelector } from "~/app/hook";
+import { setCurrentSelectedFinanceTabValue } from "~/features/state/table-state.slice";
 import { type IReimbursementRequest } from "~/types/reimbursement.types";
 import { classNames } from "~/utils/classNames";
 import { type CustomFilterMeta, type TableHeaderProps } from "..";
 import { Button } from "../../Button";
-import ButtonGroup from "../../form/fields/ButtonGroup";
+import ButtonGroup, {
+  type ButtonGroupOption,
+} from "../../form/fields/ButtonGroup";
 import Input from "../../form/fields/Input";
 import SkeletonLoading from "../../SkeletonLoading";
 
 interface MobileHeaderProps extends TableHeaderProps {
+  isFinanceTable?: boolean;
   headerGroups: HeaderGroup<IReimbursementRequest>[];
 }
 
@@ -28,9 +33,17 @@ const MobileTableHeader: React.FC<MobileHeaderProps> = ({
   searchIsLoading,
   handleSearch,
   headerGroups,
-  handleStatusToggle,
-  statusToggleValue,
+  isFinanceTable = false,
 }) => {
+  const dispatch = useAppDispatch();
+
+  const { currentSelectedFinanceTabValue } = useAppSelector(
+    (state) => state.pageTableState,
+  );
+
+  const handleStatusToggleChange = (e: ButtonGroupOption) => {
+    dispatch(setCurrentSelectedFinanceTabValue(+e.value));
+  };
   return (
     <thead className="sticky top-0 z-[5] h-12 rounded-t-sm  bg-white text-xs md:hidden">
       <tr>
@@ -101,7 +114,7 @@ const MobileTableHeader: React.FC<MobileHeaderProps> = ({
               </div>
             )}
 
-            {handleStatusToggle && statusToggleValue && (
+            {isFinanceTable && (
               <div className="w-64">
                 <ButtonGroup
                   options={[
@@ -111,8 +124,8 @@ const MobileTableHeader: React.FC<MobileHeaderProps> = ({
                   ]}
                   label=""
                   name="statusToggle"
-                  handleChange={handleStatusToggle}
-                  defaultValue={statusToggleValue}
+                  handleChange={handleStatusToggleChange}
+                  defaultValue={currentSelectedFinanceTabValue}
                 />
               </div>
             )}

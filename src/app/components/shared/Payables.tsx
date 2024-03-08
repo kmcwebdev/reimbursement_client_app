@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
 import { type ColumnDef } from "@tanstack/react-table";
 import dynamic from "next/dynamic";
-import React, { useEffect, useMemo, useState, type ChangeEvent } from "react";
+import React, { useEffect, useState, type ChangeEvent } from "react";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { appApiSlice } from "~/app/rtkQuery";
 import { useApprovalAnalyticsQuery } from "~/features/api/analytics-api-slice";
@@ -11,7 +11,6 @@ import {
 } from "~/features/api/reimbursement-api-slice";
 import {
   openSideDrawer,
-  setCurrentSelectedFinanceTabValue,
   setFocusedReimbursementId,
   setPageTableFilters,
   setSelectedItems,
@@ -27,7 +26,6 @@ import {
 import { createSearchParams } from "~/utils/create-search-params";
 import { env } from "../../../../env.mjs";
 import { showToast } from "../core/Toast";
-import { type ButtonGroupOption } from "../core/form/fields/ButtonGroup";
 import Table from "../core/table";
 import TableCell from "../core/table/TableCell";
 import TableCheckbox from "../core/table/TableCheckbox";
@@ -72,7 +70,6 @@ const Payables: React.FC = () => {
   const [downloadReportLoading, setDownloadReportLoading] = useState(false);
   const debouncedSearchText = useDebounce(searchParams.search, 500);
   const [isSearching, setIsSearching] = useState<boolean>(false);
-  const [isMounted, setIsMounted] = useState<boolean>(false);
 
   const {
     isFetching: reimbursementRequestDataIsLoading,
@@ -174,7 +171,7 @@ const Payables: React.FC = () => {
       type: assignedRole?.split("_")[1].toLowerCase()!,
     },
     {
-      skip: !isMounted && !assignedRole,
+      skip: !assignedRole,
     },
   );
 
@@ -304,7 +301,7 @@ const Payables: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isFetching]);
 
-  useMemo(() => {
+  useEffect(() => {
     dispatch(setSelectedItems([]));
     dispatch(
       setPageTableFilters({
@@ -312,14 +309,8 @@ const Payables: React.FC = () => {
         request_status__id: currentSelectedFinanceTabValue.toString(),
       }),
     );
-
-    setIsMounted(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentSelectedFinanceTabValue]);
-
-  const handleStatusToggleChange = (e: ButtonGroupOption) => {
-    dispatch(setCurrentSelectedFinanceTabValue(+e.value));
-  };
 
   const toggleCreditDialogVisibility = () => {
     dispatch(toggleBulkCreditDialog());
@@ -352,11 +343,9 @@ const Payables: React.FC = () => {
             buttonIsVisible: data && data.results.length > 0 ? true : false,
             handleSearch: handleSearch,
             searchIsLoading: isFetching,
-            handleStatusToggle: handleStatusToggleChange,
-            statusToggleValue: currentSelectedFinanceTabValue,
           }}
           type="finance"
-          loading={!isMounted && isFetching}
+          loading={isFetching}
           handleMobileClick={(e: number) => {
             dispatch(setFocusedReimbursementId(e));
             dispatch(openSideDrawer());
@@ -369,6 +358,7 @@ const Payables: React.FC = () => {
             previous: data?.previous!,
           }}
         />
+
         <SideDrawer
           title={
             !reimbursementRequestDataIsLoading && reimbursementRequestData
