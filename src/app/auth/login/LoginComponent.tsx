@@ -4,12 +4,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
+import { SiMicrosoftoffice } from "react-icons-all-files/si/SiMicrosoftoffice";
 import CollapseHeightAnimation from "~/app/components/animation/CollapseHeight";
 import { Button } from "~/app/components/core/Button";
 import Form from "~/app/components/core/form";
 import Input from "~/app/components/core/form/fields/Input";
 import { CredentialsSchema, type Credentials } from "~/schema/auth.schema";
-import {  handleCredentialsLogin } from "./login";
+import { handleAzureAdLogin, handleCredentialsLogin } from "./login";
 
 const LoginComponent: React.FC = () => {
   const [loading, setIsLoading] = useState<boolean>(false);
@@ -76,7 +77,7 @@ const LoginComponent: React.FC = () => {
           </Button>
         </Form>
 
-        {/* <div className="flex flex-col items-center gap-4">
+        <div className="flex flex-col items-center gap-4">
           <p className="text-neutral-600">Or sign in with</p>
 
           <Button
@@ -90,7 +91,7 @@ const LoginComponent: React.FC = () => {
             <SiMicrosoftoffice className="h-5 w-5" />
             MS Office 365
           </Button>
-        </div> */}
+        </div>
       </div>
     </div>
   );
