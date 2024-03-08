@@ -51,9 +51,13 @@ const Camera: React.FC<CameraProps> = ({
             attachmentCount = 1;
           }
 
-          const attachment = new File([blob], `Attachment-${attachmentCount}`, {
-            type: "image/png",
-          });
+          const attachment = new File(
+            [blob],
+            `Attachment-${attachmentCount}.png`,
+            {
+              type: "image/png",
+            },
+          );
 
           setAttachment(attachment);
         });
