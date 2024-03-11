@@ -4,9 +4,7 @@ import { useAbility } from "@casl/react";
 import { type ColumnDef } from "@tanstack/react-table";
 import dynamic from "next/dynamic";
 import React, { useEffect, useState, type ChangeEvent } from "react";
-import Table from "~/app/components/core/table";
-import TableCheckbox from "~/app/components/core/table/TableCheckbox";
-import { type FilterProps } from "~/app/components/core/table/filters/StatusFilter";
+import TableCheckbox from "~/app/components/core/tableV2/TableCheckbox";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { AbilityContext } from "~/context/AbilityContext";
 import { useApprovalAnalyticsQuery } from "~/features/api/analytics-api-slice";
@@ -15,16 +13,17 @@ import {
   useGetRequestQuery,
 } from "~/features/api/reimbursement-api-slice";
 import {
-  openSideDrawer,
-  setFocusedReimbursementId,
-  toggleBulkApprovalDialog,
-} from "~/features/state/table-state.slice";
+  setApprovalDashboardFilters,
+  setApprovalDashboardSelectedItems,
+} from "~/features/state/approval-dashboard-state-slice";
+import { toggleBulkApprovalDialog } from "~/features/state/table-state.slice";
 import { useDebounce } from "~/hooks/use-debounce";
 import {
-  type IReimbursementRequest,
-  type IReimbursementsFilterQuery,
+  type QueryFilter,
+  type ReimbursementRequest,
 } from "~/types/reimbursement.types";
-import TableCell from "../core/table/TableCell";
+import TableV2 from "../core/tableV2";
+import TableCell from "../core/tableV2/TableCell";
 import ApprovalTableAnalytics from "./analytics/ApprovalTableAnalytics";
 
 const ReimbursementsCardView = dynamic(
@@ -36,35 +35,33 @@ const BulkApproveReimbursementsDialog = dynamic(
 );
 
 const StatusFilter = dynamic(
-  () => import("~/app/components/core/table/filters/StatusFilter"),
+  () => import("~/app/components/core/tableV2/filters/StatusFilter"),
 );
 const ExpenseTypeFilter = dynamic(
-  () => import("~/app/components/core/table/filters/ExpenseTypeFilter"),
+  () => import("~/app/components/core/tableV2/filters/ExpenseTypeFilter"),
 );
 const ReimbursementTypeFilter = dynamic(
-  () => import("~/app/components/core/table/filters/ReimbursementTypeFilter"),
+  () => import("~/app/components/core/tableV2/filters/ReimbursementTypeFilter"),
 );
 
 const DateFiledFilter = dynamic(
-  () => import("~/app/components/core/table/filters/DateFiledFilter"),
+  () => import("~/app/components/core/tableV2/filters/DateFiledFilter"),
 );
 
 const MyApprovals: React.FC = () => {
   const dispatch = useAppDispatch();
   const ability = useAbility(AbilityContext);
   const { assignedRole } = useAppSelector((state) => state.session);
-  const { selectedItems, filters, focusedReimbursementId } = useAppSelector(
+  const { focusedReimbursementId } = useAppSelector(
     (state) => state.pageTableState,
   );
+  const { filters, selectedItems } = useAppSelector(
+    (state) => state.approvalDashboardState,
+  );
 
-  const [searchParams, setSearchParams] = useState<IReimbursementsFilterQuery>({
-    search: undefined,
-    expense_type__id: undefined,
-    request_type__id: undefined,
-    created_at_before: undefined,
-    created_at_after: undefined,
-  });
-  const debouncedSearchText = useDebounce(searchParams.search, 500);
+  const [searchParams, setSearchParams] = useState<QueryFilter | null>(null);
+
+  const debouncedSearchText = useDebounce(searchParams?.search, 500);
   const [isSearching, setIsSearching] = useState<boolean>(false);
 
   const { isFetching: analyticsIsLoading, data: analytics } =
@@ -100,8 +97,21 @@ const MyApprovals: React.FC = () => {
     setSearchParams({ ...searchParams, search: searchValue });
   };
 
-  const columns = React.useMemo<ColumnDef<IReimbursementRequest>[]>(() => {
-    const defaultColumns: ColumnDef<IReimbursementRequest>[] = [
+  const setFilters = (filters: QueryFilter | null) => {
+    dispatch(setApprovalDashboardFilters(filters));
+  };
+
+  const setSelectedItems = (selectedItems: number[]) => {
+    dispatch(setApprovalDashboardSelectedItems(selectedItems));
+  };
+
+  const resetTableState = () => {
+    dispatch(setApprovalDashboardFilters(null));
+    dispatch(setApprovalDashboardSelectedItems([]));
+  };
+
+  const columns = React.useMemo<ColumnDef<ReimbursementRequest>[]>(() => {
+    const defaultColumns: ColumnDef<ReimbursementRequest>[] = [
       {
         id: "select",
         header: ({ table }) => {
@@ -138,7 +148,9 @@ const MyApprovals: React.FC = () => {
         },
         enableColumnFilter: true,
         meta: {
-          filterComponent: StatusFilter,
+          filterComponent: () => (
+            <StatusFilter filters={filters} setFilters={setFilters} />
+          ),
         },
       },
       {
@@ -169,7 +181,12 @@ const MyApprovals: React.FC = () => {
           return value.includes(row.getValue(id));
         },
         meta: {
-          filterComponent: ReimbursementTypeFilter,
+          filterComponent: () => (
+            <ReimbursementTypeFilter
+              filters={filters}
+              setFilters={setFilters}
+            />
+          ),
         },
       },
       {
@@ -180,7 +197,9 @@ const MyApprovals: React.FC = () => {
           return value.includes(row.getValue(id));
         },
         meta: {
-          filterComponent: ExpenseTypeFilter,
+          filterComponent: () => (
+            <ExpenseTypeFilter filters={filters} setFilters={setFilters} />
+          ),
         },
       },
       {
@@ -191,7 +210,9 @@ const MyApprovals: React.FC = () => {
           return value.includes(row.getValue(id));
         },
         meta: {
-          filterComponent: (info: FilterProps) => <DateFiledFilter {...info} />,
+          filterComponent: () => (
+            <DateFiledFilter filters={filters} setFilters={setFilters} />
+          ),
         },
       },
       {
@@ -241,7 +262,9 @@ const MyApprovals: React.FC = () => {
           />
         )}
 
-        <Table
+        <TableV2
+          tableState={{ filters, selectedItems }}
+          tableActions={{ setSelectedItems, resetTableState, setFilters }}
           header={{
             isLoading: !isSearching && isLoading,
             title: "For Approval",
@@ -260,10 +283,6 @@ const MyApprovals: React.FC = () => {
           loading={isLoading}
           data={data?.results}
           columns={columns}
-          handleMobileClick={(e: number) => {
-            dispatch(setFocusedReimbursementId(e));
-            dispatch(openSideDrawer());
-          }}
           pagination={{
             count: data?.count!,
             next: data?.next!,
@@ -277,6 +296,8 @@ const MyApprovals: React.FC = () => {
         selectedReimbursement={data?.results.find(
           (a) => a.id === selectedItems[0],
         )}
+        selectedItems={selectedItems}
+        setSelectedItems={setSelectedItems}
       />
 
       <SideDrawer

@@ -10,11 +10,11 @@ import {
   setFocusedReimbursementId,
   toggleSingleApprovalDialog,
 } from "~/features/state/table-state.slice";
-import { type IReimbursementRequest } from "~/types/reimbursement.types";
+import { type ReimbursementRequest } from "~/types/reimbursement.types";
 import { currencyFormat } from "~/utils/currencyFormat";
 
 type SingleApproveReimbursementsDialogProps = {
-  selectedReimbursement?: IReimbursementRequest;
+  selectedReimbursement?: ReimbursementRequest;
 };
 
 const SingleApproveReimbursementsDialog: React.FC<

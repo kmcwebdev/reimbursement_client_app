@@ -16,7 +16,7 @@ import {
   setParticularDetailsFormIsVisible,
   setReimbursementFormValues,
 } from "~/features/state/reimbursement-form-slice";
-import { type ParticularDetails } from "~/schema/reimbursement-particulars.schema";
+import { type ParticularDetails } from "~/types/reimbursement.types";
 
 interface ParticularDetailsProps {
   formReturn: UseFormReturn<ParticularDetails>;

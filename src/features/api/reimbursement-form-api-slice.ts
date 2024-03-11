@@ -1,8 +1,8 @@
 import { appApiSlice } from "~/app/rtkQuery";
 import {
-  type IFileStack,
+  type FileStack,
   type ReimbursementFormValues,
-} from "~/types/reimbursement-form-values.type";
+} from "~/types/reimbursement.types";
 
 /**
  * REIMBURSEMENT FORM API SLICE
@@ -12,7 +12,7 @@ import {
 
 export const reimbursementFormApiSlice = appApiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    uploadFile: builder.mutation<IFileStack, FormData>({
+    uploadFile: builder.mutation<FileStack, FormData>({
       query: (formData) => {
         return {
           url: "/reimbursements/request/attachments",

@@ -19,10 +19,8 @@ import {
   useApproveReimbursementViaEmailMutation,
   useRejectReimbursementViaEmailMutation,
 } from "~/features/api/actions-api-slice";
-import {
-  RejectReimbursementSchema,
-  type RejectReimbursementType,
-} from "~/schema/reimbursement-reject-form.schema";
+import { rejectReimbursementSchema } from "~/schema/reimbursement-reject-form.schema";
+import { type RejectReimbursementType } from "~/types/reimbursement.types";
 
 const EmailActionPage: React.FC = () => {
   const searchParams = useSearchParams();
@@ -81,7 +79,7 @@ const EmailActionPage: React.FC = () => {
   ]);
 
   const useRejectFormReturn = useForm<RejectReimbursementType>({
-    resolver: zodResolver(RejectReimbursementSchema),
+    resolver: zodResolver(rejectReimbursementSchema),
     mode: "onChange",
   });
 

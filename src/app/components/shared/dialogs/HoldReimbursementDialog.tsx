@@ -5,10 +5,9 @@ import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { appApiSlice } from "~/app/rtkQuery";
 import { useHoldReimbursementMutation } from "~/features/api/actions-api-slice";
 import { toggleHoldDialog } from "~/features/state/table-state.slice";
-import {
-  OnholdReimbursementSchema,
-  type OnholdReimbursementType,
-} from "~/schema/reimbursement-onhold-form.schema";
+
+import { onholdReimbursementSchema } from "~/schema/reimbursement-onhold-form.schema";
+import { type OnholdReimbursementType } from "~/types/reimbursement.types";
 import { Button } from "../../core/Button";
 import Dialog from "../../core/Dialog";
 import { showToast } from "../../core/Toast";
@@ -24,7 +23,7 @@ const HoldReimbursementDialog: React.FC = () => {
     useHoldReimbursementMutation();
 
   const formReturn = useForm<OnholdReimbursementType>({
-    resolver: zodResolver(OnholdReimbursementSchema),
+    resolver: zodResolver(onholdReimbursementSchema),
     mode: "onChange",
   });
   const onAbort = () => {

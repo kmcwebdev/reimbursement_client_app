@@ -1,15 +1,16 @@
 import React from "react";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { toggleBulkDownloadReportDialog } from "~/features/state/table-state.slice";
-import { type IReimbursementRequest } from "~/types/reimbursement.types";
+import { type ReimbursementRequest } from "~/types/reimbursement.types";
 import { Button } from "../../../core/Button";
 import Dialog from "../../../core/Dialog";
 
 interface BulkDownloadReportDialogProps {
   isLoading: boolean;
   onConfirm: () => void;
-  selectedReimbursement?: IReimbursementRequest;
+  selectedReimbursement?: ReimbursementRequest;
   downloadType?: "finance-approval" | "report-only";
+  selectedItems: number[];
 }
 
 const BulkDownloadReportDialog: React.FC<BulkDownloadReportDialogProps> = ({
@@ -17,8 +18,9 @@ const BulkDownloadReportDialog: React.FC<BulkDownloadReportDialogProps> = ({
   onConfirm,
   selectedReimbursement,
   downloadType = "finance-approval",
+  selectedItems,
 }) => {
-  const { selectedItems, bulkDownloadReportDialogIsOpen } = useAppSelector(
+  const { bulkDownloadReportDialogIsOpen } = useAppSelector(
     (state) => state.pageTableState,
   );
   const dispatch = useAppDispatch();

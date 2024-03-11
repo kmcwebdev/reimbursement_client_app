@@ -14,7 +14,6 @@ import {
   toggleSingleDownloadReportDialog,
 } from "~/features/state/table-state.slice";
 import { useReportDownload } from "~/hooks/use-report-download";
-import { type IReimbursementRequest } from "~/types/reimbursement.types";
 import { env } from "../../../../env.mjs";
 import EmptyState from "../core/EmptyState";
 import { showToast } from "../core/Toast";
@@ -22,6 +21,7 @@ import CancelReimbursementDialog from "../shared/dialogs/CancelReimbursementDial
 import HoldReimbursementDialog from "../shared/dialogs/HoldReimbursementDialog";
 import RejectReimbursementDialog from "../shared/dialogs/RejectReimbursementDialog";
 
+import { type ReimbursementRequest } from "~/types/reimbursement.types";
 import SingleApproveReimbursementsDialog from "../shared/dialogs/approval/SingleApproveReimbursmentDialog";
 import SingleDownloadReportDialog from "../shared/dialogs/download-report/SingleDownloadReportDialog";
 import SingleTransitionToCreditedDialog from "../shared/dialogs/update-to-credited/SingleTransitionToCreditedDialog";
@@ -41,7 +41,7 @@ export interface ReimbursementsCardViewProps extends PropsWithChildren {
   isApproverView?: boolean;
   isHistoryView?: boolean;
   isAdminView?: boolean;
-  data?: IReimbursementRequest;
+  data?: ReimbursementRequest;
   isError?: boolean;
 }
 

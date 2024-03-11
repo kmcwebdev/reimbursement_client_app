@@ -1,7 +1,7 @@
 import React from "react";
 import { type UseFormReturn } from "react-hook-form";
 import { useAppSelector } from "~/app/hook";
-import { type ReimbursementFormType } from "~/schema/reimbursement-type.schema";
+import { type ReimbursementFormType } from "~/types/reimbursement.types";
 import { classNames } from "~/utils/classNames";
 import Dialog from "../../core/Dialog";
 import ReimburseForm from "../reimburse-form";

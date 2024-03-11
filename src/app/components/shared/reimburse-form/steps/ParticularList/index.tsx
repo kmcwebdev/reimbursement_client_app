@@ -1,7 +1,8 @@
 import React from "react";
 import { type UseFormReturn } from "react-hook-form";
 import { useAppSelector } from "~/app/hook";
-import { type ParticularDetails } from "~/schema/reimbursement-particulars.schema";
+
+import { type ParticularDetails } from "~/types/reimbursement.types";
 import Particulars from "./List";
 import ParticularDetailsForm from "./ParticularDetailsForm";
 

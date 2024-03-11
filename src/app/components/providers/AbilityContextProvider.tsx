@@ -15,7 +15,7 @@ import {
   setRefreshToken,
   setUser,
 } from "~/features/state/user-state.slice";
-import { type AppClaims } from "~/types/permission-types";
+import { type AppClaims } from "~/types/reimbursement.types";
 import { defineAbility } from "~/utils/define-ability";
 import AuthLoader from "../loaders/AuthLoader";
 

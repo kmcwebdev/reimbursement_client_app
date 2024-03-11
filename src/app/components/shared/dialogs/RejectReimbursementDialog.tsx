@@ -8,10 +8,8 @@ import {
   setFocusedReimbursementId,
   toggleRejectDialog,
 } from "~/features/state/table-state.slice";
-import {
-  RejectReimbursementSchema,
-  type RejectReimbursementType,
-} from "~/schema/reimbursement-reject-form.schema";
+import { rejectReimbursementSchema } from "~/schema/reimbursement-reject-form.schema";
+import { type RejectReimbursementType } from "~/types/reimbursement.types";
 import { Button } from "../../core/Button";
 import Dialog from "../../core/Dialog";
 import { showToast } from "../../core/Toast";
@@ -27,7 +25,7 @@ const RejectReimbursementDialog: React.FC = () => {
     useRejectReimbursementMutation();
 
   const formReturn = useForm<RejectReimbursementType>({
-    resolver: zodResolver(RejectReimbursementSchema),
+    resolver: zodResolver(rejectReimbursementSchema),
     mode: "onChange",
   });
 
