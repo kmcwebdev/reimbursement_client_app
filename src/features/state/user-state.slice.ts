@@ -1,29 +1,9 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import { type IGroupType } from "~/types/group.type";
-import { type AppClaims } from "~/types/permission-types";
-
-export interface IUser {
-  id: string;
-  email: string;
-  first_name: string;
-  last_name: string;
-  is_superuser: boolean;
-  is_staff: boolean;
-  groups: IGroupType[];
-  profile: IUserProfile | null;
-  permissions: AppClaims[];
-}
-
-interface IUserProfile {
-  employee_id: string;
-  organization: string;
-  hrbp: string[];
-  manager: string[];
-}
+import { type GroupType, type User } from "~/types/reimbursement.types";
 
 interface IUserSession {
-  user: IUser | null;
-  assignedRole: IGroupType | null;
+  user: User | null;
+  assignedRole: GroupType | null;
   accessToken: string | null;
   refreshToken: string | null;
 }
@@ -39,10 +19,10 @@ const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
-    setUser(state, action: PayloadAction<IUser | null>) {
+    setUser(state, action: PayloadAction<User | null>) {
       state.user = action.payload;
     },
-    setAssignedRole(state, action: PayloadAction<IGroupType | null>) {
+    setAssignedRole(state, action: PayloadAction<GroupType | null>) {
       state.assignedRole = action.payload;
     },
     setAccessToken(state, action: PayloadAction<string | null>) {

@@ -14,13 +14,13 @@ import { useAppSelector } from "~/app/hook";
 import { useReRouteApproverMutation } from "~/features/api/actions-api-slice";
 import { useDialogState } from "~/hooks/use-dialog-state";
 import {
-  ApproverSchema,
+  approverSchema,
   getApproverSchema,
-  type Approver,
 } from "~/schema/reimbursement-approver.schema";
 import {
-  type IApproverMatrix,
-  type IStatus,
+  type Approver,
+  type ApproverMatrix,
+  type Status,
 } from "~/types/reimbursement.types";
 import { parseTimezone } from "~/utils/parse-timezone";
 import { Button } from "../core/Button";
@@ -33,8 +33,8 @@ dayjs.extend(timezone);
 interface ApproversProps {
   requestorEmail: string;
   isOwnRequest: boolean;
-  approvers: IApproverMatrix[];
-  request_status: IStatus;
+  approvers: ApproverMatrix[];
+  request_status: Status;
   next_approver: string;
 }
 
@@ -69,7 +69,7 @@ const Approvers: React.FC<ApproversProps> = ({
         return zodResolver(getApproverSchema(false, requestorEmail));
       }
 
-      return zodResolver(ApproverSchema);
+      return zodResolver(approverSchema);
     }, [isOwnRequest, user, requestorEmail]),
     mode: "onChange",
   });

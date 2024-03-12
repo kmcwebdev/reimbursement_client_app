@@ -5,46 +5,45 @@ import { type ColumnDef } from "@tanstack/react-table";
 import dynamic from "next/dynamic";
 import { redirect } from "next/navigation";
 import React, { useEffect, useState, type ChangeEvent } from "react";
-import Table from "~/app/components/core/table";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import {
   useGetRequestQuery,
   useGetRequestsHistoryQuery,
 } from "~/features/api/reimbursement-api-slice";
 import {
-  openSideDrawer,
-  setFocusedReimbursementId,
-  setSelectedItems,
-  toggleBulkDownloadReportDialog,
-} from "~/features/state/table-state.slice";
+  setHistoryDashboardFilters,
+  setHistoryDashboardSelectedItems,
+} from "~/features/state/history-dashboard-state-slice";
+import { toggleBulkDownloadReportDialog } from "~/features/state/table-state.slice";
 import { useDebounce } from "~/hooks/use-debounce";
 import { useReportDownload } from "~/hooks/use-report-download";
 import {
-  type IReimbursementRequest,
-  type IReimbursementsFilterQuery,
+  type QueryFilter,
+  type ReimbursementRequest,
 } from "~/types/reimbursement.types";
 import { createSearchParams } from "~/utils/create-search-params";
 import { env } from "../../../../env.mjs";
 import { showToast } from "../core/Toast";
-import TableCell from "../core/table/TableCell";
-import TableCheckbox from "../core/table/TableCheckbox";
+import TableV2 from "../core/tableV2";
+import TableCell from "../core/tableV2/TableCell";
+import TableCheckbox from "../core/tableV2/TableCheckbox";
 
 const ReimbursementsCardView = dynamic(() => import("../reimbursement-view"));
 const BulkDownloadReportDialog = dynamic(
   () => import("./dialogs/download-report/BulkDownloadReportDialog"),
 );
 const StatusFilter = dynamic(
-  () => import("~/app/components/core/table/filters/StatusFilter"),
+  () => import("~/app/components/core/tableV2/filters/StatusFilter"),
 );
 const ExpenseTypeFilter = dynamic(
-  () => import("~/app/components/core/table/filters/ExpenseTypeFilter"),
+  () => import("~/app/components/core/tableV2/filters/ExpenseTypeFilter"),
 );
 const ReimbursementTypeFilter = dynamic(
-  () => import("~/app/components/core/table/filters/ReimbursementTypeFilter"),
+  () => import("~/app/components/core/tableV2/filters/ReimbursementTypeFilter"),
 );
 
 const DateFiledFilter = dynamic(
-  () => import("~/app/components/core/table/filters/DateFiledFilter"),
+  () => import("~/app/components/core/tableV2/filters/DateFiledFilter"),
 );
 
 const SideDrawer = dynamic(() => import("~/app/components/core/SideDrawer"));
@@ -54,8 +53,12 @@ const ReimbursementHistory: React.FC = () => {
   const { user, assignedRole } = useAppSelector((state) => state.session);
   const [downloadReportLoading, setDownloadReportLoading] = useState(false);
 
-  const { selectedItems, filters, focusedReimbursementId } = useAppSelector(
+  const { focusedReimbursementId } = useAppSelector(
     (state) => state.pageTableState,
+  );
+
+  const { selectedItems, filters } = useAppSelector(
+    (state) => state.historyDashboardState,
   );
 
   const {
@@ -67,22 +70,18 @@ const ReimbursementHistory: React.FC = () => {
     { skip: !focusedReimbursementId },
   );
 
-  const [searchParams, setSearchParams] = useState<IReimbursementsFilterQuery>({
-    search: undefined,
-    expense_type__id: undefined,
-    created_at_before: undefined,
-    created_at_after: undefined,
-  });
+  const [searchParams, setSearchParams] = useState<QueryFilter | null>(null);
 
   const toggleDownloadReportDialogVisibility = () => {
     dispatch(toggleBulkDownloadReportDialog());
   };
 
-  const debouncedSearchText = useDebounce(searchParams.search, 500);
+  const debouncedSearchText = useDebounce(searchParams?.search, 500);
+
   const [isSearching, setIsSearching] = useState<boolean>(false);
   const { download: exportReport } = useReportDownload({
     onSuccess: () => {
-      dispatch(setSelectedItems([]));
+      dispatch(setHistoryDashboardSelectedItems([]));
       setDownloadReportLoading(false);
       toggleDownloadReportDialogVisibility();
     },
@@ -107,9 +106,9 @@ const ReimbursementHistory: React.FC = () => {
     { skip: !assignedRole },
   );
 
-  const columns = React.useMemo<ColumnDef<IReimbursementRequest>[]>(() => {
+  const columns = React.useMemo<ColumnDef<ReimbursementRequest>[]>(() => {
     //FINANCE COLUMNS
-    const defaultColumns: ColumnDef<IReimbursementRequest>[] = [
+    const defaultColumns: ColumnDef<ReimbursementRequest>[] = [
       {
         id: "select",
         header: ({ table }) => {
@@ -151,7 +150,9 @@ const ReimbursementHistory: React.FC = () => {
           return value.includes(row.getValue(id));
         },
         meta: {
-          filterComponent: StatusFilter,
+          filterComponent: () => (
+            <StatusFilter filters={filters} setFilters={setFilters} />
+          ),
         },
       },
       {
@@ -182,7 +183,12 @@ const ReimbursementHistory: React.FC = () => {
           return value.includes(row.getValue(id));
         },
         meta: {
-          filterComponent: ReimbursementTypeFilter,
+          filterComponent: () => (
+            <ReimbursementTypeFilter
+              filters={filters}
+              setFilters={setFilters}
+            />
+          ),
         },
       },
       {
@@ -193,7 +199,9 @@ const ReimbursementHistory: React.FC = () => {
           return value.includes(row.getValue(id));
         },
         meta: {
-          filterComponent: ExpenseTypeFilter,
+          filterComponent: () => (
+            <ExpenseTypeFilter filters={filters} setFilters={setFilters} />
+          ),
         },
       },
       {
@@ -206,7 +214,9 @@ const ReimbursementHistory: React.FC = () => {
           return value.includes(row.getValue(id));
         },
         meta: {
-          filterComponent: DateFiledFilter,
+          filterComponent: () => (
+            <DateFiledFilter filters={filters} setFilters={setFilters} />
+          ),
         },
       },
       {
@@ -244,7 +254,7 @@ const ReimbursementHistory: React.FC = () => {
       }
     });
 
-    const searchParams = createSearchParams(filters);
+    const searchParams = createSearchParams(filters ? filters : {});
     if (reference_nos.length > 0) {
       searchParams?.append("multi_reference_no", reference_nos.join(","));
     }
@@ -288,6 +298,19 @@ const ReimbursementHistory: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isFetching]);
 
+  const setFilters = (filters: QueryFilter | null) => {
+    dispatch(setHistoryDashboardFilters(filters));
+  };
+
+  const setSelectedItems = (selectedItems: number[]) => {
+    dispatch(setHistoryDashboardSelectedItems(selectedItems));
+  };
+
+  const resetTableState = () => {
+    dispatch(setHistoryDashboardFilters(null));
+    dispatch(setHistoryDashboardSelectedItems([]));
+  };
+
   if (assignedRole === "REIMBURSEMENT_USER") {
     redirect("/forbidden");
   }
@@ -295,7 +318,9 @@ const ReimbursementHistory: React.FC = () => {
   return (
     <>
       <div className="grid bg-neutral-50 md:gap-y-4 md:p-5">
-        <Table
+        <TableV2
+          tableState={{ filters, selectedItems }}
+          tableActions={{ setSelectedItems, resetTableState, setFilters }}
           header={{
             isLoading: !isSearching && isFetching,
             title: "Reimbursements History",
@@ -307,10 +332,6 @@ const ReimbursementHistory: React.FC = () => {
           }}
           type="history"
           loading={isFetching}
-          handleMobileClick={(e: number) => {
-            dispatch(setFocusedReimbursementId(e));
-            dispatch(openSideDrawer());
-          }}
           data={data?.results}
           columns={columns}
           pagination={{
@@ -344,6 +365,7 @@ const ReimbursementHistory: React.FC = () => {
         selectedReimbursement={data?.results.find(
           (a) => a.id === selectedItems[0],
         )}
+        selectedItems={selectedItems}
       />
     </>
   );

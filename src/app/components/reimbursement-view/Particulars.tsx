@@ -1,9 +1,9 @@
 import React from "react";
-import { type IParticularDetails } from "~/types/reimbursement.types";
+import { type Particular } from "~/types/reimbursement.types";
 import Accordion from "../core/accordion";
 
 interface ParticularsProps {
-  particulars: IParticularDetails[];
+  particulars: Particular[];
 }
 
 const Particulars: React.FC<ParticularsProps> = ({ particulars }) => {

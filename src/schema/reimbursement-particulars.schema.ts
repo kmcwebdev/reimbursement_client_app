@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const ParticularDetailsSchema = z.object({
+export const particularDetailsSchema = z.object({
   expense_type: z.coerce
     .number({ required_error: "Please select request type!" })
     .min(1, "Please select request type!"),
@@ -22,5 +22,3 @@ export const ParticularDetailsSchema = z.object({
     .number({ required_error: "Please input total!" })
     .min(1, "Please input total!"),
 });
-
-export type ParticularDetails = z.infer<typeof ParticularDetailsSchema>;

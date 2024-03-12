@@ -2,21 +2,21 @@ import React from "react";
 import StatusBadge, {
   type StatusType,
 } from "~/app/components/core/StatusBadge";
-import { type IUser } from "~/features/state/user-state.slice";
-import { type ReimbursementRequestType } from "~/types/reimbursement.request-type";
 import {
-  type IParticularDetails,
-  type IStatus,
+  type Particular,
+  type RequestType,
+  type Status,
+  type User,
 } from "~/types/reimbursement.types";
 import { currencyFormat } from "~/utils/currencyFormat";
 import { parseTimezone } from "~/utils/parse-timezone";
 import List from "../core/List";
 
 export interface DetailsProps {
-  request_status: IStatus;
-  request_type: ReimbursementRequestType;
-  particulars: IParticularDetails[];
-  reimb_requestor: IUser;
+  request_status: Status;
+  request_type: RequestType;
+  particulars: Particular[];
+  reimb_requestor: User;
   created_at: string;
   amount: string;
   payroll_date: string;

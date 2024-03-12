@@ -11,11 +11,11 @@ import {
 } from "~/features/state/table-state.slice";
 import {
   type CreditPayload,
-  type IReimbursementRequest,
+  type ReimbursementRequest,
 } from "~/types/reimbursement.types";
 
 type SingleTransitionToCreditedDialogProps = {
-  selectedReimbursement?: IReimbursementRequest;
+  selectedReimbursement?: ReimbursementRequest;
 };
 
 const SingleTransitionToCreditedDialog: React.FC<

@@ -1,8 +1,8 @@
-import { type EndpointBuilder } from "@reduxjs/toolkit/dist/query/endpointDefinitions";
 import {
   createApi,
   fetchBaseQuery,
   type BaseQueryFn,
+  type EndpointBuilder,
   type FetchArgs,
   type FetchBaseQueryError,
   type FetchBaseQueryMeta,

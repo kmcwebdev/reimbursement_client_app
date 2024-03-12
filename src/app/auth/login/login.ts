@@ -1,7 +1,7 @@
 "use server";
 
 import { signIn } from "~/app/auth";
-import { type Credentials } from "~/schema/auth.schema";
+import { type Credentials } from "~/types/reimbursement.types";
 
 export const handleCredentialsLogin = async (credentials: Credentials) => {
   await signIn("credentials", {

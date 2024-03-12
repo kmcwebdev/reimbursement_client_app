@@ -13,7 +13,7 @@ import {
   setAssignedRole,
 } from "~/features/state/user-state.slice";
 import { useDialogState } from "~/hooks/use-dialog-state";
-import { type IGroupType } from "~/types/group.type";
+import { type GroupType } from "~/types/reimbursement.types";
 import { Button } from "../../Button";
 import Dialog from "../../Dialog";
 import Popover from "../../Popover";
@@ -74,7 +74,7 @@ const ProfileMenu: React.FC = () => {
       void assignGroup({ id: user.id, group_id: +selectedOption.value })
         .unwrap()
         .then(() => {
-          dispatch(setAssignedRole(selectedOption.label as IGroupType));
+          dispatch(setAssignedRole(selectedOption.label as GroupType));
           buttonChildRef.current?.click();
           buttonRef.current?.click();
           if (typeof window !== "undefined") {

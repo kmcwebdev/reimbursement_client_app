@@ -1,11 +1,11 @@
 import React from "react";
 import { AiTwotoneFile } from "react-icons-all-files/ai/AiTwotoneFile";
 import { FaArrowRight } from "react-icons-all-files/fa/FaArrowRight";
-import { type IFileStack } from "~/types/reimbursement-form-values.type";
+import { type FileStack } from "~/types/reimbursement.types";
 import { Button } from "../core/Button";
 
 interface AttachmentsProps {
-  attachments: IFileStack[];
+  attachments: FileStack[];
 }
 
 const Attachments: React.FC<AttachmentsProps> = ({ attachments }) => {

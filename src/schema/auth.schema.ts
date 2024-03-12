@@ -1,6 +1,6 @@
-import * as z from "zod";
+import { z } from "zod";
 
-export const CredentialsSchema = z.object({
+export const credentialsSchema = z.object({
   username: z.string({ required_error: "Please input username!" }).nonempty({
     message: "Please input username!",
   }),
@@ -10,5 +10,3 @@ export const CredentialsSchema = z.object({
       message: "Please input password!",
     }),
 });
-
-export type Credentials = z.infer<typeof CredentialsSchema>;

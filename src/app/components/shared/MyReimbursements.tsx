@@ -4,7 +4,6 @@ import { type ColumnDef } from "@tanstack/react-table";
 import dynamic from "next/dynamic";
 import React, { useEffect, useMemo, useState, type ChangeEvent } from "react";
 import { useForm } from "react-hook-form";
-import Table from "~/app/components/core/table";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { appApiSlice } from "~/app/rtkQuery";
 import { useGetRequestQuery } from "~/features/api/reimbursement-api-slice";
@@ -15,21 +14,17 @@ import {
   toggleCancelDialog,
   toggleFormDialog,
 } from "~/features/state/reimbursement-form-slice";
-import {
-  openSideDrawer,
-  setFocusedReimbursementId,
-} from "~/features/state/table-state.slice";
+import { setUserDashboardFilters } from "~/features/state/user-dashboard-state-slice";
 import { useDebounce } from "~/hooks/use-debounce";
+import { reimbursementTypeSchema } from "~/schema/reimbursement-type.schema";
 import {
-  ReimbursementTypeSchema,
+  type QueryFilter,
   type ReimbursementFormType,
-} from "~/schema/reimbursement-type.schema";
-import {
-  type IReimbursementRequest,
-  type IReimbursementsFilterQuery,
+  type ReimbursementRequest,
 } from "~/types/reimbursement.types";
 import { showToast } from "../core/Toast";
-import TableCell from "../core/table/TableCell";
+import TableV2 from "../core/tableV2";
+import TableCell from "../core/tableV2/TableCell";
 import MemberAnalytics from "./analytics/MemberAnalytics";
 
 const ReimbursementsCardView = dynamic(
@@ -45,16 +40,16 @@ const CancelReimbursementCreationDialog = dynamic(
 
 const SideDrawer = dynamic(() => import("~/app/components/core/SideDrawer"));
 const StatusFilter = dynamic(
-  () => import("~/app/components/core/table/filters/StatusFilter"),
+  () => import("~/app/components/core/tableV2/filters/StatusFilter"),
 );
 const ExpenseTypeFilter = dynamic(
-  () => import("~/app/components/core/table/filters/ExpenseTypeFilter"),
+  () => import("~/app/components/core/tableV2/filters/ExpenseTypeFilter"),
 );
 const ReimbursementTypeFilter = dynamic(
-  () => import("~/app/components/core/table/filters/ReimbursementTypeFilter"),
+  () => import("~/app/components/core/tableV2/filters/ReimbursementTypeFilter"),
 );
 const DateFiledFilter = dynamic(
-  () => import("~/app/components/core/table/filters/DateFiledFilter"),
+  () => import("~/app/components/core/tableV2/filters/DateFiledFilter"),
 );
 
 const MyReimbursements: React.FC = () => {
@@ -62,21 +57,17 @@ const MyReimbursements: React.FC = () => {
     (state) => state.reimbursementForm,
   );
 
-  const { filters, focusedReimbursementId } = useAppSelector(
+  const { filters } = useAppSelector((state) => state.userDashboardState);
+
+  const { focusedReimbursementId } = useAppSelector(
     (state) => state.pageTableState,
   );
 
   const { user } = useAppSelector((state) => state.session);
 
-  const [searchParams, setSearchParams] = useState<IReimbursementsFilterQuery>({
-    search: undefined,
-    expense_type__id: undefined,
-    request_type__id: undefined,
-    created_at_before: undefined,
-    created_at_after: undefined,
-  });
+  const [searchParams, setSearchParams] = useState<QueryFilter | null>(null);
 
-  const debouncedSearchText = useDebounce(searchParams.search, 500);
+  const debouncedSearchText = useDebounce(searchParams?.search, 500);
   const [isSearching, setIsSearching] = useState<boolean>(false);
 
   const dispatch = useAppDispatch();
@@ -95,83 +86,11 @@ const MyReimbursements: React.FC = () => {
     { skip: !focusedReimbursementId },
   );
 
-  const columns = React.useMemo<ColumnDef<IReimbursementRequest>[]>(() => {
-    const defaultColumns: ColumnDef<IReimbursementRequest, unknown>[] = [
-      {
-        id: "request_status",
-        accessorKey: "request_status",
-        header: "Status",
-        filterFn: (row, value: string) => {
-          return value.includes(row.original.request_status.name);
-        },
-        meta: {
-          filterComponent: StatusFilter,
-        },
-      },
-      {
-        id: "reference_no",
-        accessorKey: "reference_no",
-        header: "R-ID",
-      },
-      {
-        id: "request_type",
-        accessorKey: "request_type",
-        header: "Type",
-        filterFn: (row, value: string) => {
-          return value.includes(row.original.request_type.name);
-        },
-        meta: {
-          filterComponent: ReimbursementTypeFilter,
-        },
-      },
-      {
-        id: "particulars",
-        accessorKey: "particulars",
-        header: "Expense",
-        filterFn: (row, id, value: string) => {
-          return value.includes(row.original.particulars[0].expense_type.name);
-        },
-        meta: {
-          filterComponent: ExpenseTypeFilter,
-        },
-        size: 30,
-      },
-      {
-        id: "created_at",
-        accessorKey: "created_at",
-        header: "Filed",
-        filterFn: (row, id, value: string) => {
-          return value.includes(row.getValue(id));
-        },
-        meta: {
-          filterComponent: DateFiledFilter,
-        },
-      },
-      {
-        id: "total_amount",
-        accessorKey: "total_amount",
-        header: "Total",
-      },
-      {
-        id: "actions",
-        accessorKey: "id",
-        header: "",
-      },
-    ];
-
-    defaultColumns.forEach((a) => {
-      a.cell = TableCell;
-    });
-
-    return defaultColumns;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data]);
-
   //Form return for reimbursement type selection
   const useReimbursementTypeFormReturn = useForm<ReimbursementFormType>({
     resolver: useMemo(() => {
       if (activeStep === 0) {
-        return zodResolver(ReimbursementTypeSchema);
+        return zodResolver(reimbursementTypeSchema);
       }
     }, [activeStep]),
     defaultValues: useMemo(() => {
@@ -236,12 +155,105 @@ const MyReimbursements: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isFetching]);
 
+  const setFilters = (filters: QueryFilter | null) => {
+    dispatch(setUserDashboardFilters(filters));
+  };
+
+  const resetTableState = () => {
+    dispatch(setUserDashboardFilters(null));
+  };
+
+  const columns = React.useMemo<ColumnDef<ReimbursementRequest>[]>(() => {
+    const defaultColumns: ColumnDef<ReimbursementRequest, unknown>[] = [
+      {
+        id: "request_status",
+        accessorKey: "request_status",
+        header: "Status",
+        filterFn: (row, value: string) => {
+          return value.includes(row.original.request_status.name);
+        },
+        meta: {
+          filterComponent: () => (
+            <StatusFilter filters={filters} setFilters={setFilters} />
+          ),
+        },
+      },
+      {
+        id: "reference_no",
+        accessorKey: "reference_no",
+        header: "R-ID",
+      },
+      {
+        id: "request_type",
+        accessorKey: "request_type",
+        header: "Type",
+        filterFn: (row, value: string) => {
+          return value.includes(row.original.request_type.name);
+        },
+        meta: {
+          filterComponent: () => (
+            <ReimbursementTypeFilter
+              filters={filters}
+              setFilters={setFilters}
+            />
+          ),
+        },
+      },
+      {
+        id: "particulars",
+        accessorKey: "particulars",
+        header: "Expense",
+        filterFn: (row, id, value: string) => {
+          return value.includes(row.original.particulars[0].expense_type.name);
+        },
+        meta: {
+          filterComponent: () => (
+            <ExpenseTypeFilter filters={filters} setFilters={setFilters} />
+          ),
+        },
+        size: 30,
+      },
+      {
+        id: "created_at",
+        accessorKey: "created_at",
+        header: "Filed",
+        filterFn: (row, id, value: string) => {
+          return value.includes(row.getValue(id));
+        },
+        meta: {
+          filterComponent: () => (
+            <DateFiledFilter filters={filters} setFilters={setFilters} />
+          ),
+        },
+      },
+      {
+        id: "total_amount",
+        accessorKey: "total_amount",
+        header: "Total",
+      },
+      {
+        id: "actions",
+        accessorKey: "id",
+        header: "",
+      },
+    ];
+
+    defaultColumns.forEach((a) => {
+      a.cell = TableCell;
+    });
+
+    return defaultColumns;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data]);
+
   return (
     <>
       <div className="grid bg-neutral-50 md:gap-y-4 md:p-5">
         <MemberAnalytics />
 
-        <Table
+        <TableV2
+          tableState={{ filters }}
+          tableActions={{ resetTableState, setFilters }}
           header={{
             isLoading: !isSearching && isFetching,
             title: "Reimbursements",
@@ -265,10 +277,6 @@ const MyReimbursements: React.FC = () => {
           loading={isFetching}
           data={data?.results}
           columns={columns}
-          handleMobileClick={(e: number) => {
-            dispatch(setFocusedReimbursementId(e));
-            dispatch(openSideDrawer());
-          }}
           pagination={{
             count: data?.count!,
             next: data?.next!,

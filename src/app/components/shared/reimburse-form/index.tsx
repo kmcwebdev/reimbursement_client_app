@@ -2,11 +2,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useMemo } from "react";
 import { useForm, type UseFormReturn } from "react-hook-form";
 import { useAppSelector } from "~/app/hook";
-import {
-  ParticularDetailsSchema,
-  type ParticularDetails,
-} from "~/schema/reimbursement-particulars.schema";
-
+import { particularDetailsSchema } from "~/schema/reimbursement-particulars.schema";
+import { type ParticularDetails } from "~/types/reimbursement.types";
 import AddAttachments from "./steps/AddAttachments";
 import ParticularList from "./steps/ParticularList";
 import SelectReimbursementType from "./steps/SelectReimbursementType";
@@ -31,7 +28,7 @@ const ReimburseForm: React.FC<ReimburseFormProps> = ({
   } = useAppSelector((state) => state.reimbursementForm);
 
   const useParticularDetailsFormReturn = useForm<ParticularDetails>({
-    resolver: zodResolver(ParticularDetailsSchema),
+    resolver: zodResolver(particularDetailsSchema),
     mode: "onChange",
     defaultValues: useMemo(() => {
       if (
