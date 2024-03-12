@@ -4,7 +4,6 @@ import { type UseFormReturn } from "react-hook-form";
 import { HiOutlinePlus } from "react-icons-all-files/hi/HiOutlinePlus";
 import CollapseHeightAnimation from "~/app/components/animation/CollapseHeight";
 import { Button } from "~/app/components/core/Button";
-import Dialog from "~/app/components/core/Dialog";
 import Popover from "~/app/components/core/Popover";
 import { showToast } from "~/app/components/core/Toast";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
@@ -13,15 +12,16 @@ import {
   useUploadFileMutation,
 } from "~/features/api/reimbursement-form-api-slice";
 import {
+  _setTempAttachedFiles,
   clearReimbursementForm,
   setActiveStep,
   setReimbursementFormValues,
   toggleFormDialog,
 } from "~/features/state/reimbursement-form-slice";
-import { useDialogState } from "~/hooks/use-dialog-state";
 import { type MutationError } from "~/types/global-types";
 import { type ParticularDetails } from "~/types/reimbursement.types";
 import { classNames } from "~/utils/classNames";
+import { isDuplicateFile } from "~/utils/is-duplicate-file";
 import AttachmentsList from "./AttachmentsList";
 import Camera from "./Camera";
 import MethodSelection from "./MethodSelection";
@@ -40,19 +40,13 @@ const AddAttachments: React.FC<AttachmentProps> = ({
   handleResetRequestType,
   formReturn,
 }) => {
-  const { activeStep, reimbursementFormValues } = useAppSelector(
-    (state) => state.reimbursementForm,
-  );
+  const { activeStep, reimbursementFormValues, _temp_attachedFiles } =
+    useAppSelector((state) => state.reimbursementForm);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const [showCamera, setShowCamera] = useState<boolean>(false);
   const [attachedFiles, setAttachedFiles] = useState<AttachedFile[]>([]);
   const [processed, setProcessed] = useState<number>(0);
   const [fileRejections, setFileRejections] = useState<FileRejection[]>([]);
-  const {
-    isVisible: confirmReturnDialogOpen,
-    open: openConfirmReturnDialog,
-    close: closeConfirmReturnDialog,
-  } = useDialogState();
 
   const dispatch = useAppDispatch();
 
@@ -79,6 +73,7 @@ const AddAttachments: React.FC<AttachmentProps> = ({
 
           setProcessed(processed + 1);
           setAttachedFiles(updatedAttachedFiles);
+          dispatch(_setTempAttachedFiles(updatedAttachedFiles));
 
           dispatch(
             setReimbursementFormValues({
@@ -134,6 +129,12 @@ const AddAttachments: React.FC<AttachmentProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [attachedFiles.length, processed]);
 
+  useEffect(() => {
+    if (_temp_attachedFiles.length > 0) {
+      setAttachedFiles(_temp_attachedFiles);
+    }
+  }, [_temp_attachedFiles]);
+
   const onCaptureProceed = (attachment: File) => {
     setShowCamera(false);
     handleDrop(attachment);
@@ -161,6 +162,7 @@ const AddAttachments: React.FC<AttachmentProps> = ({
         .then(() => {
           dispatch(toggleFormDialog());
           dispatch(clearReimbursementForm());
+          dispatch(_setTempAttachedFiles([]));
           setAttachedFiles([]);
           handleResetRequestType();
           formReturn.reset();
@@ -190,11 +192,32 @@ const AddAttachments: React.FC<AttachmentProps> = ({
     }
   };
 
-  const fileValidator = (file: File) => {
+  useEffect(() => {
+    if (fileRejections.length > 0) {
+      setFileRejections([]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showCamera]);
+
+  const fileValidator = (attachedFiles: AttachedFile[], file: File) => {
     if (file.size > 50000000) {
       return {
         code: "size-too-large",
         message: `file is larger than 50MB`,
+      };
+    }
+
+    if (file.name.length > 100) {
+      return {
+        code: "name-too-long",
+        message: `file name exceeds 100 characters`,
+      };
+    }
+
+    if (isDuplicateFile(attachedFiles, file)) {
+      return {
+        code: "duplicate-file",
+        message: `file already exists`,
       };
     }
 
@@ -209,35 +232,16 @@ const AddAttachments: React.FC<AttachmentProps> = ({
     noClick: true,
     onDrop: (e, i) => {
       if (i.length === 0) {
-        let attachmentCount = 0;
-
         e.forEach((file) => {
-          if (attachedFiles.length > 0) {
-            const lastAttachmentCount =
-              attachedFiles[attachedFiles.length - 1].file.name.split("-")[1];
-
-            attachmentCount = parseInt(lastAttachmentCount) + 1;
-          }
-          if (attachedFiles.length === 0) {
-            attachmentCount = 1;
-          }
-
-          const splitted = file.name.split(".");
-
-          console.log("FileExtenstion", splitted[splitted.length - 1]);
-
-          const formattedFile = new File(
-            [file],
-            `Attachment-${attachmentCount}.${splitted[splitted.length - 1]}`,
-            {
-              type: file.type,
-            },
-          );
+          const formattedFile = new File([file], file.name, {
+            type: file.type,
+            lastModified: file.lastModified,
+          });
           handleDrop(formattedFile);
         });
       }
     },
-    validator: fileValidator,
+    validator: (e) => fileValidator(attachedFiles, e),
     accept: {
       "application/pdf": [".pdf"],
       "image/*": [".png", ".jpg", ".jpeg"],
@@ -257,6 +261,17 @@ const AddAttachments: React.FC<AttachmentProps> = ({
           title = "File size too large!";
           message = `File size exceeds the maximum limit. Please reduce the file size and try again.`;
         }
+
+        if (fileRejections[0].errors[0].code === "name-too-long") {
+          title = "File name too long!";
+          message = `File name exceeds 100 characters. Please rename the file and try again.`;
+        }
+
+        if (fileRejections[0].errors[0].code === "duplicate-file") {
+          title = "Duplicate File!";
+          message = `File already exists.`;
+        }
+
         showToast({
           type: "error",
           title,
@@ -275,6 +290,8 @@ const AddAttachments: React.FC<AttachmentProps> = ({
     const updated = reimbursementFormValues.attachments.filter(
       (a) => a.file_name !== name,
     );
+
+    dispatch(_setTempAttachedFiles(filtered));
     dispatch(
       setReimbursementFormValues({
         ...reimbursementFormValues,
@@ -301,7 +318,6 @@ const AddAttachments: React.FC<AttachmentProps> = ({
       <CollapseHeightAnimation isVisible={showCamera}>
         <Camera
           onProceed={onCaptureProceed}
-          attachedFiles={attachedFiles}
           toggleCamera={() => {
             setShowCamera(!showCamera);
             setFileRejections([]);
@@ -327,6 +343,12 @@ const AddAttachments: React.FC<AttachmentProps> = ({
 
                 {fileRejections[0].errors[0].code === "size-too-large" &&
                   "The file you chose is too large. Please shrink its size and try uploading again."}
+
+                {fileRejections[0].errors[0].code === "name-too-long" &&
+                  "File name exceeds 100 characters. Please rename the file and try again."}
+
+                {fileRejections[0].errors[0].code === "duplicate-file" &&
+                  "File already exists.Please upload other file and try again."}
               </p>
             )}
           </CollapseHeightAnimation>
@@ -374,20 +396,8 @@ const AddAttachments: React.FC<AttachmentProps> = ({
                 variant="neutral"
                 className="w-full"
                 onClick={() => {
-                  if (attachedFiles.length > 0) {
-                    openConfirmReturnDialog();
-                  } else {
-                    setAttachedFiles([]);
-                    setProcessed(0);
-                    setFileRejections([]);
-                    dispatch(setActiveStep(activeStep - 1));
-                    dispatch(
-                      setReimbursementFormValues({
-                        ...reimbursementFormValues,
-                        attachments: [],
-                      }),
-                    );
-                  }
+                  setFileRejections([]);
+                  dispatch(setActiveStep(activeStep - 1));
                 }}
               >
                 Return
@@ -417,7 +427,7 @@ const AddAttachments: React.FC<AttachmentProps> = ({
         </div>
       )}
 
-      <Dialog
+      {/* <Dialog
         title="Confirm Return?"
         isVisible={confirmReturnDialogOpen}
         close={closeConfirmReturnDialog}
@@ -459,7 +469,7 @@ const AddAttachments: React.FC<AttachmentProps> = ({
             </Button>
           </div>
         </div>
-      </Dialog>
+      </Dialog> */}
     </div>
   );
 };
