@@ -18,6 +18,7 @@ import {
   getApproverSchema,
 } from "~/schema/reimbursement-approver.schema";
 import {
+  RtkApiError,
   type Approver,
   type ApproverMatrix,
   type Status,
@@ -91,7 +92,7 @@ const Approvers: React.FC<ApproversProps> = ({
             description: "New Approver has been set successfully.",
           });
         })
-        .catch((error: { status: number; data: { detail: string } }) => {
+        .catch((error: RtkApiError) => {
           showToast({ type: "error", description: error.data.detail });
         });
     }

@@ -9,7 +9,10 @@ import {
   toggleRejectDialog,
 } from "~/features/state/table-state.slice";
 import { rejectReimbursementSchema } from "~/schema/reimbursement-reject-form.schema";
-import { type RejectReimbursementType } from "~/types/reimbursement.types";
+import {
+  type RejectReimbursementType,
+  type RtkApiError,
+} from "~/types/reimbursement.types";
 import { Button } from "../../core/Button";
 import Dialog from "../../core/Dialog";
 import { showToast } from "../../core/Toast";
@@ -53,10 +56,10 @@ const RejectReimbursementDialog: React.FC = () => {
           dispatch(setFocusedReimbursementId(null));
           formReturn.reset();
         })
-        .catch(() => {
+        .catch((error: RtkApiError) => {
           showToast({
             type: "error",
-            description: "Rejection failed!",
+            description: error.data.detail,
           });
         });
     }

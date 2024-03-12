@@ -12,6 +12,7 @@ import {
 import {
   type CreditPayload,
   type ReimbursementRequest,
+  type RtkApiError,
 } from "~/types/reimbursement.types";
 
 type SingleTransitionToCreditedDialogProps = {
@@ -59,10 +60,10 @@ const SingleTransitionToCreditedDialog: React.FC<
           onAbort();
           dispatch(closeSideDrawer());
         })
-        .catch(() => {
+        .catch((error: RtkApiError) => {
           showToast({
             type: "error",
-            description: "Status update failed!",
+            description: error.data.detail,
           });
         });
     }
