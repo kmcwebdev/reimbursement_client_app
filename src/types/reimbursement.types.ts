@@ -1,6 +1,7 @@
 import { type MongoAbility } from "@casl/ability";
 import { type z } from "zod";
 import { type analyticsSchema } from "~/schema/analytics.schema";
+import { type apiErrorSchema } from "~/schema/api-error.schema";
 import { type appClaimsSchema } from "~/schema/app-claims.schema";
 import { type approvalStatusSchema } from "~/schema/approval-status.schema";
 import { type approverMatrixSchema } from "~/schema/approver-matrix.schema";
@@ -66,3 +67,4 @@ export type ReimbursementFormValues = z.infer<
 export type Group = z.infer<typeof groupSchema>;
 export type GroupResponse = z.infer<typeof groupResponseSchema>;
 export type UsersResponse = z.infer<typeof usersResponseSchema>;
+export type RtkApiError = z.infer<typeof apiErrorSchema>;

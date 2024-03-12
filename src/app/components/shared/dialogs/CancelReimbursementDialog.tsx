@@ -6,6 +6,7 @@ import {
   setFocusedReimbursementId,
   toggleCancelDialog,
 } from "~/features/state/table-state.slice";
+import { type RtkApiError } from "~/types/reimbursement.types";
 import { Button } from "../../core/Button";
 import Dialog from "../../core/Dialog";
 import { showToast } from "../../core/Toast";
@@ -37,10 +38,10 @@ const CancelReimbursementDialog: React.FC = () => {
           dispatch(closeSideDrawer());
           dispatch(setFocusedReimbursementId(null));
         })
-        .catch(() => {
+        .catch((error: RtkApiError) => {
           showToast({
             type: "error",
-            description: "Cancellation failed!",
+            description: error.data.detail,
           });
         });
     }

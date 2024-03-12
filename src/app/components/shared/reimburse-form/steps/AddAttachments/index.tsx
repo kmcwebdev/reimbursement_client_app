@@ -18,8 +18,10 @@ import {
   setReimbursementFormValues,
   toggleFormDialog,
 } from "~/features/state/reimbursement-form-slice";
-import { type MutationError } from "~/types/global-types";
-import { type ParticularDetails } from "~/types/reimbursement.types";
+import {
+  type ParticularDetails,
+  type RtkApiError,
+} from "~/types/reimbursement.types";
 import { classNames } from "~/utils/classNames";
 import { isDuplicateFile } from "~/utils/is-duplicate-file";
 import AttachmentsList from "./AttachmentsList";
@@ -90,11 +92,10 @@ const AddAttachments: React.FC<AttachmentProps> = ({
           }
         }
       })
-      .catch(() => {
+      .catch((error: RtkApiError) => {
         showToast({
           type: "error",
-          description:
-            "There was a problem uploading attachments. Please try again!",
+          description: error.data.detail,
         });
       });
   };
@@ -172,19 +173,9 @@ const AddAttachments: React.FC<AttachmentProps> = ({
               "Your reimbursement request has been submitted successfully!",
           });
         })
-        .catch((error: MutationError) => {
+        .catch((error: RtkApiError) => {
           if (error) {
-            if (Array.isArray(error.data.errors)) {
-              showToast({
-                type: "error",
-                description: error.data.errors[0].message,
-              });
-            } else {
-              showToast({
-                type: "error",
-                description: error.data.message,
-              });
-            }
+            showToast({ type: "error", description: error.data.detail });
           }
         });
     } else {

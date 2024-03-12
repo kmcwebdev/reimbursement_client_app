@@ -233,12 +233,10 @@ const MyAdmin: React.FC = () => {
       setDownloadReportLoading(false);
       toggleDownloadReportDialogVisibility();
     },
-    onError: (data) => {
+    onError: (error) => {
       showToast({
         type: "error",
-        description: data
-          ? (data as string)
-          : "Error downloading.Please try again.",
+        description: error,
       });
       setDownloadReportLoading(false);
       toggleDownloadReportDialogVisibility();
