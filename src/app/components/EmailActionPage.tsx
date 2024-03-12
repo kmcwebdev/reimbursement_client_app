@@ -24,10 +24,14 @@ import { type RejectReimbursementType } from "~/types/reimbursement.types";
 
 const EmailActionPage: React.FC = () => {
   const searchParams = useSearchParams();
-  const { action_type, reference_no } = useParams<{
+  const {
+    action_type,
+    reference_no,
+  }: { action_type: string; reference_no: string } = useParams<{
     reference_no: string;
     action_type: string;
   }>();
+
   const access_token = searchParams.get("access_token");
   const action_id = searchParams.get("action_id");
   const request_id = searchParams.get("request_id");
