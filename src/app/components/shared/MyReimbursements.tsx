@@ -9,6 +9,7 @@ import { appApiSlice } from "~/app/rtkQuery";
 import { useGetRequestQuery } from "~/features/api/reimbursement-api-slice";
 import { useMyRequestsQuery } from "~/features/api/user-api-slice";
 import {
+  _setTempAttachedFiles,
   clearReimbursementForm,
   setReimbursementFormValues,
   toggleCancelDialog,
@@ -126,6 +127,7 @@ const MyReimbursements: React.FC = () => {
     dispatch(clearReimbursementForm());
     useReimbursementTypeFormReturn.reset();
     dispatch(toggleCancelDialog());
+    dispatch(_setTempAttachedFiles([]));
   };
 
   /**Aborts reimbursement request cancellation */
