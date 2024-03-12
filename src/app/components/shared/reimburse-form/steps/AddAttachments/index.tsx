@@ -136,17 +136,25 @@ const AddAttachments: React.FC<AttachmentProps> = ({
     }
   }, [_temp_attachedFiles]);
 
+  const handleDropMultiple = (files: File[]) => {
+    const updatedAttachedFiles = [...attachedFiles];
+
+    files.forEach((file) => {
+      const formattedFile = new File([file], file.name, {
+        type: file.type,
+        lastModified: file.lastModified,
+      });
+
+      updatedAttachedFiles.push({ status: "unprocessed", file: formattedFile });
+
+      setAttachedFiles(updatedAttachedFiles);
+    });
+  };
+
   const onCaptureProceed = (attachment: File) => {
     setShowCamera(false);
-    handleDrop(attachment);
+    handleDropMultiple([attachment]);
   };
-
-  const handleDrop = (e: File) => {
-    const filesCopy = attachedFiles;
-    filesCopy.push({ status: "unprocessed", file: e });
-    setAttachedFiles(filesCopy);
-  };
-
   const [createReimbursement, { isLoading: isSubmitting }] =
     useCreateReimbursementMutation();
 
@@ -223,13 +231,14 @@ const AddAttachments: React.FC<AttachmentProps> = ({
     noClick: true,
     onDrop: (e, i) => {
       if (i.length === 0) {
-        e.forEach((file) => {
-          const formattedFile = new File([file], file.name, {
-            type: file.type,
-            lastModified: file.lastModified,
-          });
-          handleDrop(formattedFile);
-        });
+        handleDropMultiple(e);
+        // e.forEach((file) => {
+        //   const formattedFile = new File([file], file.name, {
+        //     type: file.type,
+        //     lastModified: file.lastModified,
+        //   });
+        //   handleDrop(formattedFile);
+        // });
       }
     },
     validator: (e) => fileValidator(attachedFiles, e),
