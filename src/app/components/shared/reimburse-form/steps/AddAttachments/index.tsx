@@ -19,8 +19,8 @@ import {
   toggleFormDialog,
 } from "~/features/state/reimbursement-form-slice";
 import { useDialogState } from "~/hooks/use-dialog-state";
-import { type ParticularDetails } from "~/schema/reimbursement-particulars.schema";
 import { type MutationError } from "~/types/global-types";
+import { type ParticularDetails } from "~/types/reimbursement.types";
 import { classNames } from "~/utils/classNames";
 import AttachmentsList from "./AttachmentsList";
 import Camera from "./Camera";

@@ -4,9 +4,7 @@ import React from "react";
 import MyApprovals from "../components/shared/MyApprovals";
 import { useAppSelector } from "../hook";
 
-interface ApprovalComponentProps {}
-
-const ApprovalComponent: React.FC<ApprovalComponentProps> = () => {
+const ApprovalComponent: React.FC = () => {
   const { user, assignedRole } = useAppSelector((state) => state.session);
 
   if (

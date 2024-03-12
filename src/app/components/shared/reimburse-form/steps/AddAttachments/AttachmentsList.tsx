@@ -61,10 +61,12 @@ const AttachmentsList: React.FC<AttachmentsListProps> = ({
               )}
             </span>
 
-            <MdOutlineDelete
-              className="h-5 w-5 cursor-pointer text-red-600 transition-all ease-in-out hover:text-red-800"
-              onClick={() => onDelete(attachment.file.name)}
-            />
+            {attachment.status === "uploaded" && (
+              <MdOutlineDelete
+                className="h-5 w-5 cursor-pointer text-red-600 transition-all ease-in-out hover:text-red-800"
+                onClick={() => onDelete(attachment.file.name)}
+              />
+            )}
           </div>
         ))}
     </CollapseHeightAnimation>

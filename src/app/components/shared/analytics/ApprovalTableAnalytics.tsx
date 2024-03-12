@@ -3,14 +3,14 @@ import { AiOutlinePause } from "react-icons-all-files/ai/AiOutlinePause";
 import { MdAccessTimeFilled } from "react-icons-all-files/md/MdAccessTimeFilled";
 import { MdCreditCard } from "react-icons-all-files/md/MdCreditCard";
 import { MdGavel } from "react-icons-all-files/md/MdGavel";
-import { type IAnalytics } from "~/types/dashboard-analytics.type";
+import { type DashboardAnalytics } from "~/types/reimbursement.types";
 import { classNames } from "~/utils/classNames";
 import DashboardCard, { DashboardCardSkeleton } from "../../core/DashboardCard";
 
 interface ApprovalTableAnalyticsProps {
   type: string;
   isLoading: boolean;
-  data: IAnalytics;
+  data: DashboardAnalytics;
 }
 
 const ApprovalTableAnalytics: React.FC<ApprovalTableAnalyticsProps> = ({

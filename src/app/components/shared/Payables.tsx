@@ -10,25 +10,25 @@ import {
   useGetRequestQuery,
 } from "~/features/api/reimbursement-api-slice";
 import {
-  openSideDrawer,
-  setFocusedReimbursementId,
-  setPageTableFilters,
-  setSelectedItems,
+  setFinanceDashboardFilters,
+  setFinanceDashboardSelectedItems,
+} from "~/features/state/finance-dashboard-state-slice";
+import {
   toggleBulkCreditDialog,
   toggleBulkDownloadReportDialog,
 } from "~/features/state/table-state.slice";
 import { useDebounce } from "~/hooks/use-debounce";
 import { useReportDownload } from "~/hooks/use-report-download";
 import {
-  type IReimbursementRequest,
-  type IReimbursementsFilterQuery,
+  type QueryFilter,
+  type ReimbursementRequest,
 } from "~/types/reimbursement.types";
 import { createSearchParams } from "~/utils/create-search-params";
 import { env } from "../../../../env.mjs";
 import { showToast } from "../core/Toast";
-import Table from "../core/table";
-import TableCell from "../core/table/TableCell";
-import TableCheckbox from "../core/table/TableCheckbox";
+import TableV2 from "../core/tableV2";
+import TableCell from "../core/tableV2/TableCell";
+import TableCheckbox from "../core/tableV2/TableCheckbox";
 import ApprovalTableAnalytics from "./analytics/ApprovalTableAnalytics";
 
 const ReimbursementsCardView = dynamic(() => import("../reimbursement-view"));
@@ -40,35 +40,30 @@ const BulkTransitionToCreditedDialog = dynamic(
   () => import("./dialogs/update-to-credited/BulkTransitionToCreditedDialog"),
 );
 const ReimbursementTypeFilter = dynamic(
-  () => import("../core/table/filters/ReimbursementTypeFilter"),
+  () => import("../core/tableV2/filters/ReimbursementTypeFilter"),
 );
 
 const ExpenseTypeFilter = dynamic(
-  () => import("../core/table/filters/ExpenseTypeFilter"),
+  () => import("../core/tableV2/filters/ExpenseTypeFilter"),
 );
 const DateFiledFilter = dynamic(
-  () => import("../core/table/filters/DateFiledFilter"),
+  () => import("../core/tableV2/filters/DateFiledFilter"),
 );
 
 const Payables: React.FC = () => {
   const { assignedRole } = useAppSelector((state) => state.session);
-  const {
-    selectedItems,
-    filters,
-    focusedReimbursementId,
-    currentSelectedFinanceTabValue,
-  } = useAppSelector((state) => state.pageTableState);
+  const { focusedReimbursementId } = useAppSelector(
+    (state) => state.pageTableState,
+  );
 
-  const [searchParams, setSearchParams] = useState<IReimbursementsFilterQuery>({
-    search: undefined,
-    expense_type__id: undefined,
-    request_type__id: undefined,
-    created_at_before: undefined,
-    created_at_after: undefined,
-  });
+  const { filters, selectedItems } = useAppSelector(
+    (state) => state.financeDashboardState,
+  );
+
+  const [searchParams, setSearchParams] = useState<QueryFilter | null>(null);
 
   const [downloadReportLoading, setDownloadReportLoading] = useState(false);
-  const debouncedSearchText = useDebounce(searchParams.search, 500);
+  const debouncedSearchText = useDebounce(searchParams?.search, 500);
   const [isSearching, setIsSearching] = useState<boolean>(false);
 
   const {
@@ -92,7 +87,7 @@ const Payables: React.FC = () => {
           "ApprovalAnalytics",
         ]),
       );
-      dispatch(setSelectedItems([]));
+      dispatch(setFinanceDashboardSelectedItems([]));
       setDownloadReportLoading(false);
       toggleDownloadReportDialogVisibility();
     },
@@ -119,7 +114,8 @@ const Payables: React.FC = () => {
       }
     });
 
-    const searchParams = createSearchParams(filters);
+    const searchParams = createSearchParams(filters ? filters : {});
+
     if (reference_nos.length > 0) {
       searchParams?.append("multi_reference_no", reference_nos.join(","));
     }
@@ -152,14 +148,6 @@ const Payables: React.FC = () => {
     const url = `${env.NEXT_PUBLIC_BASEAPI_URL}/reimbursements/request/finance/download-reports${searchParams && searchParams.size ? `?${searchParams.toString()}` : ""}`;
 
     await exportReport(url, filename);
-    dispatch(setSelectedItems([]));
-    dispatch(
-      appApiSlice.util.invalidateTags([
-        "ReimbursementRequest",
-        "ReimbursementApprovalList",
-        "ApprovalAnalytics",
-      ]),
-    );
   };
 
   const dispatch = useAppDispatch();
@@ -172,6 +160,7 @@ const Payables: React.FC = () => {
     },
     {
       skip: !assignedRole,
+      refetchOnMountOrArgChange: true,
     },
   );
 
@@ -183,9 +172,22 @@ const Payables: React.FC = () => {
       { skip: !assignedRole },
     );
 
-  const columns = React.useMemo<ColumnDef<IReimbursementRequest>[]>(
+  const setFilters = (filters: QueryFilter | null) => {
+    dispatch(setFinanceDashboardFilters(filters));
+  };
+
+  const setSelectedItems = (selectedItems: number[]) => {
+    dispatch(setFinanceDashboardSelectedItems(selectedItems));
+  };
+
+  const resetTableState = () => {
+    dispatch(setFinanceDashboardFilters(null));
+    dispatch(setFinanceDashboardSelectedItems([]));
+  };
+
+  const columns = React.useMemo<ColumnDef<ReimbursementRequest>[]>(
     () => {
-      const defaultColumns: ColumnDef<IReimbursementRequest>[] = [
+      const defaultColumns: ColumnDef<ReimbursementRequest>[] = [
         {
           id: "select",
           header: ({ table }) => {
@@ -241,7 +243,12 @@ const Payables: React.FC = () => {
             return value.includes(row.getValue(id));
           },
           meta: {
-            filterComponent: ReimbursementTypeFilter,
+            filterComponent: () => (
+              <ReimbursementTypeFilter
+                filters={filters}
+                setFilters={setFilters}
+              />
+            ),
           },
         },
         {
@@ -252,7 +259,9 @@ const Payables: React.FC = () => {
             return value.includes(row.getValue(id));
           },
           meta: {
-            filterComponent: ExpenseTypeFilter,
+            filterComponent: () => (
+              <ExpenseTypeFilter filters={filters} setFilters={setFilters} />
+            ),
           },
         },
         {
@@ -263,7 +272,9 @@ const Payables: React.FC = () => {
             return value.includes(row.getValue(id));
           },
           meta: {
-            filterComponent: DateFiledFilter,
+            filterComponent: () => (
+              <DateFiledFilter filters={filters} setFilters={setFilters} />
+            ),
           },
         },
         {
@@ -301,17 +312,6 @@ const Payables: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isFetching]);
 
-  useEffect(() => {
-    dispatch(setSelectedItems([]));
-    dispatch(
-      setPageTableFilters({
-        ...filters,
-        request_status__id: currentSelectedFinanceTabValue.toString(),
-      }),
-    );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentSelectedFinanceTabValue]);
-
   const toggleCreditDialogVisibility = () => {
     dispatch(toggleBulkCreditDialog());
   };
@@ -325,19 +325,20 @@ const Payables: React.FC = () => {
           isLoading={analyticsIsLoading}
         />
 
-        <Table
+        <TableV2
+          tableState={{ filters, selectedItems }}
+          tableActions={{ resetTableState, setSelectedItems, setFilters }}
           header={{
             isLoading: !isSearching && isFetching,
             title:
-              currentSelectedFinanceTabValue === 3
+              filters?.request_status__id === "3"
                 ? "For Crediting"
-                : currentSelectedFinanceTabValue === 5
+                : filters?.request_status__id === "5"
                   ? "Onhold"
                   : "For Processing",
-            button:
-              currentSelectedFinanceTabValue === 3 ? "credit" : "download",
+            button: filters?.request_status__id === "3" ? "credit" : "download",
             buttonClickHandler:
-              currentSelectedFinanceTabValue === 3
+              filters?.request_status__id === "3"
                 ? toggleCreditDialogVisibility
                 : toggleDownloadReportDialogVisibility,
             buttonIsVisible: data && data.results.length > 0 ? true : false,
@@ -346,10 +347,6 @@ const Payables: React.FC = () => {
           }}
           type="finance"
           loading={isFetching}
-          handleMobileClick={(e: number) => {
-            dispatch(setFocusedReimbursementId(e));
-            dispatch(openSideDrawer());
-          }}
           data={data?.results}
           columns={columns}
           pagination={{
@@ -379,12 +376,15 @@ const Payables: React.FC = () => {
           selectedReimbursement={data?.results.find(
             (a) => a.id === selectedItems[0],
           )}
+          selectedItems={selectedItems}
         />
 
         <BulkTransitionToCreditedDialog
           selectedReimbursement={data?.results.find(
             (a) => a.id === selectedItems[0],
           )}
+          selectedItems={selectedItems}
+          setSelectedItems={setSelectedItems}
         />
       </div>
     </>

@@ -1,5 +1,5 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import { type ReimbursementFormValues } from "~/types/reimbursement-form-values.type";
+import { type ReimbursementFormValues } from "~/types/reimbursement.types";
 
 interface ReimburseFormState {
   activeStep: number;

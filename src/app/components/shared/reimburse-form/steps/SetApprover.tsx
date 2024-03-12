@@ -14,12 +14,11 @@ import {
   setActiveStep,
   toggleFormDialog,
 } from "~/features/state/reimbursement-form-slice";
+import { getApproverSchema } from "~/schema/reimbursement-approver.schema";
 import {
-  getApproverSchema,
   type Approver,
-} from "~/schema/reimbursement-approver.schema";
-import { type ParticularDetails } from "~/schema/reimbursement-particulars.schema";
-
+  type ParticularDetails,
+} from "~/types/reimbursement.types";
 interface SetApproverProps {
   formReturn: UseFormReturn<ParticularDetails>;
   handleResetRequestType: () => void;

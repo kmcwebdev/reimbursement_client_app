@@ -1,12 +1,12 @@
 import { appApiSlice } from "~/app/rtkQuery";
+import { reimbursementTypeSchema } from "~/schema/reimbursement-type.schema";
 import {
-  ReimbursementTypeSchema,
+  type ExpenseTypeResponse,
+  type GroupResponse,
   type ReimbursementFormType,
-} from "~/schema/reimbursement-type.schema";
-import { type IGroupsResponse } from "~/types/group.type";
-import { type IExpenseTypeResponse } from "~/types/reimbursement.expense-type";
-import { type IRequestTypeResponse } from "~/types/reimbursement.request-type";
-import { type IStatusResponse } from "~/types/reimbursement.types";
+  type RequestTypeResponse,
+  type StatusResponse,
+} from "~/types/reimbursement.types";
 
 /**
  * REFERENCES API SLICE
@@ -16,12 +16,12 @@ import { type IStatusResponse } from "~/types/reimbursement.types";
 
 export const referencesApiSlice = appApiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    requestTypes: builder.query<IRequestTypeResponse, void>({
+    requestTypes: builder.query<RequestTypeResponse, void>({
       query: () => "/reimbursements/request/request-types",
     }),
-    expenseTypes: builder.query<IExpenseTypeResponse, ReimbursementFormType>({
+    expenseTypes: builder.query<ExpenseTypeResponse, ReimbursementFormType>({
       query: ({ request_type }) => {
-        const parse = ReimbursementTypeSchema.safeParse({ request_type });
+        const parse = reimbursementTypeSchema.safeParse({ request_type });
 
         if (!parse.success) {
           throw new Error("Invalid request_type_id");
@@ -38,7 +38,7 @@ export const referencesApiSlice = appApiSlice.injectEndpoints({
         { type: "ExpenseTypes", id: query.request_type },
       ],
     }),
-    allStatuses: builder.query<IStatusResponse, unknown>({
+    allStatuses: builder.query<StatusResponse, unknown>({
       query: () => {
         return {
           url: "/reimbursements/request/request-status",
@@ -48,7 +48,7 @@ export const referencesApiSlice = appApiSlice.injectEndpoints({
         { type: "AllStatuses", id: "/all" },
       ],
     }),
-    allExpenseTypes: builder.query<IExpenseTypeResponse, unknown>({
+    allExpenseTypes: builder.query<ExpenseTypeResponse, unknown>({
       query: () => {
         return {
           url: "/reimbursements/request/expense-types?page_size=100",
@@ -58,7 +58,7 @@ export const referencesApiSlice = appApiSlice.injectEndpoints({
         { type: "AllExpenseTypes", id: "/all" },
       ],
     }),
-    allGroups: builder.query<IGroupsResponse, unknown>({
+    allGroups: builder.query<GroupResponse, unknown>({
       query: () => {
         return {
           url: "/management/users/groups",

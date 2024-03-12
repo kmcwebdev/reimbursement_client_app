@@ -1,85 +1,68 @@
-import { type IUser } from "~/features/state/user-state.slice";
-import { type ParticularDetails } from "~/schema/reimbursement-particulars.schema";
-import { type IResponsePagination } from "./global-types";
-import { type IFileStack } from "./reimbursement-form-values.type";
-import { type IExpenseType } from "./reimbursement.expense-type";
-import { type ReimbursementRequestType } from "./reimbursement.request-type";
+import { type MongoAbility } from "@casl/ability";
+import { type z } from "zod";
+import { type analyticsSchema } from "~/schema/analytics.schema";
+import { type appClaimsSchema } from "~/schema/app-claims.schema";
+import { type approvalStatusSchema } from "~/schema/approval-status.schema";
+import { type approverMatrixSchema } from "~/schema/approver-matrix.schema";
+import { type credentialsSchema } from "~/schema/auth.schema";
+import { type creditPayloadSchema } from "~/schema/credit-payload.schema";
+import { type expenseTypeResponseSchema } from "~/schema/expense-type-response.schema";
+import { type expenseTypeSchema } from "~/schema/expense-type.schema";
+import { type fileStackSchema } from "~/schema/file-stack.schema";
+import { type groupResponseSchema } from "~/schema/group-response.schema";
+import { type groupTypeSchema } from "~/schema/group-type.schema";
+import { type groupSchema } from "~/schema/group.schema";
+import { type particularSchema } from "~/schema/particulars.schema";
+import { type queryFilterSchema } from "~/schema/query-filter.schema";
+import { type approverSchema } from "~/schema/reimbursement-approver.schema";
+import { type reimbursementFormValuesSchema } from "~/schema/reimbursement-form-values.schema";
+import { type onholdReimbursementSchema } from "~/schema/reimbursement-onhold-form.schema";
+import { type particularDetailsSchema } from "~/schema/reimbursement-particulars.schema";
+import { type rejectReimbursementSchema } from "~/schema/reimbursement-reject-form.schema";
+import { type reimbursementRequestSchema } from "~/schema/reimbursement-request.schema";
+import { type reimbursementTypeSchema } from "~/schema/reimbursement-type.schema";
+import { type requestListResponseSchema } from "~/schema/request-list-response.schema";
+import { type requestTypeResponseSchema } from "~/schema/request-type-response.schema";
+import { type requestTypeSchema } from "~/schema/request-type.schema";
+import { type responsePaginationSchema } from "~/schema/response-pagination.schema";
+import { type statusResponseSchema } from "~/schema/status-response.schema";
+import { type statusTypeSchema } from "~/schema/status-type.schema";
+import { type statusSchema } from "~/schema/status.schema";
+import { type userProfileSchema, type userSchema } from "~/schema/user.schema";
+import { type usersResponseSchema } from "~/schema/users-response.schema";
 
-//NEW CHANGES
-
-export interface IParticularDetails
-  extends Omit<ParticularDetails, "expense_type"> {
-  id: number;
-  created_at: string;
-  updated_at: string;
-  expense_type: IExpenseType;
-}
-
-export type IRequestListResponse = {
-  results: IReimbursementRequest[];
-} & IResponsePagination;
-
-export type IReimbursementRequest = {
-  id: number;
-  reference_no: string;
-  total_amount: string;
-  request_type: ReimbursementRequestType;
-  request_status: IStatus;
-  reimb_requestor: IUser;
-  next_approver: string;
-  fully_approved: boolean;
-  particulars: IParticularDetails[];
-  approver_matrix: IApproverMatrix[];
-  supporting_documents: IFileStack[];
-  payroll_date: string;
-  created_at: string;
-  updated_at: string;
-  remarks: string;
-};
-
-export type IApproverMatrix = {
-  id: number;
-  approver: IUser;
-  approval_order: number;
-  display_name: string;
-  approver_deligation: string;
-  is_approved: boolean;
-  is_rejected: boolean;
-  acknowledge_datetime: string;
-  remarks: string;
-  approval_status: { id: number; name: string };
-};
-
-export type IStatusResponse = {
-  results: IStatus[];
-} & IResponsePagination;
-
-export type IStatus = {
-  id: number;
-  name: StatusType;
-};
-
-export type StatusType =
-  | "Pending"
-  | "Approved"
-  | "Processing"
-  | "Credited"
-  | "On-hold"
-  | "Rejected"
-  | "Cancelled";
-
-export type CreditPayload = {
-  request_ids: string[];
-  credit_all_request: boolean;
-};
-
-export type IReimbursementsFilterQuery = {
-  search?: string;
-  request_type__id?: string;
-  expense_type__id?: string;
-  request_status__id?: string;
-  page?: number;
-  created_at_before?: string;
-  created_at_after?: string;
-  history?: boolean;
-};
+export type AbilityActions = "access" | "create" | "read" | "update" | "delete";
+export type AppAbility = MongoAbility<[AbilityActions, AppClaims]>;
+export type DashboardAnalytics = z.infer<typeof analyticsSchema>;
+export type AppClaims = z.infer<typeof appClaimsSchema>;
+export type ApprovalStatus = z.infer<typeof approvalStatusSchema>;
+export type ApproverMatrix = z.infer<typeof approverMatrixSchema>;
+export type Credentials = z.infer<typeof credentialsSchema>;
+export type GroupType = z.infer<typeof groupTypeSchema>;
+export type QueryFilter = z.infer<typeof queryFilterSchema>;
+export type Approver = z.infer<typeof approverSchema>;
+export type OnholdReimbursementType = z.infer<typeof onholdReimbursementSchema>;
+export type ParticularDetails = z.infer<typeof particularDetailsSchema>;
+export type RejectReimbursementType = z.infer<typeof rejectReimbursementSchema>;
+export type ReimbursementFormType = z.infer<typeof reimbursementTypeSchema>;
+export type StatusType = z.infer<typeof statusTypeSchema>;
+export type Status = z.infer<typeof statusSchema>;
+export type UserProfileSchema = z.infer<typeof userProfileSchema>;
+export type User = z.infer<typeof userSchema>;
+export type ExpenseType = z.infer<typeof expenseTypeSchema>;
+export type Particular = z.infer<typeof particularSchema>;
+export type FileStack = z.infer<typeof fileStackSchema>;
+export type RequestType = z.infer<typeof requestTypeSchema>;
+export type ReimbursementRequest = z.infer<typeof reimbursementRequestSchema>;
+export type CreditPayload = z.infer<typeof creditPayloadSchema>;
+export type ResponsePagination = z.infer<typeof responsePaginationSchema>;
+export type RequestListResponse = z.infer<typeof requestListResponseSchema>;
+export type StatusResponse = z.infer<typeof statusResponseSchema>;
+export type RequestTypeResponse = z.infer<typeof requestTypeResponseSchema>;
+export type ExpenseTypeResponse = z.infer<typeof expenseTypeResponseSchema>;
+export type ReimbursementFormValues = z.infer<
+  typeof reimbursementFormValuesSchema
+>;
+export type Group = z.infer<typeof groupSchema>;
+export type GroupResponse = z.infer<typeof groupResponseSchema>;
+export type UsersResponse = z.infer<typeof usersResponseSchema>;

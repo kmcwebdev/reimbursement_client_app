@@ -9,14 +9,15 @@ import CollapseHeightAnimation from "~/app/components/animation/CollapseHeight";
 import { Button } from "~/app/components/core/Button";
 import Form from "~/app/components/core/form";
 import Input from "~/app/components/core/form/fields/Input";
-import { CredentialsSchema, type Credentials } from "~/schema/auth.schema";
+import { credentialsSchema } from "~/schema/auth.schema";
+import { type Credentials } from "~/types/reimbursement.types";
 import { handleAzureAdLogin, handleCredentialsLogin } from "./login";
 
 const LoginComponent: React.FC = () => {
   const [loading, setIsLoading] = useState<boolean>(false);
   const [loginError, setLoginIsError] = useState<boolean>(false);
   const useCredentialsForm = useForm<Credential>({
-    resolver: zodResolver(CredentialsSchema),
+    resolver: zodResolver(credentialsSchema),
     mode: "onChange",
   });
 
@@ -55,11 +56,7 @@ const LoginComponent: React.FC = () => {
           onSubmit={(e: Credentials) => void onSubmit(e)}
           className="flex w-full flex-col gap-4"
         >
-          <Input
-            label="Username or Email"
-            name="username"
-            placeholder="Username"
-          />
+          <Input label="Username" name="username" placeholder="Username" />
           <Input
             label="Password"
             type="password"

@@ -5,26 +5,25 @@ import { showToast } from "~/app/components/core/Toast";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { appApiSlice } from "~/app/rtkQuery";
 import { useApproveReimbursementMutation } from "~/features/api/actions-api-slice";
+import { toggleBulkApprovalDialog } from "~/features/state/table-state.slice";
 import {
-  setSelectedItems,
-  toggleBulkApprovalDialog,
-} from "~/features/state/table-state.slice";
-import {
-  type IReimbursementRequest,
-  type IRequestListResponse,
+  type ReimbursementRequest,
+  type RequestListResponse,
 } from "~/types/reimbursement.types";
 import { currencyFormat } from "~/utils/currencyFormat";
 
 type BulkApproveReimbursementsDialogProps = {
-  data?: IRequestListResponse;
-  selectedReimbursement?: IReimbursementRequest;
+  data?: RequestListResponse;
+  selectedReimbursement?: ReimbursementRequest;
+  selectedItems: number[];
+  setSelectedItems: (e: number[]) => void;
 };
 
 const BulkApproveReimbursementsDialog: React.FC<
   BulkApproveReimbursementsDialogProps
-> = ({ data, selectedReimbursement }) => {
+> = ({ data, selectedReimbursement, selectedItems, setSelectedItems }) => {
   const dispatch = useAppDispatch();
-  const { selectedItems, bulkApprovalDialogIsOpen } = useAppSelector(
+  const { bulkApprovalDialogIsOpen } = useAppSelector(
     (state) => state.pageTableState,
   );
   const onAbort = () => {
@@ -56,7 +55,7 @@ const BulkApproveReimbursementsDialog: React.FC<
           processedItems = processedItems - 1;
 
           if (processedItems === 0) {
-            dispatch(setSelectedItems([]));
+            setSelectedItems([]);
             dispatch(
               appApiSlice.util.invalidateTags([
                 "ReimbursementRequest",

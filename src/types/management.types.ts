@@ -1,9 +1,4 @@
-import { type IUser } from "~/features/state/user-state.slice";
 import { type IResponsePagination } from "./global-types";
-
-export type IUsersResponse = {
-  results: IUser[];
-} & IResponsePagination;
 
 export type IPermissions = {
   id: number;
