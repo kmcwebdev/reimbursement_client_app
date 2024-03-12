@@ -13,6 +13,4 @@ if (process.env.ENABLE_SENTRY === "1")
 
     // Setting this option to true will print useful information to the console while you're setting up Sentry.
     debug: false,
-
-    integrations: [Sentry.replayIntegration()],
   });
