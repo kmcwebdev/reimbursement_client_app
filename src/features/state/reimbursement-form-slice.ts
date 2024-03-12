@@ -1,4 +1,5 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import { type AttachedFile } from "~/app/components/shared/reimburse-form/steps/AddAttachments";
 import { type ReimbursementFormValues } from "~/types/reimbursement.types";
 
 interface ReimburseFormState {
@@ -6,6 +7,7 @@ interface ReimburseFormState {
   particularDetailsFormIsVisible: boolean;
   activeParticularIndex: string | null;
   reimbursementFormValues: ReimbursementFormValues;
+  _temp_attachedFiles: AttachedFile[];
   cancelDialogIsOpen: boolean;
   formDialogIsOpen: boolean;
 }
@@ -20,6 +22,7 @@ const initialState: ReimburseFormState = {
     attachments: [],
     manager_approver_email: null,
   },
+  _temp_attachedFiles: [],
   formDialogIsOpen: false,
   cancelDialogIsOpen: false,
 };
@@ -53,6 +56,9 @@ const reimbursementFormSlice = createSlice({
     toggleCancelDialog(state) {
       state.cancelDialogIsOpen = !state.cancelDialogIsOpen;
     },
+    _setTempAttachedFiles(state, action: PayloadAction<AttachedFile[]>) {
+      state._temp_attachedFiles = action.payload;
+    },
   },
 });
 
@@ -64,6 +70,7 @@ export const {
   clearReimbursementForm,
   toggleFormDialog,
   toggleCancelDialog,
+  _setTempAttachedFiles,
 } = reimbursementFormSlice.actions;
 
 export default reimbursementFormSlice.reducer;

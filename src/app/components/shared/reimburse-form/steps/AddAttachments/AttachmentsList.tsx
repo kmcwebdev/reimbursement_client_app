@@ -42,20 +42,20 @@ const AttachmentsList: React.FC<AttachmentsListProps> = ({
               )}
             </div>
 
-            <span className="w-10/12 gap-2 truncate  text-sm text-neutral-900">
+            <span className="block w-10/12 gap-2 text-sm text-neutral-900">
               {attachment.status === "uploaded" && (
-                <p>{attachment.file.name}</p>
+                <p className="truncate">{attachment.file.name}</p>
               )}
 
               {attachment.status === "unprocessed" && (
                 <div className="flex flex-col gap-2">
-                  <p>{attachment.file.name}</p>
+                  <p className="truncate">{attachment.file.name}</p>
                   <p className="text-xs text-neutral-400">Queued</p>
                 </div>
               )}
               {attachment.status === "uploading" && (
                 <div className="flex flex-col gap-2">
-                  <p>{attachment.file.name}</p>
+                  <p className="truncate">{attachment.file.name}</p>
                   <IndeterminateProgressBar />
                 </div>
               )}

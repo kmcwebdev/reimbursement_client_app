@@ -10,6 +10,7 @@ import Input from "~/app/components/core/form/fields/Input";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { useCreateReimbursementMutation } from "~/features/api/reimbursement-form-api-slice";
 import {
+  _setTempAttachedFiles,
   clearReimbursementForm,
   setActiveStep,
   toggleFormDialog,
@@ -68,6 +69,7 @@ const SetApprover: React.FC<SetApproverProps> = ({
       .then(() => {
         dispatch(toggleFormDialog());
         dispatch(clearReimbursementForm());
+        dispatch(_setTempAttachedFiles([]));
         handleResetRequestType();
         formReturn.reset();
         showToast({
