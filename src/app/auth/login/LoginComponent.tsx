@@ -56,11 +56,7 @@ const LoginComponent: React.FC = () => {
           onSubmit={(e: Credentials) => void onSubmit(e)}
           className="flex w-full flex-col gap-4"
         >
-          <Input
-            label="Username or Email"
-            name="username"
-            placeholder="Username"
-          />
+          <Input label="Username" name="username" placeholder="Username" />
           <Input
             label="Password"
             type="password"
