@@ -13,7 +13,7 @@ const PageNotFound: React.FC = () => {
       <div className="h-72 w-full">
         <EmptyState
           title="Page Not Found."
-          description="The page tou want to access doesn't exist."
+          description="The page you want to access doesn't exist."
         >
           {assignedRole ? (
             <Button
