@@ -78,10 +78,10 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
       setDownloadReportLoading(false);
       dispatch(toggleSingleDownloadReportDialog());
     },
-    onError: () => {
+    onError: (error) => {
       showToast({
         type: "error",
-        description: "Error downloading.Please try again.",
+        description: error,
       });
       setDownloadReportLoading(false);
       dispatch(toggleSingleDownloadReportDialog());

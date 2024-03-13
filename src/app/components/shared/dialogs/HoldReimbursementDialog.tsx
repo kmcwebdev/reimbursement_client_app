@@ -7,7 +7,10 @@ import { useHoldReimbursementMutation } from "~/features/api/actions-api-slice";
 import { toggleHoldDialog } from "~/features/state/table-state.slice";
 
 import { onholdReimbursementSchema } from "~/schema/reimbursement-onhold-form.schema";
-import { type OnholdReimbursementType } from "~/types/reimbursement.types";
+import {
+  type OnholdReimbursementType,
+  type RtkApiError,
+} from "~/types/reimbursement.types";
 import { Button } from "../../core/Button";
 import Dialog from "../../core/Dialog";
 import { showToast } from "../../core/Toast";
@@ -48,10 +51,10 @@ const HoldReimbursementDialog: React.FC = () => {
           });
           onAbort();
         })
-        .catch(() => {
+        .catch((error: RtkApiError) => {
           showToast({
             type: "error",
-            description: "Rejection failed!",
+            description: error.data.detail,
           });
         });
     }

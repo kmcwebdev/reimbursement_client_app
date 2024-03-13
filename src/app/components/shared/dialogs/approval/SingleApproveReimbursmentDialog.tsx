@@ -10,7 +10,10 @@ import {
   setFocusedReimbursementId,
   toggleSingleApprovalDialog,
 } from "~/features/state/table-state.slice";
-import { type ReimbursementRequest } from "~/types/reimbursement.types";
+import {
+  type ReimbursementRequest,
+  type RtkApiError,
+} from "~/types/reimbursement.types";
 import { currencyFormat } from "~/utils/currencyFormat";
 
 type SingleApproveReimbursementsDialogProps = {
@@ -58,10 +61,10 @@ const SingleApproveReimbursementsDialog: React.FC<
 
             onAbort();
           })
-          .catch(() => {
+          .catch((error: RtkApiError) => {
             showToast({
               type: "error",
-              description: "Approval failed!",
+              description: error.data.detail,
             });
           });
       });

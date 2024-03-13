@@ -18,8 +18,10 @@ import {
   setReimbursementFormValues,
   toggleFormDialog,
 } from "~/features/state/reimbursement-form-slice";
-import { type MutationError } from "~/types/global-types";
-import { type ParticularDetails } from "~/types/reimbursement.types";
+import {
+  type ParticularDetails,
+  type RtkApiError,
+} from "~/types/reimbursement.types";
 import { classNames } from "~/utils/classNames";
 import { isDuplicateFile } from "~/utils/is-duplicate-file";
 import AttachmentsList from "./AttachmentsList";
@@ -90,11 +92,10 @@ const AddAttachments: React.FC<AttachmentProps> = ({
           }
         }
       })
-      .catch(() => {
+      .catch((error: RtkApiError) => {
         showToast({
           type: "error",
-          description:
-            "There was a problem uploading attachments. Please try again!",
+          description: error.data.detail,
         });
       });
   };
@@ -135,17 +136,25 @@ const AddAttachments: React.FC<AttachmentProps> = ({
     }
   }, [_temp_attachedFiles]);
 
+  const handleDropMultiple = (files: File[]) => {
+    const updatedAttachedFiles = [...attachedFiles];
+
+    files.forEach((file) => {
+      const formattedFile = new File([file], file.name, {
+        type: file.type,
+        lastModified: file.lastModified,
+      });
+
+      updatedAttachedFiles.push({ status: "unprocessed", file: formattedFile });
+
+      setAttachedFiles(updatedAttachedFiles);
+    });
+  };
+
   const onCaptureProceed = (attachment: File) => {
     setShowCamera(false);
-    handleDrop(attachment);
+    handleDropMultiple([attachment]);
   };
-
-  const handleDrop = (e: File) => {
-    const filesCopy = attachedFiles;
-    filesCopy.push({ status: "unprocessed", file: e });
-    setAttachedFiles(filesCopy);
-  };
-
   const [createReimbursement, { isLoading: isSubmitting }] =
     useCreateReimbursementMutation();
 
@@ -172,19 +181,9 @@ const AddAttachments: React.FC<AttachmentProps> = ({
               "Your reimbursement request has been submitted successfully!",
           });
         })
-        .catch((error: MutationError) => {
+        .catch((error: RtkApiError) => {
           if (error) {
-            if (Array.isArray(error.data.errors)) {
-              showToast({
-                type: "error",
-                description: error.data.errors[0].message,
-              });
-            } else {
-              showToast({
-                type: "error",
-                description: error.data.message,
-              });
-            }
+            showToast({ type: "error", description: error.data.detail });
           }
         });
     } else {
@@ -232,13 +231,14 @@ const AddAttachments: React.FC<AttachmentProps> = ({
     noClick: true,
     onDrop: (e, i) => {
       if (i.length === 0) {
-        e.forEach((file) => {
-          const formattedFile = new File([file], file.name, {
-            type: file.type,
-            lastModified: file.lastModified,
-          });
-          handleDrop(formattedFile);
-        });
+        handleDropMultiple(e);
+        // e.forEach((file) => {
+        //   const formattedFile = new File([file], file.name, {
+        //     type: file.type,
+        //     lastModified: file.lastModified,
+        //   });
+        //   handleDrop(formattedFile);
+        // });
       }
     },
     validator: (e) => fileValidator(attachedFiles, e),

@@ -3,10 +3,10 @@ import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { appApiSlice } from "~/app/rtkQuery";
 import { useTransitionToCreditedMutation } from "~/features/api/actions-api-slice";
 import { toggleBulkCreditDialog } from "~/features/state/table-state.slice";
-
 import {
   type CreditPayload,
   type ReimbursementRequest,
+  type RtkApiError,
 } from "~/types/reimbursement.types";
 import { Button } from "../../../core/Button";
 import Dialog from "../../../core/Dialog";
@@ -72,10 +72,10 @@ const BulkTransitionToCreditedDialog: React.FC<
           ]),
         );
       })
-      .catch(() => {
+      .catch((error: RtkApiError) => {
         showToast({
           type: "error",
-          description: "Status update failed!",
+          description: error.data.detail,
         });
       });
   };

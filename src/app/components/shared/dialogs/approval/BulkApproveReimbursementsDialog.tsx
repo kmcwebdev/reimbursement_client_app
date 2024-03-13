@@ -9,6 +9,7 @@ import { toggleBulkApprovalDialog } from "~/features/state/table-state.slice";
 import {
   type ReimbursementRequest,
   type RequestListResponse,
+  type RtkApiError,
 } from "~/types/reimbursement.types";
 import { currencyFormat } from "~/utils/currencyFormat";
 
@@ -69,10 +70,10 @@ const BulkApproveReimbursementsDialog: React.FC<
             onAbort();
           }
         })
-        .catch(() => {
+        .catch((error: RtkApiError) => {
           showToast({
             type: "error",
-            description: "Approval failed!",
+            description: error.data.detail,
           });
         });
     });
