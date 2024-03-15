@@ -1,9 +1,9 @@
 import { appApiSlice } from "~/app/rtkQuery";
+import { type IPermissionsResponse } from "~/types/management.types";
 import {
-  type IPermissionsResponse,
-  type IUsersResponse,
-} from "~/types/management.types";
-import { type IReimbursementRequest } from "~/types/reimbursement.types";
+  type ReimbursementRequest,
+  type UsersResponse,
+} from "~/types/reimbursement.types";
 
 /**
  * MANAGEMENT API SLICE
@@ -13,7 +13,7 @@ import { type IReimbursementRequest } from "~/types/reimbursement.types";
 
 export const managementApiSlice = appApiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    getUsers: builder.query<IUsersResponse, null>({
+    getUsers: builder.query<UsersResponse, null>({
       query: () => {
         return {
           url: "/management/users",
@@ -38,7 +38,7 @@ export const managementApiSlice = appApiSlice.injectEndpoints({
         group_id: 0;
         permission_name: "string";
       },
-      Pick<IReimbursementRequest, "id">
+      Pick<ReimbursementRequest, "id">
     >({
       query: ({ id }) => {
         return {
@@ -47,7 +47,7 @@ export const managementApiSlice = appApiSlice.injectEndpoints({
         };
       },
 
-      invalidatesTags: [{ type: "Users" }],
+      invalidatesTags: ["Users"],
     }),
   }),
 });

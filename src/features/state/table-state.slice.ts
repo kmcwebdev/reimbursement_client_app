@@ -1,11 +1,6 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import { type IReimbursementsFilterQuery } from "~/types/reimbursement.types";
-import { removeUndefinedValues } from "~/utils/remove-undefined-values";
 
 interface TableState {
-  selectedItems: number[];
-  filters: IReimbursementsFilterQuery;
-  page: number | null;
   focusedReimbursementId: number | null;
   drawerIsOpen: boolean;
   bulkApprovalDialogIsOpen: boolean;
@@ -20,9 +15,6 @@ interface TableState {
 }
 
 const initialState: TableState = {
-  selectedItems: [],
-  filters: {},
-  page: null,
   focusedReimbursementId: null,
   drawerIsOpen: false,
   bulkApprovalDialogIsOpen: false,
@@ -40,17 +32,6 @@ const TableStateSlice = createSlice({
   name: "tableStateSlice",
   initialState,
   reducers: {
-    setSelectedItems(state, action: PayloadAction<number[]>) {
-      state.selectedItems = action.payload;
-    },
-    setPageTableFilters(
-      state,
-      action: PayloadAction<IReimbursementsFilterQuery>,
-    ) {
-      state.filters = removeUndefinedValues(
-        action.payload,
-      ) as IReimbursementsFilterQuery;
-    },
     setFocusedReimbursementId(state, action: PayloadAction<number | null>) {
       state.focusedReimbursementId = action.payload;
     },
@@ -59,10 +40,6 @@ const TableStateSlice = createSlice({
     },
     openSideDrawer(state) {
       state.drawerIsOpen = true;
-    },
-    resetPageTableState(state) {
-      state.selectedItems = [];
-      state.filters = {};
     },
     toggleBulkApprovalDialog(state) {
       state.bulkApprovalDialogIsOpen = !state.bulkApprovalDialogIsOpen;
@@ -97,12 +74,9 @@ const TableStateSlice = createSlice({
 });
 
 export const {
-  setSelectedItems,
-  setPageTableFilters,
   setFocusedReimbursementId,
   closeSideDrawer,
   openSideDrawer,
-  resetPageTableState,
   toggleBulkApprovalDialog,
   toggleSingleApprovalDialog,
   toggleBulkCreditDialog,

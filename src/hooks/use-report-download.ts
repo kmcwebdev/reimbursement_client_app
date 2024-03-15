@@ -6,7 +6,7 @@ export const useReportDownload = ({
   onError,
 }: {
   onSuccess: () => void;
-  onError: (desc?: unknown) => void;
+  onError: (desc?: string) => void;
 }) => {
   const { accessToken } = useAppSelector((state) => state.session);
 
@@ -42,7 +42,7 @@ export const useReportDownload = ({
       }
     } catch (error) {
       if (error) {
-        onError(error);
+        onError("Downloading failed.");
       }
     }
   };

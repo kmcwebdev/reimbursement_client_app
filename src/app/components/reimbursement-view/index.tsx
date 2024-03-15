@@ -14,7 +14,6 @@ import {
   toggleSingleDownloadReportDialog,
 } from "~/features/state/table-state.slice";
 import { useReportDownload } from "~/hooks/use-report-download";
-import { type IReimbursementRequest } from "~/types/reimbursement.types";
 import { env } from "../../../../env.mjs";
 import EmptyState from "../core/EmptyState";
 import { showToast } from "../core/Toast";
@@ -22,6 +21,7 @@ import CancelReimbursementDialog from "../shared/dialogs/CancelReimbursementDial
 import HoldReimbursementDialog from "../shared/dialogs/HoldReimbursementDialog";
 import RejectReimbursementDialog from "../shared/dialogs/RejectReimbursementDialog";
 
+import { type ReimbursementRequest } from "~/types/reimbursement.types";
 import SingleApproveReimbursementsDialog from "../shared/dialogs/approval/SingleApproveReimbursmentDialog";
 import SingleDownloadReportDialog from "../shared/dialogs/download-report/SingleDownloadReportDialog";
 import SingleTransitionToCreditedDialog from "../shared/dialogs/update-to-credited/SingleTransitionToCreditedDialog";
@@ -41,7 +41,7 @@ export interface ReimbursementsCardViewProps extends PropsWithChildren {
   isApproverView?: boolean;
   isHistoryView?: boolean;
   isAdminView?: boolean;
-  data?: IReimbursementRequest;
+  data?: ReimbursementRequest;
   isError?: boolean;
 }
 
@@ -55,7 +55,7 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
 }) => {
   const ability = useContext(AbilityContext);
 
-  const { user,assignedRole } = useAppSelector((state) => state.session);
+  const { user, assignedRole } = useAppSelector((state) => state.session);
 
   const [downloadReportLoading, setDownloadReportLoading] =
     useState<boolean>(false);
@@ -70,18 +70,18 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
     onSuccess: () => {
       dispatch(
         appApiSlice.util.invalidateTags([
-          { type: "ReimbursementRequest" },
-          { type: "ReimbursementApprovalList" },
-          { type: "ApprovalAnalytics" },
+          "ReimbursementRequest",
+          "ReimbursementApprovalList",
+          "ApprovalAnalytics",
         ]),
       );
       setDownloadReportLoading(false);
       dispatch(toggleSingleDownloadReportDialog());
     },
-    onError: () => {
+    onError: (error) => {
       showToast({
         type: "error",
-        description: "Error downloading.Please try again.",
+        description: error,
       });
       setDownloadReportLoading(false);
       dispatch(toggleSingleDownloadReportDialog());
@@ -101,9 +101,9 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
       await exportReport(url, filename);
       dispatch(
         appApiSlice.util.invalidateTags([
-          { type: "ReimbursementRequest" },
-          { type: "ReimbursementApprovalList" },
-          { type: "ApprovalAnalytics" },
+          "ReimbursementRequest",
+          "ReimbursementApprovalList",
+          "ApprovalAnalytics",
         ]),
       );
 
@@ -123,6 +123,7 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
               amount={data.total_amount}
               particulars={data.particulars}
               reimb_requestor={data.reimb_requestor}
+              payroll_date={data.payroll_date}
             />
 
             {data.remarks &&
@@ -132,13 +133,17 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
                 <Notes note={data.remarks} />
               )}
 
-            {user && data.approver_matrix && data.approver_matrix.length > 0 && (
-              <Approvers
-                isOwnRequest={user.email === data.reimb_requestor.email }
-                approvers={data.approver_matrix}
-                request_status={data.request_status}
-              />
-            )}
+            {user &&
+              data.approver_matrix &&
+              data.approver_matrix.length > 0 && (
+                <Approvers
+                  requestorEmail={data.reimb_requestor.email}
+                  isOwnRequest={user.email === data.reimb_requestor.email}
+                  approvers={data.approver_matrix}
+                  request_status={data.request_status}
+                  next_approver={data.next_approver}
+                />
+              )}
 
             <Particulars particulars={data.particulars} />
 

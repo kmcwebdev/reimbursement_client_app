@@ -15,13 +15,13 @@
     "jsx": "preserve",
     "incremental": true,
     "paths": {
-      "~/*": ["./src/*"]
+      "~/*": ["./src/*"],
     },
     "plugins": [
       {
-        "name": "next"
-      }
-    ]
+        "name": "next",
+      },
+    ],
   },
   "include": [
     ".eslintrc.cjs",
@@ -31,7 +31,8 @@
     "**/*.tsx",
     "**/*.cjs",
     "**/*.mjs",
-    ".next/types/**/*.ts"
+    ".next/types/**/*.ts",
+    "src/app/global-error.tsx",
   ],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules"],
 }

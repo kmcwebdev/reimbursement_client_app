@@ -5,10 +5,12 @@ import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { appApiSlice } from "~/app/rtkQuery";
 import { useHoldReimbursementMutation } from "~/features/api/actions-api-slice";
 import { toggleHoldDialog } from "~/features/state/table-state.slice";
+
+import { onholdReimbursementSchema } from "~/schema/reimbursement-onhold-form.schema";
 import {
-  OnholdReimbursementSchema,
   type OnholdReimbursementType,
-} from "~/schema/reimbursement-onhold-form.schema";
+  type RtkApiError,
+} from "~/types/reimbursement.types";
 import { Button } from "../../core/Button";
 import Dialog from "../../core/Dialog";
 import { showToast } from "../../core/Toast";
@@ -24,7 +26,7 @@ const HoldReimbursementDialog: React.FC = () => {
     useHoldReimbursementMutation();
 
   const formReturn = useForm<OnholdReimbursementType>({
-    resolver: zodResolver(OnholdReimbursementSchema),
+    resolver: zodResolver(onholdReimbursementSchema),
     mode: "onChange",
   });
   const onAbort = () => {
@@ -42,19 +44,17 @@ const HoldReimbursementDialog: React.FC = () => {
       void holdReimbursement(payload)
         .unwrap()
         .then(() => {
-          dispatch(
-            appApiSlice.util.invalidateTags([{ type: "ReimbursementRequest" }]),
-          );
+          dispatch(appApiSlice.util.invalidateTags(["ReimbursementRequest"]));
           showToast({
             type: "success",
             description: "Reimbursement Request successfully put onhold!",
           });
           onAbort();
         })
-        .catch(() => {
+        .catch((error: RtkApiError) => {
           showToast({
             type: "error",
-            description: "Rejection failed!",
+            description: error.data.detail,
           });
         });
     }

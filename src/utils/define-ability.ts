@@ -1,10 +1,13 @@
 import { defineAbility as CASLdefineAbility } from "@casl/ability";
-import { type IGroupType } from "~/types/group.type";
 
-import { type AppAbility, type AppClaims } from "~/types/permission-types";
+import {
+  type AppAbility,
+  type AppClaims,
+  type GroupType,
+} from "~/types/reimbursement.types";
 
 export const defineAbility = (
-  assignedRole?: IGroupType | null,
+  assignedRole?: GroupType | null,
   claims?: AppClaims[],
 ) => {
   return CASLdefineAbility<AppAbility>((can) => {

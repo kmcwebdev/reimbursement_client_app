@@ -1,8 +1,8 @@
-import { type EndpointBuilder } from "@reduxjs/toolkit/dist/query/endpointDefinitions";
 import {
   createApi,
   fetchBaseQuery,
   type BaseQueryFn,
+  type EndpointBuilder,
   type FetchArgs,
   type FetchBaseQueryError,
   type FetchBaseQueryMeta,
@@ -18,11 +18,17 @@ type RefreshTokenResponse = {
 const unprotectedEndpoints = [
   "approveReimbursementViaEmail",
   "rejectReimbursementViaEmail",
+  "changePassword",
+  "forgotPassword",
 ];
 
 const appApiBaseQuery = fetchBaseQuery({
   baseUrl: env.NEXT_PUBLIC_BASEAPI_URL,
   prepareHeaders: (headers, { getState }) => {
+    headers.set("Cache-Control", "no-cache");
+    headers.set("Pragma", "no-cache");
+    headers.set("Expires", "0");
+
     const token = (getState() as RootState).session.accessToken;
 
     if (token && !headers.has("authorization")) {
@@ -93,6 +99,12 @@ const appApiBaseQueryWithReauth: BaseQueryFn<
     }
   }
 
+  if (
+    result?.error?.status === 500 &&
+    !window.location.pathname.includes("server-error")
+  ) {
+    window.location.replace("/server-error");
+  }
   return result;
 };
 

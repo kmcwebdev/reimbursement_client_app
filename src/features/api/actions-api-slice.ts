@@ -1,8 +1,13 @@
 import { type IApproverToEdit } from "~/app/components/reimbursement-view/Approvers";
 import { appApiSlice } from "~/app/rtkQuery";
-import { type OnholdReimbursementType } from "~/schema/reimbursement-onhold-form.schema";
-import { type RejectReimbursementType } from "~/schema/reimbursement-reject-form.schema";
-import { type IReimbursementRequest } from "~/types/reimbursement.types";
+import {
+  type ChangePasswordPayload,
+  type CreditPayload,
+  type ForgotPasswordPayload,
+  type OnholdReimbursementType,
+  type ReimbursementRequest,
+  type RejectReimbursementType,
+} from "~/types/reimbursement.types";
 
 /**
  * ACTIONS API SLICE
@@ -14,7 +19,7 @@ export const actionsApiSlice = appApiSlice.injectEndpoints({
   endpoints: (builder) => ({
     approveReimbursement: builder.mutation<
       unknown,
-      Pick<IReimbursementRequest, "id">
+      Pick<ReimbursementRequest, "id">
     >({
       query: ({ id }) => {
         return {
@@ -23,8 +28,10 @@ export const actionsApiSlice = appApiSlice.injectEndpoints({
         };
       },
       invalidatesTags: [
-        { type: "ReimbursementApprovalList" },
-        { type: "ApprovalAnalytics" },
+        "ReimbursementRequest",
+        "ReimbursementHistoryList",
+        "ReimbursementApprovalList",
+        "ApprovalAnalytics",
       ],
     }),
     rejectReimbursement: builder.mutation<
@@ -41,8 +48,10 @@ export const actionsApiSlice = appApiSlice.injectEndpoints({
         };
       },
       invalidatesTags: [
-        { type: "ReimbursementApprovalList" },
-        { type: "ApprovalAnalytics" },
+        "ReimbursementRequest",
+        "ReimbursementHistoryList",
+        "ReimbursementApprovalList",
+        "ApprovalAnalytics",
       ],
     }),
     approveReimbursementViaEmail: builder.mutation<
@@ -71,6 +80,12 @@ export const actionsApiSlice = appApiSlice.injectEndpoints({
           remarks: data.remarks,
         },
       }),
+      invalidatesTags: [
+        "ReimbursementRequest",
+        "ReimbursementApprovalList",
+        "ReimbursementHistoryList",
+        "ApprovalAnalytics",
+      ],
     }),
     cancelReimbursement: builder.mutation<
       unknown,
@@ -85,10 +100,11 @@ export const actionsApiSlice = appApiSlice.injectEndpoints({
         };
       },
       invalidatesTags: [
-        { type: "MyRequests" },
-        { type: "ReimbursementRequestList" },
-        { type: "MyAnalytics" },
-        { type: "ApprovalAnalytics" },
+        "MyRequests",
+        "ReimbursementRequestList",
+        "MyAnalytics",
+        "ApprovalAnalytics",
+        "ReimbursementHistoryList",
       ],
     }),
     holdReimbursement: builder.mutation<
@@ -105,10 +121,11 @@ export const actionsApiSlice = appApiSlice.injectEndpoints({
         };
       },
       invalidatesTags: [
-        { type: "ReimbursementApprovalList" },
-        { type: "ReimbursementAdminList" },
-        { type: "MyAnalytics" },
-        { type: "ApprovalAnalytics" },
+        "ReimbursementHistoryList",
+        "ReimbursementApprovalList",
+        "ReimbursementAdminList",
+        "MyAnalytics",
+        "ApprovalAnalytics",
       ],
     }),
     reRouteApprover: builder.mutation<
@@ -125,18 +142,13 @@ export const actionsApiSlice = appApiSlice.injectEndpoints({
         };
       },
       invalidatesTags: [
-        { type: "ReimbursementRequest" },
-        { type: "ReimbursementApprovalList" },
-        { type: "MyAnalytics" },
-        { type: "ApprovalAnalytics" },
+        "ReimbursementRequest",
+        "ReimbursementApprovalList",
+        "MyAnalytics",
+        "ApprovalAnalytics",
       ],
     }),
-    transitionToCredited: builder.mutation<
-      unknown,
-      {
-        request_ids: string[];
-      }
-    >({
+    transitionToCredited: builder.mutation<unknown, CreditPayload>({
       query: (data) => {
         return {
           url: `/reimbursements/request/credit`,
@@ -145,11 +157,30 @@ export const actionsApiSlice = appApiSlice.injectEndpoints({
         };
       },
       invalidatesTags: [
-        { type: "ReimbursementRequest" },
-        { type: "ReimbursementApprovalList" },
-        { type: "MyAnalytics" },
-        { type: "ApprovalAnalytics" },
+        "ReimbursementHistoryList",
+        "ReimbursementRequest",
+        "ReimbursementApprovalList",
+        "MyAnalytics",
+        "ApprovalAnalytics",
       ],
+    }),
+    changePassword: builder.mutation<unknown, ChangePasswordPayload>({
+      query: (data) => {
+        return {
+          url: `/management/users/change-password`,
+          method: "PATCH",
+          body: { ...data },
+        };
+      },
+    }),
+    forgotPassword: builder.mutation<unknown, ForgotPasswordPayload>({
+      query: (data) => {
+        return {
+          url: `/management/users/forgot-password`,
+          method: "POST",
+          body: { ...data },
+        };
+      },
     }),
   }),
 });
@@ -163,4 +194,6 @@ export const {
   useHoldReimbursementMutation,
   useReRouteApproverMutation,
   useTransitionToCreditedMutation,
+  useChangePasswordMutation,
+  useForgotPasswordMutation,
 } = actionsApiSlice;

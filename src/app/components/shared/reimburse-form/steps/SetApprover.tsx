@@ -10,17 +10,17 @@ import Input from "~/app/components/core/form/fields/Input";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { useCreateReimbursementMutation } from "~/features/api/reimbursement-form-api-slice";
 import {
+  _setTempAttachedFiles,
   clearReimbursementForm,
   setActiveStep,
-  setSelectedAttachmentMethod,
   toggleFormDialog,
 } from "~/features/state/reimbursement-form-slice";
+import { getApproverSchema } from "~/schema/reimbursement-approver.schema";
 import {
-  getApproverSchema,
-  type Approver
-} from "~/schema/reimbursement-approver.schema";
-import { type ParticularDetails } from "~/schema/reimbursement-particulars.schema";
-
+  type Approver,
+  type ParticularDetails,
+  type RtkApiError,
+} from "~/types/reimbursement.types";
 interface SetApproverProps {
   formReturn: UseFormReturn<ParticularDetails>;
   handleResetRequestType: () => void;
@@ -34,19 +34,17 @@ const SetApprover: React.FC<SetApproverProps> = ({
     (state) => state.reimbursementForm,
   );
 
-  const { user } = useAppSelector(
-    (state) => state.session,
-  );
+  const { user } = useAppSelector((state) => state.session);
 
   const dispatch = useAppDispatch();
 
   const useSetApproverFormReturn = useForm<Approver>({
     resolver: useMemo(() => {
       if (user) {
-        return zodResolver(getApproverSchema(user.email));
+        return zodResolver(getApproverSchema(true, user.email));
       }
       return undefined;
-    },[user]),
+    }, [user]),
     mode: "onChange",
     defaultValues: useMemo(() => {
       if (reimbursementFormValues.manager_approver_email) {
@@ -72,7 +70,7 @@ const SetApprover: React.FC<SetApproverProps> = ({
       .then(() => {
         dispatch(toggleFormDialog());
         dispatch(clearReimbursementForm());
-        dispatch(setSelectedAttachmentMethod(null));
+        dispatch(_setTempAttachedFiles([]));
         handleResetRequestType();
         formReturn.reset();
         showToast({
@@ -81,12 +79,12 @@ const SetApprover: React.FC<SetApproverProps> = ({
             "Your reimbursement request has been submitted successfully!",
         });
       })
-      .catch((error: { status: number; data: { detail: string } }) => {
-          showToast({
-            type: "error",
-            description: error.data.detail,
-          });
+      .catch((error: RtkApiError) => {
+        showToast({
+          type: "error",
+          description: error.data.detail,
         });
+      });
   };
 
   return (

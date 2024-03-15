@@ -1,10 +1,10 @@
 import { appApiSlice } from "~/app/rtkQuery";
 import {
-  type IReimbursementsFilterQuery,
-  type IRequestListResponse,
+  type QueryFilter,
+  type RequestListResponse,
+  type User,
 } from "~/types/reimbursement.types";
 import { createSearchParams } from "~/utils/create-search-params";
-import { type IUser } from "../state/user-state.slice";
 
 /**
  * USER API SLICE
@@ -14,7 +14,7 @@ import { type IUser } from "../state/user-state.slice";
 
 export const userApiSlice = appApiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    getMe: builder.query<IUser, null>({
+    getMe: builder.query<User, null>({
       query: () => {
         return {
           url: "/management/users/me",
@@ -24,20 +24,18 @@ export const userApiSlice = appApiSlice.injectEndpoints({
         { type: "Me", id: JSON.stringify(query) },
       ],
     }),
-    myRequests: builder.query<IRequestListResponse, IReimbursementsFilterQuery>(
-      {
-        query: (query) => {
-          const searchParams = createSearchParams(query);
-          return {
-            url: "/reimbursements/request",
-            params: searchParams ? searchParams : undefined,
-          };
-        },
-        providesTags: (_result, _fetchBaseQuery, query) => [
-          { type: "MyRequests", id: JSON.stringify(query) },
-        ],
+    myRequests: builder.query<RequestListResponse, QueryFilter>({
+      query: (query) => {
+        const searchParams = createSearchParams(query);
+        return {
+          url: "/reimbursements/request",
+          params: searchParams ? searchParams : undefined,
+        };
       },
-    ),
+      providesTags: (_result, _fetchBaseQuery, query) => [
+        { type: "MyRequests", id: JSON.stringify(query) },
+      ],
+    }),
 
     //PATCH REQUESTS
     assignGroup: builder.mutation<

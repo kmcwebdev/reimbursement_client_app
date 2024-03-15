@@ -7,21 +7,24 @@ import { appApiSlice } from "~/app/rtkQuery";
 import { useApproveReimbursementMutation } from "~/features/api/actions-api-slice";
 import { toggleBulkApprovalDialog } from "~/features/state/table-state.slice";
 import {
-  type IReimbursementRequest,
-  type IRequestListResponse,
+  type ReimbursementRequest,
+  type RequestListResponse,
+  type RtkApiError,
 } from "~/types/reimbursement.types";
 import { currencyFormat } from "~/utils/currencyFormat";
 
 type BulkApproveReimbursementsDialogProps = {
-  data?: IRequestListResponse;
-  selectedReimbursement?: IReimbursementRequest;
+  data?: RequestListResponse;
+  selectedReimbursement?: ReimbursementRequest;
+  selectedItems: number[];
+  setSelectedItems: (e: number[]) => void;
 };
 
 const BulkApproveReimbursementsDialog: React.FC<
   BulkApproveReimbursementsDialogProps
-> = ({ data, selectedReimbursement }) => {
+> = ({ data, selectedReimbursement, selectedItems, setSelectedItems }) => {
   const dispatch = useAppDispatch();
-  const { selectedItems, bulkApprovalDialogIsOpen } = useAppSelector(
+  const { bulkApprovalDialogIsOpen } = useAppSelector(
     (state) => state.pageTableState,
   );
   const onAbort = () => {
@@ -44,21 +47,22 @@ const BulkApproveReimbursementsDialog: React.FC<
       });
     }
 
-    let processedItems = selectedItems.length;
+    let processedItems = matrixIds.length;
 
     matrixIds.forEach((a) => {
       void approveReimbursement({ id: a })
         .unwrap()
         .then(() => {
-          dispatch(
-            appApiSlice.util.invalidateTags([{ type: "ReimbursementRequest" }]),
-          );
-
           processedItems = processedItems - 1;
 
-          console.log(processedItems);
-
           if (processedItems === 0) {
+            setSelectedItems([]);
+            dispatch(
+              appApiSlice.util.invalidateTags([
+                "ReimbursementRequest",
+                "ReimbursementApprovalList",
+              ]),
+            );
             showToast({
               type: "success",
               description: "Reimbursement Requests successfully approved!",
@@ -66,10 +70,10 @@ const BulkApproveReimbursementsDialog: React.FC<
             onAbort();
           }
         })
-        .catch(() => {
+        .catch((error: RtkApiError) => {
           showToast({
             type: "error",
-            description: "Approval failed!",
+            description: error.data.detail,
           });
         });
     });

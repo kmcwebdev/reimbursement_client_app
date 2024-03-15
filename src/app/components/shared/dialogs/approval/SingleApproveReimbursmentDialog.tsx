@@ -10,11 +10,14 @@ import {
   setFocusedReimbursementId,
   toggleSingleApprovalDialog,
 } from "~/features/state/table-state.slice";
-import { type IReimbursementRequest } from "~/types/reimbursement.types";
+import {
+  type ReimbursementRequest,
+  type RtkApiError,
+} from "~/types/reimbursement.types";
 import { currencyFormat } from "~/utils/currencyFormat";
 
 type SingleApproveReimbursementsDialogProps = {
-  selectedReimbursement?: IReimbursementRequest;
+  selectedReimbursement?: ReimbursementRequest;
 };
 
 const SingleApproveReimbursementsDialog: React.FC<
@@ -43,7 +46,8 @@ const SingleApproveReimbursementsDialog: React.FC<
           .then(() => {
             dispatch(
               appApiSlice.util.invalidateTags([
-                { type: "ReimbursementRequest" },
+                "ReimbursementApprovalList",
+                "ReimbursementRequest",
               ]),
             );
 
@@ -57,10 +61,10 @@ const SingleApproveReimbursementsDialog: React.FC<
 
             onAbort();
           })
-          .catch(() => {
+          .catch((error: RtkApiError) => {
             showToast({
               type: "error",
-              description: "Approval failed!",
+              description: error.data.detail,
             });
           });
       });

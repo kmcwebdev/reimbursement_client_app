@@ -16,7 +16,7 @@ import {
   setParticularDetailsFormIsVisible,
   setReimbursementFormValues,
 } from "~/features/state/reimbursement-form-slice";
-import { type ParticularDetails } from "~/schema/reimbursement-particulars.schema";
+import { type ParticularDetails } from "~/types/reimbursement.types";
 
 interface ParticularDetailsProps {
   formReturn: UseFormReturn<ParticularDetails>;
@@ -135,12 +135,9 @@ const ParticularDetailsForm: React.FC<ParticularDetailsProps> = ({
           required
         />
       </CollapseHeightAnimation>
-      <Input
-        name="name"
-        label="Particular Name"
-        placeholder="Particular Name"
-        required
-      />
+
+      <Input name="name" label="Receipt" placeholder="Receipt" required />
+
       <TextArea
         name="justification"
         label="Justification"

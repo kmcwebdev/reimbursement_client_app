@@ -14,13 +14,14 @@ import { useAppSelector } from "~/app/hook";
 import { useReRouteApproverMutation } from "~/features/api/actions-api-slice";
 import { useDialogState } from "~/hooks/use-dialog-state";
 import {
-  ApproverSchema,
+  approverSchema,
   getApproverSchema,
-  type Approver
 } from "~/schema/reimbursement-approver.schema";
 import {
-  type IApproverMatrix,
-  type IStatus,
+  type Approver,
+  type ApproverMatrix,
+  type RtkApiError,
+  type Status,
 } from "~/types/reimbursement.types";
 import { parseTimezone } from "~/utils/parse-timezone";
 import { Button } from "../core/Button";
@@ -31,9 +32,11 @@ import Input from "../core/form/fields/Input";
 
 dayjs.extend(timezone);
 interface ApproversProps {
+  requestorEmail: string;
   isOwnRequest: boolean;
-  approvers: IApproverMatrix[];
-  request_status: IStatus;
+  approvers: ApproverMatrix[];
+  request_status: Status;
+  next_approver: string;
 }
 
 export interface IApproverToEdit {
@@ -42,7 +45,13 @@ export interface IApproverToEdit {
   prev_approver_group: string;
 }
 
-const Approvers: React.FC<ApproversProps> = ({ approvers, request_status,isOwnRequest }) => {
+const Approvers: React.FC<ApproversProps> = ({
+  next_approver,
+  approvers,
+  request_status,
+  isOwnRequest,
+  requestorEmail,
+}) => {
   const { user } = useAppSelector((state) => state.session);
   const pathname = usePathname();
   const { isVisible, open, close } = useDialogState();
@@ -54,10 +63,15 @@ const Approvers: React.FC<ApproversProps> = ({ approvers, request_status,isOwnRe
   const useSetApproverFormReturn = useForm<Approver>({
     resolver: useMemo(() => {
       if (user && isOwnRequest) {
-        return zodResolver(getApproverSchema(user.email));
+        return zodResolver(getApproverSchema(true, user.email));
       }
-      return zodResolver(ApproverSchema);
-    },[isOwnRequest, user]),
+
+      if (user && !isOwnRequest) {
+        return zodResolver(getApproverSchema(false, requestorEmail));
+      }
+
+      return zodResolver(approverSchema);
+    }, [isOwnRequest, user, requestorEmail]),
     mode: "onChange",
   });
 
@@ -78,8 +92,11 @@ const Approvers: React.FC<ApproversProps> = ({ approvers, request_status,isOwnRe
             description: "New Approver has been set successfully.",
           });
         })
-        .catch((error: { status: number; data: { detail: string } }) => {
-          showToast({ type: "error", description: error.data.detail });
+        .catch((error: RtkApiError) => {
+          showToast({
+            type: "error",
+            description: error.data.detail,
+          });
         });
     }
   };
@@ -114,9 +131,12 @@ const Approvers: React.FC<ApproversProps> = ({ approvers, request_status,isOwnRe
 
                   {!approver.is_approved &&
                     approver.display_name !== "Finance" &&
+                    next_approver === approver.approver.email &&
                     pathname === "/admin" &&
                     user?.is_superuser &&
-                    !approver.is_rejected && request_status.name === "Pending" && !isOwnRequest && (
+                    !approver.is_rejected &&
+                    request_status.name === "Pending" &&
+                    !isOwnRequest && (
                       <Button
                         buttonType="text"
                         onClick={() => {

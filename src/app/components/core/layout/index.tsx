@@ -2,8 +2,8 @@
 "use client";
 import { usePathname } from "next/navigation";
 import React, { useEffect, type PropsWithChildren } from "react";
-import { useAppDispatch } from "~/app/hook";
-import { resetPageTableState } from "~/features/state/table-state.slice";
+import { useAppSelector } from "~/app/hook";
+
 import { barlow_Condensed } from "~/styles/fonts/barlowCondensed";
 import { karla } from "~/styles/fonts/karla";
 import { classNames } from "~/utils/classNames";
@@ -13,8 +13,8 @@ import MobileNav from "./MobileNav";
 import Sidebar from "./Sidebar";
 
 const Layout: React.FC<PropsWithChildren> = ({ children }) => {
+  const { assignedRole } = useAppSelector((state) => state.session);
   const pathname = usePathname();
-  const dispatch = useAppDispatch();
 
   /**
    * This resets the page table filter to its initial state on every
@@ -22,17 +22,19 @@ const Layout: React.FC<PropsWithChildren> = ({ children }) => {
    */
   useEffect(() => {
     if (pathname) {
-      dispatch(resetPageTableState());
     }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pathname]);
+  }, [assignedRole, pathname]);
 
   if (
     pathname &&
     (pathname.includes("/auth") ||
       pathname === "/" ||
       pathname.includes("/page-not-found") ||
-      pathname.includes("/forbidden"))
+      pathname.includes("/forbidden") ||
+      pathname.includes("/server-error") ||
+      pathname.includes("/reset-password"))
   ) {
     return <FullPageLayout>{children}</FullPageLayout>;
   }

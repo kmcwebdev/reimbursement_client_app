@@ -1,16 +1,17 @@
 import { appApiSlice } from "~/app/rtkQuery";
 import {
-  type IReimbursementRequest,
-  type IReimbursementsFilterQuery,
-  type IRequestListResponse,
+  type QueryFilter,
+  type ReimbursementRequest,
+  type RequestListResponse,
 } from "~/types/reimbursement.types";
+
 import { createSearchParams } from "~/utils/create-search-params";
 
 export const reimbursementApiSlice = appApiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getApprovalList: builder.query<
-      IRequestListResponse,
-      IReimbursementsFilterQuery & { type: string }
+      RequestListResponse,
+      QueryFilter & { type: string }
     >({
       query: (query) => {
         const searchParams = createSearchParams(query);
@@ -24,14 +25,9 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
         { type: "ReimbursementApprovalList", id: JSON.stringify(query) },
       ],
     }),
-
-    getAdminList: builder.query<
-      IRequestListResponse,
-      IReimbursementsFilterQuery
-    >({
+    getAdminList: builder.query<RequestListResponse, QueryFilter>({
       query: (query) => {
         const searchParams = createSearchParams(query);
-        searchParams?.delete("type");
         return {
           url: `/reimbursements/request/administrator/all`,
           params: searchParams ? searchParams : {},
@@ -42,8 +38,8 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
       ],
     }),
     getRequestsHistory: builder.query<
-      IRequestListResponse,
-      IReimbursementsFilterQuery & { type: string }
+      RequestListResponse,
+      QueryFilter & { type: string }
     >({
       query: (query) => {
         const searchParams = createSearchParams(query);
@@ -82,8 +78,8 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
       ],
     }),
     getRequest: builder.query<
-      IReimbursementRequest,
-      Pick<IReimbursementRequest, "id">
+      ReimbursementRequest,
+      Pick<ReimbursementRequest, "id">
     >({
       query: ({ id }) => {
         return {

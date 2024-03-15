@@ -1,22 +1,27 @@
 import React from "react";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
+import { appApiSlice } from "~/app/rtkQuery";
 import { useTransitionToCreditedMutation } from "~/features/api/actions-api-slice";
+import { toggleBulkCreditDialog } from "~/features/state/table-state.slice";
 import {
-  setSelectedItems,
-  toggleBulkCreditDialog,
-} from "~/features/state/table-state.slice";
-import { type IReimbursementRequest } from "~/types/reimbursement.types";
+  type CreditPayload,
+  type ReimbursementRequest,
+  type RtkApiError,
+} from "~/types/reimbursement.types";
 import { Button } from "../../../core/Button";
 import Dialog from "../../../core/Dialog";
 import { showToast } from "../../../core/Toast";
+
 type BulkTransitionToCreditedDialogProps = {
-  selectedReimbursement?: IReimbursementRequest;
+  selectedReimbursement?: ReimbursementRequest;
+  selectedItems: number[];
+  setSelectedItems: (e: number[]) => void;
 };
 
 const BulkTransitionToCreditedDialog: React.FC<
   BulkTransitionToCreditedDialogProps
-> = ({ selectedReimbursement }) => {
-  const { selectedItems, bulkCreditDialogIsOpen } = useAppSelector(
+> = ({ selectedReimbursement, selectedItems, setSelectedItems }) => {
+  const { bulkCreditDialogIsOpen } = useAppSelector(
     (state) => state.pageTableState,
   );
   const dispatch = useAppDispatch();
@@ -29,9 +34,24 @@ const BulkTransitionToCreditedDialog: React.FC<
   };
 
   const handleConfirmCreditReimbursements = () => {
-    const payload = {
-      request_ids: selectedItems.map((item) => item.toString()),
+    let payload: CreditPayload = {
+      request_ids: [],
+      credit_all_request: false,
     };
+
+    if (selectedItems.length > 0) {
+      payload = {
+        request_ids: selectedItems.map(String),
+        credit_all_request: false,
+      };
+    }
+
+    if (selectedItems.length === 0) {
+      payload = {
+        request_ids: [],
+        credit_all_request: true,
+      };
+    }
 
     void creditReimbursement(payload)
       .unwrap()
@@ -42,12 +62,20 @@ const BulkTransitionToCreditedDialog: React.FC<
             "Reimbursement Requests status successfully changed to credited!",
         });
         onAbort();
-        dispatch(setSelectedItems([]));
+        setSelectedItems([]);
+        dispatch(
+          appApiSlice.util.invalidateTags([
+            "ReimbursementRequest",
+            "ReimbursementApprovalList",
+            "ReimbursementHistoryList",
+            "ApprovalAnalytics",
+          ]),
+        );
       })
-      .catch(() => {
+      .catch((error: RtkApiError) => {
         showToast({
           type: "error",
-          description: "Status update failed!",
+          description: error.data.detail,
         });
       });
   };

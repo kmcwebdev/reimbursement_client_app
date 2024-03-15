@@ -42,8 +42,8 @@ const Particular: React.FC<ParticularProps> = ({ index, label }) => {
       <div className="flex w-full items-center justify-between rounded border p-3">
         <div className="flex w-10/12 items-center gap-3">
           <MdReceipt className="h-4 w-4 text-neutral-800" />
-          <p className="text-neutral-800">
-            <span className="truncate text-sm">{label}</span>
+          <p className="block w-11/12 truncate text-neutral-800 ">
+            <span className="text-sm">{label}</span>
           </p>
         </div>
 

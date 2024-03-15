@@ -1,12 +1,13 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import { type ReimbursementFormValues } from "~/types/reimbursement-form-values.type";
+import { type AttachedFile } from "~/app/components/shared/reimburse-form/steps/AddAttachments";
+import { type ReimbursementFormValues } from "~/types/reimbursement.types";
 
 interface ReimburseFormState {
   activeStep: number;
   particularDetailsFormIsVisible: boolean;
   activeParticularIndex: string | null;
-  selectedAttachmentMethod: "capture" | "upload" | null;
   reimbursementFormValues: ReimbursementFormValues;
+  _temp_attachedFiles: AttachedFile[];
   cancelDialogIsOpen: boolean;
   formDialogIsOpen: boolean;
 }
@@ -15,13 +16,13 @@ const initialState: ReimburseFormState = {
   activeStep: 0,
   particularDetailsFormIsVisible: false,
   activeParticularIndex: null,
-  selectedAttachmentMethod: null,
   reimbursementFormValues: {
     request_type: null,
     particulars: [],
     attachments: [],
     manager_approver_email: null,
   },
+  _temp_attachedFiles: [],
   formDialogIsOpen: false,
   cancelDialogIsOpen: false,
 };
@@ -39,12 +40,6 @@ const reimbursementFormSlice = createSlice({
     setActiveParticularIndex(state, action: PayloadAction<string | null>) {
       state.activeParticularIndex = action.payload;
     },
-    setSelectedAttachmentMethod(
-      state,
-      action: PayloadAction<"capture" | "upload" | null>,
-    ) {
-      state.selectedAttachmentMethod = action.payload;
-    },
     setReimbursementFormValues(
       state,
       action: PayloadAction<ReimbursementFormValues>,
@@ -61,6 +56,9 @@ const reimbursementFormSlice = createSlice({
     toggleCancelDialog(state) {
       state.cancelDialogIsOpen = !state.cancelDialogIsOpen;
     },
+    _setTempAttachedFiles(state, action: PayloadAction<AttachedFile[]>) {
+      state._temp_attachedFiles = action.payload;
+    },
   },
 });
 
@@ -68,11 +66,11 @@ export const {
   setActiveStep,
   setParticularDetailsFormIsVisible,
   setActiveParticularIndex,
-  setSelectedAttachmentMethod,
   setReimbursementFormValues,
   clearReimbursementForm,
   toggleFormDialog,
   toggleCancelDialog,
+  _setTempAttachedFiles,
 } = reimbursementFormSlice.actions;
 
 export default reimbursementFormSlice.reducer;

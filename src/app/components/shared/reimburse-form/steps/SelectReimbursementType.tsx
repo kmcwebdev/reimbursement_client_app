@@ -15,8 +15,10 @@ import {
   setActiveStep,
   setReimbursementFormValues,
 } from "~/features/state/reimbursement-form-slice";
-import { type ReimbursementFormType } from "~/schema/reimbursement-type.schema";
-import { type ReimbursementFormValues } from "~/types/reimbursement-form-values.type";
+import {
+  type ReimbursementFormType,
+  type ReimbursementFormValues,
+} from "~/types/reimbursement.types";
 
 interface SelectReimbursementTypeProps {
   formReturn: UseFormReturn<ReimbursementFormType>;
@@ -57,6 +59,8 @@ const SelectReimbursementType: React.FC<SelectReimbursementTypeProps> = ({
       onSubmit={onSubmit}
       useFormReturn={formReturn}
     >
+      <div className="mt-2 h-px bg-neutral-300" />
+
       <CardSelection
         label=""
         name="request_type"
@@ -92,7 +96,10 @@ const SelectReimbursementType: React.FC<SelectReimbursementTypeProps> = ({
             aria-label="Continue"
             type="submit"
             className="w-full"
-            disabled={!selectedReimbursementType}
+            disabled={
+              !selectedReimbursementType &&
+              !reimbursementFormValues.request_type
+            }
           >
             Continue
           </Button>

@@ -3,15 +3,20 @@ import { Button } from "~/app/components/core/Button";
 import Dialog from "~/app/components/core/Dialog";
 import { showToast } from "~/app/components/core/Toast";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
+import { appApiSlice } from "~/app/rtkQuery";
 import { useTransitionToCreditedMutation } from "~/features/api/actions-api-slice";
 import {
   closeSideDrawer,
   toggleSingleCreditDialog,
 } from "~/features/state/table-state.slice";
-import { type IReimbursementRequest } from "~/types/reimbursement.types";
+import {
+  type CreditPayload,
+  type ReimbursementRequest,
+  type RtkApiError,
+} from "~/types/reimbursement.types";
 
 type SingleTransitionToCreditedDialogProps = {
-  selectedReimbursement?: IReimbursementRequest;
+  selectedReimbursement?: ReimbursementRequest;
 };
 
 const SingleTransitionToCreditedDialog: React.FC<
@@ -31,13 +36,22 @@ const SingleTransitionToCreditedDialog: React.FC<
 
   const handleConfirmCreditReimbursements = () => {
     if (selectedReimbursement) {
-      const payload = {
+      const payload: CreditPayload = {
         request_ids: [selectedReimbursement.id.toString()],
+        credit_all_request: false,
       };
 
       void creditReimbursement(payload)
         .unwrap()
         .then(() => {
+          dispatch(
+            appApiSlice.util.invalidateTags([
+              "ReimbursementRequest",
+              "ReimbursementApprovalList",
+              "ReimbursementHistoryList",
+              "ApprovalAnalytics",
+            ]),
+          );
           showToast({
             type: "success",
             description:
@@ -46,10 +60,10 @@ const SingleTransitionToCreditedDialog: React.FC<
           onAbort();
           dispatch(closeSideDrawer());
         })
-        .catch(() => {
+        .catch((error: RtkApiError) => {
           showToast({
             type: "error",
-            description: "Status update failed!",
+            description: error.data.detail,
           });
         });
     }

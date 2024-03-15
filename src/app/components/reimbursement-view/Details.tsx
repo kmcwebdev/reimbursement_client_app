@@ -2,23 +2,24 @@ import React from "react";
 import StatusBadge, {
   type StatusType,
 } from "~/app/components/core/StatusBadge";
-import { type IUser } from "~/features/state/user-state.slice";
-import { type ReimbursementRequestType } from "~/types/reimbursement.request-type";
 import {
-  type IParticularDetails,
-  type IStatus,
+  type Particular,
+  type RequestType,
+  type Status,
+  type User,
 } from "~/types/reimbursement.types";
 import { currencyFormat } from "~/utils/currencyFormat";
 import { parseTimezone } from "~/utils/parse-timezone";
 import List from "../core/List";
 
 export interface DetailsProps {
-  request_status: IStatus;
-  request_type: ReimbursementRequestType;
-  particulars: IParticularDetails[];
-  reimb_requestor: IUser;
+  request_status: Status;
+  request_type: RequestType;
+  particulars: Particular[];
+  reimb_requestor: User;
   created_at: string;
   amount: string;
+  payroll_date: string;
 }
 
 const Details: React.FC<DetailsProps> = ({
@@ -28,6 +29,7 @@ const Details: React.FC<DetailsProps> = ({
   particulars,
   created_at,
   amount,
+  payroll_date,
 }) => {
   return (
     <List>
@@ -75,11 +77,10 @@ const Details: React.FC<DetailsProps> = ({
       <List.Item label="Amount" value={currencyFormat(+amount)} />
 
       <div className="flex flex-col">
-        {(request_status.name === "Processing" ||
-          request_status.name === "Credited") && (
+        {payroll_date && request_status.name === "Credited" && (
           <List.Item
             label="Payout"
-            value={parseTimezone(created_at).format("MMMM DD,YYYY")}
+            value={parseTimezone(payroll_date).format("MMMM DD,YYYY")}
           />
         )}
       </div>

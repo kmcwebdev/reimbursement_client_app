@@ -19,17 +19,22 @@ import {
   useApproveReimbursementViaEmailMutation,
   useRejectReimbursementViaEmailMutation,
 } from "~/features/api/actions-api-slice";
+import { rejectReimbursementSchema } from "~/schema/reimbursement-reject-form.schema";
 import {
-  RejectReimbursementSchema,
   type RejectReimbursementType,
-} from "~/schema/reimbursement-reject-form.schema";
+  type RtkApiError,
+} from "~/types/reimbursement.types";
 
 const EmailActionPage: React.FC = () => {
   const searchParams = useSearchParams();
-  const { action_type, reference_no } = useParams<{
+  const {
+    action_type,
+    reference_no,
+  }: { action_type: string; reference_no: string } = useParams<{
     reference_no: string;
     action_type: string;
   }>();
+
   const access_token = searchParams.get("access_token");
   const action_id = searchParams.get("action_id");
   const request_id = searchParams.get("request_id");
@@ -64,7 +69,7 @@ const EmailActionPage: React.FC = () => {
             .then(() => {
               setIsActionSucceeded(true);
             })
-            .catch((error: { status: number; data: { detail: string } }) => {
+            .catch((error: RtkApiError) => {
               setActionError(error.data.detail);
             });
         }
@@ -81,7 +86,7 @@ const EmailActionPage: React.FC = () => {
   ]);
 
   const useRejectFormReturn = useForm<RejectReimbursementType>({
-    resolver: zodResolver(RejectReimbursementSchema),
+    resolver: zodResolver(rejectReimbursementSchema),
     mode: "onChange",
   });
 
@@ -100,7 +105,7 @@ const EmailActionPage: React.FC = () => {
           setIsActionSucceeded(true);
           useRejectFormReturn.reset();
         })
-        .catch((error: { status: number; data: { detail: string } }) => {
+        .catch((error: RtkApiError) => {
           setActionError(error.data.detail);
         });
     }
