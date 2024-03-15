@@ -1,7 +1,9 @@
 import { type IApproverToEdit } from "~/app/components/reimbursement-view/Approvers";
 import { appApiSlice } from "~/app/rtkQuery";
 import {
+  type ChangePasswordPayload,
   type CreditPayload,
+  type ForgotPasswordPayload,
   type OnholdReimbursementType,
   type ReimbursementRequest,
   type RejectReimbursementType,
@@ -162,6 +164,24 @@ export const actionsApiSlice = appApiSlice.injectEndpoints({
         "ApprovalAnalytics",
       ],
     }),
+    changePassword: builder.mutation<unknown, ChangePasswordPayload>({
+      query: (data) => {
+        return {
+          url: `/management/users/change-password`,
+          method: "PATCH",
+          body: { ...data },
+        };
+      },
+    }),
+    forgotPassword: builder.mutation<unknown, ForgotPasswordPayload>({
+      query: (data) => {
+        return {
+          url: `/management/users/forgot-password`,
+          method: "POST",
+          body: { ...data },
+        };
+      },
+    }),
   }),
 });
 
@@ -174,4 +194,6 @@ export const {
   useHoldReimbursementMutation,
   useReRouteApproverMutation,
   useTransitionToCreditedMutation,
+  useChangePasswordMutation,
+  useForgotPasswordMutation,
 } = actionsApiSlice;

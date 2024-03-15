@@ -20,7 +20,10 @@ import {
   useRejectReimbursementViaEmailMutation,
 } from "~/features/api/actions-api-slice";
 import { rejectReimbursementSchema } from "~/schema/reimbursement-reject-form.schema";
-import { type RejectReimbursementType } from "~/types/reimbursement.types";
+import {
+  type RejectReimbursementType,
+  type RtkApiError,
+} from "~/types/reimbursement.types";
 
 const EmailActionPage: React.FC = () => {
   const searchParams = useSearchParams();
@@ -66,7 +69,7 @@ const EmailActionPage: React.FC = () => {
             .then(() => {
               setIsActionSucceeded(true);
             })
-            .catch((error: { status: number; data: { detail: string } }) => {
+            .catch((error: RtkApiError) => {
               setActionError(error.data.detail);
             });
         }
@@ -102,7 +105,7 @@ const EmailActionPage: React.FC = () => {
           setIsActionSucceeded(true);
           useRejectFormReturn.reset();
         })
-        .catch((error: { status: number; data: { detail: string } }) => {
+        .catch((error: RtkApiError) => {
           setActionError(error.data.detail);
         });
     }
