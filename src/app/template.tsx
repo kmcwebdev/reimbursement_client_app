@@ -11,7 +11,8 @@ const Template = ({ children }: { children: ReactNode }) => {
     pathname?.includes("forbidden") ||
     pathname?.includes("page-not-found") ||
     pathname?.includes("server-error") ||
-    pathname?.includes("email-action")
+    pathname?.includes("email-action") ||
+    pathname?.includes("reset-password")
   ) {
     return <>{children}</>;
   }

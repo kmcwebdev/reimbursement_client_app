@@ -18,9 +18,9 @@ import {
   getApproverSchema,
 } from "~/schema/reimbursement-approver.schema";
 import {
-  RtkApiError,
   type Approver,
   type ApproverMatrix,
+  type RtkApiError,
   type Status,
 } from "~/types/reimbursement.types";
 import { parseTimezone } from "~/utils/parse-timezone";
@@ -93,7 +93,10 @@ const Approvers: React.FC<ApproversProps> = ({
           });
         })
         .catch((error: RtkApiError) => {
-          showToast({ type: "error", description: error.data.detail });
+          showToast({
+            type: "error",
+            description: error.data.detail,
+          });
         });
     }
   };

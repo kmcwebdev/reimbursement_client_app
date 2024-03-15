@@ -19,6 +19,7 @@ import { getApproverSchema } from "~/schema/reimbursement-approver.schema";
 import {
   type Approver,
   type ParticularDetails,
+  type RtkApiError,
 } from "~/types/reimbursement.types";
 interface SetApproverProps {
   formReturn: UseFormReturn<ParticularDetails>;
@@ -78,7 +79,7 @@ const SetApprover: React.FC<SetApproverProps> = ({
             "Your reimbursement request has been submitted successfully!",
         });
       })
-      .catch((error: { status: number; data: { detail: string } }) => {
+      .catch((error: RtkApiError) => {
         showToast({
           type: "error",
           description: error.data.detail,

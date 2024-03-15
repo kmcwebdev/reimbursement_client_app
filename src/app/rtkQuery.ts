@@ -18,6 +18,8 @@ type RefreshTokenResponse = {
 const unprotectedEndpoints = [
   "approveReimbursementViaEmail",
   "rejectReimbursementViaEmail",
+  "changePassword",
+  "forgotPassword",
 ];
 
 const appApiBaseQuery = fetchBaseQuery({
