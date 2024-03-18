@@ -64,7 +64,7 @@ const WelcomePage: NextPage = () => {
       {!user?.profile?.first_login && <AuthLoader />}
 
       {user?.profile?.first_login && (
-        <section className="grid h-screen w-screen place-items-center bg-green-500">
+        <section className="grid h-screen w-screen place-items-center">
           <div className="flex flex-col items-center gap-4 bg-white shadow-md rounded-md p-4 w-3/12">
             <h3 className="text-center">Welcome to Reimbursement Portal!</h3>
 
