@@ -183,7 +183,10 @@ const AddAttachments: React.FC<AttachmentProps> = ({
         })
         .catch((error: RtkApiError) => {
           if (error) {
-            showToast({ type: "error", description: error.data.detail });
+            showToast({
+              type: "error",
+              description: error.data.detail,
+            });
           }
         });
     } else {
