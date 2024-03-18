@@ -3,7 +3,7 @@ import React from "react";
 import ResetPasswordForm from "../components/reset-password";
 
 export const metadata: Metadata = {
-  title: "Profile",
+  title: "Account Recovery",
 };
 
 const ResetPasswordPage: React.FC = () => {
