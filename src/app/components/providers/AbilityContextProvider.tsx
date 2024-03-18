@@ -1,5 +1,6 @@
 "use client";
 import { useSession } from "next-auth/react";
+import { redirect, usePathname } from "next/navigation";
 import React, {
   useEffect,
   useMemo,
@@ -24,11 +25,15 @@ export const AbilityContextProvider: React.FC<PropsWithChildren> = ({
 }) => {
   const nextAuthSession = useSession();
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const pathname = usePathname();
 
   const { accessToken, assignedRole } = useAppSelector(
     (state) => state.session,
   );
-  const { data: me, isLoading: meIsLoading } = useGetMeQuery(null, {
+  const {
+    data: me,
+    isLoading: meIsLoading,
+  } = useGetMeQuery(null, {
     skip: !accessToken,
   });
   const dispatch = useAppDispatch();
@@ -64,12 +69,17 @@ export const AbilityContextProvider: React.FC<PropsWithChildren> = ({
 
   useMemo(() => {
     if (me && !meIsLoading) {
+       if (me && me.profile && me.profile.first_login && pathname !== "/") {
+          redirect("/");
+        }
       setTimeout(() => {
         if (!assignedRole && me.groups.length > 0) {
           dispatch(setAssignedRole(me.groups[0]));
         }
         setPermissions(me.permissions);
         dispatch(setUser(me));
+
+       
       }, 0);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
