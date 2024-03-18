@@ -7,6 +7,7 @@ export const userProfileSchema = z.object({
   organization: z.string(),
   hrbp: z.array(z.string()),
   manager: z.array(z.string()),
+  first_login: z.boolean(),
 });
 
 export const userSchema = z.object({

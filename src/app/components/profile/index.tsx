@@ -9,7 +9,7 @@ import { FaUserTie } from "react-icons-all-files/fa/FaUserTie";
 import { HiBriefcase } from "react-icons-all-files/hi/HiBriefcase";
 import { MdMail } from "react-icons-all-files/md/MdMail";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
-import { useChangePasswordMutation } from "~/features/api/actions-api-slice";
+import { useChangeProfilePasswordMutation } from "~/features/api/actions-api-slice";
 import { clearUserSession } from "~/features/state/user-state.slice";
 import { useDialogState } from "~/hooks/use-dialog-state";
 import { changePasswordSchema } from "~/schema/change-password.schema";
@@ -30,11 +30,11 @@ const Profile: NextPage = () => {
     (state) => state.session,
   );
   const { isVisible, open, close } = useDialogState();
-  const [payload, setPayload] = useState<ChangePasswordPayload>();
+  const [payload, setPayload] = useState<Pick<ChangePasswordPayload ,"new_password">>();
   const dispatch = useAppDispatch();
   const router = useRouter();
   const [changePasswordMutation, { isLoading: isSubmitting }] =
-    useChangePasswordMutation();
+    useChangeProfilePasswordMutation();
 
   const formReturn = useForm<ChangePassword>({
     resolver: zodResolver(changePasswordSchema),
@@ -48,9 +48,7 @@ const Profile: NextPage = () => {
   const handleSubmit = (data: ChangePassword) => {
     if (user && accessToken) {
       const payload = {
-        email: user.email,
         new_password: data.password,
-        token: accessToken,
       };
       setPayload(payload);
       open();

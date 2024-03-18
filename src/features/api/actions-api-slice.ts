@@ -173,6 +173,15 @@ export const actionsApiSlice = appApiSlice.injectEndpoints({
         };
       },
     }),
+    changeProfilePassword: builder.mutation<unknown, Pick<ChangePasswordPayload, 'new_password'>>({
+      query: (data) => {
+        return {
+          url: `/management/users/profile/change-password`,
+          method: "PATCH",
+          body: { ...data },
+        };
+      },
+    }),
     forgotPassword: builder.mutation<unknown, ForgotPasswordPayload>({
       query: (data) => {
         return {
@@ -195,5 +204,6 @@ export const {
   useReRouteApproverMutation,
   useTransitionToCreditedMutation,
   useChangePasswordMutation,
+  useChangeProfilePasswordMutation,
   useForgotPasswordMutation,
 } = actionsApiSlice;
