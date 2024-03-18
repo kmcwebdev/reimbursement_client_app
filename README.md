@@ -15,3 +15,5 @@ To install the project dependencies, run the following command:
 ```bash
 pnpm install
 ```
+
+## ---
