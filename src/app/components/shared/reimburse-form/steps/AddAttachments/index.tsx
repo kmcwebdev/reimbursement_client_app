@@ -62,7 +62,7 @@ const AddAttachments: React.FC<AttachmentProps> = ({
       .unwrap()
       .then((data) => {
         if (data) {
-          const updatedAttachedFiles = [...attachedFiles.map((a) => {
+          const updatedAttachedFiles = attachedFiles.map((a) => {
             let updated = a;
             if (a.file.name === data.file_name) {
               updated = {
@@ -71,7 +71,7 @@ const AddAttachments: React.FC<AttachmentProps> = ({
               };
             }
             return updated;
-          })];
+          });
 
           setProcessed(processed + 1);
           setAttachedFiles(updatedAttachedFiles);
@@ -130,10 +130,10 @@ const AddAttachments: React.FC<AttachmentProps> = ({
   }, [attachedFiles.length, processed]);
 
   useEffect(() => {
-    if (_temp_attachedFiles.length > 0 && attachedFiles.length === 0) {
+    if (_temp_attachedFiles.length > 0) {
       setAttachedFiles(_temp_attachedFiles);
     }
-  }, [_temp_attachedFiles, attachedFiles.length]);
+  }, [_temp_attachedFiles]);
 
   const handleDropMultiple = (files: File[]) => {
     const updatedAttachedFiles = [...attachedFiles];
