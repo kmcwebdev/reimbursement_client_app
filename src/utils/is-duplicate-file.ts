@@ -9,7 +9,5 @@ export const isDuplicateFile = (existingFiles: AttachedFile[], file: File) => {
       existingFile.file.type === file.type,
   );
 
-  console.log("duplicate", isDuplicate);
-
   return isDuplicate;
 };
