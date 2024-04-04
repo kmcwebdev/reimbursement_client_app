@@ -66,14 +66,9 @@ const WelcomePage: NextPage = () => {
       {user?.profile?.first_login && (
         <section className="grid h-screen w-screen place-items-center">
           <div className="flex flex-col items-center gap-4 bg-white shadow-md rounded-md p-4 w-3/12">
-            <h3 className="text-center">Welcome to Reimbursement Portal!</h3>
+            <h3 className="text-center">Welcome to Reimbursements!</h3>
 
-            <h4>Password Change Required!</h4>
-
-            <p>
-              As you&apos;re logging in for the first time. Please create your
-              new password.
-            </p>
+            <h4>Let&apos;s finish setting up your account!</h4>
 
             <div className="w-full">
               <ResetPasswordForm
