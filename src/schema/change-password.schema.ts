@@ -2,8 +2,8 @@ import { z } from "zod";
 
 export const changePasswordSchema = z
   .object({
-    password: z.string().min(8),
-    confirmPassword: z.string().min(8),
+    password: z.string().min(8,"Password must contain at least 8 characters."),
+    confirmPassword: z.string().min(8,"Password must contain at least 8 characters."),
   })
   .superRefine(({ password }, ctx) => {
     const containsUppercase = (ch: string) => /[A-Z]/.test(ch);

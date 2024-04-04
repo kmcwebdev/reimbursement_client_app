@@ -62,21 +62,22 @@ const AddAttachments: React.FC<AttachmentProps> = ({
       .unwrap()
       .then((data) => {
         if (data) {
-          const updatedAttachedFiles = attachedFiles.map((a) => {
-            let updated = a;
-            if (a.file.name === data.file_name) {
-              updated = {
-                ...a,
-                status: "uploaded",
-              };
-            }
-            return updated;
-          });
+          const updatedAttachedFiles = [
+            ...attachedFiles.map((a) => {
+              let updated = a;
+              if (a.file.name === data.file_name) {
+                updated = {
+                  ...a,
+                  status: "uploaded",
+                };
+              }
+              return updated;
+            }),
+          ];
 
           setProcessed(processed + 1);
           setAttachedFiles(updatedAttachedFiles);
           dispatch(_setTempAttachedFiles(updatedAttachedFiles));
-
           dispatch(
             setReimbursementFormValues({
               ...reimbursementFormValues,
@@ -131,10 +132,10 @@ const AddAttachments: React.FC<AttachmentProps> = ({
   }, [attachedFiles.length, processed]);
 
   useEffect(() => {
-    if (_temp_attachedFiles.length > 0) {
+    if (_temp_attachedFiles.length > 0 && attachedFiles.length === 0) {
       setAttachedFiles(_temp_attachedFiles);
     }
-  }, [_temp_attachedFiles]);
+  }, [_temp_attachedFiles, attachedFiles.length]);
 
   const handleDropMultiple = (files: File[]) => {
     const updatedAttachedFiles = [...attachedFiles];
@@ -144,9 +145,7 @@ const AddAttachments: React.FC<AttachmentProps> = ({
         type: file.type,
         lastModified: file.lastModified,
       });
-
       updatedAttachedFiles.push({ status: "unprocessed", file: formattedFile });
-
       setAttachedFiles(updatedAttachedFiles);
     });
   };
@@ -235,13 +234,6 @@ const AddAttachments: React.FC<AttachmentProps> = ({
     onDrop: (e, i) => {
       if (i.length === 0) {
         handleDropMultiple(e);
-        // e.forEach((file) => {
-        //   const formattedFile = new File([file], file.name, {
-        //     type: file.type,
-        //     lastModified: file.lastModified,
-        //   });
-        //   handleDrop(formattedFile);
-        // });
       }
     },
     validator: (e) => fileValidator(attachedFiles, e),
