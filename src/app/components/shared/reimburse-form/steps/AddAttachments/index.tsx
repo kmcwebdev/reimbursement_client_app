@@ -253,6 +253,8 @@ const AddAttachments: React.FC<AttachmentProps> = ({
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [
         ".xlsx",
       ],
+      "application/zip": [".zip"],
+      "application/vnd.rar" : [".rar"],
     },
     onDropRejected: (fileRejections) => {
       setFileRejections([]);
@@ -314,7 +316,7 @@ const AddAttachments: React.FC<AttachmentProps> = ({
       </div>
 
       <div className="flex text-xs text-neutral-700">
-        <p>Upload PDF,Excel File or JPEG, maximum upload file size (50mb).</p>
+        <p>Upload PDF,Excel File, Zip/Rar File or JPEG, maximum upload file size (50mb).</p>
       </div>
       <div className="mt-2 h-px bg-neutral-300" />
 

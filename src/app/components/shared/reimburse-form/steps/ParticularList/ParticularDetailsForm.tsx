@@ -146,9 +146,9 @@ const ParticularDetailsForm: React.FC<ParticularDetailsProps> = ({
       />
       <Input
         type="number"
-        label="Amount"
+        label="Amount to be Reimbursed"
         name="amount"
-        placeholder="Amount"
+        placeholder="Amount to be Reimbursed"
         required
         step={0.01}
       />
