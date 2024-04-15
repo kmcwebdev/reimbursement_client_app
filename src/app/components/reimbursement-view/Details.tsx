@@ -74,7 +74,7 @@ const Details: React.FC<DetailsProps> = ({
         label="Filed"
         value={parseTimezone(created_at).format("MMM D,YYYY")}
       />
-      <List.Item label="Amount" value={currencyFormat(+amount)} />
+      <List.Item label="Amount to be Reimbursed" value={currencyFormat(+amount)} />
 
       <div className="flex flex-col">
         {payroll_date && request_status.name === "Credited" && (
