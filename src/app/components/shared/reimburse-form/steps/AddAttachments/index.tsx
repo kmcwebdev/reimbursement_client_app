@@ -121,7 +121,11 @@ const AddAttachments: React.FC<AttachmentProps> = ({
         handleUpload(unUploadedAttachedFiles[0].file);
         const updatedAttachedFiles = attachedFiles.map((a) => {
           let updated = a;
-          if (a.file.name === unUploadedAttachedFiles[0].file.name) {
+
+          if (
+            a.fileName.replaceAll(/\s/g, "") ===
+            unUploadedAttachedFiles[0].fileName.replaceAll(/\s/g, "")
+          ) {
             updated = {
               ...a,
               status: "uploading",
@@ -288,13 +292,15 @@ const AddAttachments: React.FC<AttachmentProps> = ({
   });
 
   const onDelete = (name: string) => {
-    const filtered = attachedFiles.filter((a) => a.file.name !== name);
+    const filtered = attachedFiles.filter(
+      (a) => a.fileName.replaceAll(/\s/g, "") !== name.replaceAll(/\s/g, ""),
+    );
 
     setAttachedFiles(filtered);
     setProcessed(processed - 1);
 
     const updated = reimbursementFormValues.attachments.filter(
-      (a) => a.file_name !== name,
+      (a) => a.file_name.replaceAll(/\s/g, "") !== name.replaceAll(/\s/g, ""),
     );
 
     dispatch(_setTempAttachedFiles(filtered));
