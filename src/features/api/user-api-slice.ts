@@ -54,6 +54,22 @@ export const userApiSlice = appApiSlice.injectEndpoints({
       },
     }),
 
+    updateBasicInfo: builder.mutation<
+      unknown,
+      {
+        first_name: string;
+        last_name: string;
+      }
+    >({
+      query: (data) => {
+        return {
+          url: `/management/users/me`,
+          method: "PATCH",
+          body: { ...data },
+        };
+      },
+    }),
+
     toggleAdminPrivilege: builder.mutation<
       unknown,
       {
@@ -77,4 +93,5 @@ export const {
   useMyRequestsQuery,
   useAssignGroupMutation,
   useToggleAdminPrivilegeMutation,
+  useUpdateBasicInfoMutation,
 } = userApiSlice;

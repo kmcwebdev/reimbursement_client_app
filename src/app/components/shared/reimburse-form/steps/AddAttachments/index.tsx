@@ -36,6 +36,7 @@ interface AttachmentProps {
 export interface AttachedFile {
   status: "uploading" | "uploaded" | "unprocessed";
   file: File;
+  fileName: string;
 }
 
 const AddAttachments: React.FC<AttachmentProps> = ({
@@ -65,7 +66,11 @@ const AddAttachments: React.FC<AttachmentProps> = ({
           const updatedAttachedFiles = [
             ...attachedFiles.map((a) => {
               let updated = a;
-              if (a.file.name === data.file_name) {
+
+              if (
+                a.fileName.replaceAll(/\s/g, "") ===
+                data.file_name.replaceAll(/\s/g, "")
+              ) {
                 updated = {
                   ...a,
                   status: "uploaded",
@@ -145,7 +150,11 @@ const AddAttachments: React.FC<AttachmentProps> = ({
         type: file.type,
         lastModified: file.lastModified,
       });
-      updatedAttachedFiles.push({ status: "unprocessed", file: formattedFile });
+      updatedAttachedFiles.push({
+        status: "unprocessed",
+        file: formattedFile,
+        fileName: file.name,
+      });
       setAttachedFiles(updatedAttachedFiles);
     });
   };
@@ -245,6 +254,8 @@ const AddAttachments: React.FC<AttachmentProps> = ({
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [
         ".xlsx",
       ],
+      "application/zip": [".zip"],
+      "application/vnd.rar": [".rar"],
     },
     onDropRejected: (fileRejections) => {
       setFileRejections([]);
@@ -306,7 +317,10 @@ const AddAttachments: React.FC<AttachmentProps> = ({
       </div>
 
       <div className="flex text-xs text-neutral-700">
-        <p>Upload PDF,Excel File or JPEG, maximum upload file size (50mb).</p>
+        <p>
+          Upload PDF,Excel File, Zip/Rar File or JPEG, maximum upload file size
+          (50mb).
+        </p>
       </div>
       <div className="mt-2 h-px bg-neutral-300" />
 
