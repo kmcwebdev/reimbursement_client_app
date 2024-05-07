@@ -113,7 +113,7 @@ const ParticularDetailsForm: React.FC<ParticularDetailsProps> = ({
       <Select
         label="Expense"
         name="expense_type"
-        placeholder="Type of expense"
+        placeholder="Select Reimbursement Type  "
         required
         onChangeEvent={handleExpenseTypeChange}
         isLoading={expenseTypesIsLoading}
@@ -136,19 +136,24 @@ const ParticularDetailsForm: React.FC<ParticularDetailsProps> = ({
         />
       </CollapseHeightAnimation>
 
-      <Input name="name" label="Receipt" placeholder="Receipt" required />
+      <Input
+        name="name"
+        label="Receipt Name"
+        placeholder="Enter name of the vendor or entity on the receipt"
+        required
+      />
 
       <TextArea
         name="justification"
         label="Justification"
-        placeholder="Justification for this receipt"
+        placeholder="Describe the purpose of the expense"
         required
       />
       <Input
         type="number"
         label="Amount to be Reimbursed"
         name="amount"
-        placeholder="Amount to be Reimbursed"
+        placeholder="Indicate the amount eligible for reimbursement"
         required
         step={0.01}
       />
