@@ -250,10 +250,12 @@ const Profile: NextPage = () => {
                         user.profile &&
                         user.profile.managers &&
                         user.profile.managers.length === 0 && (
-                          <EmptyState
-                            title="No Assigned Manager"
-                            description="You currently don't have an assigned manager."
-                          />
+                          <div className="rounded-md bg-neutral-100 py-10">
+                            <EmptyState
+                              title="No Assigned Manager"
+                              description="You currently don't have an assigned manager."
+                            />
+                          </div>
                         )}
                     </div>
                   </div>
