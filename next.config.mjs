@@ -19,6 +19,11 @@ const nextConfig = {
       },
       {
         protocol: "https",
+        hostname: "artemis.sgp1.digitaloceanspaces.com",
+        pathname: "**",
+      },
+      {
+        protocol: "https",
         hostname: "cdn.filestackcontent.com",
         pathname: "**",
       },
