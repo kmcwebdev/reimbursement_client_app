@@ -2,11 +2,16 @@ import { z } from "zod";
 import { appClaimsSchema } from "./app-claims.schema";
 import { groupTypeSchema } from "./group-type.schema";
 
+export const userApproverSchema = z.object({
+  full_name: z.string(),
+  email: z.string(),
+});
+
 export const userProfileSchema = z.object({
   employee_id: z.string(),
   organization: z.string(),
-  hrbp: z.array(z.string()),
-  manager: z.array(z.string()),
+  hrbps: z.array(userApproverSchema),
+  managers: z.array(userApproverSchema),
   first_login: z.boolean(),
 });
 

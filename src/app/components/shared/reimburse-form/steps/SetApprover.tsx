@@ -52,8 +52,17 @@ const SetApprover: React.FC<SetApproverProps> = ({
           manager_approver_email:
             reimbursementFormValues.manager_approver_email,
         };
+      } else {
+        if (user?.profile?.managers && user.profile.managers.length > 0) {
+          return {
+            manager_approver_email: user?.profile?.managers[0].email,
+          };
+        }
       }
-    }, [reimbursementFormValues]),
+    }, [
+      reimbursementFormValues.manager_approver_email,
+      user?.profile?.managers,
+    ]),
   });
 
   const [createReimbursement, { isLoading: isSubmitting }] =
