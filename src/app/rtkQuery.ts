@@ -7,7 +7,8 @@ import {
   type FetchBaseQueryError,
   type FetchBaseQueryMeta,
 } from "@reduxjs/toolkit/query/react";
-import { setAccessToken } from "~/features/state/user-state.slice";
+import { signOut } from "next-auth/react";
+import { clearUserSession, setAccessToken } from "~/features/state/user-state.slice";
 import { env } from "../../env.mjs";
 import { type RootState } from "./store";
 
@@ -66,7 +67,7 @@ export const refreshAccessToken = async (
 
     return refreshedTokens;
   } catch (error) {
-    console.log("Refresh token error");
+    console.log("Failed to refresh token");
   }
 };
 
@@ -89,13 +90,17 @@ const appApiBaseQueryWithReauth: BaseQueryFn<
     const accessToken = rootState.session.accessToken!;
     const newAccessToken = await refreshAccessToken(accessToken, refreshToken);
 
+
     if (newAccessToken?.access) {
       const { access } = newAccessToken;
       api.dispatch(setAccessToken(access));
 
       result = await appApiBaseQuery(args, api, extraOptions);
     } else {
-      api.dispatch(setAccessToken(null));
+      await signOut().then(() => {
+      api.dispatch(clearUserSession());
+      window.location.reload();
+    });
     }
   }
 
