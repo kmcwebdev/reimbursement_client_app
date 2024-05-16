@@ -5,7 +5,7 @@ import { useAppSelector } from "~/app/hook";
 import { particularDetailsSchema } from "~/schema/reimbursement-particulars.schema";
 import { type ParticularDetails } from "~/types/reimbursement.types";
 import AddAttachments from "./steps/AddAttachments";
-import ParticularList from "./steps/ParticularList";
+import ParticularDetailsStep from "./steps/ParicularDetails";
 import SelectReimbursementType from "./steps/SelectReimbursementType";
 import AddApprovers from "./steps/SetApprover";
 
@@ -61,11 +61,15 @@ const ReimburseForm: React.FC<ReimburseFormProps> = ({
         />
       )}
       {activeStep === 1 && (
+        <ParticularDetailsStep formReturn={useParticularDetailsFormReturn} />
+      )}
+
+      {/* {activeStep === 1 && (
         <ParticularList
           handleOpenCancelDialog={handleOpenCancelDialog}
           formReturn={useParticularDetailsFormReturn}
         />
-      )}
+      )} */}
 
       {activeStep === 2 && (
         <AddAttachments

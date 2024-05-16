@@ -9,7 +9,7 @@ const Placeholder: React.FC<PlaceholderProps> = ({ hasError, children }) => {
   return (
     <div
       className={classNames(
-        "text-xs font-light",
+        "text-sm",
         hasError ? "text-red-600" : "text-neutral-800",
       )}
     >
