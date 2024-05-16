@@ -45,7 +45,7 @@ const Particulars: React.FC<ParticularsProps> = ({
       {reimbursementFormValues.particulars.length > 0 &&
         reimbursementFormValues.particulars.map((part, i) => (
           <Particular
-            key={`${part.name}-${i}`}
+            key={`-${i}`}
             index={i}
             label={
               allExpenseTypesIsLoading
@@ -54,7 +54,7 @@ const Particulars: React.FC<ParticularsProps> = ({
                     allExpenseTypes?.results.find(
                       (a) => a.id === part.expense_type,
                     )?.name
-                  }-${part.name}`
+                  }`
             }
           />
         ))}
