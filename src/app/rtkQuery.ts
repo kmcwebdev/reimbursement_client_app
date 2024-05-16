@@ -8,8 +8,11 @@ import {
   type FetchBaseQueryMeta,
 } from "@reduxjs/toolkit/query/react";
 import { signOut } from "next-auth/react";
-import { clearUserSession, setAccessToken } from "~/features/state/user-state.slice";
-import { env } from "../../env.mjs";
+import { env } from "~/env.mjs";
+import {
+  clearUserSession,
+  setAccessToken,
+} from "~/features/state/user-state.slice";
 import { type RootState } from "./store";
 
 type RefreshTokenResponse = {
@@ -90,7 +93,6 @@ const appApiBaseQueryWithReauth: BaseQueryFn<
     const accessToken = rootState.session.accessToken!;
     const newAccessToken = await refreshAccessToken(accessToken, refreshToken);
 
-
     if (newAccessToken?.access) {
       const { access } = newAccessToken;
       api.dispatch(setAccessToken(access));
@@ -98,9 +100,9 @@ const appApiBaseQueryWithReauth: BaseQueryFn<
       result = await appApiBaseQuery(args, api, extraOptions);
     } else {
       await signOut().then(() => {
-      api.dispatch(clearUserSession());
-      window.location.reload();
-    });
+        api.dispatch(clearUserSession());
+        window.location.reload();
+      });
     }
   }
 
