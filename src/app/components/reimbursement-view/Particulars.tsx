@@ -12,7 +12,7 @@ const Particulars: React.FC<ParticularsProps> = ({ particulars }) => {
       label="Particulars"
       items={particulars.map((particular) => ({
         id: particular.id,
-        label: `${particular.expense_type.name}-${particular.name}`,
+        label: `${particular.expense_type.name}`,
         description: particular.justification,
         amount: particular.amount,
       }))}
