@@ -65,11 +65,6 @@ const ParticularDetailsForm: React.FC<ParticularDetailsProps> = ({
       }
 
       formReturn.setValue(
-        "name",
-        reimbursementFormValues.particulars[+activeParticularIndex].name,
-      );
-
-      formReturn.setValue(
         "justification",
         reimbursementFormValues.particulars[+activeParticularIndex]
           .justification,
