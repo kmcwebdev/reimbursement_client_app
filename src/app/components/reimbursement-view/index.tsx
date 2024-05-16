@@ -29,7 +29,6 @@ import Approvers from "./Approvers";
 import Attachments from "./Attachments";
 import Details from "./Details";
 import Notes from "./Notes";
-import Particulars from "./Particulars";
 import ReimbursementViewSkeleton from "./ReimbursementViewSkeleton";
 import AdminButtons from "./action-buttons/AdminButtons";
 import ApproverButtons from "./action-buttons/ApproverButtons";
@@ -145,7 +144,7 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
                 />
               )}
 
-            <Particulars particulars={data.particulars} />
+            {/* <Particulars particulars={data.particulars} /> */}
 
             <Attachments attachments={data.supporting_documents} />
           </div>
