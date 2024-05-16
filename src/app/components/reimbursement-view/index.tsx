@@ -14,13 +14,13 @@ import {
   toggleSingleDownloadReportDialog,
 } from "~/features/state/table-state.slice";
 import { useReportDownload } from "~/hooks/use-report-download";
-import { env } from "../../../../env.mjs";
 import EmptyState from "../core/EmptyState";
 import { showToast } from "../core/Toast";
 import CancelReimbursementDialog from "../shared/dialogs/CancelReimbursementDialog";
 import HoldReimbursementDialog from "../shared/dialogs/HoldReimbursementDialog";
 import RejectReimbursementDialog from "../shared/dialogs/RejectReimbursementDialog";
 
+import { env } from "~/env.mjs";
 import { type ReimbursementRequest } from "~/types/reimbursement.types";
 import SingleApproveReimbursementsDialog from "../shared/dialogs/approval/SingleApproveReimbursmentDialog";
 import SingleDownloadReportDialog from "../shared/dialogs/download-report/SingleDownloadReportDialog";
@@ -29,7 +29,6 @@ import Approvers from "./Approvers";
 import Attachments from "./Attachments";
 import Details from "./Details";
 import Notes from "./Notes";
-import Particulars from "./Particulars";
 import ReimbursementViewSkeleton from "./ReimbursementViewSkeleton";
 import AdminButtons from "./action-buttons/AdminButtons";
 import ApproverButtons from "./action-buttons/ApproverButtons";
@@ -145,7 +144,7 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
                 />
               )}
 
-            <Particulars particulars={data.particulars} />
+            {/* <Particulars particulars={data.particulars} /> */}
 
             <Attachments attachments={data.supporting_documents} />
           </div>

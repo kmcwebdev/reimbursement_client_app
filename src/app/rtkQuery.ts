@@ -7,8 +7,12 @@ import {
   type FetchBaseQueryError,
   type FetchBaseQueryMeta,
 } from "@reduxjs/toolkit/query/react";
-import { setAccessToken } from "~/features/state/user-state.slice";
-import { env } from "../../env.mjs";
+import { signOut } from "next-auth/react";
+import { env } from "~/env.mjs";
+import {
+  clearUserSession,
+  setAccessToken,
+} from "~/features/state/user-state.slice";
 import { type RootState } from "./store";
 
 type RefreshTokenResponse = {
@@ -66,7 +70,7 @@ export const refreshAccessToken = async (
 
     return refreshedTokens;
   } catch (error) {
-    console.log("Refresh token error");
+    console.log("Failed to refresh token");
   }
 };
 
@@ -95,7 +99,10 @@ const appApiBaseQueryWithReauth: BaseQueryFn<
 
       result = await appApiBaseQuery(args, api, extraOptions);
     } else {
-      api.dispatch(setAccessToken(null));
+      await signOut().then(() => {
+        api.dispatch(clearUserSession());
+        window.location.reload();
+      });
     }
   }
 

@@ -12,21 +12,20 @@ import TextArea from "~/app/components/core/form/fields/TextArea";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { useExpenseTypesQuery } from "~/features/api/references-api-slice";
 import {
-  setActiveParticularIndex,
-  setParticularDetailsFormIsVisible,
+  setActiveStep,
   setReimbursementFormValues,
 } from "~/features/state/reimbursement-form-slice";
 import { type ParticularDetails } from "~/types/reimbursement.types";
 
-interface ParticularDetailsProps {
+interface ParticularDetailsStepProps {
   formReturn: UseFormReturn<ParticularDetails>;
 }
 
-const ParticularDetailsForm: React.FC<ParticularDetailsProps> = ({
+const ParticularDetailsStep: React.FC<ParticularDetailsStepProps> = ({
   formReturn,
 }) => {
   const dispatch = useAppDispatch();
-  const { reimbursementFormValues, activeParticularIndex } = useAppSelector(
+  const { reimbursementFormValues, activeStep } = useAppSelector(
     (state) => state.reimbursementForm,
   );
   const [selectedExpense, setSelectedExpense] = useState<number>();
@@ -41,61 +40,42 @@ const ParticularDetailsForm: React.FC<ParticularDetailsProps> = ({
   };
 
   useMemo(() => {
-    if (
-      activeParticularIndex &&
-      reimbursementFormValues.particulars.length > 0 &&
-      reimbursementFormValues.particulars[+activeParticularIndex]
-    ) {
+    if (reimbursementFormValues.particulars.length > 0) {
       formReturn.setValue(
         "expense_type",
-        reimbursementFormValues.particulars[+activeParticularIndex]
-          .expense_type,
+        reimbursementFormValues.particulars[0].expense_type,
       );
 
-      setSelectedExpense(
-        reimbursementFormValues.particulars[+activeParticularIndex]
-          .expense_type,
-      );
+      setSelectedExpense(reimbursementFormValues.particulars[0].expense_type);
 
-      if (reimbursementFormValues.particulars[+activeParticularIndex].remarks) {
+      if (reimbursementFormValues.particulars[0].remarks) {
         formReturn.setValue(
           "remarks",
-          reimbursementFormValues.particulars[+activeParticularIndex].remarks,
+          reimbursementFormValues.particulars[0].remarks,
         );
       }
 
       formReturn.setValue(
         "justification",
-        reimbursementFormValues.particulars[+activeParticularIndex]
-          .justification,
+        reimbursementFormValues.particulars[0].justification,
       );
 
       formReturn.setValue(
         "amount",
-        reimbursementFormValues.particulars[+activeParticularIndex].amount,
+        reimbursementFormValues.particulars[0].amount,
       );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [reimbursementFormValues, activeParticularIndex]);
+  }, [reimbursementFormValues]);
 
   const handleSubmit = (e: ParticularDetails) => {
-    const particulars = [...reimbursementFormValues.particulars];
-
-    if (activeParticularIndex) {
-      particulars[+activeParticularIndex] = e;
-    } else {
-      particulars.push(e);
-    }
-
     dispatch(
       setReimbursementFormValues({
         ...reimbursementFormValues,
-        particulars,
+        particulars: [e],
       }),
     );
-    dispatch(setParticularDetailsFormIsVisible(false));
-    dispatch(setActiveParticularIndex(null));
-    formReturn.reset();
+    dispatch(setActiveStep(activeStep + 1));
   };
 
   return (
@@ -108,7 +88,7 @@ const ParticularDetailsForm: React.FC<ParticularDetailsProps> = ({
       <Select
         label="Expense"
         name="expense_type"
-        placeholder="Select Reimbursement Type  "
+        placeholder="Select Expense Type"
         required
         onChangeEvent={handleExpenseTypeChange}
         isLoading={expenseTypesIsLoading}
@@ -132,10 +112,12 @@ const ParticularDetailsForm: React.FC<ParticularDetailsProps> = ({
       </CollapseHeightAnimation>
 
       <Input
-        name="name"
-        label="Receipt Name"
-        placeholder="Enter name of the vendor or entity on the receipt"
+        type="number"
+        label="Amount to be Reimbursed"
+        name="amount"
+        placeholder="Indicate the amount eligible for reimbursement"
         required
+        step={0.01}
       />
 
       <TextArea
@@ -144,41 +126,31 @@ const ParticularDetailsForm: React.FC<ParticularDetailsProps> = ({
         placeholder="Describe the purpose of the expense"
         required
       />
-      <Input
-        type="number"
-        label="Amount to be Reimbursed"
-        name="amount"
-        placeholder="Indicate the amount eligible for reimbursement"
-        required
-        step={0.01}
-      />
-      <div className="grid grid-cols-2 items-center gap-2 pt-4">
-        <div>
-          <Button
-            aria-label="Return"
-            type="button"
-            buttonType="outlined"
-            variant="neutral"
-            className="w-full"
-            onClick={() => {
-              formReturn.reset();
-              dispatch(setActiveParticularIndex(null));
-              dispatch(setParticularDetailsFormIsVisible(false));
-            }}
-          >
-            Return
+
+      <div className="flex justify-end pt-4">
+        <div className="flex w-1/2 items-center justify-center gap-2">
+          <div>
+            <Button
+              aria-label="Return"
+              type="button"
+              buttonType="outlined"
+              variant="neutral"
+              className="w-full"
+              onClick={() => {
+                dispatch(setActiveStep(activeStep - 1));
+              }}
+            >
+              Return
+            </Button>
+          </div>
+
+          <Button aria-label="Submit" type="submit" className="w-full">
+            Continue
           </Button>
         </div>
-
-        <Button aria-label="Submit" type="submit" className="w-full">
-          {activeParticularIndex &&
-          reimbursementFormValues.particulars[+activeParticularIndex]
-            ? "Update"
-            : "Add"}
-        </Button>
       </div>
     </Form>
   );
 };
 
-export default ParticularDetailsForm;
+export default ParticularDetailsStep;

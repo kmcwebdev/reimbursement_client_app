@@ -10,9 +10,9 @@ export const particularDetailsSchema = z.object({
       message: "Please input remarks!",
     })
     .optional(),
-  name: z.string({ required_error: "Please input particular name!" }).nonempty({
-    message: "Please input particular name!",
-  }),
+  // name: z.string({ required_error: "Please input particular name!" }).nonempty({
+  //   message: "Please input particular name!",
+  // }),
   justification: z
     .string({ required_error: "Please input justification!" })
     .nonempty({

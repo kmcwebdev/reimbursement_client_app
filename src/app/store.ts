@@ -1,4 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
+import { env } from "~/env.mjs";
 import adminDashboardStateSlice from "~/features/state/admin-dashboard-state-slice";
 import approvalDashboardStateSlice from "~/features/state/approval-dashboard-state-slice";
 import financeDashboardStateSlice from "~/features/state/finance-dashboard-state-slice";
@@ -7,7 +8,6 @@ import layoutStateSlice from "~/features/state/layout-state-slice";
 import reimbursementFormSlice from "~/features/state/reimbursement-form-slice";
 import pageTableStateSlice from "~/features/state/table-state.slice";
 import userDashboardStateSlice from "~/features/state/user-dashboard-state-slice";
-import { env } from "../../env.mjs";
 import userReducer from "../features/state/user-state.slice";
 import { appApiSlice } from "./rtkQuery";
 

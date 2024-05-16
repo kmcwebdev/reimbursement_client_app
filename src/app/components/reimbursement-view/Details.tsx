@@ -46,6 +46,12 @@ const Details: React.FC<DetailsProps> = ({
         label="Client"
         value={reimb_requestor.profile?.organization || "No Organization"}
       />
+
+      <List.Item
+        label="ID"
+        value={reimb_requestor.profile?.employee_id || "..."}
+      />
+
       <List.Item
         label="Name"
         value={`${reimb_requestor.first_name} ${reimb_requestor.last_name}`}
@@ -74,7 +80,18 @@ const Details: React.FC<DetailsProps> = ({
         label="Filed"
         value={parseTimezone(created_at).format("MMM D,YYYY")}
       />
-      <List.Item label="Amount to be Reimbursed" value={currencyFormat(+amount)} />
+      <List.Item
+        label="Amount to be Reimbursed"
+        value={currencyFormat(+amount)}
+      />
+
+      <div className="grid gap-4">
+        <span className="text-neutral-700">Justification</span>
+
+        <span className="text-neutral-900">
+          {particulars.length > 0 && particulars[0].justification}
+        </span>
+      </div>
 
       <div className="flex flex-col">
         {payroll_date && request_status.name === "Credited" && (
