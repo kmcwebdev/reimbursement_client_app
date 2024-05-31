@@ -22,6 +22,7 @@ type RefreshTokenResponse = {
 const unprotectedEndpoints = [
   "approveReimbursementViaEmail",
   "rejectReimbursementViaEmail",
+  "getRequestApprovalStatus",
   "changePassword",
   "forgotPassword",
 ];
@@ -126,6 +127,7 @@ export const appApiSlice = createApi({
     "ReimbursementAdminList",
     "ReimbursementHistoryList",
     "ReimbursementRequest",
+    "ReimbursementRequestApprovalStatus",
     "MyAnalytics",
     "ApprovalAnalytics",
     "ExpenseTypes",
