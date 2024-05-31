@@ -19,6 +19,7 @@ import {
   useApproveReimbursementViaEmailMutation,
   useRejectReimbursementViaEmailMutation,
 } from "~/features/api/actions-api-slice";
+import { useGetRequestApprovalStatusQuery } from "~/features/api/reimbursement-api-slice";
 import { rejectReimbursementSchema } from "~/schema/reimbursement-reject-form.schema";
 import {
   type RejectReimbursementType,
@@ -39,6 +40,16 @@ const EmailActionPage: React.FC = () => {
   const action_id = searchParams.get("action_id");
   const request_id = searchParams.get("request_id");
 
+  const { data, isLoading } = useGetRequestApprovalStatusQuery(
+    {
+      id: request_id!,
+      access_token: access_token!,
+    },
+    {
+      skip: !request_id && !access_token,
+    },
+  );
+
   const [isMounted, setIsMounted] = useState<boolean>(false);
 
   const [actionError, setActionError] = useState<string>();
@@ -56,13 +67,18 @@ const EmailActionPage: React.FC = () => {
       access_token &&
       action_id &&
       request_id &&
-      reference_no
+      reference_no &&
+      !isLoading &&
+      data
     ) {
       if (!isMounted) {
         setIsMounted(true);
       }
       if (isMounted) {
-        if (action_type === "approve") {
+        if (
+          action_type === "approve" &&
+          data.detail.status.name === "Pending"
+        ) {
           const payload = { id: request_id, action_id, access_token };
           void approveMutation(payload)
             .unwrap()
@@ -83,6 +99,8 @@ const EmailActionPage: React.FC = () => {
     request_id,
     reference_no,
     isMounted,
+    data,
+    isLoading,
   ]);
 
   const useRejectFormReturn = useForm<RejectReimbursementType>({
@@ -111,6 +129,8 @@ const EmailActionPage: React.FC = () => {
     }
   };
 
+  console.log(data);
+
   return (
     <div className="grid h-full place-items-center p-4">
       {(action_type !== "approve" && action_type !== "reject") ||
@@ -135,7 +155,14 @@ const EmailActionPage: React.FC = () => {
           </div>
 
           {/* APPROVED */}
-          <CollapseHeightAnimation isVisible={action_type === "approve"}>
+          <CollapseHeightAnimation
+            isVisible={
+              !isLoading &&
+              !!data &&
+              data.detail.status.name === "Pending" &&
+              action_type === "approve"
+            }
+          >
             {isActionSucceeded && (
               <div className="flex flex-col gap-2">
                 <div className="flex items-center gap-2">
@@ -159,7 +186,15 @@ const EmailActionPage: React.FC = () => {
             )}
           </CollapseHeightAnimation>
 
-          <CollapseHeightAnimation isVisible={action_type === "reject"}>
+          {/* REJECTED */}
+          <CollapseHeightAnimation
+            isVisible={
+              !isLoading &&
+              !!data &&
+              data.detail.status.name === "Pending" &&
+              action_type === "reject"
+            }
+          >
             {!actionError && !isActionSucceeded && (
               <Form
                 name="rejectReimbursementForm"
@@ -207,8 +242,27 @@ const EmailActionPage: React.FC = () => {
             )}
           </CollapseHeightAnimation>
 
+          {/* ALREADY APPROVED/REJECTED */}
           <CollapseHeightAnimation
-            isVisible={isApprovalLoading || isRejectLoading}
+            isVisible={
+              !isLoading && !!data && data.detail.status.name !== "Pending"
+            }
+          >
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center gap-2">
+                <HiExclamationCircle className="h-5 w-5 text-red-600" />
+                Something went wrong!
+              </div>
+              <p className="text-neutral-600">
+                The request has already been{" "}
+                {data?.detail.status.name.toLowerCase()} by another approver at
+                the same approval level.
+              </p>
+            </div>
+          </CollapseHeightAnimation>
+
+          <CollapseHeightAnimation
+            isVisible={isLoading || isApprovalLoading || isRejectLoading}
           >
             <div className="grid h-20 place-items-center ">
               <RiLoader4Fill className="h-14 w-14 animate-spin text-orange-600" />
