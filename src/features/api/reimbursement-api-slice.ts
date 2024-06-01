@@ -1,4 +1,5 @@
 import { appApiSlice } from "~/app/rtkQuery";
+import { type ApprovalStatus } from "~/schema/approval-status.schema";
 import {
   type QueryFilter,
   type ReimbursementRequest,
@@ -94,6 +95,26 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
         },
       ],
     }),
+    getRequestApprovalStatus: builder.query<
+      { detail: { status: ApprovalStatus } },
+      { id: string; access_token: string }
+    >({
+      query: ({ id, access_token }) => {
+        return {
+          url: `/reimbursements/request/${id}/approval_status`,
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+          },
+        };
+      },
+      keepUnusedDataFor: 0,
+      providesTags: (_result, _fetchBaseQuery, { id }) => [
+        {
+          type: "ReimbursementRequestApprovalStatus",
+          id,
+        },
+      ],
+    }),
   }),
 });
 
@@ -102,4 +123,5 @@ export const {
   useGetAdminListQuery,
   useGetRequestsHistoryQuery,
   useGetRequestQuery,
+  useGetRequestApprovalStatusQuery,
 } = reimbursementApiSlice;
