@@ -130,7 +130,7 @@ const Approvers: React.FC<ApproversProps> = ({
                   </span>
 
                   {!approver.is_approved &&
-                    approver.display_name !== "Finance" &&
+                    approver.display_name === "Manager" &&
                     next_approver === approver.approver.email &&
                     pathname === "/admin" &&
                     user?.is_superuser &&
