@@ -96,7 +96,7 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
       ],
     }),
     getRequestApprovalStatus: builder.query<
-      { detail: { status: ApprovalStatus } },
+      ApprovalStatus,
       { id: string; access_token: string }
     >({
       query: ({ id, access_token }) => {
@@ -107,7 +107,6 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
           },
         };
       },
-      keepUnusedDataFor: 0,
       providesTags: (_result, _fetchBaseQuery, { id }) => [
         {
           type: "ReimbursementRequestApprovalStatus",
