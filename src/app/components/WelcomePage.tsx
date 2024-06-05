@@ -2,13 +2,16 @@
 
 import { type NextPage } from "next";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAppSelector } from "../hook";
+import AuthLoader from "./loaders/AuthLoader";
 import InitialLoginForm from "./shared/initial-login";
 
 const WelcomePage: NextPage = () => {
   const router = useRouter();
   const { user } = useAppSelector((state) => state.session);
+
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     if (user) {
@@ -16,10 +19,17 @@ const WelcomePage: NextPage = () => {
         if (!user.profile.first_login) {
           router.push("/dashboard");
         }
+      } else {
+        router.push("/no-assigned-group");
       }
     }
+    setIsLoading(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
+
+  if (isLoading) {
+    return <AuthLoader message="Validating your account, please wait..." />;
+  }
 
   return (
     <>

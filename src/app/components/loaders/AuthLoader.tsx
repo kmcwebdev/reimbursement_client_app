@@ -13,11 +13,7 @@ const AuthLoader: React.FC<{ message?: string }> = ({ message }) => {
           <RiLoader4Fill className="h-24 w-24 animate-spin text-orange-600" />
         </div>
 
-        <h5>
-          {message
-            ? "Loading App, please wait..."
-            : "Authenticating, please wait..."}
-        </h5>
+        <h5>{message ? message : "Authenticating, please wait..."}</h5>
       </div>
     </div>
   );
