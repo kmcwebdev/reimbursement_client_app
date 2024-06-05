@@ -14,7 +14,7 @@ const Template = ({ children }: { children: ReactNode }) => {
     pathname?.includes("email-action") ||
     pathname?.includes("reset-password")
   ) {
-    return <>{children}</>;
+    return <LazyMotion features={domAnimation}>{children}</LazyMotion>;
   }
 
   return (
