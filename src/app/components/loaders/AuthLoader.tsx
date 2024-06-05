@@ -2,7 +2,7 @@ import React from "react";
 import { BsFingerprint } from "react-icons-all-files/bs/BsFingerprint";
 import { RiLoader4Fill } from "react-icons-all-files/ri/RiLoader4Fill";
 
-const AuthLoader: React.FC = () => {
+const AuthLoader: React.FC<{ message?: string }> = ({ message }) => {
   return (
     <div className="grid h-screen w-screen place-items-center">
       <div className="flex flex-col items-center gap-4">
@@ -13,7 +13,11 @@ const AuthLoader: React.FC = () => {
           <RiLoader4Fill className="h-24 w-24 animate-spin text-orange-600" />
         </div>
 
-        <h5>Authenticating,please wait...</h5>
+        <h5>
+          {message
+            ? "Loading App, please wait..."
+            : "Authenticating, please wait..."}
+        </h5>
       </div>
     </div>
   );
