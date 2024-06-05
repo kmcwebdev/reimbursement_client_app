@@ -1,5 +1,5 @@
 import { appApiSlice } from "~/app/rtkQuery";
-import { type ApprovalStatus } from "~/schema/approval-status.schema";
+import { type ApprovalStatusResponse } from "~/schema/approval-status.schema";
 import {
   type QueryFilter,
   type ReimbursementRequest,
@@ -96,7 +96,7 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
       ],
     }),
     getRequestApprovalStatus: builder.query<
-      ApprovalStatus,
+      ApprovalStatusResponse,
       { id: string; access_token: string }
     >({
       query: ({ id, access_token }) => {

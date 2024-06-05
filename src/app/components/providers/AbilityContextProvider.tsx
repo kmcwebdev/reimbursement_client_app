@@ -24,16 +24,15 @@ export const AbilityContextProvider: React.FC<PropsWithChildren> = ({
   children,
 }) => {
   const nextAuthSession = useSession();
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [nextAuthIsLoading, setNextAuthIsLoading] = useState<boolean>(false);
+  const [assignedRoleIsLoading, setAssignedRoleIsLoading] =
+    useState<boolean>(false);
   const pathname = usePathname();
 
   const { accessToken, assignedRole } = useAppSelector(
     (state) => state.session,
   );
-  const {
-    data: me,
-    isLoading: meIsLoading,
-  } = useGetMeQuery(null, {
+  const { data: me, isFetching: meIsLoading } = useGetMeQuery(null, {
     skip: !accessToken,
   });
   const dispatch = useAppDispatch();
@@ -46,8 +45,10 @@ export const AbilityContextProvider: React.FC<PropsWithChildren> = ({
 
   /**STORES TOKEN IN REDUX */
   useEffect(() => {
+    setNextAuthIsLoading(true);
     if (
       nextAuthSession &&
+      nextAuthSession.status === "authenticated" &&
       nextAuthSession.data &&
       nextAuthSession.data.accessToken &&
       nextAuthSession.data.refreshToken
@@ -58,35 +59,39 @@ export const AbilityContextProvider: React.FC<PropsWithChildren> = ({
       );
     }
 
+    setNextAuthIsLoading(false);
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nextAuthSession]);
 
   useEffect(() => {
-    if (nextAuthSession.status !== "loading") {
-      setIsLoading(false);
+    if (accessToken && assignedRole && nextAuthSession) {
+      nextAuthSession.update;
     }
   }, [accessToken, assignedRole, nextAuthSession]);
 
   useMemo(() => {
     if (me && !meIsLoading) {
-       if (me && me.profile && me.profile.first_login && pathname !== "/") {
-          redirect("/");
-        }
-      setTimeout(() => {
-        if (!assignedRole && me.groups.length > 0) {
-          dispatch(setAssignedRole(me.groups[0]));
-        }
-        setPermissions(me.permissions);
-        dispatch(setUser(me));
+      setAssignedRoleIsLoading(true);
+      if (me && me.profile && me.profile.first_login && pathname !== "/") {
+        redirect("/");
+      }
 
-       
-      }, 0);
+      if (!assignedRole && me.groups.length > 0) {
+        dispatch(setAssignedRole(me.groups[0]));
+      }
+      setPermissions(me.permissions);
+      dispatch(setUser(me));
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [me, meIsLoading]);
+    setAssignedRoleIsLoading(false);
+  }, [assignedRole, dispatch, me, meIsLoading, pathname]);
 
-  if (isLoading) {
+  if (nextAuthIsLoading) {
     return <AuthLoader />;
+  }
+
+  if (meIsLoading || assignedRoleIsLoading) {
+    return <AuthLoader message="Loading App, please wait..." />;
   }
 
   return (
