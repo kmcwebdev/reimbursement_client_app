@@ -45,7 +45,7 @@ export const viewport: Viewport = {
   userScalable: false,
 };
 
-export const RootLayout: NextPage<PropsWithChildren> = ({ children }) => {
+const RootLayout: NextPage<PropsWithChildren> = ({ children }) => {
   return (
     <html lang="en">
       <body>
