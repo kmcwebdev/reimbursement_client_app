@@ -1,5 +1,4 @@
 "use client";
-import { useSession } from "next-auth/react";
 import { redirect, usePathname } from "next/navigation";
 import React, {
   useEffect,
@@ -16,6 +15,7 @@ import {
   setRefreshToken,
   setUser,
 } from "~/features/state/user-state.slice";
+import { useCurrentSession } from "~/hooks/use-current-session";
 import { type AppClaims } from "~/types/reimbursement.types";
 import { defineAbility } from "~/utils/define-ability";
 import AuthLoader from "../loaders/AuthLoader";
@@ -23,7 +23,8 @@ import AuthLoader from "../loaders/AuthLoader";
 export const AbilityContextProvider: React.FC<PropsWithChildren> = ({
   children,
 }) => {
-  const nextAuthSession = useSession();
+  // const nextAuthSession = useSession();
+  const nextAuthCurrentSession = useCurrentSession();
   const [nextAuthIsLoading, setNextAuthIsLoading] = useState<boolean>(false);
   const [assignedRoleIsLoading, setAssignedRoleIsLoading] =
     useState<boolean>(false);
@@ -48,25 +49,34 @@ export const AbilityContextProvider: React.FC<PropsWithChildren> = ({
   /**STORES TOKEN IN REDUX */
   useEffect(() => {
     setNextAuthIsLoading(true);
+    // if (
+    //   nextAuthSession &&
+    //   nextAuthSession.status === "authenticated" &&
+    //   nextAuthSession.data &&
+    //   nextAuthSession.data.accessToken &&
+    //   nextAuthSession.data.refreshToken
+    // ) {
+    //   dispatchTokens(
+    //     nextAuthSession.data.accessToken,
+    //     nextAuthSession.data.refreshToken,
+    //   );
+    //   console.log("Dispatched tokens");
+    // }
+
     if (
-      nextAuthSession &&
-      nextAuthSession.status === "authenticated" &&
-      nextAuthSession.data &&
-      nextAuthSession.data.accessToken &&
-      nextAuthSession.data.refreshToken
+      nextAuthCurrentSession.data &&
+      nextAuthCurrentSession.data.accessToken &&
+      nextAuthCurrentSession.data.refreshToken
     ) {
       dispatchTokens(
-        nextAuthSession.data.accessToken,
-        nextAuthSession.data.refreshToken,
+        nextAuthCurrentSession.data.accessToken,
+        nextAuthCurrentSession.data.refreshToken,
       );
       console.log("Dispatched tokens");
-    } else {
-      window.location.reload();
     }
-
     setNextAuthIsLoading(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [nextAuthSession]);
+  }, [nextAuthCurrentSession]);
 
   useMemo(() => {
     if (me && !meIsLoading) {

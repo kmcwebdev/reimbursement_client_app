@@ -3,6 +3,7 @@ import { type Metadata, type NextPage, type Viewport } from "next";
 import dynamic from "next/dynamic";
 import { type PropsWithChildren } from "react";
 import "~/styles/globals.css";
+import { auth } from "./auth";
 import Layout from "./components/core/layout";
 import { AbilityContextProvider } from "./components/providers/AbilityContextProvider";
 import NextAuthSessionProvider from "./components/providers/NextAuthSessionProvider";
@@ -45,12 +46,13 @@ export const viewport: Viewport = {
   userScalable: false,
 };
 
-const RootLayout: NextPage<PropsWithChildren> = ({ children }) => {
+const RootLayout: NextPage<PropsWithChildren> = async ({ children }) => {
+  const session = await auth();
   return (
     <html lang="en">
       <body>
         <ReduxStoreProvider>
-          <NextAuthSessionProvider>
+          <NextAuthSessionProvider session={session}>
             <AbilityContextProvider>
               <Toaster />
               <Layout>
