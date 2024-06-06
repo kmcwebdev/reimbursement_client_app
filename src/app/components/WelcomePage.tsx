@@ -18,12 +18,13 @@ const WelcomePage: NextPage = () => {
       if (user.profile) {
         if (!user.profile.first_login) {
           router.push("/dashboard");
+          setIsLoading(false);
         }
       } else {
         router.push("/no-assigned-group");
       }
     }
-    setIsLoading(false);
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 

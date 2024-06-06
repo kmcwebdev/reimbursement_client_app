@@ -25,9 +25,6 @@ export const AbilityContextProvider: React.FC<PropsWithChildren> = ({
 }) => {
   // const nextAuthSession = useSession();
   const nextAuthCurrentSession = useCurrentSession();
-  const [nextAuthIsLoading, setNextAuthIsLoading] = useState<boolean>(false);
-  const [assignedRoleIsLoading, setAssignedRoleIsLoading] =
-    useState<boolean>(false);
   const pathname = usePathname();
 
   const { accessToken, assignedRole } = useAppSelector(
@@ -48,21 +45,6 @@ export const AbilityContextProvider: React.FC<PropsWithChildren> = ({
 
   /**STORES TOKEN IN REDUX */
   useEffect(() => {
-    setNextAuthIsLoading(true);
-    // if (
-    //   nextAuthSession &&
-    //   nextAuthSession.status === "authenticated" &&
-    //   nextAuthSession.data &&
-    //   nextAuthSession.data.accessToken &&
-    //   nextAuthSession.data.refreshToken
-    // ) {
-    //   dispatchTokens(
-    //     nextAuthSession.data.accessToken,
-    //     nextAuthSession.data.refreshToken,
-    //   );
-    //   console.log("Dispatched tokens");
-    // }
-
     if (
       nextAuthCurrentSession.data &&
       nextAuthCurrentSession.data.accessToken &&
@@ -72,16 +54,13 @@ export const AbilityContextProvider: React.FC<PropsWithChildren> = ({
         nextAuthCurrentSession.data.accessToken,
         nextAuthCurrentSession.data.refreshToken,
       );
-      console.log("Dispatched tokens");
     }
-    setNextAuthIsLoading(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nextAuthCurrentSession]);
 
   useMemo(() => {
     if (me && !meIsLoading) {
       console.log("Triggered me useEffect");
-      setAssignedRoleIsLoading(true);
       if (me && me.profile && me.profile.first_login && pathname !== "/") {
         redirect("/");
       }
@@ -92,16 +71,11 @@ export const AbilityContextProvider: React.FC<PropsWithChildren> = ({
       setPermissions(me.permissions);
       dispatch(setUser(me));
     }
-    setAssignedRoleIsLoading(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [me, meIsLoading]);
 
-  if (nextAuthIsLoading) {
+  if (nextAuthCurrentSession.status === "loading" && meIsLoading) {
     return <AuthLoader />;
-  }
-
-  if (meIsLoading || assignedRoleIsLoading) {
-    return <AuthLoader message="Loading App, please wait..." />;
   }
 
   return (
