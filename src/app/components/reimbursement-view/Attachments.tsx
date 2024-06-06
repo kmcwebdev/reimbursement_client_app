@@ -1,4 +1,4 @@
-import Image, { ImageLoaderProps } from "next/image";
+import Image, { type ImageLoaderProps } from "next/image";
 import React from "react";
 import { AiTwotoneFile } from "react-icons-all-files/ai/AiTwotoneFile";
 import { FaArrowRight } from "react-icons-all-files/fa/FaArrowRight";
