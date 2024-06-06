@@ -43,6 +43,8 @@ export const AbilityContextProvider: React.FC<PropsWithChildren> = ({
     dispatch(setRefreshToken(refresh));
   };
 
+  console.log("TOKEN:", accessToken);
+
   /**STORES TOKEN IN REDUX */
   useEffect(() => {
     setNextAuthIsLoading(true);
@@ -57,21 +59,16 @@ export const AbilityContextProvider: React.FC<PropsWithChildren> = ({
         nextAuthSession.data.accessToken,
         nextAuthSession.data.refreshToken,
       );
+      console.log("Dispatched tokens");
     }
 
     setNextAuthIsLoading(false);
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nextAuthSession]);
 
-  useEffect(() => {
-    if (accessToken && assignedRole && nextAuthSession) {
-      nextAuthSession.update;
-    }
-  }, [accessToken, assignedRole, nextAuthSession]);
-
   useMemo(() => {
     if (me && !meIsLoading) {
+      console.log("Triggered me useEffect");
       setAssignedRoleIsLoading(true);
       if (me && me.profile && me.profile.first_login && pathname !== "/") {
         redirect("/");
@@ -84,7 +81,8 @@ export const AbilityContextProvider: React.FC<PropsWithChildren> = ({
       dispatch(setUser(me));
     }
     setAssignedRoleIsLoading(false);
-  }, [assignedRole, dispatch, me, meIsLoading, pathname]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [me, meIsLoading]);
 
   if (nextAuthIsLoading) {
     return <AuthLoader />;
