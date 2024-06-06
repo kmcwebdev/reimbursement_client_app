@@ -60,6 +60,8 @@ export const AbilityContextProvider: React.FC<PropsWithChildren> = ({
         nextAuthSession.data.refreshToken,
       );
       console.log("Dispatched tokens");
+    } else {
+      window.location.reload();
     }
 
     setNextAuthIsLoading(false);
