@@ -11,7 +11,7 @@ const MobileListSkeleton: React.FC<MobileListSkeletonProps> = () => {
           key={`mobileSkeleton-${i}`}
           className="table-row h-[120px] border-b md:hidden"
         >
-          <td className="h-full px-4" colSpan={length}>
+          <td className="h-full px-4">
             <div className="flex flex-col justify-between gap-2 py-4">
               <div className="flex flex-col gap-4">
                 <div className="flex items-center justify-between">

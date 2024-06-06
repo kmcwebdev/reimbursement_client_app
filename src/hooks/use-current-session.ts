@@ -6,7 +6,7 @@ import { useCallback, useEffect, useState } from "react";
 // This hook doesn't rely on the session provider
 export const useCurrentSession = () => {
   const [data, setData] = useState<Session | null>(null);
-  const [status, setStatus] = useState<string>("unauthenticated");
+  const [status, setStatus] = useState<string>("loading");
   const pathName = usePathname();
 
   const retrieveSession = useCallback(async () => {
