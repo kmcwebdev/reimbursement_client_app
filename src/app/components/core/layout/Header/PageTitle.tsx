@@ -1,15 +1,16 @@
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import React from "react";
 
 const PageTitle: React.FC = () => {
   const pathname = usePathname();
+  const router = useRouter();
 
   // Check if pathname is not null before proceeding with includes checks
   if (pathname) {
     if (pathname.includes("email-action")) {
       return (
-        <div className="relative h-6 w-[101px]">
+        <div className="relative h-6 w-[101px]" onClick={()=>void router.push("/")}>
           <Image
             src="https://cdn.kmc.solutions/project-statics/KMC-logo-updated-black%20(1).png"
             alt="kmc-logo"
