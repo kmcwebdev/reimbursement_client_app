@@ -34,7 +34,7 @@ const appApiBaseQuery = fetchBaseQuery({
     headers.set("Cache-Control", "no-cache");
     headers.set("Pragma", "no-cache");
     headers.set("Expires", "0");
-    
+
     const tokenFromRedux = (getState() as RootState).session.accessToken;
     const lsUserSession = localStorage.getItem("_user_session");
 
@@ -49,12 +49,10 @@ const appApiBaseQuery = fetchBaseQuery({
           if (parseUserSession) {
             token = parseUserSession.accessToken;
           }
-
         }
       }
 
       headers.set("authorization", `Bearer ${token}`);
-      
     }
 
     return headers;
@@ -150,6 +148,8 @@ export const appApiSlice = createApi({
     "ExpenseTypes",
     "AllExpenseTypes",
     "AllGroups",
+    "AllClients",
+    "AllHRBPs",
     "AllStatuses",
     "Users",
     "Permissions",

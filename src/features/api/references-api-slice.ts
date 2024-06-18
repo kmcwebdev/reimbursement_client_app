@@ -1,12 +1,15 @@
 import { appApiSlice } from "~/app/rtkQuery";
 import { reimbursementTypeSchema } from "~/schema/reimbursement-type.schema";
 import {
+  ClientFilterQuery,
   type ExpenseTypeResponse,
   type GroupResponse,
+  type ReimbursementClientsResponse,
   type ReimbursementFormType,
   type RequestTypeResponse,
   type StatusResponse,
 } from "~/types/reimbursement.types";
+import { createSearchParams } from "~/utils/create-search-params";
 
 /**
  * REFERENCES API SLICE
@@ -68,6 +71,29 @@ export const referencesApiSlice = appApiSlice.injectEndpoints({
         { type: "AllGroups", id: "/all" },
       ],
     }),
+    allClients: builder.query<ReimbursementClientsResponse, ClientFilterQuery>({
+      query: (query) => {
+        const searchParams = createSearchParams(query);
+
+        return {
+          url: "/reimbursements/request/clients",
+          params: searchParams ? searchParams : {},
+        };
+      },
+      providesTags: (_result, _fetchBaseQuery, query) => [
+        { type: "AllClients", id: JSON.stringify(query) },
+      ],
+    }),
+    allHRBPs: builder.query<any, unknown>({
+      query: () => {
+        return {
+          url: "/management/users?group_id=4",
+        };
+      },
+      providesTags: (_result, _fetchBaseQuery, _query) => [
+        { type: "AllGroups", id: "/all" },
+      ],
+    }),
   }),
 });
 
@@ -77,4 +103,6 @@ export const {
   useAllStatusesQuery,
   useAllExpenseTypesQuery,
   useAllGroupsQuery,
+  useAllClientsQuery,
+  useAllHRBPsQuery,
 } = referencesApiSlice;
