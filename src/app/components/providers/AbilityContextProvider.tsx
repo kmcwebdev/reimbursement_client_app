@@ -41,15 +41,16 @@ export const AbilityContextProvider: React.FC<PropsWithChildren> = ({
     dispatch(setRefreshToken(refresh));
   };
 
-  console.log("TOKEN:", accessToken);
-
-  /**STORES TOKEN IN REDUX */
+  /**STORES TOKEN IN REDUX AND LOCAL STORAGE */
   useEffect(() => {
     if (
       nextAuthCurrentSession.data &&
       nextAuthCurrentSession.data.accessToken &&
       nextAuthCurrentSession.data.refreshToken
     ) {
+
+      localStorage.setItem("_user_session", JSON.stringify(nextAuthCurrentSession.data));
+      
       dispatchTokens(
         nextAuthCurrentSession.data.accessToken,
         nextAuthCurrentSession.data.refreshToken,

@@ -7,6 +7,7 @@ import {
   type FetchBaseQueryError,
   type FetchBaseQueryMeta,
 } from "@reduxjs/toolkit/query/react";
+import { Session } from "next-auth";
 import { signOut } from "next-auth/react";
 import { env } from "~/env.mjs";
 import {
@@ -33,11 +34,27 @@ const appApiBaseQuery = fetchBaseQuery({
     headers.set("Cache-Control", "no-cache");
     headers.set("Pragma", "no-cache");
     headers.set("Expires", "0");
+    
+    const tokenFromRedux = (getState() as RootState).session.accessToken;
+    const lsUserSession = localStorage.getItem("_user_session");
 
-    const token = (getState() as RootState).session.accessToken;
+    if (!headers.has("authorization")) {
+      let token;
+      if (tokenFromRedux) {
+        token = tokenFromRedux;
+      } else {
+        if (lsUserSession) {
+          const parseUserSession = JSON.parse(lsUserSession) as Session;
 
-    if (token && !headers.has("authorization")) {
+          if (parseUserSession) {
+            token = parseUserSession.accessToken;
+          }
+
+        }
+      }
+
       headers.set("authorization", `Bearer ${token}`);
+      
     }
 
     return headers;

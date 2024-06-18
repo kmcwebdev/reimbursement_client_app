@@ -93,6 +93,7 @@ const Profile: NextPage = () => {
           formReturn.reset();
           await signOut().then(() => {
             dispatch(clearUserSession());
+            localStorage.removeItem("_user_session");
             close();
             router.refresh();
           });

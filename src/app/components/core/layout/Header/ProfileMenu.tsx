@@ -37,6 +37,7 @@ const ProfileMenu: React.FC = () => {
 
   const logoutFn = async () => {
     await signOut().then(() => {
+      localStorage.removeItem("_user_session");
       dispatch(clearUserSession());
       closeSignoutDialog();
       router.refresh();
