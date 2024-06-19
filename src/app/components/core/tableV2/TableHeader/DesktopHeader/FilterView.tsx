@@ -6,9 +6,12 @@ import { HiCurrencyDollar } from "react-icons-all-files/hi/HiCurrencyDollar";
 import { IoMdClose } from "react-icons-all-files/io/IoMdClose";
 import { MdAccessTimeFilled } from "react-icons-all-files/md/MdAccessTimeFilled";
 import { MdCalendarToday } from "react-icons-all-files/md/MdCalendarToday";
+import { MdGroup } from "react-icons-all-files/md/MdGroup";
 import { MdLabel } from "react-icons-all-files/md/MdLabel";
 import {
+  useAllClientsQuery,
   useAllExpenseTypesQuery,
+  useAllHRBPsQuery,
   useAllStatusesQuery,
   useRequestTypesQuery,
 } from "~/features/api/references-api-slice";
@@ -27,6 +30,8 @@ interface FilterViewProps {
 
 interface IFilters {
   request_status__id: string[];
+  client_id: string[];
+  hrbp_id: string[];
   request_type__id: string[];
   expense_type__id: string[];
   date: string[];
@@ -49,9 +54,17 @@ const FilterView: React.FC<FilterViewProps> = ({
   const { data: allStatuses, isLoading: allStatusesIsLoading } =
     useAllStatusesQuery({});
 
+  const { data: selectedClients, isLoading: selectedClientsIsLoading } =
+    useAllClientsQuery({ id: filters?.client_id });
+
+  const { data: selectedHRBPs, isLoading: selectedHRBPSIsLoading } =
+    useAllHRBPsQuery({ id: filters?.hrbp_id });
+
   useMemo(() => {
     const transformedFilters: IFilters = {
       request_status__id: [],
+      client_id: [],
+      hrbp_id: [],
       expense_type__id: [],
       request_type__id: [],
       date: [],
@@ -89,6 +102,20 @@ const FilterView: React.FC<FilterViewProps> = ({
             transformedFilters.request_type__id = filters.request_type__id
               .toString()
               .split(",");
+          }
+        }
+
+        if (key === "client_id") {
+          if (filters.client_id) {
+            transformedFilters.client_id = filters.client_id
+              .toString()
+              .split(",");
+          }
+        }
+
+        if (key === "hrbp_id") {
+          if (filters.hrbp_id) {
+            transformedFilters.hrbp_id = filters.hrbp_id.toString().split(",");
           }
         }
       });
@@ -148,7 +175,13 @@ const FilterView: React.FC<FilterViewProps> = ({
                 Object.keys(filterViewState).map((key) => (
                   <div key={key}>
                     {filterViewState[key as keyof IFilters].length > 0 && (
-                      <div key={key} className="flex items-center gap-2">
+                      <div
+                        key={key}
+                        className={classNames(
+                          "flex items-center gap-2",
+                          key === "client_id" && "w-96 overflow-x-auto py-1",
+                        )}
+                      >
                         {key === "request_status__id" &&
                           filterViewState.request_status__id.length > 0 && (
                             <MdLabel className="h-4 w-4 text-neutral-900" />
@@ -157,6 +190,16 @@ const FilterView: React.FC<FilterViewProps> = ({
                         {key === "request_type__id" &&
                           filterViewState.request_type__id.length > 0 && (
                             <MdAccessTimeFilled className="h-4 w-4 text-neutral-900" />
+                          )}
+
+                        {key === "client_id" &&
+                          filterViewState.client_id.length > 0 && (
+                            <MdGroup className="h-4 w-4 text-neutral-900" />
+                          )}
+
+                        {key === "hrbp_id" &&
+                          filterViewState.hrbp_id.length > 0 && (
+                            <MdGroup className="h-4 w-4 text-neutral-900" />
                           )}
 
                         {key === "expense_type__id" &&
@@ -170,8 +213,52 @@ const FilterView: React.FC<FilterViewProps> = ({
 
                         {filterViewState[key as keyof IFilters].length > 0 && (
                           <div className="flex gap-2">
-                            {filterViewState[key as keyof IFilters].map(
-                              (value, i) => (
+                            <span>
+                              {key === "client_id" && (
+                                <p
+                                  key={key}
+                                  className={classNames(
+                                    "pl-2 text-sm text-neutral-800",
+                                  )}
+                                >
+                                  {selectedClientsIsLoading
+                                    ? "..."
+                                    : selectedClients &&
+                                        selectedClients.count >= 2
+                                      ? `${selectedClients.count} Clients Selected`
+                                      : selectedClients?.results?.map(
+                                          (a) => a.name,
+                                        )}
+                                </p>
+                              )}
+                            </span>
+
+                            <span>
+                              {key === "hrbp_id" && (
+                                <p
+                                  key={key}
+                                  className={classNames(
+                                    "pl-2 text-sm text-neutral-800",
+                                  )}
+                                >
+                                  {selectedHRBPSIsLoading
+                                    ? "..."
+                                    : selectedHRBPs && selectedHRBPs.count >= 2
+                                      ? `${selectedHRBPs.count} HRBPs Selected`
+                                      : selectedHRBPs?.results?.map(
+                                          (a) =>
+                                            `${a.first_name} ${a.last_name}`,
+                                        )}
+                                </p>
+                              )}
+                            </span>
+
+                            {filterViewState[key as keyof IFilters]
+                              .filter(
+                                (key) =>
+                                  key !== "client_id" && key !== "hrbp_id",
+                              )
+                              .map((value, i) => (
                                 <span key={key + "-" + value}>
                                   {key === "request_status__id" && (
                                     <span className="ml-4 first:ml-0">
@@ -228,8 +315,7 @@ const FilterView: React.FC<FilterViewProps> = ({
                                     </p>
                                   )}
                                 </span>
-                              ),
-                            )}
+                              ))}
                           </div>
                         )}
                       </div>

@@ -41,7 +41,7 @@ const EmailActionPage: React.FC = () => {
   const request_id = searchParams.get("request_id");
 
   const [canTakeAction, setCanTakeAction] = useState<boolean>(false);
-  const { data: approvalStatus, isLoading: approvalStatusIsLoading } =
+  const { data: approvalStatus, isLoading: approvalStatusIsLoading,isError:approvalStatusIsError,error:approvalStatusError } =
     useGetRequestApprovalStatusQuery(
       {
         id: request_id!,
@@ -251,11 +251,19 @@ const EmailActionPage: React.FC = () => {
                 <HiExclamationCircle className="h-5 w-5 text-red-600" />
                 Something went wrong!
               </div>
-              <p className="text-neutral-600">
+
+              {!approvalStatusIsError && approvalStatus &&
+                <p className="text-neutral-600">
                 The request has already been{" "}
-                {approvalStatus?.detail.status.name.toLowerCase()} by another
+                {approvalStatus.detail.status.name.toLowerCase()} by another
                 approver at the same approval level.
-              </p>
+                </p>}
+              
+               {approvalStatusIsError && approvalStatusError &&
+                <p className="text-neutral-600">
+                  { (approvalStatusError as RtkApiError).data.detail}
+              </p>}
+          
             </div>
           </CollapseHeightAnimation>
 

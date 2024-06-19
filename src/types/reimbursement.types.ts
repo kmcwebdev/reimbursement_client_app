@@ -8,6 +8,7 @@ import { type approverMatrixSchema } from "~/schema/approver-matrix.schema";
 import { type credentialsSchema } from "~/schema/auth.schema";
 import { type changePasswordPayloadSchema } from "~/schema/change-password-payload.schema";
 import { type changePasswordSchema } from "~/schema/change-password.schema";
+import { clientFilterSchema } from "~/schema/client-filter.schema";
 import { type creditPayloadSchema } from "~/schema/credit-payload.schema";
 import { type expenseTypeResponseSchema } from "~/schema/expense-type-response.schema";
 import { type expenseTypeSchema } from "~/schema/expense-type.schema";
@@ -20,7 +21,9 @@ import { type initialLoginFormSchema } from "~/schema/initial-login.schema";
 import { type particularSchema } from "~/schema/particulars.schema";
 import { type queryFilterSchema } from "~/schema/query-filter.schema";
 import { type approverSchema } from "~/schema/reimbursement-approver.schema";
+import { reimbursementClientsSchema } from "~/schema/reimbursement-clients.schema";
 import { type reimbursementFormValuesSchema } from "~/schema/reimbursement-form-values.schema";
+import { reimbursementHrbpsSchema } from "~/schema/reimbursement-hrbps.schema";
 import { type onholdReimbursementSchema } from "~/schema/reimbursement-onhold-form.schema";
 import { type particularDetailsSchema } from "~/schema/reimbursement-particulars.schema";
 import { type rejectReimbursementSchema } from "~/schema/reimbursement-reject-form.schema";
@@ -62,6 +65,13 @@ export type ReimbursementRequest = z.infer<typeof reimbursementRequestSchema>;
 export type CreditPayload = z.infer<typeof creditPayloadSchema>;
 export type ResponsePagination = z.infer<typeof responsePaginationSchema>;
 export type RequestListResponse = z.infer<typeof requestListResponseSchema>;
+export type ReimbursementClientsResponse = z.infer<
+  typeof reimbursementClientsSchema
+>;
+export type ReimbursementHrbpsResponse = z.infer<
+  typeof reimbursementHrbpsSchema
+>;
+export type ClientFilterQuery = z.infer<typeof clientFilterSchema>;
 export type StatusResponse = z.infer<typeof statusResponseSchema>;
 export type RequestTypeResponse = z.infer<typeof requestTypeResponseSchema>;
 export type ExpenseTypeResponse = z.infer<typeof expenseTypeResponseSchema>;

@@ -37,6 +37,7 @@ const ProfileMenu: React.FC = () => {
 
   const logoutFn = async () => {
     await signOut().then(() => {
+      localStorage.removeItem("_user_session");
       dispatch(clearUserSession());
       closeSignoutDialog();
       router.refresh();
@@ -71,7 +72,10 @@ const ProfileMenu: React.FC = () => {
     if (user) {
       const selectedOption = selected as OptionData;
 
-      void assignGroup({ id: user.id, group_id: +selectedOption.value })
+      void assignGroup({
+        id: user.id.toString(),
+        group_id: +selectedOption.value,
+      })
         .unwrap()
         .then(() => {
           dispatch(setAssignedRole(selectedOption.label as GroupType));

@@ -23,6 +23,8 @@ import { showToast } from "../core/Toast";
 import TableV2 from "../core/tableV2";
 import TableCell from "../core/tableV2/TableCell";
 import TableCheckbox from "../core/tableV2/TableCheckbox";
+import ClientFilter from "../core/tableV2/filters/ClientFilter";
+import HRBPFilter from "../core/tableV2/filters/HRBPFilter";
 import AdminAnalytics from "./analytics/AdminAnalytics";
 
 const ReimbursementsCardView = dynamic(
@@ -129,6 +131,14 @@ const MyAdmin: React.FC = () => {
         id: "reimb_requestor",
         accessorKey: "reimb_requestor",
         header: "Client",
+        filterFn: (row, id, value: string) => {
+          return value.includes(row.getValue(id));
+        },
+        meta: {
+          filterComponent: () => (
+            <ClientFilter filters={filters} setFilters={setFilters} />
+          ),
+        },
       },
       {
         id: "reimb_requestor",
@@ -139,6 +149,19 @@ const MyAdmin: React.FC = () => {
         id: "reimb_requestor",
         accessorKey: "reimb_requestor",
         header: "Name",
+      },
+      {
+        id: "reimb_requestor",
+        accessorKey: "reimb_requestor",
+        header: "Assigned HRBP/s",
+        filterFn: (row, id, value: string) => {
+          return value.includes(row.getValue(id));
+        },
+        meta: {
+          filterComponent: () => (
+            <HRBPFilter filters={filters} setFilters={setFilters} />
+          ),
+        },
       },
       {
         id: "reference_no",

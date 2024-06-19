@@ -2,6 +2,8 @@ import { z } from "zod";
 
 export const queryFilterSchema = z.object({
   search: z.string().optional(),
+  client_id: z.string().optional(),
+  hrbp_id: z.string().optional(),
   request_type__id: z.string().optional(),
   expense_type__id: z.string().optional(),
   request_status__id: z.string().optional(),

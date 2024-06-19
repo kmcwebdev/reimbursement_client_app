@@ -7,6 +7,7 @@ import {
   type FetchBaseQueryError,
   type FetchBaseQueryMeta,
 } from "@reduxjs/toolkit/query/react";
+import { Session } from "next-auth";
 import { signOut } from "next-auth/react";
 import { env } from "~/env.mjs";
 import {
@@ -34,9 +35,23 @@ const appApiBaseQuery = fetchBaseQuery({
     headers.set("Pragma", "no-cache");
     headers.set("Expires", "0");
 
-    const token = (getState() as RootState).session.accessToken;
+    const tokenFromRedux = (getState() as RootState).session.accessToken;
+    const lsUserSession = localStorage.getItem("_user_session");
 
-    if (token && !headers.has("authorization")) {
+    if (!headers.has("authorization")) {
+      let token;
+      if (tokenFromRedux) {
+        token = tokenFromRedux;
+      } else {
+        if (lsUserSession) {
+          const parseUserSession = JSON.parse(lsUserSession) as Session;
+
+          if (parseUserSession) {
+            token = parseUserSession.accessToken;
+          }
+        }
+      }
+
       headers.set("authorization", `Bearer ${token}`);
     }
 
@@ -133,6 +148,8 @@ export const appApiSlice = createApi({
     "ExpenseTypes",
     "AllExpenseTypes",
     "AllGroups",
+    "AllClients",
+    "AllHRBPs",
     "AllStatuses",
     "Users",
     "Permissions",

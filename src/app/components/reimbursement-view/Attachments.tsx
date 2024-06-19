@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image, { type ImageLoaderProps } from "next/image";
 import React from "react";
 import { AiTwotoneFile } from "react-icons-all-files/ai/AiTwotoneFile";
 import { FaArrowRight } from "react-icons-all-files/fa/FaArrowRight";
@@ -8,6 +8,10 @@ import EmptyState from "../core/EmptyState";
 interface AttachmentsProps {
   attachments: FileStack[];
 }
+
+const attachmentLoader = (props: ImageLoaderProps) => {
+  return props.src;
+};
 
 const Attachments: React.FC<AttachmentsProps> = ({ attachments }) => {
   return (
@@ -22,8 +26,14 @@ const Attachments: React.FC<AttachmentsProps> = ({ attachments }) => {
             onClick={() => window.open(attachment.file_upload)}
           >
             {attachment.file_type.includes("image") && (
-              <div className="relative flex h-28 w-full flex-1 overflow-hidden rounded-md">
-                <Image fill src={attachment.file_upload} alt="image" />
+              <div className="relative flex h-28 w-full flex-1 overflow-hidden rounded-md object-contain">
+                <Image
+                  fill
+                  src={attachment.file_upload}
+                  loader={attachmentLoader}
+                  className="object-cover object-center"
+                  alt="image"
+                />
               </div>
             )}
 

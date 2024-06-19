@@ -48,6 +48,7 @@ const InitialLoginForm: React.FC = () => {
       .unwrap()
       .then(async () => {
         await signOut();
+        localStorage.removeItem("_user_session");
         showToast({
           type: "success",
           description: "Password has been changed successfully",
