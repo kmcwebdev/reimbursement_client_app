@@ -23,6 +23,7 @@ import { type queryFilterSchema } from "~/schema/query-filter.schema";
 import { type approverSchema } from "~/schema/reimbursement-approver.schema";
 import { reimbursementClientsSchema } from "~/schema/reimbursement-clients.schema";
 import { type reimbursementFormValuesSchema } from "~/schema/reimbursement-form-values.schema";
+import { reimbursementHrbpsSchema } from "~/schema/reimbursement-hrbps.schema";
 import { type onholdReimbursementSchema } from "~/schema/reimbursement-onhold-form.schema";
 import { type particularDetailsSchema } from "~/schema/reimbursement-particulars.schema";
 import { type rejectReimbursementSchema } from "~/schema/reimbursement-reject-form.schema";
@@ -66,6 +67,9 @@ export type ResponsePagination = z.infer<typeof responsePaginationSchema>;
 export type RequestListResponse = z.infer<typeof requestListResponseSchema>;
 export type ReimbursementClientsResponse = z.infer<
   typeof reimbursementClientsSchema
+>;
+export type ReimbursementHrbpsResponse = z.infer<
+  typeof reimbursementHrbpsSchema
 >;
 export type ClientFilterQuery = z.infer<typeof clientFilterSchema>;
 export type StatusResponse = z.infer<typeof statusResponseSchema>;

@@ -18,6 +18,7 @@ import {
 import { currencyFormat } from "~/utils/currencyFormat";
 import { parseTimezone } from "~/utils/parse-timezone";
 import { Button } from "../../Button";
+import Popover from "../../Popover";
 import StatusBadge, { type StatusType } from "../../StatusBadge";
 import ExpenseTypeCell from "./ExpenseTypeCell";
 
@@ -37,6 +38,7 @@ const TableCell: React.FC<CellContext<ReimbursementRequest, unknown>> = (
     "Name",
     "E-ID",
     "Client",
+    "Assigned HRBP/s",
   ];
 
   const getHRBPAcknowledgeDate = (value: ApproverMatrix[]) => {
@@ -46,6 +48,57 @@ const TableCell: React.FC<CellContext<ReimbursementRequest, unknown>> = (
       return hrbpApprover.acknowledge_datetime;
     }
     return "";
+  };
+
+  const getHrbps = () => {
+    const requestor = props.getValue() as User;
+    if (requestor) {
+      const hrbps = requestor.profile?.hrbps;
+
+      if (hrbps) {
+        if (hrbps.length > 1) {
+          return (
+            <div className="flex items-center gap-2">
+              <span className="rounded-md border border-neutral-500 px-1 py-0.5">
+                {hrbps[0].full_name}
+              </span>
+
+              <Popover
+                ariaLabel="hrbp"
+                btn={
+                  <span className="cursor-pointer rounded-md border border-neutral-500 px-1 py-1 transition-all ease-in-out hover:text-orange-600">
+                    + {hrbps.length - 1}
+                  </span>
+                }
+                panelClassName="left-0 top-5"
+                content={
+                  <div className="relative w-52">
+                    <div className="flex flex-col gap-4 p-4">
+                      {hrbps.map((hrbp) => (
+                        <p key={hrbp.email}>{hrbp.full_name}</p>
+                      ))}
+                    </div>
+                  </div>
+                }
+              />
+            </div>
+          );
+        } else {
+          return (
+            <div className="flex items-center gap-2">
+              {hrbps.map((hrbp) => (
+                <span
+                  key={hrbp.email}
+                  className="rounded-md border border-neutral-500 px-1 py-0.5"
+                >
+                  {hrbp.full_name}
+                </span>
+              ))}
+            </div>
+          );
+        }
+      }
+    }
   };
 
   return (
@@ -112,6 +165,11 @@ const TableCell: React.FC<CellContext<ReimbursementRequest, unknown>> = (
           {(props.getValue() as User)?.first_name}{" "}
           {(props.getValue() as User)?.last_name}
         </>
+      )}
+
+      {/* REQUESTOR HRBPs*/}
+      {props.column.columnDef.header === "Assigned HRBP/s" && (
+        <div className="flex gap-2">{getHrbps()}</div>
       )}
       {/* EXPENSE TYPE */}
       {props.column.columnDef.header === "Expense" && (

@@ -11,6 +11,7 @@ import { MdLabel } from "react-icons-all-files/md/MdLabel";
 import {
   useAllClientsQuery,
   useAllExpenseTypesQuery,
+  useAllHRBPsQuery,
   useAllStatusesQuery,
   useRequestTypesQuery,
 } from "~/features/api/references-api-slice";
@@ -30,6 +31,7 @@ interface FilterViewProps {
 interface IFilters {
   request_status__id: string[];
   client_id: string[];
+  hrbp_id: string[];
   request_type__id: string[];
   expense_type__id: string[];
   date: string[];
@@ -55,10 +57,14 @@ const FilterView: React.FC<FilterViewProps> = ({
   const { data: selectedClients, isLoading: selectedClientsIsLoading } =
     useAllClientsQuery({ id: filters?.client_id });
 
+  const { data: selectedHRBPs, isLoading: selectedHRBPSIsLoading } =
+    useAllHRBPsQuery({ id: filters?.hrbp_id });
+
   useMemo(() => {
     const transformedFilters: IFilters = {
       request_status__id: [],
       client_id: [],
+      hrbp_id: [],
       expense_type__id: [],
       request_type__id: [],
       date: [],
@@ -104,6 +110,12 @@ const FilterView: React.FC<FilterViewProps> = ({
             transformedFilters.client_id = filters.client_id
               .toString()
               .split(",");
+          }
+        }
+
+        if (key === "hrbp_id") {
+          if (filters.hrbp_id) {
+            transformedFilters.hrbp_id = filters.hrbp_id.toString().split(",");
           }
         }
       });
@@ -185,6 +197,11 @@ const FilterView: React.FC<FilterViewProps> = ({
                             <MdGroup className="h-4 w-4 text-neutral-900" />
                           )}
 
+                        {key === "hrbp_id" &&
+                          filterViewState.hrbp_id.length > 0 && (
+                            <MdGroup className="h-4 w-4 text-neutral-900" />
+                          )}
+
                         {key === "expense_type__id" &&
                           filterViewState.expense_type__id.length > 0 && (
                             <HiCurrencyDollar className="h-4 w-4 text-neutral-900" />
@@ -215,8 +232,32 @@ const FilterView: React.FC<FilterViewProps> = ({
                                 </p>
                               )}
                             </span>
+
+                            <span>
+                              {key === "hrbp_id" && (
+                                <p
+                                  key={key}
+                                  className={classNames(
+                                    "pl-2 text-sm text-neutral-800",
+                                  )}
+                                >
+                                  {selectedHRBPSIsLoading
+                                    ? "..."
+                                    : selectedHRBPs && selectedHRBPs.count >= 2
+                                      ? `${selectedHRBPs.count} HRBPs Selected`
+                                      : selectedHRBPs?.results?.map(
+                                          (a) =>
+                                            `${a.first_name} ${a.last_name}`,
+                                        )}
+                                </p>
+                              )}
+                            </span>
+
                             {filterViewState[key as keyof IFilters]
-                              .filter((key) => key !== "client_id")
+                              .filter(
+                                (key) =>
+                                  key !== "client_id" && key !== "hrbp_id",
+                              )
                               .map((value, i) => (
                                 <span key={key + "-" + value}>
                                   {key === "request_status__id" && (

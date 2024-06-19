@@ -16,7 +16,7 @@ export const userProfileSchema = z.object({
 });
 
 export const userSchema = z.object({
-  id: z.string(),
+  id: z.number(),
   email: z.string(),
   first_name: z.string(),
   last_name: z.string(),
