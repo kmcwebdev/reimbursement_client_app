@@ -3,6 +3,7 @@ import { FaCaretDown } from "react-icons-all-files/fa/FaCaretDown";
 import { MdClose } from "react-icons-all-files/md/MdClose";
 import { useAllHRBPsQuery } from "~/features/api/references-api-slice";
 import { useDebounce } from "~/hooks/use-debounce";
+import { classNames } from "~/utils/classNames";
 import Popover from "../../Popover";
 import Checkbox from "../../form/fields/Checkbox";
 import Input from "../../form/fields/Input";
@@ -66,7 +67,8 @@ const HRBPFilter: React.FC<FilterProps> = ({ filters, setFilters }) => {
           <div className="flex h-10 items-center border-b px-4 text-orange-600">
             Pick HRBP/s
           </div>
-          <div className="relative h-[360px] w-96 overflow-y-hidden bg-neutral-50">
+
+          <div className="relative h-[360px] w-96 overflow-hidden bg-neutral-50">
             {filters?.hrbp_id && (
               <div className="flex gap-2 overflow-x-auto border-b p-4 scrollbar-none">
                 {!selectedHrbpsIsLoading &&
@@ -86,17 +88,21 @@ const HRBPFilter: React.FC<FilterProps> = ({ filters, setFilters }) => {
                   ))}
               </div>
             )}
-
             <div className="border-b p-4">
               <Input
                 name="Search"
-                placeholder="Search Client"
+                placeholder="Search HRBP"
                 onChange={handleSearch}
               />
             </div>
 
-            <div className="flex h-64 gap-2 overflow-y-auto capitalize">
-              <div className="flex flex-1 flex-col gap-4 p-2">
+            <div
+              className={classNames(
+                "flex gap-2 overflow-y-auto overflow-x-hidden capitalize",
+                !filters?.hrbp_id ? "h-[280px]" : "h-64",
+              )}
+            >
+              <div className="flex flex-1 flex-col gap-4 px-2">
                 {!allHrbpssIsLoading &&
                   allHrbps &&
                   allHrbps.results.length > 0 &&
