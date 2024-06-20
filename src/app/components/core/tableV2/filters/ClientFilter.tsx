@@ -3,6 +3,7 @@ import { FaCaretDown } from "react-icons-all-files/fa/FaCaretDown";
 import { MdClose } from "react-icons-all-files/md/MdClose";
 import { useAllClientsQuery } from "~/features/api/references-api-slice";
 import { useDebounce } from "~/hooks/use-debounce";
+import { classNames } from "~/utils/classNames";
 import Popover from "../../Popover";
 import Checkbox from "../../form/fields/Checkbox";
 import Input from "../../form/fields/Input";
@@ -99,8 +100,13 @@ const ClientFilter: React.FC<FilterProps> = ({ filters, setFilters }) => {
               />
             </div>
 
-            <div className="flex h-64 gap-2 overflow-y-auto capitalize">
-              <div className="flex flex-1 flex-col gap-4 p-2">
+            <div
+              className={classNames(
+                "flex gap-2 overflow-y-auto overflow-x-hidden py-4 capitalize",
+                !filters?.client_id ? "h-[280px]" : "h-64",
+              )}
+            >
+              <div className="flex flex-1 flex-col gap-4 px-2 pb-4">
                 {!allClientsIsLoading &&
                   allClients &&
                   allClients.results.length > 0 &&
