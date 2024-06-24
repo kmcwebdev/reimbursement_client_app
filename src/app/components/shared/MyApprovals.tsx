@@ -4,14 +4,12 @@ import { useAbility } from "@casl/react";
 import { type ColumnDef } from "@tanstack/react-table";
 import dynamic from "next/dynamic";
 import React, { useEffect, useState, type ChangeEvent } from "react";
+import useMyApprovalList from "~/app/api/services/approval-list";
 import TableCheckbox from "~/app/components/core/tableV2/TableCheckbox";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { AbilityContext } from "~/context/AbilityContext";
 import { useApprovalAnalyticsQuery } from "~/features/api/analytics-api-slice";
-import {
-  useGetApprovalListQuery,
-  useGetRequestQuery,
-} from "~/features/api/reimbursement-api-slice";
+import { useGetRequestQuery } from "~/features/api/reimbursement-api-slice";
 import {
   setApprovalDashboardFilters,
   setApprovalDashboardSelectedItems,
@@ -80,16 +78,11 @@ const MyApprovals: React.FC = () => {
     { skip: !focusedReimbursementId },
   );
 
-  const { isFetching: isLoading, data } = useGetApprovalListQuery(
-    {
-      ...filters,
-      search: debouncedSearchText,
-      type: assignedRole?.split("_")[1].toLowerCase()!,
-    },
-    {
-      skip: !assignedRole,
-    },
-  );
+  const { isLoading, data } = useMyApprovalList({
+    ...filters,
+    search: debouncedSearchText,
+    type: assignedRole?.split("_")[1].toLowerCase()!,
+  });
 
   const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
     setIsSearching(true);

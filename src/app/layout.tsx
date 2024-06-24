@@ -7,6 +7,7 @@ import { auth } from "./auth";
 import Layout from "./components/core/layout";
 import { AbilityContextProvider } from "./components/providers/AbilityContextProvider";
 import NextAuthSessionProvider from "./components/providers/NextAuthSessionProvider";
+import ReactQueryClientProvider from "./components/providers/ReactQueryClientProvider";
 import ReduxStoreProvider from "./components/providers/ReduxStoreProvider";
 
 const Toaster = dynamic(() => import("~/context/Toaster"));
@@ -48,20 +49,23 @@ export const viewport: Viewport = {
 
 const RootLayout: NextPage<PropsWithChildren> = async ({ children }) => {
   const session = await auth();
+
   return (
     <html lang="en">
       <body>
-        <ReduxStoreProvider>
-          <NextAuthSessionProvider session={session}>
-            <AbilityContextProvider>
-              <Toaster />
-              <Layout>
-                {children}
-                <SpeedInsights />
-              </Layout>
-            </AbilityContextProvider>
-          </NextAuthSessionProvider>
-        </ReduxStoreProvider>
+        <ReactQueryClientProvider>
+          <ReduxStoreProvider>
+            <NextAuthSessionProvider session={session}>
+              <AbilityContextProvider>
+                <Toaster />
+                <Layout>
+                  {children}
+                  <SpeedInsights />
+                </Layout>
+              </AbilityContextProvider>
+            </NextAuthSessionProvider>
+          </ReduxStoreProvider>
+        </ReactQueryClientProvider>
       </body>
     </html>
   );

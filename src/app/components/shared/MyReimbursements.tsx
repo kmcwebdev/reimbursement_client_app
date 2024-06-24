@@ -4,10 +4,10 @@ import { type ColumnDef } from "@tanstack/react-table";
 import dynamic from "next/dynamic";
 import React, { useEffect, useMemo, useState, type ChangeEvent } from "react";
 import { useForm } from "react-hook-form";
+import useMyReimbursementsList from "~/app/api/services/reimbursements-list";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { appApiSlice } from "~/app/rtkQuery";
 import { useGetRequestQuery } from "~/features/api/reimbursement-api-slice";
-import { useMyRequestsQuery } from "~/features/api/user-api-slice";
 import {
   _setTempAttachedFiles,
   clearReimbursementForm,
@@ -73,7 +73,7 @@ const MyReimbursements: React.FC = () => {
 
   const dispatch = useAppDispatch();
 
-  const { isFetching, data } = useMyRequestsQuery({
+  const { isFetching, data } = useMyReimbursementsList({
     ...filters,
     search: debouncedSearchText,
   });
