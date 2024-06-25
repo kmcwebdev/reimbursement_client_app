@@ -4,12 +4,12 @@ import { useAbility } from "@casl/react";
 import { type ColumnDef } from "@tanstack/react-table";
 import dynamic from "next/dynamic";
 import React, { useEffect, useState, type ChangeEvent } from "react";
-import useMyApprovalList from "~/app/api/services/approval-list";
+import AnalyticsService from "~/app/api/services/analytics-service";
+import SideDrawerService from "~/app/api/services/side-drawer-service";
+import TableService from "~/app/api/services/table-service";
 import TableCheckbox from "~/app/components/core/tableV2/TableCheckbox";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { AbilityContext } from "~/context/AbilityContext";
-import { useApprovalAnalyticsQuery } from "~/features/api/analytics-api-slice";
-import { useGetRequestQuery } from "~/features/api/reimbursement-api-slice";
 import {
   setApprovalDashboardFilters,
   setApprovalDashboardSelectedItems,
@@ -63,22 +63,14 @@ const MyApprovals: React.FC = () => {
   const [isSearching, setIsSearching] = useState<boolean>(false);
 
   const { isFetching: analyticsIsLoading, data: analytics } =
-    useApprovalAnalyticsQuery(
-      {
-        type: assignedRole?.split("_")[1].toLowerCase()!,
-      },
-      { skip: !assignedRole },
-    );
+    AnalyticsService.useAnalytics(assignedRole?.split("_")[1].toLowerCase()!);
 
   const {
     isFetching: reimbursementRequestDataIsLoading,
-    currentData: reimbursementRequestData,
-  } = useGetRequestQuery(
-    { id: focusedReimbursementId! },
-    { skip: !focusedReimbursementId },
-  );
+    data: reimbursementRequestData,
+  } = SideDrawerService.useReimbursementRequest(+focusedReimbursementId!);
 
-  const { isLoading, data } = useMyApprovalList({
+  const { isLoading, data } = TableService.useApprovalList({
     ...filters,
     search: debouncedSearchText,
     type: assignedRole?.split("_")[1].toLowerCase()!,

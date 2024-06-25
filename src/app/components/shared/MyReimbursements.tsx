@@ -4,10 +4,10 @@ import { type ColumnDef } from "@tanstack/react-table";
 import dynamic from "next/dynamic";
 import React, { useEffect, useMemo, useState, type ChangeEvent } from "react";
 import { useForm } from "react-hook-form";
-import useMyReimbursementsList from "~/app/api/services/reimbursements-list";
+import SideDrawerService from "~/app/api/services/side-drawer-service";
+import TableService from "~/app/api/services/table-service";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { appApiSlice } from "~/app/rtkQuery";
-import { useGetRequestQuery } from "~/features/api/reimbursement-api-slice";
 import {
   _setTempAttachedFiles,
   clearReimbursementForm,
@@ -73,7 +73,7 @@ const MyReimbursements: React.FC = () => {
 
   const dispatch = useAppDispatch();
 
-  const { isFetching, data } = useMyReimbursementsList({
+  const { isFetching, data } = TableService.useMyReimbursementsList({
     ...filters,
     search: debouncedSearchText,
   });
@@ -81,11 +81,8 @@ const MyReimbursements: React.FC = () => {
   const {
     isFetching: focusedReimbursementDataIsFetching,
     isError: focusedReimbursementDataIsError,
-    currentData: focusedReimbursementData,
-  } = useGetRequestQuery(
-    { id: focusedReimbursementId! },
-    { skip: !focusedReimbursementId },
-  );
+    data: focusedReimbursementData,
+  } = SideDrawerService.useReimbursementRequest(+focusedReimbursementId!);
 
   //Form return for reimbursement type selection
   const useReimbursementTypeFormReturn = useForm<ReimbursementFormType>({

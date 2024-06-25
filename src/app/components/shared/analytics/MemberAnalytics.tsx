@@ -1,14 +1,15 @@
 import React from "react";
 import { MdAccessTimeFilled } from "react-icons-all-files/md/MdAccessTimeFilled";
 import { MdCreditCard } from "react-icons-all-files/md/MdCreditCard";
+import AnalyticsService from "~/app/api/services/analytics-service";
 import DashboardCard, {
   DashboardCardSkeleton,
 } from "~/app/components/core/DashboardCard";
-import { useMyAnalyticsQuery } from "~/features/api/analytics-api-slice";
 
 const MemberAnalytics: React.FC = () => {
   const { isFetching: analyticsIsLoading, data: analytics } =
-    useMyAnalyticsQuery();
+    AnalyticsService.useUserAnalytics();
+
   return (
     <div>
       {analyticsIsLoading && (

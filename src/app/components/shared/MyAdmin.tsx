@@ -2,12 +2,10 @@
 import { type ColumnDef } from "@tanstack/react-table";
 import dynamic from "next/dynamic";
 import React, { useState, type ChangeEvent } from "react";
+import SideDrawerService from "~/app/api/services/side-drawer-service";
+import TableService from "~/app/api/services/table-service";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { env } from "~/env.mjs";
-import {
-  useGetAdminListQuery,
-  useGetRequestQuery,
-} from "~/features/api/reimbursement-api-slice";
 import {
   setAdminDashboardFilters,
   setAdminDashboardSelectedItems,
@@ -60,15 +58,6 @@ const MyAdmin: React.FC = () => {
 
   const [downloadReportLoading, setDownloadReportLoading] = useState(false);
 
-  const {
-    isFetching: focusedReimbursementDataIsFetching,
-    isError: focusedReimbursementDataIsError,
-    currentData: focusedReimbursementData,
-  } = useGetRequestQuery(
-    { id: +focusedReimbursementId! },
-    { skip: !focusedReimbursementId },
-  );
-
   const toggleDownloadReportDialogVisibility = () => {
     dispatch(toggleBulkDownloadReportDialog());
   };
@@ -78,13 +67,16 @@ const MyAdmin: React.FC = () => {
 
   const debouncedSearchText = useDebounce(searchParams?.search, 500);
 
-  const { isFetching, data } = useGetAdminListQuery(
-    {
-      ...filters,
-      search: debouncedSearchText,
-    },
-    { refetchOnMountOrArgChange: true },
-  );
+  const {
+    isFetching: focusedReimbursementDataIsFetching,
+    isError: focusedReimbursementDataIsError,
+    data: focusedReimbursementData,
+  } = SideDrawerService.useReimbursementRequest(+focusedReimbursementId!);
+
+  const { isFetching, data } = TableService.useAdminList({
+    ...filters,
+    search: debouncedSearchText,
+  });
 
   const columns = React.useMemo<ColumnDef<ReimbursementRequest>[]>(() => {
     const defaultColumns: ColumnDef<ReimbursementRequest, unknown>[] = [

@@ -5,12 +5,10 @@ import { type ColumnDef } from "@tanstack/react-table";
 import dynamic from "next/dynamic";
 import { redirect } from "next/navigation";
 import React, { useEffect, useState, type ChangeEvent } from "react";
+import SideDrawerService from "~/app/api/services/side-drawer-service";
+import TableService from "~/app/api/services/table-service";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { env } from "~/env.mjs";
-import {
-  useGetRequestQuery,
-  useGetRequestsHistoryQuery,
-} from "~/features/api/reimbursement-api-slice";
 import {
   setHistoryDashboardFilters,
   setHistoryDashboardSelectedItems,
@@ -64,11 +62,8 @@ const ReimbursementHistory: React.FC = () => {
   const {
     isFetching: reimbursementRequestDataIsLoading,
     isError: reimbursementRequestDataIsError,
-    currentData: reimbursementRequestData,
-  } = useGetRequestQuery(
-    { id: focusedReimbursementId! },
-    { skip: !focusedReimbursementId },
-  );
+    data: reimbursementRequestData,
+  } = SideDrawerService.useReimbursementRequest(+focusedReimbursementId!);
 
   const [searchParams, setSearchParams] = useState<QueryFilter | null>(null);
 
@@ -95,14 +90,11 @@ const ReimbursementHistory: React.FC = () => {
     },
   });
 
-  const { isFetching, currentData: data } = useGetRequestsHistoryQuery(
-    {
-      ...filters,
-      search: debouncedSearchText,
-      type: assignedRole?.split("_")[1].toLowerCase()!,
-    },
-    { skip: !assignedRole },
-  );
+  const { isFetching, data } = TableService.useHistoryList({
+    ...filters,
+    search: debouncedSearchText,
+    type: assignedRole?.split("_")[1].toLowerCase()!,
+  });
 
   const columns = React.useMemo<ColumnDef<ReimbursementRequest>[]>(() => {
     //FINANCE COLUMNS

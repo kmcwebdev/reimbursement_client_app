@@ -2,14 +2,12 @@
 import { type ColumnDef } from "@tanstack/react-table";
 import dynamic from "next/dynamic";
 import React, { useEffect, useState, type ChangeEvent } from "react";
+import AnalyticsService from "~/app/api/services/analytics-service";
+import SideDrawerService from "~/app/api/services/side-drawer-service";
+import TableService from "~/app/api/services/table-service";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { appApiSlice } from "~/app/rtkQuery";
 import { env } from "~/env.mjs";
-import { useApprovalAnalyticsQuery } from "~/features/api/analytics-api-slice";
-import {
-  useGetApprovalListQuery,
-  useGetRequestQuery,
-} from "~/features/api/reimbursement-api-slice";
 import {
   setFinanceDashboardFilters,
   setFinanceDashboardSelectedItems,
@@ -68,11 +66,8 @@ const Payables: React.FC = () => {
 
   const {
     isFetching: reimbursementRequestDataIsLoading,
-    currentData: reimbursementRequestData,
-  } = useGetRequestQuery(
-    { id: focusedReimbursementId! },
-    { skip: !focusedReimbursementId },
-  );
+    data: reimbursementRequestData,
+  } = SideDrawerService.useReimbursementRequest(+focusedReimbursementId!);
 
   const toggleDownloadReportDialogVisibility = () => {
     dispatch(toggleBulkDownloadReportDialog());
@@ -150,25 +145,14 @@ const Payables: React.FC = () => {
 
   const dispatch = useAppDispatch();
 
-  const { isFetching, data } = useGetApprovalListQuery(
-    {
-      ...filters,
-      search: debouncedSearchText,
-      type: assignedRole?.split("_")[1].toLowerCase()!,
-    },
-    {
-      skip: !assignedRole,
-      refetchOnMountOrArgChange: true,
-    },
-  );
+  const { isFetching, data } = TableService.useApprovalList({
+    ...filters,
+    search: debouncedSearchText,
+    type: assignedRole?.split("_")[1].toLowerCase()!,
+  });
 
   const { isFetching: analyticsIsLoading, data: analytics } =
-    useApprovalAnalyticsQuery(
-      {
-        type: assignedRole?.split("_")[1].toLowerCase()!,
-      },
-      { skip: !assignedRole },
-    );
+    AnalyticsService.useAnalytics(assignedRole?.split("_")[1].toLowerCase()!);
 
   const setFilters = (filters: QueryFilter | null) => {
     dispatch(setFinanceDashboardFilters(filters));

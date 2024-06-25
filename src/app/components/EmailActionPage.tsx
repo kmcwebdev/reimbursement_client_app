@@ -19,12 +19,12 @@ import {
   useApproveReimbursementViaEmailMutation,
   useRejectReimbursementViaEmailMutation,
 } from "~/features/api/actions-api-slice";
-import { useGetRequestApprovalStatusQuery } from "~/features/api/reimbursement-api-slice";
 import { rejectReimbursementSchema } from "~/schema/reimbursement-reject-form.schema";
 import {
   type RejectReimbursementType,
   type RtkApiError,
 } from "~/types/reimbursement.types";
+import EmailActionService from "../api/services/email-action-service";
 
 const EmailActionPage: React.FC = () => {
   const searchParams = useSearchParams();
@@ -41,16 +41,15 @@ const EmailActionPage: React.FC = () => {
   const request_id = searchParams.get("request_id");
 
   const [canTakeAction, setCanTakeAction] = useState<boolean>(false);
-  const { data: approvalStatus, isLoading: approvalStatusIsLoading,isError:approvalStatusIsError,error:approvalStatusError } =
-    useGetRequestApprovalStatusQuery(
-      {
-        id: request_id!,
-        access_token: access_token!,
-      },
-      {
-        skip: !request_id && !access_token,
-      },
-    );
+  const {
+    data: approvalStatus,
+    isLoading: approvalStatusIsLoading,
+    isError: approvalStatusIsError,
+    error: approvalStatusError,
+  } = EmailActionService.useApprovalStatus({
+    id: request_id!,
+    access_token: access_token!,
+  });
 
   const [isMounted, setIsMounted] = useState<boolean>(false);
 
@@ -252,18 +251,19 @@ const EmailActionPage: React.FC = () => {
                 Something went wrong!
               </div>
 
-              {!approvalStatusIsError && approvalStatus &&
+              {!approvalStatusIsError && approvalStatus && (
                 <p className="text-neutral-600">
-                The request has already been{" "}
-                {approvalStatus.detail.status.name.toLowerCase()} by another
-                approver at the same approval level.
-                </p>}
-              
-               {approvalStatusIsError && approvalStatusError &&
+                  The request has already been{" "}
+                  {approvalStatus.detail.status.name.toLowerCase()} by another
+                  approver at the same approval level.
+                </p>
+              )}
+
+              {approvalStatusIsError && approvalStatusError && (
                 <p className="text-neutral-600">
-                  { (approvalStatusError as RtkApiError).data.detail}
-              </p>}
-          
+                  {approvalStatusError.data.detail}
+                </p>
+              )}
             </div>
           </CollapseHeightAnimation>
 
