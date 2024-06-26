@@ -272,15 +272,9 @@ const ReimbursementHistory: React.FC = () => {
       filename = `${filename} - ${reference_nos.join(",")}`;
     }
 
-    if (assignedRole === "REIMBURSEMENT_FINANCE") {
-      const url = `${env.NEXT_PUBLIC_BASEAPI_URL}/reimbursements/request/${assignedRole?.split("_")[1].toLowerCase()}/download-reports/history${searchParams && searchParams.size ? `?${searchParams.toString()}` : ""}`;
+    const url = `${env.NEXT_PUBLIC_BASEAPI_URL}/reimbursements/request/${assignedRole?.split("_")[1].toLowerCase()}/download-reports/history${searchParams && searchParams.size ? `?${searchParams.toString()}` : ""}`;
 
-      await exportReport(url, filename);
-    } else {
-      const url = `${env.NEXT_PUBLIC_BASEAPI_URL}/reimbursements/request/${assignedRole?.split("_")[1].toLowerCase()}/download-reports${searchParams && searchParams.size ? `?${searchParams.toString()}` : ""}`;
-
-      await exportReport(url, filename);
-    }
+    await exportReport(url, filename);
   };
 
   const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {

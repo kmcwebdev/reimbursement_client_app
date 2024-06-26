@@ -269,7 +269,23 @@ const MyAdmin: React.FC = () => {
   const downloadReport = async () => {
     setDownloadReportLoading(true);
 
+    const clientIdFilterValue = filters?.client_id;
+    const hrbpIdFilterValue = filters?.hrbp_id;
+
     const reference_nos: string[] = [];
+    const hrbp_ids: string[] = [];
+    const client_ids: string[] = [];
+
+    if (clientIdFilterValue) {
+      const splittedValue = clientIdFilterValue.split(",");
+      splittedValue.forEach((value) => client_ids.push(value));
+    }
+
+    if (hrbpIdFilterValue) {
+      const splittedValue = hrbpIdFilterValue.split(",");
+      splittedValue.forEach((value) => hrbp_ids.push(value));
+    }
+
     selectedItems.forEach((a) => {
       const reimbursement = data?.results.find((b) => +a === b.id);
       if (reimbursement) {
@@ -277,13 +293,28 @@ const MyAdmin: React.FC = () => {
       }
     });
 
+    const url = new URL(
+      `${env.NEXT_PUBLIC_BASEAPI_URL}/reimbursements/request/administrator/download-reports`,
+    );
+
+    if (reference_nos.length > 0) {
+      url.searchParams.append("multi_reference_no", client_ids.join(","));
+    }
+
+    if (client_ids.length > 0) {
+      url.searchParams.append("client_id", client_ids.join(","));
+    }
+
+    if (hrbp_ids.length > 0) {
+      url.searchParams.append("hrbp_id", hrbp_ids.join(","));
+    }
+
     let filename: string = "ADMINISTRATOR_REIMBURSEMENT_REPORT";
 
     if (reference_nos.length === 1) {
       const requestor = data?.results.find(
         (b) => reference_nos[0] === b.reference_no,
       )?.reimb_requestor;
-
       filename = `${filename} (${requestor?.first_name.toUpperCase()} ${requestor?.last_name.toUpperCase()}-${reference_nos[0]})`;
     }
 
@@ -291,9 +322,15 @@ const MyAdmin: React.FC = () => {
       filename = `${filename} - ${reference_nos.join(",")}`;
     }
 
-    const url = `${env.NEXT_PUBLIC_BASEAPI_URL}/reimbursements/request/administrator/download-reports${reference_nos.length > 0 ? `?multi_reference_no=${reference_nos.join(",")}` : ""}`;
+    if (client_ids.length > 0) {
+      filename = `${filename} - Client(${client_ids.join(",")})`;
+    }
 
-    await exportReport(url, filename);
+    if (hrbp_ids.length > 0) {
+      filename = `${filename} - HRBP(${client_ids.join(",")})`;
+    }
+
+    await exportReport(url.href, filename);
   };
 
   return (
