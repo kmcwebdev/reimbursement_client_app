@@ -5,8 +5,8 @@ import { type ColumnDef } from "@tanstack/react-table";
 import dynamic from "next/dynamic";
 import { redirect } from "next/navigation";
 import React, { useEffect, useState, type ChangeEvent } from "react";
-import SideDrawerService from "~/app/api/services/side-drawer-service";
-import TableService from "~/app/api/services/table-service";
+import SideDrawerApiService from "~/app/api/services/side-drawer-service";
+import TableApiService from "~/app/api/services/table-service";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { env } from "~/env.mjs";
 import {
@@ -63,7 +63,7 @@ const ReimbursementHistory: React.FC = () => {
     isFetching: reimbursementRequestDataIsLoading,
     isError: reimbursementRequestDataIsError,
     data: reimbursementRequestData,
-  } = SideDrawerService.useReimbursementRequest(+focusedReimbursementId!);
+  } = SideDrawerApiService.useReimbursementRequest(+focusedReimbursementId!);
 
   const [searchParams, setSearchParams] = useState<QueryFilter | null>(null);
 
@@ -90,7 +90,7 @@ const ReimbursementHistory: React.FC = () => {
     },
   });
 
-  const { isFetching, data } = TableService.useHistoryList({
+  const { isFetching, data } = TableApiService.useHistoryList({
     ...filters,
     search: debouncedSearchText,
     type: assignedRole?.split("_")[1].toLowerCase()!,

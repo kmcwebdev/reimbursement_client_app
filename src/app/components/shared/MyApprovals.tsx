@@ -4,9 +4,9 @@ import { useAbility } from "@casl/react";
 import { type ColumnDef } from "@tanstack/react-table";
 import dynamic from "next/dynamic";
 import React, { useEffect, useState, type ChangeEvent } from "react";
-import AnalyticsService from "~/app/api/services/analytics-service";
-import SideDrawerService from "~/app/api/services/side-drawer-service";
-import TableService from "~/app/api/services/table-service";
+import AnalyticsApiService from "~/app/api/services/analytics-service";
+import SideDrawerApiService from "~/app/api/services/side-drawer-service";
+import TableApiService from "~/app/api/services/table-service";
 import TableCheckbox from "~/app/components/core/tableV2/TableCheckbox";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { AbilityContext } from "~/context/AbilityContext";
@@ -63,14 +63,16 @@ const MyApprovals: React.FC = () => {
   const [isSearching, setIsSearching] = useState<boolean>(false);
 
   const { isFetching: analyticsIsLoading, data: analytics } =
-    AnalyticsService.useAnalytics(assignedRole?.split("_")[1].toLowerCase()!);
+    AnalyticsApiService.useAnalytics(
+      assignedRole?.split("_")[1].toLowerCase()!,
+    );
 
   const {
     isFetching: reimbursementRequestDataIsLoading,
     data: reimbursementRequestData,
-  } = SideDrawerService.useReimbursementRequest(+focusedReimbursementId!);
+  } = SideDrawerApiService.useReimbursementRequest(+focusedReimbursementId!);
 
-  const { isLoading, data } = TableService.useApprovalList({
+  const { isLoading, data } = TableApiService.useApprovalList({
     ...filters,
     search: debouncedSearchText,
     type: assignedRole?.split("_")[1].toLowerCase()!,

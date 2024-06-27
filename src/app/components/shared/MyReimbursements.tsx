@@ -4,8 +4,8 @@ import { type ColumnDef } from "@tanstack/react-table";
 import dynamic from "next/dynamic";
 import React, { useEffect, useMemo, useState, type ChangeEvent } from "react";
 import { useForm } from "react-hook-form";
-import SideDrawerService from "~/app/api/services/side-drawer-service";
-import TableService from "~/app/api/services/table-service";
+import SideDrawerApiService from "~/app/api/services/side-drawer-service";
+import TableApiService from "~/app/api/services/table-service";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { appApiSlice } from "~/app/rtkQuery";
 import {
@@ -73,7 +73,7 @@ const MyReimbursements: React.FC = () => {
 
   const dispatch = useAppDispatch();
 
-  const { isFetching, data } = TableService.useMyReimbursementsList({
+  const { isFetching, data } = TableApiService.useMyReimbursementsList({
     ...filters,
     search: debouncedSearchText,
   });
@@ -82,7 +82,7 @@ const MyReimbursements: React.FC = () => {
     isFetching: focusedReimbursementDataIsFetching,
     isError: focusedReimbursementDataIsError,
     data: focusedReimbursementData,
-  } = SideDrawerService.useReimbursementRequest(+focusedReimbursementId!);
+  } = SideDrawerApiService.useReimbursementRequest(+focusedReimbursementId!);
 
   //Form return for reimbursement type selection
   const useReimbursementTypeFormReturn = useForm<ReimbursementFormType>({

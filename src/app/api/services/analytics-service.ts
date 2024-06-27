@@ -1,8 +1,11 @@
 import { useQuery } from "react-query";
-import { DashboardAnalytics, RtkApiError } from "~/types/reimbursement.types";
+import {
+  type DashboardAnalytics,
+  type RtkApiError,
+} from "~/types/reimbursement.types";
 import { makeRequest } from "../api-client/make-request";
 
-class AnalyticsService {
+class AnalyticsApiService {
   //#region User Analytics
   private static getUserAnalytics = () => {
     return makeRequest<DashboardAnalytics>({
@@ -22,7 +25,7 @@ class AnalyticsService {
   //#region Analytics
   private static getAnalytics = (type: string) => {
     return makeRequest<DashboardAnalytics>({
-      url: "/reimbursements/request/my-analytics",
+      url: `/reimbursements/request/${type}/analytics`,
       method: "GET",
     });
   };
@@ -37,4 +40,4 @@ class AnalyticsService {
   //#endregion
 }
 
-export default AnalyticsService;
+export default AnalyticsApiService;

@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 "use client";
 import { usePathname } from "next/navigation";
-import React, { useEffect, type PropsWithChildren } from "react";
-import { useAppSelector } from "~/app/hook";
+import React, { type PropsWithChildren } from "react";
 
 import { barlow_Condensed } from "~/styles/fonts/barlowCondensed";
 import { karla } from "~/styles/fonts/karla";
@@ -13,19 +12,7 @@ import MobileNav from "./MobileNav";
 import Sidebar from "./Sidebar";
 
 const Layout: React.FC<PropsWithChildren> = ({ children }) => {
-  const { assignedRole } = useAppSelector((state) => state.session);
   const pathname = usePathname();
-
-  /**
-   * This resets the page table filter to its initial state on every
-   * router pathname change
-   */
-  useEffect(() => {
-    if (pathname) {
-    }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [assignedRole, pathname]);
 
   if (
     pathname &&

@@ -1,8 +1,8 @@
 import { useQuery } from "react-query";
-import { ReimbursementRequest } from "~/types/reimbursement.types";
+import { type ReimbursementRequest } from "~/types/reimbursement.types";
 import { makeRequest } from "../api-client/make-request";
 
-class SideDrawerService {
+class SideDrawerApiService {
   //#region ReimbursementRequest
   private static getReimbursementRequest = (id: number) => {
     return makeRequest<ReimbursementRequest>({
@@ -21,4 +21,4 @@ class SideDrawerService {
   //#endregion
 }
 
-export default SideDrawerService;
+export default SideDrawerApiService;

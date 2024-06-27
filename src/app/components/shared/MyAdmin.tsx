@@ -2,8 +2,8 @@
 import { type ColumnDef } from "@tanstack/react-table";
 import dynamic from "next/dynamic";
 import React, { useState, type ChangeEvent } from "react";
-import SideDrawerService from "~/app/api/services/side-drawer-service";
-import TableService from "~/app/api/services/table-service";
+import SideDrawerApiService from "~/app/api/services/side-drawer-service";
+import TableApiService from "~/app/api/services/table-service";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { env } from "~/env.mjs";
 import {
@@ -71,9 +71,9 @@ const MyAdmin: React.FC = () => {
     isFetching: focusedReimbursementDataIsFetching,
     isError: focusedReimbursementDataIsError,
     data: focusedReimbursementData,
-  } = SideDrawerService.useReimbursementRequest(+focusedReimbursementId!);
+  } = SideDrawerApiService.useReimbursementRequest(+focusedReimbursementId!);
 
-  const { isFetching, data } = TableService.useAdminList({
+  const { isFetching, data } = TableApiService.useAdminList({
     ...filters,
     search: debouncedSearchText,
   });

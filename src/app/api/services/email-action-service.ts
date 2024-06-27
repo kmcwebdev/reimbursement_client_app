@@ -1,9 +1,9 @@
 import { useQuery } from "react-query";
-import { ApprovalStatusResponse } from "~/schema/approval-status.schema";
-import { RtkApiError } from "~/types/reimbursement.types";
+import { type ApprovalStatusResponse } from "~/schema/approval-status.schema";
+import { type RtkApiError } from "~/types/reimbursement.types";
 import { makeRequest } from "../api-client/make-request";
 
-class EmailActionService {
+class EmailActionApiService {
   //#region ApprovalStatus
   private static getApprovalStatus = (query: {
     id: string;
@@ -31,4 +31,4 @@ class EmailActionService {
   //#endregion
 }
 
-export default EmailActionService;
+export default EmailActionApiService;

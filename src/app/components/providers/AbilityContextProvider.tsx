@@ -6,9 +6,9 @@ import React, {
   useState,
   type PropsWithChildren,
 } from "react";
+import UserApiService from "~/app/api/services/user-service";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { AbilityContext } from "~/context/AbilityContext";
-import { useGetMeQuery } from "~/features/api/user-api-slice";
 import {
   setAccessToken,
   setAssignedRole,
@@ -30,9 +30,8 @@ export const AbilityContextProvider: React.FC<PropsWithChildren> = ({
   const { accessToken, assignedRole } = useAppSelector(
     (state) => state.session,
   );
-  const { data: me, isFetching: meIsLoading } = useGetMeQuery(null, {
-    skip: !accessToken,
-  });
+  const { data: me, isFetching: meIsLoading } =
+    UserApiService.useMe(accessToken);
   const dispatch = useAppDispatch();
   const [permissions, setPermissions] = useState<AppClaims[]>();
 
@@ -48,9 +47,11 @@ export const AbilityContextProvider: React.FC<PropsWithChildren> = ({
       nextAuthCurrentSession.data.accessToken &&
       nextAuthCurrentSession.data.refreshToken
     ) {
+      localStorage.setItem(
+        "_user_session",
+        JSON.stringify(nextAuthCurrentSession.data),
+      );
 
-      localStorage.setItem("_user_session", JSON.stringify(nextAuthCurrentSession.data));
-      
       dispatchTokens(
         nextAuthCurrentSession.data.accessToken,
         nextAuthCurrentSession.data.refreshToken,

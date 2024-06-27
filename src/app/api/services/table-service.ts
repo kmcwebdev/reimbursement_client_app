@@ -6,7 +6,7 @@ import {
 import { createSearchParams } from "~/utils/create-search-params";
 import { makeRequest } from "../api-client/make-request";
 
-class TableService {
+class TableApiService {
   //#region ApprovalList
   private static getApprovalList = (query: QueryFilter & { type: string }) => {
     const searchParams = createSearchParams(query);
@@ -109,4 +109,4 @@ class TableService {
   //#endregion
 }
 
-export default TableService;
+export default TableApiService;

@@ -24,7 +24,7 @@ import {
   type RejectReimbursementType,
   type RtkApiError,
 } from "~/types/reimbursement.types";
-import EmailActionService from "../api/services/email-action-service";
+import EmailActionApiService from "../api/services/email-action-service";
 
 const EmailActionPage: React.FC = () => {
   const searchParams = useSearchParams();
@@ -46,7 +46,7 @@ const EmailActionPage: React.FC = () => {
     isLoading: approvalStatusIsLoading,
     isError: approvalStatusIsError,
     error: approvalStatusError,
-  } = EmailActionService.useApprovalStatus({
+  } = EmailActionApiService.useApprovalStatus({
     id: request_id!,
     access_token: access_token!,
   });

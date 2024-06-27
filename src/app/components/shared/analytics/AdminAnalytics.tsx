@@ -2,14 +2,14 @@ import React from "react";
 import { FaThList } from "react-icons-all-files/fa/FaThList";
 import { MdAccessTimeFilled } from "react-icons-all-files/md/MdAccessTimeFilled";
 import { MdGavel } from "react-icons-all-files/md/MdGavel";
-import AnalyticsService from "~/app/api/services/analytics-service";
+import AnalyticsApiService from "~/app/api/services/analytics-service";
 import DashboardCard, {
   DashboardCardSkeleton,
 } from "~/app/components/core/DashboardCard";
 
 const AdminAnalytics: React.FC = () => {
   const { isLoading: analyticsIsLoading, data: analytics } =
-    AnalyticsService.useAnalytics("administrator");
+    AnalyticsApiService.useAnalytics("administrator");
 
   return (
     <div>
