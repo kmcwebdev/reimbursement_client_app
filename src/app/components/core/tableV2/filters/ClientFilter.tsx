@@ -1,17 +1,22 @@
 import { useState, type ChangeEvent } from "react";
 import { FaCaretDown } from "react-icons-all-files/fa/FaCaretDown";
 import { MdClose } from "react-icons-all-files/md/MdClose";
-import { useAllClientsQuery } from "~/features/api/references-api-slice";
+import {
+  useAllClientsQuery,
+  useSelectedClientsQuery,
+} from "~/features/api/references-api-slice";
 import { useDebounce } from "~/hooks/use-debounce";
 import { classNames } from "~/utils/classNames";
 import Popover from "../../Popover";
+import SkeletonLoading from "../../SkeletonLoading";
 import Checkbox from "../../form/fields/Checkbox";
 import Input from "../../form/fields/Input";
 import { type FilterProps } from "./filter-props.type";
 
 const ClientFilter: React.FC<FilterProps> = ({ filters, setFilters }) => {
+  const [allClientsPage, setAllClientsPage] = useState<number>(1);
   const { data: selectedClients, isLoading: selectedClientsIsLoading } =
-    useAllClientsQuery(
+    useSelectedClientsQuery(
       { id: filters?.client_id },
       { skip: !filters?.client_id },
     );
@@ -24,13 +29,28 @@ const ClientFilter: React.FC<FilterProps> = ({ filters, setFilters }) => {
   };
 
   const debouncedSearchText = useDebounce(clientSearchValue, 500);
-  const { data: allClients, isLoading: allClientsIsLoading } =
+
+  const { data: allClients, isFetching: allClientsIsLoading } =
     useAllClientsQuery(
-      { search: debouncedSearchText, page_size: 100 },
+      { search: debouncedSearchText, page: allClientsPage },
       {
         refetchOnMountOrArgChange: true,
       },
     );
+
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const { scrollHeight, scrollTop, clientHeight } = e.currentTarget;
+    const bottom = scrollHeight - scrollTop <= clientHeight + 10;
+
+    if (
+      bottom &&
+      allClients &&
+      allClients.count !== allClients?.results.length &&
+      !allClientsIsLoading
+    ) {
+      setAllClientsPage((e) => e + 1);
+    }
+  };
 
   const onChange = (value: number) => {
     let client_id: string | undefined = "";
@@ -105,10 +125,10 @@ const ClientFilter: React.FC<FilterProps> = ({ filters, setFilters }) => {
                 "flex gap-2 overflow-y-auto overflow-x-hidden py-4 capitalize",
                 !filters?.client_id ? "h-[280px]" : "h-64",
               )}
+              onScroll={handleScroll}
             >
               <div className="flex flex-1 flex-col gap-4 px-2 pb-4">
-                {!allClientsIsLoading &&
-                  allClients &&
+                {allClients &&
                   allClients.results.length > 0 &&
                   allClients.results
                     .filter(
@@ -128,6 +148,14 @@ const ClientFilter: React.FC<FilterProps> = ({ filters, setFilters }) => {
                         onChange={() => onChange(option.id)}
                       />
                     ))}
+
+                {allClientsIsLoading &&
+                  Array.from({ length: 10 }).map((_a, i) => (
+                    <div key={i} className="flex flex-1 gap-4">
+                      <SkeletonLoading className="h-5 w-5 rounded-md" />
+                      <SkeletonLoading className="h-5 w-64 rounded-md" />
+                    </div>
+                  ))}
               </div>
             </div>
           </div>

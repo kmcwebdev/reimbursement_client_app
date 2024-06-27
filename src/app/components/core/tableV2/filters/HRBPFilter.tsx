@@ -1,17 +1,25 @@
 import { useState, type ChangeEvent } from "react";
 import { FaCaretDown } from "react-icons-all-files/fa/FaCaretDown";
 import { MdClose } from "react-icons-all-files/md/MdClose";
-import { useAllHRBPsQuery } from "~/features/api/references-api-slice";
+import {
+  useAllHRBPsQuery,
+  useSelectedHRBPsQuery,
+} from "~/features/api/references-api-slice";
 import { useDebounce } from "~/hooks/use-debounce";
 import { classNames } from "~/utils/classNames";
 import Popover from "../../Popover";
+import SkeletonLoading from "../../SkeletonLoading";
 import Checkbox from "../../form/fields/Checkbox";
 import Input from "../../form/fields/Input";
 import { type FilterProps } from "./filter-props.type";
 
 const HRBPFilter: React.FC<FilterProps> = ({ filters, setFilters }) => {
+  const [allHrbpPage, setAllHrbpPage] = useState<number>(1);
   const { data: selectedHrbps, isLoading: selectedHrbpsIsLoading } =
-    useAllHRBPsQuery({ id: filters?.hrbp_id }, { skip: !filters?.hrbp_id });
+    useSelectedHRBPsQuery(
+      { id: filters?.hrbp_id },
+      { skip: !filters?.hrbp_id },
+    );
 
   const [hrbpSearchValue, setHRBPSearchValue] = useState<string>("");
 
@@ -21,12 +29,24 @@ const HRBPFilter: React.FC<FilterProps> = ({ filters, setFilters }) => {
   };
 
   const debouncedSearchText = useDebounce(hrbpSearchValue, 500);
-  const { data: allHrbps, isLoading: allHrbpssIsLoading } = useAllHRBPsQuery(
-    { search: debouncedSearchText, page_size: 100 },
-    {
-      refetchOnMountOrArgChange: true,
-    },
-  );
+  const { data: allHrbps, isFetching: allHrbpssIsLoading } = useAllHRBPsQuery({
+    search: debouncedSearchText,
+    page: allHrbpPage,
+  });
+
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const { scrollHeight, scrollTop, clientHeight } = e.currentTarget;
+    const bottom = scrollHeight - scrollTop <= clientHeight + 10;
+
+    if (
+      bottom &&
+      allHrbps &&
+      allHrbps.count !== allHrbps.results.length &&
+      !allHrbpssIsLoading
+    ) {
+      setAllHrbpPage((e) => e + 1);
+    }
+  };
 
   const onChange = (value: number) => {
     let hrbp_id: string | undefined = "";
@@ -101,15 +121,15 @@ const HRBPFilter: React.FC<FilterProps> = ({ filters, setFilters }) => {
                 "flex gap-2 overflow-y-auto overflow-x-hidden capitalize",
                 !filters?.hrbp_id ? "h-[280px]" : "h-64",
               )}
+              onScroll={handleScroll}
             >
               <div className="flex flex-1 flex-col gap-4 px-2">
-                {!allHrbpssIsLoading &&
-                  allHrbps &&
+                {allHrbps &&
                   allHrbps.results.length > 0 &&
                   allHrbps.results
                     .filter(
                       (a) =>
-                        !filters?.client_id
+                        !filters?.hrbp_id
                           ?.split(",")
                           ?.includes(a.id.toString()),
                     )
@@ -124,6 +144,14 @@ const HRBPFilter: React.FC<FilterProps> = ({ filters, setFilters }) => {
                         onChange={() => onChange(option.id)}
                       />
                     ))}
+
+                {allHrbpssIsLoading &&
+                  Array.from({ length: 10 }).map((_a, i) => (
+                    <div key={i} className="flex flex-1 gap-4">
+                      <SkeletonLoading className="h-5 w-5 rounded-md" />
+                      <SkeletonLoading className="h-5 w-64 rounded-md" />
+                    </div>
+                  ))}
               </div>
             </div>
           </div>

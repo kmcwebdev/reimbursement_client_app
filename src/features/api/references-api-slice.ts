@@ -76,6 +76,10 @@ export const referencesApiSlice = appApiSlice.injectEndpoints({
       query: (query) => {
         const searchParams = createSearchParams(query);
 
+        if (query.search) {
+          searchParams?.delete("page");
+        }
+
         return {
           url: "/reimbursements/request/clients",
           params: searchParams ? searchParams : {},
@@ -84,10 +88,45 @@ export const referencesApiSlice = appApiSlice.injectEndpoints({
       providesTags: (_result, _fetchBaseQuery, query) => [
         { type: "AllClients", id: JSON.stringify(query) },
       ],
+      serializeQueryArgs: ({ queryArgs, endpointName }) => {
+        if (queryArgs.search) {
+          return queryArgs.search;
+        }
+        return endpointName;
+      },
+      merge: (currentCache, newItems) => {
+        newItems.results.forEach((newItem) => {
+          if (!currentCache.results.some((item) => item.id === newItem.id)) {
+            currentCache.results.push(newItem);
+          }
+        });
+      },
+      forceRefetch({ currentArg, previousArg }) {
+        return currentArg !== previousArg;
+      },
+    }),
+    selectedClients: builder.query<
+      ReimbursementClientsResponse,
+      ClientFilterQuery
+    >({
+      query: (query) => {
+        const searchParams = createSearchParams(query);
+
+        return {
+          url: "/reimbursements/request/clients",
+          params: searchParams ? searchParams : {},
+        };
+      },
+      providesTags: (_result, _fetchBaseQuery, query) => [
+        { type: "SelectedClients", id: JSON.stringify(query) },
+      ],
     }),
     allHRBPs: builder.query<ReimbursementHrbpsResponse, ClientFilterQuery>({
       query: (query) => {
         const searchParams = createSearchParams(query);
+        if (query.search) {
+          searchParams?.delete("page");
+        }
         searchParams?.append("group_id", "4");
         return {
           url: "/management/users",
@@ -97,7 +136,38 @@ export const referencesApiSlice = appApiSlice.injectEndpoints({
       providesTags: (_result, _fetchBaseQuery, query) => [
         { type: "AllHRBPs", id: JSON.stringify(query) },
       ],
+      serializeQueryArgs: ({ queryArgs, endpointName }) => {
+        if (queryArgs.search) {
+          return queryArgs.search;
+        }
+        return endpointName;
+      },
+      merge: (currentCache, newItems) => {
+        newItems.results.forEach((newItem) => {
+          if (!currentCache.results.some((item) => item.id === newItem.id)) {
+            currentCache.results.push(newItem);
+          }
+        });
+      },
+      forceRefetch({ currentArg, previousArg }) {
+        return currentArg !== previousArg;
+      },
     }),
+    selectedHRBPs: builder.query<ReimbursementHrbpsResponse, ClientFilterQuery>(
+      {
+        query: (query) => {
+          const searchParams = createSearchParams(query);
+          searchParams?.append("group_id", "4");
+          return {
+            url: "/management/users",
+            params: searchParams ? searchParams : {},
+          };
+        },
+        providesTags: (_result, _fetchBaseQuery, query) => [
+          { type: "SelectedHrbps", id: JSON.stringify(query) },
+        ],
+      },
+    ),
   }),
 });
 
@@ -108,5 +178,7 @@ export const {
   useAllExpenseTypesQuery,
   useAllGroupsQuery,
   useAllClientsQuery,
+  useSelectedClientsQuery,
   useAllHRBPsQuery,
+  useSelectedHRBPsQuery,
 } = referencesApiSlice;
