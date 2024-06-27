@@ -149,6 +149,8 @@ export const appApiSlice = createApi({
     "AllExpenseTypes",
     "AllGroups",
     "AllClients",
+    "SelectedClients",
+    "SelectedHrbps",
     "AllHRBPs",
     "AllStatuses",
     "Users",

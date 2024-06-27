@@ -9,11 +9,11 @@ import { MdCalendarToday } from "react-icons-all-files/md/MdCalendarToday";
 import { MdGroup } from "react-icons-all-files/md/MdGroup";
 import { MdLabel } from "react-icons-all-files/md/MdLabel";
 import {
-  useAllClientsQuery,
   useAllExpenseTypesQuery,
-  useAllHRBPsQuery,
   useAllStatusesQuery,
   useRequestTypesQuery,
+  useSelectedClientsQuery,
+  useSelectedHRBPsQuery,
 } from "~/features/api/references-api-slice";
 import { type QueryFilter } from "~/types/reimbursement.types";
 import { classNames } from "~/utils/classNames";
@@ -54,11 +54,11 @@ const FilterView: React.FC<FilterViewProps> = ({
   const { data: allStatuses, isLoading: allStatusesIsLoading } =
     useAllStatusesQuery({});
 
-  const { data: selectedClients, isLoading: selectedClientsIsLoading } =
-    useAllClientsQuery({ id: filters?.client_id });
+  const { data: selectedClients, isFetching: selectedClientsIsLoading } =
+    useSelectedClientsQuery({ id: filters?.client_id });
 
-  const { data: selectedHRBPs, isLoading: selectedHRBPSIsLoading } =
-    useAllHRBPsQuery({ id: filters?.hrbp_id });
+  const { data: selectedHRBPs, isFetching: selectedHRBPSIsLoading } =
+    useSelectedHRBPsQuery({ id: filters?.hrbp_id });
 
   useMemo(() => {
     const transformedFilters: IFilters = {
