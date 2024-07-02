@@ -1,6 +1,6 @@
 import { useMemo, useState, type ChangeEvent } from "react";
 import { FaCaretDown } from "react-icons-all-files/fa/FaCaretDown";
-import { useAllStatusesQuery } from "~/features/api/references-api-slice";
+import ReferencesApiService from "~/app/api/services/references-service";
 import Popover from "../../Popover";
 import StatusBadge, { type StatusType } from "../../StatusBadge";
 import Checkbox from "../../form/fields/Checkbox";
@@ -10,7 +10,7 @@ import { type FilterProps } from "./filter-props.type";
 const StatusFilter: React.FC<FilterProps> = ({ filters, setFilters }) => {
   const [statusOptions, setStatusOptions] = useState<OptionData[]>();
   const { data: allStatuses, isLoading: allStatusesIsLoading } =
-    useAllStatusesQuery({});
+    ReferencesApiService.useAllStatus();
 
   useMemo(() => {
     const options: OptionData[] = [];

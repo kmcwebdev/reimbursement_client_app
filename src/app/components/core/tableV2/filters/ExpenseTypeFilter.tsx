@@ -1,13 +1,13 @@
 import { type ChangeEvent } from "react";
 import { FaCaretDown } from "react-icons-all-files/fa/FaCaretDown";
-import { useAllExpenseTypesQuery } from "~/features/api/references-api-slice";
+import ReferencesApiService from "~/app/api/services/references-service";
 import Popover from "../../Popover";
 import Checkbox from "../../form/fields/Checkbox";
 import { type FilterProps } from "./filter-props.type";
 
 const ExpenseTypeFilter: React.FC<FilterProps> = ({ filters, setFilters }) => {
   const { data: allExpenseTypes, isLoading: allExpenseTypesIsLoading } =
-    useAllExpenseTypesQuery({});
+    ReferencesApiService.useAllExpenseTypes();
 
   const onChange = (e: ChangeEvent<HTMLInputElement>, value: number) => {
     let expense_type__id: string | undefined = "";

@@ -1,6 +1,6 @@
 import React, { type ChangeEvent } from "react";
 import { FaCaretDown } from "react-icons-all-files/fa/FaCaretDown";
-import { useRequestTypesQuery } from "~/features/api/references-api-slice";
+import ReferencesApiService from "~/app/api/services/references-service";
 import Popover from "../../Popover";
 import Checkbox from "../../form/fields/Checkbox";
 import { type FilterProps } from "./filter-props.type";
@@ -10,7 +10,7 @@ const ReimbursementTypeFilter: React.FC<FilterProps> = ({
   setFilters,
 }) => {
   const { isLoading: requestTypesIsLoading, data: requestTypes } =
-    useRequestTypesQuery();
+    ReferencesApiService.useRequestTypes();
 
   const onChange = (e: ChangeEvent<HTMLInputElement>, value: number) => {
     let request_type__id: string | undefined = value.toString();
