@@ -146,7 +146,11 @@ const HRBPFilter: React.FC<FilterProps> = ({ filters, setFilters }) => {
                         .map((option) => (
                           <div ref={lastElementRef} key={option.id}>
                             <Checkbox
-                              label={`${option.first_name} ${option.last_name}`}
+                              label={
+                                <div className="block w-48 truncate text-left">
+                                  {option.first_name} {option.last_name}
+                                </div>
+                              }
                               name={`${option.first_name} ${option.last_name}`}
                               checked={filters?.hrbp_id
                                 ?.split(",")

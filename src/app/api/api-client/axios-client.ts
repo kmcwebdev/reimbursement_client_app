@@ -13,8 +13,6 @@ const axiosClient = (() => {
 })();
 
 axiosClient.interceptors.request.use(requestHandler);
-axiosClient.interceptors.response.use((res)=>res,responseHandler
-);
+axiosClient.interceptors.response.use((res) => res, responseHandler);
 
 export default axiosClient;
-

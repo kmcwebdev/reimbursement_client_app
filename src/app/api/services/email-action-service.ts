@@ -3,18 +3,17 @@ import { type ApprovalStatusResponse } from "~/schema/approval-status.schema";
 import { type RtkApiError } from "~/types/reimbursement.types";
 import { makeRequest } from "../api-client/make-request";
 
-export type GlobalMutationOption<T> = UseMutationOptions<
-  unknown,
-  RtkApiError,
-  T
->;
+export type GlobalMutationOption<
+  TData,
+  TResponse = unknown,
+> = UseMutationOptions<TResponse, RtkApiError, TData>;
 class EmailActionApiService {
   //#region ApprovalStatus
-  private static getApprovalStatus = (query: {
+  private static getApprovalStatus = <T>(query: {
     id: string;
     access_token: string;
   }) => {
-    return makeRequest<ApprovalStatusResponse>({
+    return makeRequest<T>({
       url: `reimbursements/request/${query.id}`,
       method: "GET",
       headers: {
@@ -23,13 +22,13 @@ class EmailActionApiService {
     });
   };
 
-  public static useApprovalStatus = (query: {
+  public static useApprovalStatus = <T = ApprovalStatusResponse>(query: {
     id: string;
     access_token: string;
   }) => {
-    return useQuery<ApprovalStatusResponse, RtkApiError>({
+    return useQuery<T, RtkApiError>({
       queryKey: ["ApprovalStatus", query],
-      queryFn: () => this.getApprovalStatus(query),
+      queryFn: () => this.getApprovalStatus<T>(query),
       enabled: !!query.id && !!query.access_token,
     });
   };

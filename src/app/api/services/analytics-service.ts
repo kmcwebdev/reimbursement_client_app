@@ -7,33 +7,33 @@ import { makeRequest } from "../api-client/make-request";
 
 class AnalyticsApiService {
   //#region User Analytics
-  private static getUserAnalytics = () => {
-    return makeRequest<DashboardAnalytics>({
+  private static getUserAnalytics = <T = DashboardAnalytics>() => {
+    return makeRequest<T>({
       url: "/reimbursements/request/my-analytics",
       method: "GET",
     });
   };
 
-  public static useUserAnalytics = () => {
-    return useQuery<DashboardAnalytics, RtkApiError>({
+  public static useUserAnalytics = <T = DashboardAnalytics>() => {
+    return useQuery<T, RtkApiError>({
       queryKey: ["UserAnalytics"],
-      queryFn: this.getUserAnalytics,
+      queryFn: () => this.getUserAnalytics<T>(),
     });
   };
   //#endregion
 
   //#region Analytics
-  private static getAnalytics = (type: string) => {
-    return makeRequest<DashboardAnalytics>({
+  private static getAnalytics = <T = DashboardAnalytics>(type: string) => {
+    return makeRequest<T>({
       url: `/reimbursements/request/${type}/analytics`,
       method: "GET",
     });
   };
 
-  public static useAnalytics = (type: string) => {
-    return useQuery<DashboardAnalytics, RtkApiError>({
+  public static useAnalytics = <T = DashboardAnalytics>(type: string) => {
+    return useQuery<T, RtkApiError>({
       queryKey: ["ApprovalAnalytics", type],
-      queryFn: () => this.getAnalytics(type),
+      queryFn: () => this.getAnalytics<T>(type),
       enabled: !!type,
     });
   };

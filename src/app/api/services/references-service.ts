@@ -16,30 +16,30 @@ import { makeRequest } from "../api-client/make-request";
 
 class ReferencesApiService {
   //#region Request Types
-  private static getRequestTypes = () => {
-    return makeRequest<RequestTypeResponse>({
+  private static getRequestTypes = <T>() => {
+    return makeRequest<T>({
       url: "/reimbursements/request/request-types",
       method: "GET",
     });
   };
 
-  public static useRequestTypes = () => {
-    return useQuery<RequestTypeResponse, RtkApiError>({
+  public static useRequestTypes = <T = RequestTypeResponse>() => {
+    return useQuery<T, RtkApiError>({
       queryKey: ["RequestTypes"],
-      queryFn: this.getRequestTypes,
+      queryFn: () => this.getRequestTypes<T>(),
     });
   };
   //#endregion
 
   //#region Expense Types
-  private static getExpenseTypes = (params: ReimbursementFormType) => {
+  private static getExpenseTypes = <T>(params: ReimbursementFormType) => {
     const { request_type } = params;
     const parse = reimbursementTypeSchema.safeParse({ request_type });
 
     if (!parse.success) {
       throw new Error("Invalid request_type_id");
     }
-    return makeRequest<ExpenseTypeResponse>({
+    return makeRequest<T>({
       url: "/reimbursements/request/expense-types",
       method: "GET",
       params: {
@@ -48,67 +48,69 @@ class ReferencesApiService {
     });
   };
 
-  public static useExpenseTypes = (params: ReimbursementFormType) => {
-    return useQuery<ExpenseTypeResponse, RtkApiError>({
+  public static useExpenseTypes = <T = ExpenseTypeResponse>(
+    params: ReimbursementFormType,
+  ) => {
+    return useQuery<T, RtkApiError>({
       queryKey: ["ExpenseTypes", params],
-      queryFn: () => this.getExpenseTypes(params),
+      queryFn: () => this.getExpenseTypes<T>(params),
     });
   };
   //#endregion
 
   //#region All Status
-  private static getAllStatus = () => {
-    return makeRequest<StatusResponse>({
+  private static getAllStatus = <T>() => {
+    return makeRequest<T>({
       url: "/reimbursements/request/request-status",
       method: "GET",
     });
   };
 
-  public static useAllStatus = () => {
-    return useQuery<StatusResponse, RtkApiError>({
+  public static useAllStatus = <T = StatusResponse>() => {
+    return useQuery<T, RtkApiError>({
       queryKey: ["AllStatus"],
-      queryFn: this.getAllStatus,
+      queryFn: () => this.getAllStatus<T>(),
     });
   };
   //#endregion
 
   //#region All Expense Types
-  private static getAllExpenseTypes = () => {
-    return makeRequest<ExpenseTypeResponse>({
+  private static getAllExpenseTypes = <T>() => {
+    return makeRequest<T>({
       url: "/reimbursements/request/expense-types?page_size=100",
       method: "GET",
     });
   };
 
-  public static useAllExpenseTypes = () => {
-    return useQuery<ExpenseTypeResponse, RtkApiError>({
+  public static useAllExpenseTypes = <T = ExpenseTypeResponse>() => {
+    return useQuery<T, RtkApiError>({
       queryKey: ["AllExpenseTypes"],
-      queryFn: this.getAllExpenseTypes,
+      queryFn: () => this.getAllExpenseTypes<T>(),
     });
   };
   //#endregion
 
   //#region All Group
-  private static getAllGroup = () => {
-    return makeRequest<GroupResponse>({
+  private static getAllGroup = <T>() => {
+    return makeRequest<T>({
       url: "/reimbursements/request/expense-types?page_size=100",
       method: "GET",
     });
   };
 
-  public static useAllGroup = () => {
-    return useQuery<GroupResponse, RtkApiError>({
+  public static useAllGroup = <T = GroupResponse>() => {
+    return useQuery<T, RtkApiError>({
       queryKey: ["AllGroup"],
-      queryFn: this.getAllGroup,
+      queryFn: () => this.getAllGroup<T>(),
     });
   };
   //#endregion
 
   //#region All Clients
-  private static getAllClients = (params: ClientFilterQuery) => {
+  private static getAllClients = <T>(params: ClientFilterQuery) => {
     const searchParams = createSearchParams(params);
 
-    return makeRequest<ReimbursementClientsResponse>({
+    return makeRequest<T, ClientFilterQuery>({
       url: "/reimbursements/request/clients",
       method: "GET",
       params: searchParams ? searchParams : {},
@@ -134,7 +136,10 @@ class ReferencesApiService {
               '"}',
           );
         }
-        return this.getAllClients({ ...params, ...nextPageParams });
+        return this.getAllClients<ReimbursementClientsResponse>({
+          ...params,
+          ...nextPageParams,
+        });
       },
       getNextPageParam: (lastPage) => lastPage.next,
     });
@@ -142,11 +147,11 @@ class ReferencesApiService {
   //#endregion
 
   //#region All Hrbps
-  private static getAllHrbps = (params: ClientFilterQuery) => {
+  private static getAllHrbps = <T>(params: ClientFilterQuery) => {
     const searchParams = createSearchParams(params);
     searchParams?.append("group_id", "4");
 
-    return makeRequest<ReimbursementHrbpsResponse>({
+    return makeRequest<T>({
       url: "/management/users",
       method: "GET",
       params: searchParams ? searchParams : {},
@@ -172,7 +177,10 @@ class ReferencesApiService {
               '"}',
           );
         }
-        return this.getAllHrbps({ ...params, ...nextPageParams });
+        return this.getAllHrbps<ReimbursementHrbpsResponse>({
+          ...params,
+          ...nextPageParams,
+        });
       },
       getNextPageParam: (lastPage) => lastPage.next,
     });

@@ -32,9 +32,12 @@ class ReimbursementActionApiService {
   private static rejectReimbursement = (
     payload: RejectReimbursementType & { id: number },
   ) => {
-    return makeRequest({
+    return makeRequest<unknown, RejectReimbursementType>({
       url: `/reimbursements/request/${payload.id}/reject`,
       method: "PATCH",
+      data: {
+        remarks: payload.remarks,
+      },
     });
   };
 
@@ -72,7 +75,7 @@ class ReimbursementActionApiService {
   private static onHoldReimbursement = (
     payload: OnholdReimbursementType & { id: number },
   ) => {
-    return makeRequest({
+    return makeRequest<unknown, OnholdReimbursementType>({
       url: `/reimbursements/request/${payload.id}/cancel`,
       method: "PATCH",
       data: {
@@ -124,7 +127,7 @@ class ReimbursementActionApiService {
 
   //#region Move to Credited
   private static moveToCredited = (payload: CreditPayload) => {
-    return makeRequest({
+    return makeRequest<unknown, CreditPayload>({
       url: "/reimbursements/request/credit",
       method: "PATCH",
       data: {

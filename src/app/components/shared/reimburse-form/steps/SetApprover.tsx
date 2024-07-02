@@ -3,12 +3,13 @@ import React, { useMemo } from "react";
 import { useForm, type UseFormReturn } from "react-hook-form";
 import { type IconType } from "react-icons-all-files";
 import { MdMail } from "react-icons-all-files/md/MdMail";
+import { useQueryClient } from "react-query";
+import FormApiService from "~/app/api/services/form-service";
 import { Button } from "~/app/components/core/Button";
 import { showToast } from "~/app/components/core/Toast";
 import Form from "~/app/components/core/form";
 import Input from "~/app/components/core/form/fields/Input";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
-import { useCreateReimbursementMutation } from "~/features/api/reimbursement-form-api-slice";
 import {
   _setTempAttachedFiles,
   clearReimbursementForm,
@@ -19,7 +20,6 @@ import { getApproverSchema } from "~/schema/reimbursement-approver.schema";
 import {
   type Approver,
   type ParticularDetails,
-  type RtkApiError,
 } from "~/types/reimbursement.types";
 interface SetApproverProps {
   formReturn: UseFormReturn<ParticularDetails>;
@@ -30,6 +30,7 @@ const SetApprover: React.FC<SetApproverProps> = ({
   formReturn,
   handleResetRequestType,
 }) => {
+  const queryClient = useQueryClient();
   const { activeStep, reimbursementFormValues } = useAppSelector(
     (state) => state.reimbursementForm,
   );
@@ -65,18 +66,9 @@ const SetApprover: React.FC<SetApproverProps> = ({
     ]),
   });
 
-  const [createReimbursement, { isLoading: isSubmitting }] =
-    useCreateReimbursementMutation();
-
-  const handleSubmit = (e: Approver) => {
-    const payload = {
-      ...reimbursementFormValues,
-      manager_approver_email: e.manager_approver_email,
-    };
-
-    void createReimbursement(payload)
-      .unwrap()
-      .then(() => {
+  const { mutateAsync: createReimbursement, isLoading: isSubmitting } =
+    FormApiService.useCreateReimbursement({
+      onSuccess: () => {
         dispatch(toggleFormDialog());
         dispatch(clearReimbursementForm());
         dispatch(_setTempAttachedFiles([]));
@@ -87,13 +79,23 @@ const SetApprover: React.FC<SetApproverProps> = ({
           description:
             "Your reimbursement request has been submitted successfully!",
         });
-      })
-      .catch((error: RtkApiError) => {
+        void queryClient.invalidateQueries(["MyReimbursementsList"]);
+      },
+      onError: (error) => {
         showToast({
           type: "error",
           description: error.data.detail,
         });
-      });
+      },
+    });
+
+  const handleSubmit = (e: Approver) => {
+    const payload = {
+      ...reimbursementFormValues,
+      manager_approver_email: e.manager_approver_email,
+    };
+
+    void createReimbursement(payload);
   };
 
   return (

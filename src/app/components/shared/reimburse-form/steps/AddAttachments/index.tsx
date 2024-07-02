@@ -2,15 +2,13 @@ import React, { useEffect, useRef, useState } from "react";
 import { useDropzone, type FileRejection } from "react-dropzone";
 import { type UseFormReturn } from "react-hook-form";
 import { HiOutlinePlus } from "react-icons-all-files/hi/HiOutlinePlus";
+import { useQueryClient } from "react-query";
+import FormApiService from "~/app/api/services/form-service";
 import CollapseHeightAnimation from "~/app/components/animation/CollapseHeight";
 import { Button } from "~/app/components/core/Button";
 import Popover from "~/app/components/core/Popover";
 import { showToast } from "~/app/components/core/Toast";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
-import {
-  useCreateReimbursementMutation,
-  useUploadFileMutation,
-} from "~/features/api/reimbursement-form-api-slice";
 import {
   _setTempAttachedFiles,
   clearReimbursementForm,
@@ -18,10 +16,7 @@ import {
   setReimbursementFormValues,
   toggleFormDialog,
 } from "~/features/state/reimbursement-form-slice";
-import {
-  type ParticularDetails,
-  type RtkApiError,
-} from "~/types/reimbursement.types";
+import { type ParticularDetails } from "~/types/reimbursement.types";
 import { classNames } from "~/utils/classNames";
 import { isDuplicateFile } from "~/utils/is-duplicate-file";
 import AttachmentsList from "./AttachmentsList";
@@ -43,6 +38,7 @@ const AddAttachments: React.FC<AttachmentProps> = ({
   handleResetRequestType,
   formReturn,
 }) => {
+  const queryClient = useQueryClient();
   const { activeStep, reimbursementFormValues, _temp_attachedFiles } =
     useAppSelector((state) => state.reimbursementForm);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -53,57 +49,56 @@ const AddAttachments: React.FC<AttachmentProps> = ({
 
   const dispatch = useAppDispatch();
 
-  const [uploadFiles] = useUploadFileMutation();
+  const { mutateAsync: uploadFiles } = FormApiService.useUploadFile({
+    onSuccess: (data) => {
+      if (data) {
+        const updatedAttachedFiles = [
+          ...attachedFiles.map((a) => {
+            let updated = a;
+
+            if (
+              a.fileName.replaceAll(/\s/g, "") ===
+              data.file_name.replaceAll(/\s/g, "")
+            ) {
+              updated = {
+                ...a,
+                status: "uploaded",
+              };
+            }
+            return updated;
+          }),
+        ];
+
+        setProcessed(processed + 1);
+        setAttachedFiles(updatedAttachedFiles);
+        dispatch(_setTempAttachedFiles(updatedAttachedFiles));
+        dispatch(
+          setReimbursementFormValues({
+            ...reimbursementFormValues,
+            attachments: [...reimbursementFormValues.attachments, data],
+          }),
+        );
+
+        if (processed === attachedFiles.length - 1) {
+          showToast({
+            type: "success",
+            description: "File Upload Success!",
+          });
+        }
+      }
+    },
+    onError: (error) => {
+      showToast({
+        type: "error",
+        description: error.data.detail,
+      });
+    },
+  });
 
   const handleUpload = (file: File) => {
     const formData = new FormData();
     formData.append("file_upload", file);
-
-    void uploadFiles(formData)
-      .unwrap()
-      .then((data) => {
-        if (data) {
-          const updatedAttachedFiles = [
-            ...attachedFiles.map((a) => {
-              let updated = a;
-
-              if (
-                a.fileName.replaceAll(/\s/g, "") ===
-                data.file_name.replaceAll(/\s/g, "")
-              ) {
-                updated = {
-                  ...a,
-                  status: "uploaded",
-                };
-              }
-              return updated;
-            }),
-          ];
-
-          setProcessed(processed + 1);
-          setAttachedFiles(updatedAttachedFiles);
-          dispatch(_setTempAttachedFiles(updatedAttachedFiles));
-          dispatch(
-            setReimbursementFormValues({
-              ...reimbursementFormValues,
-              attachments: [...reimbursementFormValues.attachments, data],
-            }),
-          );
-
-          if (processed === attachedFiles.length - 1) {
-            showToast({
-              type: "success",
-              description: "File Upload Success!",
-            });
-          }
-        }
-      })
-      .catch((error: RtkApiError) => {
-        showToast({
-          type: "error",
-          description: error.data.detail,
-        });
-      });
+    void uploadFiles(formData);
   };
 
   //Automatically upload if attachment name is not in uploadedAttachmentNames
@@ -167,8 +162,29 @@ const AddAttachments: React.FC<AttachmentProps> = ({
     setShowCamera(false);
     handleDropMultiple([attachment]);
   };
-  const [createReimbursement, { isLoading: isSubmitting }] =
-    useCreateReimbursementMutation();
+  const { mutateAsync: createReimbursement, isLoading: isSubmitting } =
+    FormApiService.useCreateReimbursement({
+      onSuccess: () => {
+        dispatch(toggleFormDialog());
+        dispatch(clearReimbursementForm());
+        dispatch(_setTempAttachedFiles([]));
+        setAttachedFiles([]);
+        handleResetRequestType();
+        formReturn.reset();
+        showToast({
+          type: "success",
+          description:
+            "Your reimbursement request has been submitted successfully!",
+        });
+        void queryClient.invalidateQueries(["MyReimbursementsList"]);
+      },
+      onError: (error) => {
+        showToast({
+          type: "error",
+          description: error.data.detail,
+        });
+      },
+    });
 
   const handleContinue = () => {
     if (reimbursementFormValues.request_type === 1) {
@@ -178,29 +194,7 @@ const AddAttachments: React.FC<AttachmentProps> = ({
 
       delete payload["manager_approver_email"];
 
-      void createReimbursement(payload)
-        .unwrap()
-        .then(() => {
-          dispatch(toggleFormDialog());
-          dispatch(clearReimbursementForm());
-          dispatch(_setTempAttachedFiles([]));
-          setAttachedFiles([]);
-          handleResetRequestType();
-          formReturn.reset();
-          showToast({
-            type: "success",
-            description:
-              "Your reimbursement request has been submitted successfully!",
-          });
-        })
-        .catch((error: RtkApiError) => {
-          if (error) {
-            showToast({
-              type: "error",
-              description: error.data.detail,
-            });
-          }
-        });
+      void createReimbursement(payload);
     } else {
       dispatch(setActiveStep(activeStep + 1));
     }

@@ -11,41 +11,41 @@ import { type GlobalMutationOption } from "./email-action-service";
 
 class UserService {
   //#region Me
-  private static getMe = () => {
-    return makeRequest<User>({
+  private static getMe = <T>() => {
+    return makeRequest<T>({
       url: "/management/users/me",
       method: "GET",
     });
   };
 
-  public static useMe = (access_token: string | null) => {
-    return useQuery<User, RtkApiError>({
+  public static useMe = <T = User>(access_token: string | null) => {
+    return useQuery<T, RtkApiError>({
       queryKey: ["Me"],
-      queryFn: this.getMe,
+      queryFn: () => this.getMe<T>(),
       enabled: !!access_token,
     });
   };
   //#endregion
 
   //#region Users
-  private static getUsers = () => {
-    return makeRequest<UsersResponse>({
+  private static getUsers = <T>() => {
+    return makeRequest<T>({
       url: "/management/users",
       method: "GET",
     });
   };
 
-  public static useUsers = () => {
-    return useQuery<UsersResponse, RtkApiError>({
+  public static useUsers = <T = UsersResponse>() => {
+    return useQuery<T, RtkApiError>({
       queryKey: ["Users"],
-      queryFn: this.getUsers,
+      queryFn: this.getUsers<T>,
     });
   };
   //#endregion
 
   //#region Assign Group
   private static assignGroup = (payload: { id: number; group_id: number }) => {
-    return makeRequest({
+    return makeRequest<unknown, { group_id: number; replace_all: boolean }>({
       url: `/management/users/${payload.id}/group/assign`,
       method: "PATCH",
       data: {
@@ -74,7 +74,13 @@ class UserService {
     first_name: string;
     last_name: string;
   }) => {
-    return makeRequest({
+    return makeRequest<
+      unknown,
+      {
+        first_name: string;
+        last_name: string;
+      }
+    >({
       url: "/management/users/me",
       method: "PATCH",
       data: {
@@ -99,7 +105,7 @@ class UserService {
 
   //#region Forgot Password
   private static forgotPassword = (payload: ForgotPasswordPayload) => {
-    return makeRequest({
+    return makeRequest<unknown, ForgotPasswordPayload>({
       url: "/management/users/forgot-password",
       method: "POST",
       data: {
@@ -123,7 +129,7 @@ class UserService {
   private static updateProfilePassword = (
     payload: Pick<ChangePasswordPayload, "new_password">,
   ) => {
-    return makeRequest({
+    return makeRequest<unknown, Pick<ChangePasswordPayload, "new_password">>({
       url: "/management/users/profile/change-password",
       method: "PATCH",
       data: {
@@ -145,7 +151,7 @@ class UserService {
 
   //#region Update Password
   private static updatePassword = (payload: ChangePasswordPayload) => {
-    return makeRequest({
+    return makeRequest<unknown, ChangePasswordPayload>({
       url: "/management/users/change-password",
       method: "PATCH",
       data: {
