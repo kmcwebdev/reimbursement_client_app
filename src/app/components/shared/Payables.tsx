@@ -78,6 +78,20 @@ const Payables: React.FC = () => {
     dispatch(toggleBulkDownloadReportDialog());
   };
 
+  const dispatch = useAppDispatch();
+
+  const { isFetching, data } = useGetApprovalListQuery(
+    {
+      ...filters,
+      search: debouncedSearchText,
+      type: assignedRole?.split("_")[1].toLowerCase()!,
+    },
+    {
+      skip: !assignedRole,
+      refetchOnMountOrArgChange: true,
+    },
+  );
+
   const { download: exportReport } = useReportDownload({
     onSuccess: () => {
       dispatch(
@@ -129,38 +143,10 @@ const Payables: React.FC = () => {
 
     searchParams?.append("ordering", "-created_at");
 
-    let filename: string = "FINANCE_REIMBURSEMENT_REPORT";
-
-    if (reference_nos.length === 1) {
-      const requestor = data?.results.find(
-        (b) => reference_nos[0] === b.reference_no,
-      )?.reimb_requestor;
-
-      filename = `${filename} (${requestor?.first_name.toUpperCase()} ${requestor?.last_name.toUpperCase()}-${reference_nos[0]})`;
-    }
-
-    if (reference_nos.length > 1) {
-      filename = `${filename} - ${reference_nos.join(",")}`;
-    }
-
     const url = `${env.NEXT_PUBLIC_BASEAPI_URL}/reimbursements/request/finance/download-reports${searchParams && searchParams.size ? `?${searchParams.toString()}` : ""}`;
 
-    await exportReport(url, filename);
+    await exportReport(url);
   };
-
-  const dispatch = useAppDispatch();
-
-  const { isFetching, data } = useGetApprovalListQuery(
-    {
-      ...filters,
-      search: debouncedSearchText,
-      type: assignedRole?.split("_")[1].toLowerCase()!,
-    },
-    {
-      skip: !assignedRole,
-      refetchOnMountOrArgChange: true,
-    },
-  );
 
   const { isFetching: analyticsIsLoading, data: analytics } =
     useApprovalAnalyticsQuery(

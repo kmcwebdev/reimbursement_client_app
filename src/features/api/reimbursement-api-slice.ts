@@ -10,6 +10,7 @@ import { createSearchParams } from "~/utils/create-search-params";
 
 export const reimbursementApiSlice = appApiSlice.injectEndpoints({
   endpoints: (builder) => ({
+    //replaced
     getApprovalList: builder.query<
       RequestListResponse,
       QueryFilter & { type: string }
@@ -26,6 +27,8 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
         { type: "ReimbursementApprovalList", id: JSON.stringify(query) },
       ],
     }),
+
+    //replaced
     getAdminList: builder.query<RequestListResponse, QueryFilter>({
       query: (query) => {
         const searchParams = createSearchParams(query);
@@ -38,6 +41,8 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
         { type: "ReimbursementAdminList", id: JSON.stringify(query) },
       ],
     }),
+
+    //replaced
     getRequestsHistory: builder.query<
       RequestListResponse,
       QueryFilter & { type: string }
@@ -78,6 +83,8 @@ export const reimbursementApiSlice = appApiSlice.injectEndpoints({
         { type: "ReimbursementHistoryList", id: JSON.stringify(query) },
       ],
     }),
+
+    //replaced
     getRequest: builder.query<
       ReimbursementRequest,
       Pick<ReimbursementRequest, "id">

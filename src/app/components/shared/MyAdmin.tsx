@@ -271,10 +271,16 @@ const MyAdmin: React.FC = () => {
 
     const clientIdFilterValue = filters?.client_id;
     const hrbpIdFilterValue = filters?.hrbp_id;
+    const statusFilterValue = filters?.request_status__id;
+    const requestTypeFilterValue = filters?.request_type__id;
+    const expenseTypeFilterValue = filters?.expense_type__id;
 
     const reference_nos: string[] = [];
     const hrbp_ids: string[] = [];
     const client_ids: string[] = [];
+    const status_ids: string[] = [];
+    const request_type_ids: string[] = [];
+    const expense_type_ids: string[] = [];
 
     if (clientIdFilterValue) {
       const splittedValue = clientIdFilterValue.split(",");
@@ -284,6 +290,21 @@ const MyAdmin: React.FC = () => {
     if (hrbpIdFilterValue) {
       const splittedValue = hrbpIdFilterValue.split(",");
       splittedValue.forEach((value) => hrbp_ids.push(value));
+    }
+
+    if (statusFilterValue) {
+      const splittedValue = statusFilterValue.split(",");
+      splittedValue.forEach((value) => status_ids.push(value));
+    }
+
+    if (requestTypeFilterValue) {
+      const splittedValue = requestTypeFilterValue.split(",");
+      splittedValue.forEach((value) => request_type_ids.push(value));
+    }
+
+    if (expenseTypeFilterValue) {
+      const splittedValue = expenseTypeFilterValue.split(",");
+      splittedValue.forEach((value) => expense_type_ids.push(value));
     }
 
     selectedItems.forEach((a) => {
@@ -309,30 +330,20 @@ const MyAdmin: React.FC = () => {
       url.searchParams.append("hrbp_id", hrbp_ids.join(","));
     }
 
-    let filename: string = "ADMINISTRATOR_REIMBURSEMENT_REPORT";
-
-    if (reference_nos.length === 1) {
-      const requestor = data?.results.find(
-        (b) => reference_nos[0] === b.reference_no,
-      )?.reimb_requestor;
-      filename = `${filename} (${requestor?.first_name.toUpperCase()} ${requestor?.last_name.toUpperCase()}-${reference_nos[0]})`;
+    if (status_ids.length > 0) {
+      url.searchParams.append("request_status__id", status_ids.join(","));
     }
 
-    if (reference_nos.length > 1) {
-      filename = `${filename} - ${reference_nos.join(",")}`;
+    if (request_type_ids.length > 0) {
+      url.searchParams.append("request_type__id", request_type_ids.join(","));
     }
 
-    if (client_ids.length > 0) {
-      filename = `${filename} - Client(${client_ids.join(",")})`;
+    if (expense_type_ids.length > 0) {
+      url.searchParams.append("expense_type__id", expense_type_ids.join(","));
     }
 
-    if (hrbp_ids.length > 0) {
-      filename = `${filename} - HRBP(${client_ids.join(",")})`;
-    }
-
-    await exportReport(url.href, filename);
+    await exportReport(url.href);
   };
-
   return (
     <>
       <div className="relative flex flex-col bg-neutral-50 md:gap-y-4 md:p-5">

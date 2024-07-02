@@ -258,23 +258,9 @@ const ReimbursementHistory: React.FC = () => {
     }
     searchParams?.append("ordering", "-created_at");
 
-    let filename: string = `${assignedRole?.split("_")[1].toUpperCase()}_REIMBURSEMENT_HISTORY_REPORT`;
-
-    if (reference_nos.length === 1) {
-      const requestor = data?.results.find(
-        (b) => reference_nos[0] === b.reference_no,
-      )?.reimb_requestor;
-
-      filename = `${filename} - ${requestor?.first_name.toUpperCase()} ${requestor?.last_name.toUpperCase()}-${reference_nos[0]}`;
-    }
-
-    if (reference_nos.length > 1) {
-      filename = `${filename} - ${reference_nos.join(",")}`;
-    }
-
     const url = `${env.NEXT_PUBLIC_BASEAPI_URL}/reimbursements/request/${assignedRole?.split("_")[1].toLowerCase()}/download-reports/history${searchParams && searchParams.size ? `?${searchParams.toString()}` : ""}`;
 
-    await exportReport(url, filename);
+    await exportReport(url);
   };
 
   const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {

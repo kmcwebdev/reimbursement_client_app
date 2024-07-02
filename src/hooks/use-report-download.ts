@@ -18,7 +18,7 @@ export const useReportDownload = ({
     },
   };
 
-  const download = async (downloadUrl: string, filename: string) => {
+  const download = async (downloadUrl: string) => {
     try {
       const response = await fetch(downloadUrl, options);
 
@@ -28,9 +28,11 @@ export const useReportDownload = ({
             new Blob([blob], { type: "csv" }),
           );
 
+          const reportFileName = response.headers.get("ReportFileName");
+
           const link = document.createElement("a");
           link.href = url;
-          link.setAttribute("download", `${filename}.csv`);
+          link.setAttribute("download", `${reportFileName}.csv`);
           document.body.appendChild(link);
           link.click();
           document.body.removeChild(link);

@@ -91,13 +91,9 @@ const ReimbursementsCardView: React.FC<ReimbursementsCardViewProps> = ({
     if (data) {
       setDownloadReportLoading(true);
 
-      let filename: string = "FINANCE_REIMBURSEMENT_REPORT";
-
-      filename = `${filename} (${data?.reimb_requestor.first_name.toUpperCase()} ${data?.reimb_requestor.last_name.toUpperCase()}-${data?.reference_no})`;
-
       const url = `${env.NEXT_PUBLIC_BASEAPI_URL}/reimbursements/request/finance/download-reports?multi_reference_no=${data.reference_no}`;
 
-      await exportReport(url, filename);
+      await exportReport(url);
       dispatch(
         appApiSlice.util.invalidateTags([
           "ReimbursementRequest",
