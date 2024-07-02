@@ -7,7 +7,7 @@ import { makeRequest } from "../api-client/make-request";
 
 class AnalyticsApiService {
   //#region User Analytics
-  private static getUserAnalytics = <T = DashboardAnalytics>() => {
+  private static getUserAnalytics = <T>() => {
     return makeRequest<T>({
       url: "/reimbursements/request/my-analytics",
       method: "GET",
@@ -23,7 +23,7 @@ class AnalyticsApiService {
   //#endregion
 
   //#region Analytics
-  private static getAnalytics = <T = DashboardAnalytics>(type: string) => {
+  private static getAnalytics = <T>(type: string) => {
     return makeRequest<T>({
       url: `/reimbursements/request/${type}/analytics`,
       method: "GET",

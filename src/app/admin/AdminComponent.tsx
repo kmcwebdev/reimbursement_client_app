@@ -11,9 +11,7 @@ export const metadata: Metadata = {
 
 const AdminComponent = () => {
   const router = useRouter();
-
   const { user } = useAppSelector((state) => state.session);
-
   useEffect(() => {
     if (user && !user.is_superuser) {
       router.push("/forbidden");
