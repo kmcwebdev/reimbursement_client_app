@@ -1,10 +1,10 @@
 import React from "react";
+import ReimbursementActionApiService from "~/app/api/services/reimbursement-action-service";
 import { Button } from "~/app/components/core/Button";
 import Dialog from "~/app/components/core/Dialog";
 import { showToast } from "~/app/components/core/Toast";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { appApiSlice } from "~/app/rtkQuery";
-import { useTransitionToCreditedMutation } from "~/features/api/actions-api-slice";
 import {
   closeSideDrawer,
   toggleSingleCreditDialog,
@@ -12,7 +12,6 @@ import {
 import {
   type CreditPayload,
   type ReimbursementRequest,
-  type RtkApiError,
 } from "~/types/reimbursement.types";
 
 type SingleTransitionToCreditedDialogProps = {
@@ -27,8 +26,32 @@ const SingleTransitionToCreditedDialog: React.FC<
   );
   const dispatch = useAppDispatch();
 
-  const [creditReimbursement, { isLoading: isCrediting }] =
-    useTransitionToCreditedMutation();
+  const { mutateAsync: creditReimbursement, isLoading: isCrediting } =
+    ReimbursementActionApiService.useMoveToCredited({
+      onSuccess: () => {
+        dispatch(
+          appApiSlice.util.invalidateTags([
+            "ReimbursementRequest",
+            "ReimbursementApprovalList",
+            "ReimbursementHistoryList",
+            "ApprovalAnalytics",
+          ]),
+        );
+        showToast({
+          type: "success",
+          description:
+            "Reimbursement Requests status successfully changed to credited!",
+        });
+        onAbort();
+        dispatch(closeSideDrawer());
+      },
+      onError: (error) => {
+        showToast({
+          type: "error",
+          description: error.data.detail,
+        });
+      },
+    });
 
   const onAbort = () => {
     dispatch(toggleSingleCreditDialog());
@@ -41,31 +64,7 @@ const SingleTransitionToCreditedDialog: React.FC<
         credit_all_request: false,
       };
 
-      void creditReimbursement(payload)
-        .unwrap()
-        .then(() => {
-          dispatch(
-            appApiSlice.util.invalidateTags([
-              "ReimbursementRequest",
-              "ReimbursementApprovalList",
-              "ReimbursementHistoryList",
-              "ApprovalAnalytics",
-            ]),
-          );
-          showToast({
-            type: "success",
-            description:
-              "Reimbursement Requests status successfully changed to credited!",
-          });
-          onAbort();
-          dispatch(closeSideDrawer());
-        })
-        .catch((error: RtkApiError) => {
-          showToast({
-            type: "error",
-            description: error.data.detail,
-          });
-        });
+      void creditReimbursement(payload);
     }
   };
   return (

@@ -1,4 +1,5 @@
 import { useInfiniteQuery, useQuery } from "react-query";
+import { useAppSelector } from "~/app/hook";
 import { reimbursementTypeSchema } from "~/schema/reimbursement-type.schema";
 import {
   type ClientFilterQuery,
@@ -99,9 +100,11 @@ class ReferencesApiService {
   };
 
   public static useAllGroup = <T = GroupResponse>() => {
+    const { user } = useAppSelector((state) => state.session);
     return useQuery<T, RtkApiError>({
       queryKey: ["AllGroup"],
       queryFn: () => this.getAllGroup<T>(),
+      enabled: !!user?.is_staff || !!user?.profile,
     });
   };
   //#endregion

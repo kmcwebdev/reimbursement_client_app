@@ -5,9 +5,9 @@ import { AiOutlineLogout } from "react-icons-all-files/ai/AiOutlineLogout";
 import { MdChangeCircle } from "react-icons-all-files/md/MdChangeCircle";
 import { RiLoader4Fill } from "react-icons-all-files/ri/RiLoader4Fill";
 import { type PropsValue } from "react-select";
+import ReferencesApiService from "~/app/api/services/references-service";
+import UserApiService from "~/app/api/services/user-service";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
-import { useAllGroupsQuery } from "~/features/api/references-api-slice";
-import { useAssignGroupMutation } from "~/features/api/user-api-slice";
 import {
   clearUserSession,
   setAssignedRole,
@@ -17,6 +17,7 @@ import { type GroupType } from "~/types/reimbursement.types";
 import { Button } from "../../Button";
 import Dialog from "../../Dialog";
 import Popover from "../../Popover";
+import { showToast } from "../../Toast";
 import Select, { type OptionData } from "../../form/fields/Select";
 
 const ProfileMenu: React.FC = () => {
@@ -24,6 +25,7 @@ const ProfileMenu: React.FC = () => {
   const buttonChildRef = useRef<HTMLButtonElement>(null);
   const dispatch = useAppDispatch();
   const router = useRouter();
+  const [selectedRole, setSelectedRole] = useState<OptionData>();
 
   const { user, assignedRole } = useAppSelector((state) => state.session);
   const [signoutButtonIsLoading, setSignoutButtonIsLoading] =
@@ -46,12 +48,29 @@ const ProfileMenu: React.FC = () => {
 
   const [groupOptions, setGroupOptions] = useState<OptionData[]>();
 
-  const [assignGroup, { isLoading: isSubmitting }] = useAssignGroupMutation();
+  const { mutateAsync: assignGroup, isLoading: isSubmitting } =
+    UserApiService.useAssignGroup({
+      onSuccess: () => {
+        if (selectedRole) {
+          dispatch(setAssignedRole(selectedRole?.label as GroupType));
+        }
+        buttonChildRef.current?.click();
+        buttonRef.current?.click();
+        setSelectedRole(undefined);
+        if (typeof window !== "undefined") {
+          window.location.reload();
+        }
+      },
+      onError: (error) => {
+        console.error(error);
+        showToast({
+          type: "error",
+          description: error.data.detail,
+        });
+      },
+    });
 
-  const { isFetching, data } = useAllGroupsQuery(
-    {},
-    { skip: !user?.is_staff || !user?.profile },
-  );
+  const { isFetching, data } = ReferencesApiService.useAllGroup();
 
   useMemo(() => {
     if (data?.results) {
@@ -71,20 +90,11 @@ const ProfileMenu: React.FC = () => {
   const onRoleChanged = (selected: PropsValue<OptionData>) => {
     if (user) {
       const selectedOption = selected as OptionData;
-
+      setSelectedRole(selectedOption);
       void assignGroup({
-        id: user.id.toString(),
+        id: user.id,
         group_id: +selectedOption.value,
-      })
-        .unwrap()
-        .then(() => {
-          dispatch(setAssignedRole(selectedOption.label as GroupType));
-          buttonChildRef.current?.click();
-          buttonRef.current?.click();
-          if (typeof window !== "undefined") {
-            window.location.reload();
-          }
-        });
+      });
     }
   };
 

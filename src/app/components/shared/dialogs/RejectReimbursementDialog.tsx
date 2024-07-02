@@ -1,18 +1,15 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";
 import { useForm } from "react-hook-form";
+import ReimbursementActionApiService from "~/app/api/services/reimbursement-action-service";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
-import { useRejectReimbursementMutation } from "~/features/api/actions-api-slice";
 import {
   closeSideDrawer,
   setFocusedReimbursementId,
   toggleRejectDialog,
 } from "~/features/state/table-state.slice";
 import { rejectReimbursementSchema } from "~/schema/reimbursement-reject-form.schema";
-import {
-  type RejectReimbursementType,
-  type RtkApiError,
-} from "~/types/reimbursement.types";
+import { type RejectReimbursementType } from "~/types/reimbursement.types";
 import { Button } from "../../core/Button";
 import Dialog from "../../core/Dialog";
 import { showToast } from "../../core/Toast";
@@ -24,8 +21,25 @@ const RejectReimbursementDialog: React.FC = () => {
     (state) => state.pageTableState,
   );
   const dispatch = useAppDispatch();
-  const [rejectReimbursement, { isLoading: isRejecting }] =
-    useRejectReimbursementMutation();
+  const { mutateAsync: rejectReimbursement, isLoading: isRejecting } =
+    ReimbursementActionApiService.useRejectReimbursement({
+      onSuccess: () => {
+        showToast({
+          type: "success",
+          description: "Reimbursement Request successfully rejected!",
+        });
+        onAbort();
+        dispatch(closeSideDrawer());
+        dispatch(setFocusedReimbursementId(null));
+        formReturn.reset();
+      },
+      onError: (error) => {
+        showToast({
+          type: "error",
+          description: error.data.detail,
+        });
+      },
+    });
 
   const formReturn = useForm<RejectReimbursementType>({
     resolver: zodResolver(rejectReimbursementSchema),
@@ -44,24 +58,7 @@ const RejectReimbursementDialog: React.FC = () => {
         remarks: values.remarks,
       };
 
-      void rejectReimbursement(payload)
-        .unwrap()
-        .then(() => {
-          showToast({
-            type: "success",
-            description: "Reimbursement Request successfully rejected!",
-          });
-          onAbort();
-          dispatch(closeSideDrawer());
-          dispatch(setFocusedReimbursementId(null));
-          formReturn.reset();
-        })
-        .catch((error: RtkApiError) => {
-          showToast({
-            type: "error",
-            description: error.data.detail,
-          });
-        });
+      void rejectReimbursement(payload);
     }
   };
 

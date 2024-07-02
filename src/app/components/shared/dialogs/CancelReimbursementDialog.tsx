@@ -1,12 +1,11 @@
 import React from "react";
+import ReimbursementActionApiService from "~/app/api/services/reimbursement-action-service";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
-import { useCancelReimbursementMutation } from "~/features/api/actions-api-slice";
 import {
   closeSideDrawer,
   setFocusedReimbursementId,
   toggleCancelDialog,
 } from "~/features/state/table-state.slice";
-import { type RtkApiError } from "~/types/reimbursement.types";
 import { Button } from "../../core/Button";
 import Dialog from "../../core/Dialog";
 import { showToast } from "../../core/Toast";
@@ -20,30 +19,30 @@ const CancelReimbursementDialog: React.FC = () => {
     dispatch(toggleCancelDialog());
   };
 
-  const [cancelReimbursement, { isLoading: isCancelling }] =
-    useCancelReimbursementMutation();
+  const { mutateAsync: cancelReimbursement, isLoading: isCancelling } =
+    ReimbursementActionApiService.useCancelReimbursement({
+      onSuccess: () => {
+        showToast({
+          type: "success",
+          description: "Reimbursement Request successfully cancelled!",
+        });
+        onAbort();
+        dispatch(closeSideDrawer());
+        dispatch(setFocusedReimbursementId(null));
+      },
+      onError: (error) => {
+        showToast({
+          type: "error",
+          description: error.data.detail,
+        });
+      },
+    });
 
   const handleConfirmCancellation = () => {
     if (focusedReimbursementId) {
       void cancelReimbursement({
         id: focusedReimbursementId,
-      })
-        .unwrap()
-        .then(() => {
-          showToast({
-            type: "success",
-            description: "Reimbursement Request successfully cancelled!",
-          });
-          onAbort();
-          dispatch(closeSideDrawer());
-          dispatch(setFocusedReimbursementId(null));
-        })
-        .catch((error: RtkApiError) => {
-          showToast({
-            type: "error",
-            description: error.data.detail,
-          });
-        });
+      });
     }
   };
 

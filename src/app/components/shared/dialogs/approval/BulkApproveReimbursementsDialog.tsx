@@ -1,15 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
+import ReimbursementActionApiService from "~/app/api/services/reimbursement-action-service";
 import { Button } from "~/app/components/core/Button";
 import Dialog from "~/app/components/core/Dialog";
 import { showToast } from "~/app/components/core/Toast";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { appApiSlice } from "~/app/rtkQuery";
-import { useApproveReimbursementMutation } from "~/features/api/actions-api-slice";
 import { toggleBulkApprovalDialog } from "~/features/state/table-state.slice";
 import {
   type ReimbursementRequest,
   type RequestListResponse,
-  type RtkApiError,
 } from "~/types/reimbursement.types";
 import { currencyFormat } from "~/utils/currencyFormat";
 
@@ -24,6 +23,7 @@ const BulkApproveReimbursementsDialog: React.FC<
   BulkApproveReimbursementsDialogProps
 > = ({ data, selectedReimbursement, selectedItems, setSelectedItems }) => {
   const dispatch = useAppDispatch();
+  const [processedItems, setProcessedItems] = useState<number>(0);
   const { bulkApprovalDialogIsOpen } = useAppSelector(
     (state) => state.pageTableState,
   );
@@ -31,8 +31,33 @@ const BulkApproveReimbursementsDialog: React.FC<
     dispatch(toggleBulkApprovalDialog());
   };
 
-  const [approveReimbursement, { isLoading: isApproving }] =
-    useApproveReimbursementMutation();
+  const { mutateAsync: approveReimbursement, isLoading: isApproving } =
+    ReimbursementActionApiService.useApproveReimbursement({
+      onSuccess: () => {
+        setProcessedItems(processedItems - 1);
+
+        if (processedItems === 0) {
+          setSelectedItems([]);
+          dispatch(
+            appApiSlice.util.invalidateTags([
+              "ReimbursementRequest",
+              "ReimbursementApprovalList",
+            ]),
+          );
+          showToast({
+            type: "success",
+            description: "Reimbursement Requests successfully approved!",
+          });
+          onAbort();
+        }
+      },
+      onError: (error) => {
+        showToast({
+          type: "error",
+          description: error.data.detail,
+        });
+      },
+    });
 
   const handleApprove = () => {
     const matrixIds: number[] = [];
@@ -47,35 +72,10 @@ const BulkApproveReimbursementsDialog: React.FC<
       });
     }
 
-    let processedItems = matrixIds.length;
+    setProcessedItems(matrixIds.length);
 
     matrixIds.forEach((a) => {
-      void approveReimbursement({ id: a })
-        .unwrap()
-        .then(() => {
-          processedItems = processedItems - 1;
-
-          if (processedItems === 0) {
-            setSelectedItems([]);
-            dispatch(
-              appApiSlice.util.invalidateTags([
-                "ReimbursementRequest",
-                "ReimbursementApprovalList",
-              ]),
-            );
-            showToast({
-              type: "success",
-              description: "Reimbursement Requests successfully approved!",
-            });
-            onAbort();
-          }
-        })
-        .catch((error: RtkApiError) => {
-          showToast({
-            type: "error",
-            description: error.data.detail,
-          });
-        });
+      void approveReimbursement({ id: a });
     });
   };
 

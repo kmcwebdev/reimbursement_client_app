@@ -8,15 +8,14 @@ import { useForm } from "react-hook-form";
 import { FaUserTie } from "react-icons-all-files/fa/FaUserTie";
 import { HiBriefcase } from "react-icons-all-files/hi/HiBriefcase";
 import { MdMail } from "react-icons-all-files/md/MdMail";
+import UserApiService from "~/app/api/services/user-service";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
-import { useChangeProfilePasswordMutation } from "~/features/api/actions-api-slice";
 import { clearUserSession } from "~/features/state/user-state.slice";
 import { useDialogState } from "~/hooks/use-dialog-state";
 import { changePasswordSchema } from "~/schema/change-password.schema";
 import {
   type ChangePassword,
   type ChangePasswordPayload,
-  type RtkApiError,
 } from "~/types/reimbursement.types";
 import { classNames } from "~/utils/classNames";
 import { Button } from "../core/Button";
@@ -58,8 +57,29 @@ const Profile: NextPage = () => {
     label: "Approvers",
     value: "approver-list",
   });
-  const [changePasswordMutation, { isLoading: isSubmitting }] =
-    useChangeProfilePasswordMutation();
+  const { mutateAsync: changePasswordMutation, isLoading: isSubmitting } =
+    UserApiService.useUpdateProfilePassword({
+      onSuccess: async () => {
+        showToast({
+          type: "success",
+          description: "Password has been changed successfully",
+        });
+        setPayload(payload);
+        formReturn.reset();
+        await signOut().then(() => {
+          dispatch(clearUserSession());
+          localStorage.removeItem("_user_session");
+          close();
+          router.refresh();
+        });
+      },
+      onError: (error) => {
+        showToast({
+          type: "error",
+          description: error.data.detail,
+        });
+      },
+    });
 
   const formReturn = useForm<ChangePassword>({
     resolver: zodResolver(changePasswordSchema),
@@ -82,28 +102,7 @@ const Profile: NextPage = () => {
 
   const handleConfirmChangePassword = () => {
     if (payload) {
-      void changePasswordMutation(payload)
-        .unwrap()
-        .then(async () => {
-          showToast({
-            type: "success",
-            description: "Password has been changed successfully",
-          });
-          setPayload(payload);
-          formReturn.reset();
-          await signOut().then(() => {
-            dispatch(clearUserSession());
-            localStorage.removeItem("_user_session");
-            close();
-            router.refresh();
-          });
-        })
-        .catch((error: RtkApiError) => {
-          showToast({
-            type: "error",
-            description: error.data.detail,
-          });
-        });
+      void changePasswordMutation(payload);
     }
   };
 

@@ -1,19 +1,16 @@
 import React from "react";
+import ReimbursementActionApiService from "~/app/api/services/reimbursement-action-service";
 import { Button } from "~/app/components/core/Button";
 import Dialog from "~/app/components/core/Dialog";
 import { showToast } from "~/app/components/core/Toast";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { appApiSlice } from "~/app/rtkQuery";
-import { useApproveReimbursementMutation } from "~/features/api/actions-api-slice";
 import {
   closeSideDrawer,
   setFocusedReimbursementId,
   toggleSingleApprovalDialog,
 } from "~/features/state/table-state.slice";
-import {
-  type ReimbursementRequest,
-  type RtkApiError,
-} from "~/types/reimbursement.types";
+import { type ReimbursementRequest } from "~/types/reimbursement.types";
 import { currencyFormat } from "~/utils/currencyFormat";
 
 type SingleApproveReimbursementsDialogProps = {
@@ -31,8 +28,33 @@ const SingleApproveReimbursementsDialog: React.FC<
     dispatch(toggleSingleApprovalDialog());
   };
 
-  const [approveReimbursement, { isLoading: isApproving }] =
-    useApproveReimbursementMutation();
+  const { mutateAsync: approveReimbursement, isLoading: isApproving } =
+    ReimbursementActionApiService.useApproveReimbursement({
+      onSuccess: () => {
+        dispatch(
+          appApiSlice.util.invalidateTags([
+            "ReimbursementApprovalList",
+            "ReimbursementRequest",
+          ]),
+        );
+
+        showToast({
+          type: "success",
+          description: "Reimbursement Requests successfully approved!",
+        });
+
+        dispatch(setFocusedReimbursementId(null));
+        dispatch(closeSideDrawer());
+
+        onAbort();
+      },
+      onError: (error) => {
+        showToast({
+          type: "error",
+          description: error.data.detail,
+        });
+      },
+    });
 
   const handleApprove = () => {
     if (focusedReimbursementId) {
@@ -41,32 +63,7 @@ const SingleApproveReimbursementsDialog: React.FC<
       matrixIds.push(focusedReimbursementId);
 
       matrixIds.forEach((a) => {
-        void approveReimbursement({ id: a })
-          .unwrap()
-          .then(() => {
-            dispatch(
-              appApiSlice.util.invalidateTags([
-                "ReimbursementApprovalList",
-                "ReimbursementRequest",
-              ]),
-            );
-
-            showToast({
-              type: "success",
-              description: "Reimbursement Requests successfully approved!",
-            });
-
-            dispatch(setFocusedReimbursementId(null));
-            dispatch(closeSideDrawer());
-
-            onAbort();
-          })
-          .catch((error: RtkApiError) => {
-            showToast({
-              type: "error",
-              description: error.data.detail,
-            });
-          });
+        void approveReimbursement({ id: a });
       });
     }
   };

@@ -1,12 +1,11 @@
 import React from "react";
+import ReimbursementActionApiService from "~/app/api/services/reimbursement-action-service";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import { appApiSlice } from "~/app/rtkQuery";
-import { useTransitionToCreditedMutation } from "~/features/api/actions-api-slice";
 import { toggleBulkCreditDialog } from "~/features/state/table-state.slice";
 import {
   type CreditPayload,
   type ReimbursementRequest,
-  type RtkApiError,
 } from "~/types/reimbursement.types";
 import { Button } from "../../../core/Button";
 import Dialog from "../../../core/Dialog";
@@ -26,8 +25,32 @@ const BulkTransitionToCreditedDialog: React.FC<
   );
   const dispatch = useAppDispatch();
 
-  const [creditReimbursement, { isLoading: isCrediting }] =
-    useTransitionToCreditedMutation();
+  const { mutateAsync: creditReimbursement, isLoading: isCrediting } =
+    ReimbursementActionApiService.useMoveToCredited({
+      onSuccess: () => {
+        showToast({
+          type: "success",
+          description:
+            "Reimbursement Requests status successfully changed to credited!",
+        });
+        onAbort();
+        setSelectedItems([]);
+        dispatch(
+          appApiSlice.util.invalidateTags([
+            "ReimbursementRequest",
+            "ReimbursementApprovalList",
+            "ReimbursementHistoryList",
+            "ApprovalAnalytics",
+          ]),
+        );
+      },
+      onError: (error) => {
+        showToast({
+          type: "error",
+          description: error.data.detail,
+        });
+      },
+    });
 
   const onAbort = () => {
     dispatch(toggleBulkCreditDialog());
@@ -53,31 +76,7 @@ const BulkTransitionToCreditedDialog: React.FC<
       };
     }
 
-    void creditReimbursement(payload)
-      .unwrap()
-      .then(() => {
-        showToast({
-          type: "success",
-          description:
-            "Reimbursement Requests status successfully changed to credited!",
-        });
-        onAbort();
-        setSelectedItems([]);
-        dispatch(
-          appApiSlice.util.invalidateTags([
-            "ReimbursementRequest",
-            "ReimbursementApprovalList",
-            "ReimbursementHistoryList",
-            "ApprovalAnalytics",
-          ]),
-        );
-      })
-      .catch((error: RtkApiError) => {
-        showToast({
-          type: "error",
-          description: error.data.detail,
-        });
-      });
+    void creditReimbursement(payload);
   };
   return (
     <Dialog

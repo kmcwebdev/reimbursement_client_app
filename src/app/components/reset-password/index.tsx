@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import React from "react";
 import { useForm } from "react-hook-form";
-import { useChangePasswordMutation } from "~/features/api/actions-api-slice";
+import UserApiService from "~/app/api/services/user-service";
 import { changePasswordSchema } from "~/schema/change-password.schema";
 import {
   type ChangePassword,
@@ -22,8 +22,23 @@ const ResetPassword: React.FC = () => {
 
   const token = searchParams.get("token");
 
-  const [changePasswordMutation, { isLoading: isSubmitting }] =
-    useChangePasswordMutation();
+  const { mutateAsync: changePasswordMutation, isLoading: isSubmitting } =
+    UserApiService.useUpdatePassword({
+      onSuccess: () => {
+        showToast({
+          type: "success",
+          description: "Password has been changed successfully",
+        });
+        formReturn.reset();
+        router.push("/auth/login");
+      },
+      onError: (error: RtkApiError) => {
+        showToast({
+          type: "error",
+          description: error.data.detail,
+        });
+      },
+    });
 
   const formReturn = useForm<ChangePassword>({
     resolver: zodResolver(changePasswordSchema),
@@ -36,23 +51,7 @@ const ResetPassword: React.FC = () => {
         new_password: payload.password,
         token: token,
       };
-
-      void changePasswordMutation(body)
-        .unwrap()
-        .then(() => {
-          showToast({
-            type: "success",
-            description: "Password has been changed successfully",
-          });
-          formReturn.reset();
-          router.push("/auth/login");
-        })
-        .catch((error: RtkApiError) => {
-          showToast({
-            type: "error",
-            description: error.data.detail,
-          });
-        });
+      void changePasswordMutation(body);
     }
   };
 

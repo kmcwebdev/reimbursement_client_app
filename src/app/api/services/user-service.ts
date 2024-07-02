@@ -9,7 +9,7 @@ import {
 import { makeRequest } from "../api-client/make-request";
 import { type GlobalMutationOption } from "./email-action-service";
 
-class UserService {
+class UserApiService {
   //#region Me
   private static getMe = <T>() => {
     return makeRequest<T>({
@@ -172,4 +172,4 @@ class UserService {
   //#endregion
 }
 
-export default UserService;
+export default UserApiService;

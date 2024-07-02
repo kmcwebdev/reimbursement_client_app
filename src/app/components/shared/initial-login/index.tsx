@@ -1,11 +1,10 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
+import UserApiService from "~/app/api/services/user-service";
 import { useAppSelector } from "~/app/hook";
-import { useChangeProfilePasswordMutation } from "~/features/api/actions-api-slice";
-import { useUpdateBasicInfoMutation } from "~/features/api/user-api-slice";
 import { changePasswordSchema } from "~/schema/change-password.schema";
 import { initialLoginFormSchema } from "~/schema/initial-login.schema";
 import {
@@ -21,6 +20,7 @@ import Input from "../../core/form/fields/Input";
 
 const InitialLoginForm: React.FC = () => {
   const { user, accessToken } = useAppSelector((state) => state.session);
+  const [submittedPassword, setSubmittedPassword] = useState<string>();
   const router = useRouter();
 
   const changePassFormReturn = useForm<ChangePassword>({
@@ -33,36 +33,52 @@ const InitialLoginForm: React.FC = () => {
     mode: "onChange",
   });
 
-  const [changePasswordMutation, { isLoading: isChangePasswordSubmitting }] =
-    useChangeProfilePasswordMutation();
+  const {
+    mutateAsync: changePasswordMutation,
+    isLoading: isChangePasswordSubmitting,
+  } = UserApiService.useUpdateProfilePassword({
+    onSuccess: async () => {
+      await signOut();
+      localStorage.removeItem("_user_session");
+      showToast({
+        type: "success",
+        description: "Password has been changed successfully",
+      });
+      updateBasicInfoFormReturn.reset();
+      changePassFormReturn.reset();
+      router.push("/auth/login");
+    },
+    onError: (error) => {
+      showToast({
+        type: "error",
+        description: error.data.detail,
+      });
+    },
+  });
 
-  const [updateBasicInfoMutation, { isLoading: isUpdateBasicInfoSubmitting }] =
-    useUpdateBasicInfoMutation();
+  const {
+    mutateAsync: updateBasicInfoMutation,
+    isLoading: isUpdateBasicInfoSubmitting,
+  } = UserApiService.useUpdateBasicInfo({
+    onSuccess: () => {
+      if (submittedPassword) {
+        handleChangePassword(submittedPassword);
+      }
+    },
+    onError: (error: RtkApiError) => {
+      showToast({
+        type: "error",
+        description: error.data.detail,
+      });
+    },
+  });
 
   const handleChangePassword = (e: string) => {
     const body: Pick<ChangePasswordPayload, "new_password"> = {
       new_password: e,
     };
 
-    void changePasswordMutation(body)
-      .unwrap()
-      .then(async () => {
-        await signOut();
-        localStorage.removeItem("_user_session");
-        showToast({
-          type: "success",
-          description: "Password has been changed successfully",
-        });
-        updateBasicInfoFormReturn.reset();
-        changePassFormReturn.reset();
-        router.push("/auth/login");
-      })
-      .catch((error: RtkApiError) => {
-        showToast({
-          type: "error",
-          description: error.data.detail,
-        });
-      });
+    void changePasswordMutation(body);
   };
 
   const handleInitialLoginForm = (e: Partial<InitialLoginFormPayload>) => {
@@ -73,14 +89,8 @@ const InitialLoginForm: React.FC = () => {
             first_name: e.first_name,
             last_name: e.last_name,
           };
-
-          void updateBasicInfoMutation(updateMe)
-            .unwrap()
-            .then(() => {
-              if (e.password) {
-                handleChangePassword(e.password);
-              }
-            });
+          setSubmittedPassword(e.password);
+          void updateBasicInfoMutation(updateMe);
         }
       } else {
         if (e.password) {
