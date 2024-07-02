@@ -7,6 +7,7 @@ import {
   type UsersResponse,
 } from "~/types/reimbursement.types";
 import { makeRequest } from "../api-client/make-request";
+import { type GlobalMutationOption } from "./email-action-service";
 
 class UserService {
   //#region Me
@@ -54,13 +55,16 @@ class UserService {
     });
   };
 
-  public static useAssignGroup = (payload: {
-    id: number;
-    group_id: number;
-  }) => {
+  public static useAssignGroup = (
+    options?: GlobalMutationOption<{
+      id: number;
+      group_id: number;
+    }>,
+  ) => {
     return useMutation({
+      ...options,
       mutationKey: ["AssignGroup"],
-      mutationFn: () => this.assignGroup(payload),
+      mutationFn: (payload) => this.assignGroup(payload),
     });
   };
   //#endregion
@@ -79,13 +83,16 @@ class UserService {
     });
   };
 
-  public static useUpdateBasicInfo = (payload: {
-    first_name: string;
-    last_name: string;
-  }) => {
+  public static useUpdateBasicInfo = (
+    options?: GlobalMutationOption<{
+      first_name: string;
+      last_name: string;
+    }>,
+  ) => {
     return useMutation({
+      ...options,
       mutationKey: ["UpdateBasicInfo"],
-      mutationFn: () => this.updateBasicInfo(payload),
+      mutationFn: (payload) => this.updateBasicInfo(payload),
     });
   };
   //#endregion
@@ -101,10 +108,13 @@ class UserService {
     });
   };
 
-  public static useForgotPassword = (payload: ForgotPasswordPayload) => {
+  public static useForgotPassword = (
+    options?: GlobalMutationOption<ForgotPasswordPayload>,
+  ) => {
     return useMutation({
+      ...options,
       mutationKey: ["ForgotPassword"],
-      mutationFn: () => this.forgotPassword(payload),
+      mutationFn: (payload) => this.forgotPassword(payload),
     });
   };
   //#endregion
@@ -123,11 +133,12 @@ class UserService {
   };
 
   public static useUpdateProfilePassword = (
-    payload: Pick<ChangePasswordPayload, "new_password">,
+    options?: GlobalMutationOption<Pick<ChangePasswordPayload, "new_password">>,
   ) => {
     return useMutation({
+      ...options,
       mutationKey: ["UpdateProfilePassword"],
-      mutationFn: () => this.updateProfilePassword(payload),
+      mutationFn: (payload) => this.updateProfilePassword(payload),
     });
   };
   //#endregion
@@ -143,10 +154,13 @@ class UserService {
     });
   };
 
-  public static useUpdatePassword = (payload: ChangePasswordPayload) => {
+  public static useUpdatePassword = (
+    options?: GlobalMutationOption<ChangePasswordPayload>,
+  ) => {
     return useMutation({
+      ...options,
       mutationKey: ["UpdatePassword"],
-      mutationFn: () => this.updatePassword(payload),
+      mutationFn: (payload) => this.updatePassword(payload),
     });
   };
   //#endregion

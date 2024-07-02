@@ -6,6 +6,7 @@ import {
   type RejectReimbursementType,
 } from "~/types/reimbursement.types";
 import { makeRequest } from "../api-client/make-request";
+import { type GlobalMutationOption } from "./email-action-service";
 
 class ReimbursementActionApiService {
   //#region Approve Reimbursement
@@ -16,10 +17,13 @@ class ReimbursementActionApiService {
     });
   };
 
-  public static useApproveReimbursement = (id: number) => {
+  public static useApproveReimbursement = (
+    options?: GlobalMutationOption<{ id: number }>,
+  ) => {
     return useMutation({
+      ...options,
       mutationKey: ["ApproveReimbursement"],
-      mutationFn: () => this.approveReimbursement(id),
+      mutationFn: ({ id }) => this.approveReimbursement(id),
     });
   };
   //#endregion
@@ -35,70 +39,12 @@ class ReimbursementActionApiService {
   };
 
   public static useRejectReimbursement = (
-    payload: RejectReimbursementType & { id: number },
+    options?: GlobalMutationOption<RejectReimbursementType & { id: number }>,
   ) => {
     return useMutation({
+      ...options,
       mutationKey: ["RejectReimbursement"],
-      mutationFn: () => this.rejectReimbursement(payload),
-    });
-  };
-  //#endregion
-
-  //#region Approve Reimbursement via Email
-  private static approveReimbursementViaEmail = (payload: {
-    id: string;
-    action_id: string;
-    access_token: string;
-  }) => {
-    return makeRequest({
-      url: `/reimbursements/request/${payload.id}/approve?via_email_link=true&action_id=${payload.action_id}`,
-      method: "PATCH",
-      headers: {
-        Authorization: `Bearer ${payload.access_token}`,
-      },
-    });
-  };
-
-  public static useApproveReimbursementViaEmail = (payload: {
-    id: string;
-    action_id: string;
-    access_token: string;
-  }) => {
-    return useMutation({
-      mutationKey: ["ApproveReimbursementViaEmail"],
-      mutationFn: () => this.approveReimbursementViaEmail(payload),
-    });
-  };
-  //#endregion
-
-  //#region Reject Reimbursement via Email
-  private static rejectReimbursementViaEmail = (payload: {
-    id: string;
-    action_id: string;
-    access_token: string;
-    remarks: string;
-  }) => {
-    return makeRequest({
-      url: `/reimbursements/request/${payload.id}/reject?via_email_link=true&action_id=${payload.action_id}`,
-      method: "PATCH",
-      headers: {
-        Authorization: `Bearer ${payload.access_token}`,
-      },
-      data: {
-        remarks: payload.remarks,
-      },
-    });
-  };
-
-  public static useRejectReimbursementViaEmail = (payload: {
-    id: string;
-    action_id: string;
-    access_token: string;
-    remarks: string;
-  }) => {
-    return useMutation({
-      mutationKey: ["ApproveReimbursementViaEmail"],
-      mutationFn: () => this.rejectReimbursementViaEmail(payload),
+      mutationFn: (payload) => this.rejectReimbursement(payload),
     });
   };
   //#endregion
@@ -111,10 +57,13 @@ class ReimbursementActionApiService {
     });
   };
 
-  public static useCancelReimbursement = (id: number) => {
+  public static useCancelReimbursement = (
+    options?: GlobalMutationOption<{ id: number }>,
+  ) => {
     return useMutation({
+      ...options,
       mutationKey: ["CancelReimbursement"],
-      mutationFn: () => this.cancelReimbursement(id),
+      mutationFn: ({ id }) => this.cancelReimbursement(id),
     });
   };
   //#endregion
@@ -133,11 +82,12 @@ class ReimbursementActionApiService {
   };
 
   public static useOnholdReimbursement = (
-    payload: OnholdReimbursementType & { id: number },
+    options?: GlobalMutationOption<OnholdReimbursementType & { id: number }>,
   ) => {
     return useMutation({
+      ...options,
       mutationKey: ["OnholdReimbursement"],
-      mutationFn: () => this.onHoldReimbursement(payload),
+      mutationFn: (payload) => this.onHoldReimbursement(payload),
     });
   };
   //#endregion
@@ -158,13 +108,16 @@ class ReimbursementActionApiService {
   };
 
   public static useRerouteApprover = (
-    payload: IApproverToEdit & {
-      new_approver_email: string;
-    },
+    options?: GlobalMutationOption<
+      IApproverToEdit & {
+        new_approver_email: string;
+      }
+    >,
   ) => {
     return useMutation({
+      ...options,
       mutationKey: ["RerouteApprover"],
-      mutationFn: () => this.rerouteApprover(payload),
+      mutationFn: (payload) => this.rerouteApprover(payload),
     });
   };
   //#endregion
@@ -180,10 +133,13 @@ class ReimbursementActionApiService {
     });
   };
 
-  public static useMoveToCredited = (payload: CreditPayload) => {
+  public static useMoveToCredited = (
+    options?: GlobalMutationOption<CreditPayload>,
+  ) => {
     return useMutation({
+      ...options,
       mutationKey: ["MoveToCredited"],
-      mutationFn: () => this.moveToCredited(payload),
+      mutationFn: (payload) => this.moveToCredited(payload),
     });
   };
   //#endregion

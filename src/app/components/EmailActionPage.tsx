@@ -15,15 +15,8 @@ import { Button } from "~/app/components/core/Button";
 import EmptyState from "~/app/components/core/EmptyState";
 import Form from "~/app/components/core/form";
 import TextArea from "~/app/components/core/form/fields/TextArea";
-import {
-  useApproveReimbursementViaEmailMutation,
-  useRejectReimbursementViaEmailMutation,
-} from "~/features/api/actions-api-slice";
 import { rejectReimbursementSchema } from "~/schema/reimbursement-reject-form.schema";
-import {
-  type RejectReimbursementType,
-  type RtkApiError,
-} from "~/types/reimbursement.types";
+import { type RejectReimbursementType } from "~/types/reimbursement.types";
 import EmailActionApiService from "../api/services/email-action-service";
 
 const EmailActionPage: React.FC = () => {
@@ -56,11 +49,27 @@ const EmailActionPage: React.FC = () => {
   const [actionError, setActionError] = useState<string>();
   const [isActionSucceeded, setIsActionSucceeded] = useState<boolean>(false);
 
-  const [approveMutation, { isLoading: isApprovalLoading }] =
-    useApproveReimbursementViaEmailMutation();
+  const { mutateAsync: approveMutation, isLoading: isApprovalLoading } =
+    EmailActionApiService.useApproveReimbursement({
+      onSuccess: () => {
+        setIsActionSucceeded(true);
+        useRejectFormReturn.reset();
+      },
+      onError: (error) => {
+        setActionError(error.data.detail);
+      },
+    });
 
-  const [rejectMutation, { isLoading: isRejectLoading }] =
-    useRejectReimbursementViaEmailMutation();
+  const { mutateAsync: rejectMutation, isLoading: isRejectLoading } =
+    EmailActionApiService.useRejectReimbursement({
+      onSuccess: () => {
+        setIsActionSucceeded(true);
+        useRejectFormReturn.reset();
+      },
+      onError: (error) => {
+        setActionError(error.data.detail);
+      },
+    });
 
   useEffect(() => {
     if (
@@ -87,14 +96,7 @@ const EmailActionPage: React.FC = () => {
       if (isMounted) {
         if (action_type === "approve") {
           const payload = { id: request_id, action_id, access_token };
-          void approveMutation(payload)
-            .unwrap()
-            .then(() => {
-              setIsActionSucceeded(true);
-            })
-            .catch((error: RtkApiError) => {
-              setActionError(error.data.detail);
-            });
+          void approveMutation(payload);
         }
       }
     }
@@ -123,15 +125,7 @@ const EmailActionPage: React.FC = () => {
         remarks: values.remarks,
       };
 
-      void rejectMutation(payload)
-        .unwrap()
-        .then(() => {
-          setIsActionSucceeded(true);
-          useRejectFormReturn.reset();
-        })
-        .catch((error: RtkApiError) => {
-          setActionError(error.data.detail);
-        });
+      void rejectMutation(payload);
     }
   };
 

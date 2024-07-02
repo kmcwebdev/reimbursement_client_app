@@ -1,6 +1,7 @@
 import { useMutation } from "react-query";
 import { type ReimbursementFormValues } from "~/types/reimbursement.types";
 import { makeRequest } from "../api-client/make-request";
+import { type GlobalMutationOption } from "./email-action-service";
 
 class FormApiService {
   //#region Create Reimbursement
@@ -12,10 +13,13 @@ class FormApiService {
     });
   };
 
-  public static useCreateReimbursement = (payload: ReimbursementFormValues) => {
+  public static useCreateReimbursement = (
+    options?: GlobalMutationOption<ReimbursementFormValues>,
+  ) => {
     return useMutation({
+      ...options,
       mutationKey: ["CreateReimbursement"],
-      mutationFn: () => this.createReimbursement(payload),
+      mutationFn: (payload) => this.createReimbursement(payload),
     });
   };
   //#endregion
@@ -29,10 +33,11 @@ class FormApiService {
     });
   };
 
-  public static useUploadFile = () => {
+  public static useUploadFile = (options: GlobalMutationOption<FormData>) => {
     return useMutation({
+      ...options,
       mutationKey: ["CreateReimbursement"],
-      mutationFn: (e: FormData) => this.uploadFile(e),
+      mutationFn: (payload) => this.uploadFile(payload),
     });
   };
   //#endregion
