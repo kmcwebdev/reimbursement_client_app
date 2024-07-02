@@ -104,7 +104,7 @@ const DateFiledFilter: React.FC<FilterProps> = ({ filters, setFilters }) => {
   return (
     <Popover
       ariaLabel="Calendar"
-      panelClassName="-translate-x-3/4 md:translate-x-0"
+      panelClassName="-translate-x-[89%]"
       btn={
         <MdCalendarToday className="text-neutral-900 hover:text-neutral-800" />
       }

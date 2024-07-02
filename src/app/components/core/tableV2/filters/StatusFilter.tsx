@@ -58,14 +58,14 @@ const StatusFilter: React.FC<FilterProps> = ({ filters, setFilters }) => {
   return (
     <Popover
       ariaLabel="Pick Status"
-      panelClassName="-translate-x-16 md:translate-x-0"
+      panelClassName="-translate-x-[85%]"
       btn={<FaCaretDown className="text-neutral-900 hover:text-neutral-800" />}
       content={
-        <div className="flex flex-col">
+        <div className="flex w-40 flex-col">
           <div className="flex h-10 items-center border-b px-4 text-orange-600">
             Pick Status
           </div>
-          <div className="w-40 bg-neutral-50 p-4">
+          <div className="bg-neutral-50 p-2 md:p-4">
             <div className="flex flex-col gap-2 capitalize">
               {statusOptions?.map((option) => (
                 <Checkbox

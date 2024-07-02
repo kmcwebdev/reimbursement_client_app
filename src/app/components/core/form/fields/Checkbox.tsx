@@ -70,7 +70,7 @@ const Checkbox = ({
             {label && (
               <label
                 htmlFor={name}
-                className=" cursor-pointer text-xs leading-6 text-neutral-900"
+                className="cursor-pointer truncate text-xs leading-6 text-neutral-900"
               >
                 {label}
               </label>

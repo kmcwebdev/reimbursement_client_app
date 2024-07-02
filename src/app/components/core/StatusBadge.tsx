@@ -18,7 +18,7 @@ type StatusBadgeProps = {
 };
 
 const statusVariant = cva(
-  "h-6 rounded text-sm border border-opacity-20 px-2 flex items-center justify-center select-none",
+  "h-6 rounded text-xs md:text-sm border border-opacity-20 px-2 flex items-center justify-center select-none",
   {
     variants: {
       status: {

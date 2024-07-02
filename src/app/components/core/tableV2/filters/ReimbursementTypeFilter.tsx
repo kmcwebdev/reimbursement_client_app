@@ -28,7 +28,7 @@ const ReimbursementTypeFilter: React.FC<FilterProps> = ({
   return (
     <Popover
       ariaLabel="Pick Reimbursement Type"
-      panelClassName="-translate-x-1/4 md:translate-x-0"
+      panelClassName="-translate-x-[85%]"
       btn={<FaCaretDown className="text-neutral-900 hover:text-neutral-800" />}
       content={
         <div className="flex flex-col">

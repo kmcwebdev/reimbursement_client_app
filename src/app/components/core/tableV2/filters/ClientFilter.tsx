@@ -1,10 +1,8 @@
-import { useState, type ChangeEvent } from "react";
+import { useCallback, useRef, useState, type ChangeEvent } from "react";
 import { FaCaretDown } from "react-icons-all-files/fa/FaCaretDown";
 import { MdClose } from "react-icons-all-files/md/MdClose";
-import {
-  useAllClientsQuery,
-  useSelectedClientsQuery,
-} from "~/features/api/references-api-slice";
+import ReferencesApiService from "~/app/api/services/references-service";
+import { useSelectedClientsQuery } from "~/features/api/references-api-slice";
 import { useDebounce } from "~/hooks/use-debounce";
 import { classNames } from "~/utils/classNames";
 import Popover from "../../Popover";
@@ -14,7 +12,6 @@ import Input from "../../form/fields/Input";
 import { type FilterProps } from "./filter-props.type";
 
 const ClientFilter: React.FC<FilterProps> = ({ filters, setFilters }) => {
-  const [allClientsPage, setAllClientsPage] = useState<number>(1);
   const { data: selectedClients, isLoading: selectedClientsIsLoading } =
     useSelectedClientsQuery(
       { id: filters?.client_id },
@@ -30,27 +27,34 @@ const ClientFilter: React.FC<FilterProps> = ({ filters, setFilters }) => {
 
   const debouncedSearchText = useDebounce(clientSearchValue, 500);
 
-  const { data: allClients, isFetching: allClientsIsLoading } =
-    useAllClientsQuery(
-      { search: debouncedSearchText, page: allClientsPage },
-      {
-        refetchOnMountOrArgChange: true,
-      },
-    );
+  const {
+    data: allClients,
+    hasNextPage,
+    isFetching: allClientsIsFetching,
+    isLoading: allClientsIsLoading,
+    fetchNextPage,
+  } = ReferencesApiService.useAllClients({
+    search: debouncedSearchText,
+  });
 
-  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
-    const { scrollHeight, scrollTop, clientHeight } = e.currentTarget;
-    const bottom = scrollHeight - scrollTop <= clientHeight + 10;
+  const observer = useRef<IntersectionObserver>();
 
-    if (
-      bottom &&
-      allClients &&
-      allClients.count !== allClients?.results.length &&
-      !allClientsIsLoading
-    ) {
-      setAllClientsPage((e) => e + 1);
-    }
-  };
+  const lastElementRef = useCallback(
+    (node: HTMLDivElement) => {
+      if (allClientsIsLoading) return;
+
+      if (observer.current) observer.current.disconnect();
+
+      observer.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && hasNextPage && !allClientsIsFetching) {
+          void fetchNextPage();
+        }
+      });
+
+      if (node) observer.current.observe(node);
+    },
+    [fetchNextPage, hasNextPage, allClientsIsFetching, allClientsIsLoading],
+  );
 
   const onChange = (value: number) => {
     let client_id: string | undefined = "";
@@ -83,17 +87,17 @@ const ClientFilter: React.FC<FilterProps> = ({ filters, setFilters }) => {
 
   return (
     <Popover
-      ariaLabel="Expense Type"
-      panelClassName="-translate-x-1/4 md:translate-x-0"
+      ariaLabel="Client Filter"
+      panelClassName="-translate-x-[89%]"
       btn={<FaCaretDown className="text-neutral-900 hover:text-neutral-800" />}
       content={
         <div className="flex flex-col">
           <div className="flex h-10 items-center border-b px-4 text-orange-600">
             Pick Client/s
           </div>
-          <div className="relative h-[360px] w-96 overflow-y-hidden bg-neutral-50">
+          <div className="relative h-60 w-64 overflow-y-hidden bg-neutral-50">
             {filters?.client_id && (
-              <div className="flex gap-2 overflow-x-auto border-b p-4 scrollbar-none">
+              <div className="flex h-10 gap-2 overflow-x-auto border-b p-2 scrollbar-none">
                 {!selectedClientsIsLoading &&
                   selectedClients &&
                   selectedClients.results.length > 0 &&
@@ -112,8 +116,9 @@ const ClientFilter: React.FC<FilterProps> = ({ filters, setFilters }) => {
               </div>
             )}
 
-            <div className="border-b p-4">
+            <div className="h-[50px] border-b p-2 md:px-4 md:py-2">
               <Input
+                className="text-xs md:text-sm"
                 name="Search"
                 placeholder="Search Client"
                 onChange={handleSearch}
@@ -123,37 +128,41 @@ const ClientFilter: React.FC<FilterProps> = ({ filters, setFilters }) => {
             <div
               className={classNames(
                 "flex gap-2 overflow-y-auto overflow-x-hidden py-4 capitalize",
-                !filters?.client_id ? "h-[280px]" : "h-64",
+                !filters?.client_id ? "h-[188px]" : "h-[148px]",
               )}
-              onScroll={handleScroll}
             >
               <div className="flex flex-1 flex-col gap-4 px-2 pb-4">
                 {allClients &&
-                  allClients.results.length > 0 &&
-                  allClients.results
-                    .filter(
-                      (a) =>
-                        !filters?.client_id
-                          ?.split(",")
-                          ?.includes(a.id.toString()),
-                    )
-                    .map((option) => (
-                      <Checkbox
-                        key={option.id}
-                        label={option.name}
-                        name={option.name}
-                        checked={filters?.client_id
-                          ?.split(",")
-                          .includes(option.id.toString())}
-                        onChange={() => onChange(option.id)}
-                      />
-                    ))}
+                  allClients.pages?.length > 0 &&
+                  allClients.pages.map(
+                    (page) =>
+                      page.results.length > 0 &&
+                      page.results
+                        .filter(
+                          (a) =>
+                            !filters?.client_id
+                              ?.split(",")
+                              ?.includes(a.id.toString()),
+                        )
+                        .map((option) => (
+                          <div ref={lastElementRef} key={option.id}>
+                            <Checkbox
+                              label={option.name}
+                              name={option.name}
+                              checked={filters?.client_id
+                                ?.split(",")
+                                .includes(option.id.toString())}
+                              onChange={() => onChange(option.id)}
+                            />
+                          </div>
+                        )),
+                  )}
 
-                {allClientsIsLoading &&
+                {allClientsIsFetching &&
                   Array.from({ length: 10 }).map((_a, i) => (
                     <div key={i} className="flex flex-1 gap-4">
                       <SkeletonLoading className="h-5 w-5 rounded-md" />
-                      <SkeletonLoading className="h-5 w-64 rounded-md" />
+                      <SkeletonLoading className="h-5 w-48 rounded-md" />
                     </div>
                   ))}
               </div>

@@ -41,16 +41,16 @@ const ExpenseTypeFilter: React.FC<FilterProps> = ({ filters, setFilters }) => {
   return (
     <Popover
       ariaLabel="Expense Type"
-      panelClassName="-translate-x-1/4 md:translate-x-0"
+      panelClassName="-translate-x-[55%] md:-translate-x-[89%]"
       btn={<FaCaretDown className="text-neutral-900 hover:text-neutral-800" />}
       content={
         <div className="flex flex-col">
-          <div className="flex h-10 items-center border-b px-4 text-orange-600">
+          <div className="flex h-10 items-center border-b px-2 text-orange-600 md:px-4">
             Pick Expense Types
           </div>
-          <div className="relative h-60 w-72 space-y-4 overflow-y-hidden bg-neutral-50">
-            <div className="flex h-60 gap-2 overflow-y-auto capitalize">
-              <div className="flex flex-1 flex-col gap-4 p-4">
+          <div className="relative h-60 w-64 space-y-4 overflow-y-hidden bg-neutral-50">
+            <div className="flex h-[238px] gap-2 overflow-y-auto capitalize">
+              <div className="flex flex-1 flex-col gap-4 p-2">
                 {!allExpenseTypesIsLoading &&
                   allExpenseTypes &&
                   allExpenseTypes.results.length > 0 &&

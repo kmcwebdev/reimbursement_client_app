@@ -1,13 +1,17 @@
-import { useQuery } from "react-query";
+import { useInfiniteQuery, useQuery } from "react-query";
 import { reimbursementTypeSchema } from "~/schema/reimbursement-type.schema";
 import {
+  type ClientFilterQuery,
   type ExpenseTypeResponse,
   type GroupResponse,
+  type ReimbursementClientsResponse,
   type ReimbursementFormType,
+  type ReimbursementHrbpsResponse,
   type RequestTypeResponse,
   type RtkApiError,
   type StatusResponse,
 } from "~/types/reimbursement.types";
+import { createSearchParams } from "~/utils/create-search-params";
 import { makeRequest } from "../api-client/make-request";
 
 class ReferencesApiService {
@@ -28,8 +32,8 @@ class ReferencesApiService {
   //#endregion
 
   //#region Expense Types
-  private static getExpenseTypes = (payload: ReimbursementFormType) => {
-    const { request_type } = payload;
+  private static getExpenseTypes = (params: ReimbursementFormType) => {
+    const { request_type } = params;
     const parse = reimbursementTypeSchema.safeParse({ request_type });
 
     if (!parse.success) {
@@ -44,10 +48,10 @@ class ReferencesApiService {
     });
   };
 
-  public static useExpenseTypes = (payload: ReimbursementFormType) => {
+  public static useExpenseTypes = (params: ReimbursementFormType) => {
     return useQuery<ExpenseTypeResponse, RtkApiError>({
-      queryKey: ["ExpenseTypes", payload],
-      queryFn: () => this.getExpenseTypes(payload),
+      queryKey: ["ExpenseTypes", params],
+      queryFn: () => this.getExpenseTypes(params),
     });
   };
   //#endregion
@@ -96,6 +100,81 @@ class ReferencesApiService {
     return useQuery<GroupResponse, RtkApiError>({
       queryKey: ["AllGroup"],
       queryFn: this.getAllGroup,
+    });
+  };
+  //#endregion
+
+  //#region All Clients
+  private static getAllClients = (params: ClientFilterQuery) => {
+    const searchParams = createSearchParams(params);
+
+    return makeRequest<ReimbursementClientsResponse>({
+      url: "/reimbursements/request/clients",
+      method: "GET",
+      params: searchParams ? searchParams : {},
+    });
+  };
+
+  public static useAllClients = (params: ClientFilterQuery) => {
+    return useInfiniteQuery<ReimbursementClientsResponse, RtkApiError>({
+      queryKey: ["AllClients", params],
+      queryFn: ({ pageParam }) => {
+        let nextPageParams = {};
+
+        if (!params.search && pageParam) {
+          const pageParamUrl = new URL(pageParam as string);
+          const search = pageParamUrl.search.substring(1);
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          nextPageParams = JSON.parse(
+            '{"' +
+              decodeURI(search)
+                .replace(/"/g, '\\"')
+                .replace(/&/g, '","')
+                .replace(/=/g, '":"') +
+              '"}',
+          );
+        }
+        return this.getAllClients({ ...params, ...nextPageParams });
+      },
+      getNextPageParam: (lastPage) => lastPage.next,
+    });
+  };
+  //#endregion
+
+  //#region All Hrbps
+  private static getAllHrbps = (params: ClientFilterQuery) => {
+    const searchParams = createSearchParams(params);
+    searchParams?.append("group_id", "4");
+
+    return makeRequest<ReimbursementHrbpsResponse>({
+      url: "/management/users",
+      method: "GET",
+      params: searchParams ? searchParams : {},
+    });
+  };
+
+  public static useAllHrbps = (params: ClientFilterQuery) => {
+    return useInfiniteQuery<ReimbursementHrbpsResponse, RtkApiError>({
+      queryKey: ["AllHrbps", params],
+      queryFn: ({ pageParam }) => {
+        let nextPageParams = {};
+
+        if (!params.search && pageParam) {
+          const pageParamUrl = new URL(pageParam as string);
+          const search = pageParamUrl.search.substring(1);
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          nextPageParams = JSON.parse(
+            '{"' +
+              decodeURI(search)
+                .replace(/"/g, '\\"')
+                .replace(/&/g, '","')
+                .replace(/=/g, '":"') +
+              '"}',
+          );
+        }
+        return this.getAllHrbps({ ...params, ...nextPageParams });
+      },
+      getNextPageParam: (lastPage) => lastPage.next,
     });
   };
   //#endregion

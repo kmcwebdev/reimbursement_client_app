@@ -69,61 +69,6 @@ const MobileListItem: React.FC<MobileListItemProps> = (props) => {
           />
         </div>
       )}
-      {/* <div
-        className={classNames(
-          selectedItems.includes(props.row.original.id) && "bg-orange-50",
-          props.type === "approvals" || props.type === "admin"
-            ? "h-32"
-            : "h-28",
-          "flex flex-col gap-4 rounded-md border-b p-4",
-        )}
-      >
-        <div className="flex">
-          
-
-          <div className="flex flex-1 flex-col gap-1" {...pressHandler}>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-1 divide-x">
-                <StatusDot
-                  status={
-                    props.row.original.request_status.name.toLowerCase() as StatusType
-                  }
-                />
-
-                <p className="pl-1 font-bold">
-                  {props.row.original.reference_no}
-                </p>
-              </div>
-              <p className="font-bold">
-                {currencyFormat(+props.row.original.total_amount)}
-              </p>
-            </div>
-
-            <div>
-              <div className="flex justify-between">
-                <p className=" text-neutral-900">
-                  {props.row.original.reimb_requestor.first_name}{" "}
-                  {props.row.original.reimb_requestor.last_name}
-                </p>
-                <p className=" text-neutral-800">
-                  {parseTimezone(props.row.original.created_at).format(
-                    "MMM DD,YYYY",
-                  )}
-                </p>
-              </div>
-
-              {(props.type === "approvals" || props.type === "admin") && (
-                <p className="text-sm text-neutral-800">
-                  {props.row.original.reimb_requestor.profile.organization ||
-                    "ORGANIZATION"}
-                </p>
-              )}
-            </div>
-
-            <ExpenseTypeCell value={props.row.original.particulars} />
-          </div>
-        </div>
-      </div> */}
     </div>
   );
 };

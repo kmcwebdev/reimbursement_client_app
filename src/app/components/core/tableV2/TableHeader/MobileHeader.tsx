@@ -6,6 +6,7 @@ import { HiFolderDownload } from "react-icons-all-files/hi/HiFolderDownload";
 import { HiPlusCircle } from "react-icons-all-files/hi/HiPlusCircle";
 import { MdCheck } from "react-icons-all-files/md/MdCheck";
 import { MdCreditScore } from "react-icons-all-files/md/MdCreditScore";
+import { MdOutlineFilterList } from "react-icons-all-files/md/MdOutlineFilterList";
 import CollapseWidthAnimation from "~/app/components/animation/CollapseWidth";
 import { useAppDispatch, useAppSelector } from "~/app/hook";
 import {
@@ -20,6 +21,7 @@ import ButtonGroup, {
   type ButtonGroupOption,
 } from "../../form/fields/ButtonGroup";
 import Input from "../../form/fields/Input";
+import Popover from "../../Popover";
 import SkeletonLoading from "../../SkeletonLoading";
 
 interface MobileHeaderProps extends TableHeaderProps {
@@ -109,7 +111,7 @@ const MobileTableHeader: React.FC<MobileHeaderProps> = ({
             </div>
 
             {isLoading ? (
-              <SkeletonLoading className="h-10 rounded-sm md:w-64" />
+              <SkeletonLoading className="h-10 rounded-sm bg-neutral-300 md:w-64" />
             ) : (
               <div className="font-normal">
                 <Input
@@ -142,48 +144,74 @@ const MobileTableHeader: React.FC<MobileHeaderProps> = ({
               </div>
             )}
 
-            <div className="h-10">
-              {headerGroups.map((headerGroup, i) => (
-                <div key={i} className="flex h-full gap-2">
-                  {headerGroup.headers
-                    .filter(
-                      (header) =>
-                        header.column.columnDef?.meta &&
-                        (header.column.columnDef?.meta as CustomFilterMeta)
-                          .filterComponent,
-                    )
-                    .map((header, index) => {
-                      return (
-                        <div
-                          key={`header-${index}`}
-                          className="flex h-full items-center gap-2 text-xs"
-                        >
-                          <div
-                            className={classNames(
-                              "flex items-center gap-1 rounded-sm bg-neutral-200 px-1",
-                            )}
-                          >
-                            {flexRender(
-                              header.column.columnDef.header,
-                              header.getContext(),
-                            )}
-                            <div className="mt-1">
-                              {header.column.columnDef?.meta &&
-                                (
-                                  header.column.columnDef
-                                    ?.meta as CustomFilterMeta
-                                ).filterComponent &&
-                                (
-                                  header.column.columnDef
-                                    ?.meta as CustomFilterMeta
-                                ).filterComponent()}
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
-                </div>
-              ))}
+            <div className="flex h-10 justify-end">
+              <Popover
+                ariaLabel="Filters"
+                btn={
+                  <>
+                    {isLoading ? (
+                      <div className="flex h-10 items-center">
+                        <SkeletonLoading className="h-5 w-20 rounded-md bg-neutral-300" />
+                      </div>
+                    ) : (
+                      <div className="flex h-10 items-center font-bold text-neutral-800">
+                        <MdOutlineFilterList className="h-5 w-5" /> Filter
+                      </div>
+                    )}
+                  </>
+                }
+                panelClassName="-right-5 -top-24"
+                content={
+                  <div className="relative w-[calc(100vw-32px)]">
+                    {headerGroups.map((headerGroup, i) => (
+                      <div
+                        key={i}
+                        className="grid h-full grid-cols-2 gap-2 p-4"
+                      >
+                        {headerGroup.headers
+                          .filter(
+                            (header) =>
+                              header.column.columnDef?.meta &&
+                              (
+                                header.column.columnDef
+                                  ?.meta as CustomFilterMeta
+                              ).filterComponent,
+                          )
+                          .map((header, index) => {
+                            return (
+                              <div
+                                key={`header-${index}`}
+                                className="flex h-full w-full items-center gap-2 text-xs"
+                              >
+                                <div
+                                  className={classNames(
+                                    "flex flex-1 items-center justify-between gap-1 rounded-sm bg-neutral-200 p-1",
+                                  )}
+                                >
+                                  {flexRender(
+                                    header.column.columnDef.header,
+                                    header.getContext(),
+                                  )}
+                                  <div className="mt-1">
+                                    {header.column.columnDef?.meta &&
+                                      (
+                                        header.column.columnDef
+                                          ?.meta as CustomFilterMeta
+                                      ).filterComponent &&
+                                      (
+                                        header.column.columnDef
+                                          ?.meta as CustomFilterMeta
+                                      ).filterComponent()}
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })}
+                      </div>
+                    ))}
+                  </div>
+                }
+              />
             </div>
           </div>
         </th>
